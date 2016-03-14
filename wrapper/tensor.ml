@@ -45,7 +45,7 @@ type tf_code =
 let tf_newtensor =
   foreign "TF_NewTensor"
     (int
-    @-> ptr char
+    @-> ptr int64_t
     @-> int
     @-> ptr char
     @-> int
@@ -67,3 +67,21 @@ let tf_tensorbytesize =
 
 let tf_tensordata =
   foreign "TF_TensorData" (tf_tensor @-> returning (ptr void))
+
+let deallocate _ _ _ = ()
+let create1d elts =
+  let size = elts * 8 in
+  let data =
+    Ctypes.CArray.make char size
+  in
+  tf_newtensor 2
+    (Ctypes.CArray.of_list int64_t [ Int64.of_int elts ] |> Ctypes.CArray.start)
+    1
+    (Ctypes.CArray.start data)
+    (elts * 8)
+    deallocate
+    null
+
+let () =
+  let vector = create1d 100 in
+  Printf.printf ">> %d %d %d\n%!" (tf_numdims vector) (tf_dim vector 0) (tf_tensorbytesize vector)
