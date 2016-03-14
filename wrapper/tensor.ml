@@ -196,4 +196,10 @@ end
 let () =
   let vector = Tensor.create1d 100 in
   Printf.printf ">> %d %d %d\n%!"
-    (tf_numdims vector) (tf_dim vector 0) (tf_tensorbytesize vector)
+    (tf_numdims vector) (tf_dim vector 0) (tf_tensorbytesize vector);
+  let session_options = Session_options.create () in
+  let status = Status.create () in
+  tf_setstatus status 9 "test-message";
+  Printf.printf "%d %s\n%!" (tf_getcode status) (tf_message status);
+  let session = Session.create session_options status in
+  Printf.printf "%d %s\n%!" (tf_getcode status) (tf_message status)
