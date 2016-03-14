@@ -116,6 +116,39 @@ let tf_setconfig =
 let tf_deletesessionoptions =
   foreign "TF_DeleteSessionOptions" (tf_sessionoptions @-> returning void)
 
+(* TF_SESSION *)
+type tf_session = unit ptr
+let tf_session : tf_session typ = ptr void
+
+let tf_newsession =
+  foreign "TF_NewSession" (tf_sessionoptions @-> tf_status @-> returning tf_session)
+
+let tf_closesession =
+  foreign "TF_CloseSession" (tf_session @-> tf_status @-> returning void)
+
+let tf_deletesession =
+  foreign "TF_DeleteSession" (tf_session @-> tf_status @-> returning void)
+
+let tf_extendgraph =
+  foreign "TF_ExtendGraph" (tf_session @-> ptr void @-> int @-> returning tf_status)
+
+let tf_run =
+  foreign "TF_Run"
+    (tf_session
+    (* Input tensors *)
+    @-> ptr string
+    @-> ptr tf_tensor
+    @-> int
+    (* Output tensors *)
+    @-> ptr string
+    @-> ptr tf_tensor
+    @-> int
+    (* Target nodes *)
+    @-> ptr string
+    @-> int
+    (* Output status *)
+    @-> tf_status
+    @-> returning void)
 
 (* TODO: actually store references to data at top-level and only remove them in [deallocate]. *)
 let deallocate _ _ _ = ()
