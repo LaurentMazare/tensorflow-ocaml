@@ -1,6 +1,7 @@
 open Ctypes
 open Foreign
 
+(* TF_TENSOR *)
 type tf_tensor = unit ptr
 let tf_tensor : tf_tensor typ = ptr void
 
@@ -75,7 +76,7 @@ let tf_tensorbytesize =
 let tf_tensordata =
   foreign "TF_TensorData" (tf_tensor @-> returning (ptr void))
 
-
+(* TF_STATUS *)
 type tf_status = unit ptr
 let tf_status : tf_status typ = ptr void
 
@@ -94,6 +95,29 @@ let tf_getcode =
 let tf_message =
   foreign "TF_Message" (tf_status @-> returning string)
 
+(* TF_SESSIONOPTIONS *)
+type tf_sessionoptions = unit ptr
+let tf_sessionoptions : tf_sessionoptions typ = ptr void
+
+let tf_newsessionoptions =
+  foreign "TF_NewSessionOptions" (void @-> returning tf_sessionoptions)
+
+let tf_settarget =
+  foreign "TF_SetTarget" (tf_sessionoptions @-> string @-> returning void)
+
+let tf_setconfig =
+  foreign "TF_SetConfig"
+    (tf_sessionoptions
+    @-> ptr void
+    @-> int
+    @-> tf_status
+    @-> returning tf_sessionoptions)
+
+let tf_deletesessionoptions =
+  foreign "TF_DeleteSessionOptions" (tf_sessionoptions @-> returning void)
+
+
+(* TODO: actually store references to data at top-level and only remove them in [deallocate]. *)
 let deallocate _ _ _ = ()
 
 let create1d elts =
