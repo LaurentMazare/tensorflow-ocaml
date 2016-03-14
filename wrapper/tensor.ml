@@ -76,6 +76,24 @@ let tf_tensorbytesize =
 let tf_tensordata =
   foreign "TF_TensorData" (tf_tensor @-> returning (ptr void))
 
+module Tensor = struct
+  (* TODO: actually store references to data at top-level and only remove them in [deallocate]. *)
+  let deallocate _ _ _ = ()
+
+  let create1d elts =
+    let size = elts * 8 in
+    let data =
+      Ctypes.CArray.make char size
+    in
+    tf_newtensor 2
+      (Ctypes.CArray.of_list int64_t [ Int64.of_int elts ] |> Ctypes.CArray.start)
+      1
+      (Ctypes.CArray.start data)
+      (elts * 8)
+      deallocate
+      null
+end
+
 (* TF_STATUS *)
 type tf_status = unit ptr
 let tf_status : tf_status typ = ptr void
@@ -94,6 +112,13 @@ let tf_getcode =
 
 let tf_message =
   foreign "TF_Message" (tf_status @-> returning string)
+
+module Status = struct
+  let create () =
+    let status = tf_newstatus () in
+    Gc.finalise tf_deletestatus status;
+    status
+end
 
 (* TF_SESSIONOPTIONS *)
 type tf_sessionoptions = unit ptr
@@ -115,6 +140,13 @@ let tf_setconfig =
 
 let tf_deletesessionoptions =
   foreign "TF_DeleteSessionOptions" (tf_sessionoptions @-> returning void)
+
+module Session_options = struct
+  let create () =
+    let session_options = tf_newsessionoptions () in
+    Gc.finalise tf_deletesessionoptions session_options;
+    session_options
+end
 
 (* TF_SESSION *)
 type tf_session = unit ptr
@@ -150,22 +182,18 @@ let tf_run =
     @-> tf_status
     @-> returning void)
 
-(* TODO: actually store references to data at top-level and only remove them in [deallocate]. *)
-let deallocate _ _ _ = ()
-
-let create1d elts =
-  let size = elts * 8 in
-  let data =
-    Ctypes.CArray.make char size
-  in
-  tf_newtensor 2
-    (Ctypes.CArray.of_list int64_t [ Int64.of_int elts ] |> Ctypes.CArray.start)
-    1
-    (Ctypes.CArray.start data)
-    (elts * 8)
-    deallocate
-    null
+module Session = struct
+  let create session_options status =
+    let session = tf_newsession session_options status in
+    Gc.finalise
+      (fun session ->
+        let status = Status.create () in
+        tf_deletesession session status)
+      session;
+    session
+end
 
 let () =
-  let vector = create1d 100 in
-  Printf.printf ">> %d %d %d\n%!" (tf_numdims vector) (tf_dim vector 0) (tf_tensorbytesize vector)
+  let vector = Tensor.create1d 100 in
+  Printf.printf ">> %d %d %d\n%!"
+    (tf_numdims vector) (tf_dim vector 0) (tf_tensorbytesize vector)
