@@ -56,7 +56,7 @@ let tf_newtensor =
     @-> ptr int64_t
     @-> int
     @-> ptr char
-    @-> int
+    @-> size_t
     @-> funptr (ptr void @-> int @-> ptr void @-> returning void)
     @-> ptr void
     @-> returning tf_tensor)
@@ -71,7 +71,7 @@ let tf_dim =
   foreign "TF_Dim" (tf_tensor @-> int @-> returning int)
 
 let tf_tensorbytesize =
-  foreign "TF_TensorByteSize" (tf_tensor @-> returning int)
+  foreign "TF_TensorByteSize" (tf_tensor @-> returning size_t)
 
 let tf_tensordata =
   foreign "TF_TensorData" (tf_tensor @-> returning (ptr void))
@@ -81,15 +81,14 @@ module Tensor = struct
   let deallocate _ _ _ = ()
 
   let create1d elts =
-    let size = elts * 8 in
-    let data =
-      Ctypes.CArray.make char size
-    in
+    let elt_size = sizeof float in
+    let size = elts * elt_size in
+    let data = Ctypes.CArray.make char size in
     tf_newtensor 2
       (Ctypes.CArray.of_list int64_t [ Int64.of_int elts ] |> Ctypes.CArray.start)
       1
       (Ctypes.CArray.start data)
-      (elts * 8)
+      (Unsigned.Size_t.of_int size)
       deallocate
       null
 end
@@ -134,7 +133,7 @@ let tf_setconfig =
   foreign "TF_SetConfig"
     (tf_sessionoptions
     @-> ptr void
-    @-> int
+    @-> size_t
     @-> tf_status
     @-> returning tf_sessionoptions)
 
@@ -162,7 +161,7 @@ let tf_deletesession =
   foreign "TF_DeleteSession" (tf_session @-> tf_status @-> returning void)
 
 let tf_extendgraph =
-  foreign "TF_ExtendGraph" (tf_session @-> ptr void @-> int @-> returning tf_status)
+  foreign "TF_ExtendGraph" (tf_session @-> ptr void @-> size_t @-> returning tf_status)
 
 let tf_run =
   foreign "TF_Run"
@@ -196,7 +195,7 @@ end
 let () =
   let vector = Tensor.create1d 100 in
   Printf.printf ">> %d %d %d\n%!"
-    (tf_numdims vector) (tf_dim vector 0) (tf_tensorbytesize vector);
+    (tf_numdims vector) (tf_dim vector 0) (tf_tensorbytesize vector |> Unsigned.Size_t.to_int);
   let session_options = Session_options.create () in
   let status = Status.create () in
   tf_setstatus status 9 "test-message";
