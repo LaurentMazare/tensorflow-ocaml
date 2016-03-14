@@ -23,6 +23,13 @@ type tf_datatype =
   | TF_QUINT16
   | TF_UINT16
 
+module Bindings (S : Cstubs.Types.TYPE) = struct
+  let tf_datatype =
+    S.enum "TF_DataType"
+      [ TF_FLOAT, S.constant "TF_FLOAT" S.int64_t
+      ]
+end
+
 type tf_code =
   | TF_OK
   | TF_CANCELLED
@@ -68,7 +75,27 @@ let tf_tensorbytesize =
 let tf_tensordata =
   foreign "TF_TensorData" (tf_tensor @-> returning (ptr void))
 
+
+type tf_status = unit ptr
+let tf_status : tf_status typ = ptr void
+
+let tf_newstatus =
+  foreign "TF_NewStatus" (void @-> returning tf_status)
+
+let tf_deletestatus =
+  foreign "TF_DeleteStatus" (tf_status @-> returning void)
+
+let tf_setstatus =
+  foreign "TF_SetStatus" (tf_status @-> int @-> string @-> returning void)
+
+let tf_getcode =
+  foreign "TF_GetCode" (tf_status @-> returning int)
+
+let tf_message =
+  foreign "TF_Message" (tf_status @-> returning string)
+
 let deallocate _ _ _ = ()
+
 let create1d elts =
   let size = elts * 8 in
   let data =
