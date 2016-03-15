@@ -3,10 +3,10 @@ module CArray = Ctypes.CArray
 
 let char_list_of_string s =
   let list = ref [] in
-  for i = 0 to String.length s - 1 do
+  for i = String.length s - 1 downto 0 do
     list := s.[i] :: !list
   done;
-  List.rev !list
+  !list
 
 let const_1d floats ~name =
   let open Graph_piqi in
