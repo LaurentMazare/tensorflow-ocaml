@@ -224,8 +224,7 @@ let () =
   Printf.printf "%d %s\n%!" (tf_getcode status) (tf_message status);
   let session = Session.create session_options status in
   Printf.printf "%d %s\n%!" (tf_getcode status) (tf_message status);
-  let simple_pbtxt = read_file "simple.pbtxt" in
-  Printf.printf "%s\n" simple_pbtxt;
+  let simple_pbtxt = read_file "test.pbtxt" in
   let carray = char_list_of_string simple_pbtxt |> Ctypes.CArray.of_list char in
   tf_extendgraph
     session

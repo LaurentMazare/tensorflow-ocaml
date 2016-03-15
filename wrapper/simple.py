@@ -6,6 +6,6 @@ with graph.as_default():
   tf_c2 = tf.constant([ 2 ], dtype=tf.float32)
   tf_res = tf_c1 + tf_c2
 
-txt = str(graph.as_graph_def())
-with open('simple.pbtxt', 'w') as f: f.write(txt)
+tf.train.write_graph(graph.as_graph_def(), '.', 'simple.pbtxt', as_text=True)
+tf.train.write_graph(graph.as_graph_def(), '.', 'test.pbtxt', as_text=False)
 
