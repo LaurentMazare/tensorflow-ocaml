@@ -1,6 +1,8 @@
 (* TODO:
-    - add a non-mutable status;
-    - return [Result.t]
+    - Improve the API.
+      - Add a non-mutable status.
+      - Return [Result.t].
+    - Handle memory properly.
 *)
 module Tensor : sig
   type t
