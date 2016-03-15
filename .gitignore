@@ -4,3 +4,4 @@
 *.native
 *.cm*
 _build
+lib/*.so

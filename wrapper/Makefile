@@ -1,5 +1,5 @@
 tensor.native: tensor.ml
-	ocamlfind ocamlopt -package ctypes -package ctypes.foreign -linkpkg tensor.ml -cclib -L. -cclib -lstdc++ -cclib -ltensorflow -cclib -lpython2.7 -o tensor.native
+	ocamlbuild -use-ocamlfind tensor.native -package ctypes -package ctypes.foreign -lflags -cclib,-L../../lib,-cclib,-ltensorflow,-cclib,-lpython2.7
 
 run: tensor.native
-	LD_LIBRARY_PATH=.:$(LD_LIBRARY_PATH) ./tensor.native
+	LD_LIBRARY_PATH=../lib:$(LD_LIBRARY_PATH) ./tensor.native
