@@ -160,9 +160,8 @@ let tf_closesession =
 let tf_deletesession =
   foreign "TF_DeleteSession" (tf_session @-> tf_status @-> returning void)
 
-  (* TODO: replace [string] with [ptr char] or [ptr void]. *)
 let tf_extendgraph =
-  foreign "TF_ExtendGraph" (tf_session @-> string @-> size_t @-> tf_status @-> returning void)
+  foreign "TF_ExtendGraph" (tf_session @-> ptr char @-> size_t @-> tf_status @-> returning void)
 
 let tf_run =
   foreign "TF_Run"
@@ -208,6 +207,13 @@ let read_file filename =
     close_in chan;
     String.concat "\n" (List.rev !lines)
 
+let char_list_of_string s =
+  let list = ref [] in
+  for i = 0 to String.length s - 1 do
+    list := s.[i] :: !list
+  done;
+  List.rev !list
+
 let () =
   let vector = Tensor.create1d 100 in
   Printf.printf ">> %d %d %d\n%!"
@@ -220,9 +226,10 @@ let () =
   Printf.printf "%d %s\n%!" (tf_getcode status) (tf_message status);
   let simple_pbtxt = read_file "simple.pbtxt" in
   Printf.printf "%s\n" simple_pbtxt;
+  let carray = char_list_of_string simple_pbtxt |> Ctypes.CArray.of_list char in
   tf_extendgraph
     session
-    simple_pbtxt
+    (Ctypes.CArray.start carray)
     (String.length simple_pbtxt |> Unsigned.Size_t.of_int)
     status;
   Printf.printf "%d %s\n%!" (tf_getcode status) (tf_message status)
