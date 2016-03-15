@@ -160,8 +160,9 @@ let tf_closesession =
 let tf_deletesession =
   foreign "TF_DeleteSession" (tf_session @-> tf_status @-> returning void)
 
+  (* TODO: replace [string] with [ptr char] or [ptr void]. *)
 let tf_extendgraph =
-  foreign "TF_ExtendGraph" (tf_session @-> ptr void @-> size_t @-> returning tf_status)
+  foreign "TF_ExtendGraph" (tf_session @-> string @-> size_t @-> tf_status @-> returning void)
 
 let tf_run =
   foreign "TF_Run"
@@ -192,6 +193,21 @@ module Session = struct
     session
 end
 
+(* API END *)
+
+(* Example code. TODO: move in a separate file. *)
+let read_file filename =
+  let lines = ref [] in
+  let chan = open_in filename in
+  try
+    while true; do
+      lines := input_line chan :: !lines
+    done;
+    assert false
+  with End_of_file ->
+    close_in chan;
+    String.concat "\n" (List.rev !lines)
+
 let () =
   let vector = Tensor.create1d 100 in
   Printf.printf ">> %d %d %d\n%!"
@@ -201,4 +217,12 @@ let () =
   tf_setstatus status 9 "test-message";
   Printf.printf "%d %s\n%!" (tf_getcode status) (tf_message status);
   let session = Session.create session_options status in
+  Printf.printf "%d %s\n%!" (tf_getcode status) (tf_message status);
+  let simple_pbtxt = read_file "simple.pbtxt" in
+  Printf.printf "%s\n" simple_pbtxt;
+  tf_extendgraph
+    session
+    simple_pbtxt
+    (String.length simple_pbtxt |> Unsigned.Size_t.of_int)
+    status;
   Printf.printf "%d %s\n%!" (tf_getcode status) (tf_message status)
