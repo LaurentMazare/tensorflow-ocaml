@@ -80,8 +80,8 @@ module Tensor = struct
   type t = tf_tensor
   let deallocate _ _ _ = ()
 
-  let create1d elts =
-    let elt_size = sizeof float in
+  let create1d typ elts =
+    let elt_size = sizeof typ in
     let size = elts * elt_size in
     let data = CArray.make char size in
     tf_newtensor 1

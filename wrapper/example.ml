@@ -21,7 +21,7 @@ let char_list_of_string s =
   List.rev !list
 
 let () =
-  let vector = Tensor.create1d 10 in
+  let vector = Tensor.create1d Ctypes.float 10 in
   Printf.printf ">> %d %d %d\n%!"
     (Tensor.num_dims vector) (Tensor.dim vector 0) (Tensor.byte_size vector);
   let session_options = Session_options.create () in

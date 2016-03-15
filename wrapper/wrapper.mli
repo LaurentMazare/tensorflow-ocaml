@@ -7,7 +7,7 @@
 module Tensor : sig
   type t
 
-  val create1d : int -> t
+  val create1d : 'a Ctypes.typ -> int -> t
 
   val num_dims : t -> int
 
