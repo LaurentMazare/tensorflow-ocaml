@@ -74,7 +74,7 @@ let tf_tensorbytesize =
   foreign "TF_TensorByteSize" (tf_tensor @-> returning size_t)
 
 let tf_tensordata =
-  foreign "TF_TensorData" (tf_tensor @-> returning (ptr void))
+  foreign "TF_TensorData" (tf_tensor @-> returning (ptr char))
 
 module Tensor = struct
   (* TODO: actually store references to data at top-level and only remove them in [deallocate]. *)
@@ -233,23 +233,22 @@ let () =
     (String.length simple_pbtxt |> Unsigned.Size_t.of_int)
     status;
   Printf.printf "%d %s\n%!" (tf_getcode status) (tf_message status);
-  for i = 0 to 39 do
-    Printf.printf "%d " (Ctypes.CArray.get data i |> Char.code)
-  done;
-  Printf.printf "\n%!";
+  let output_tensors = Ctypes.CArray.make tf_tensor 1 in
   tf_run
     session
     Ctypes.CArray.(of_list string [] |> start)
     Ctypes.CArray.(of_list tf_tensor [] |> start)
     0
     Ctypes.CArray.(of_list string [ "add" ] |> start)
-    Ctypes.CArray.(of_list tf_tensor [ vector ] |> start)
+    (Ctypes.CArray.start output_tensors)
     1
     Ctypes.CArray.(of_list string [ "add" ] |> start)
     1
     status;
   Printf.printf "%d %s\n%!" (tf_getcode status) (tf_message status);
-  for i = 0 to 39 do
+  let output_tensor = Ctypes.CArray.get output_tensors 0 in
+  let data = Ctypes.CArray.from_ptr (tf_tensordata output_tensor) 4 in
+  for i = 0 to 3 do
     Printf.printf "%d " (Ctypes.CArray.get data i |> Char.code)
   done;
   Printf.printf "\n%!"
