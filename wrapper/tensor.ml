@@ -55,7 +55,7 @@ let tf_newtensor =
     (int
     @-> ptr int64_t
     @-> int
-    @-> ptr char
+    @-> ptr void
     @-> size_t
     @-> funptr (ptr void @-> int @-> ptr void @-> returning void)
     @-> ptr void
@@ -74,7 +74,7 @@ let tf_tensorbytesize =
   foreign "TF_TensorByteSize" (tf_tensor @-> returning size_t)
 
 let tf_tensordata =
-  foreign "TF_TensorData" (tf_tensor @-> returning (ptr char))
+  foreign "TF_TensorData" (tf_tensor @-> returning (ptr void))
 
 module Tensor = struct
   (* TODO: actually store references to data at top-level and only remove them in [deallocate]. *)
@@ -87,7 +87,7 @@ module Tensor = struct
     tf_newtensor 1
       (Ctypes.CArray.of_list int64_t [ Int64.of_int elts ] |> Ctypes.CArray.start)
       1
-      (Ctypes.CArray.start data)
+      (Ctypes.CArray.start data |> to_voidp)
       (Unsigned.Size_t.of_int size)
       deallocate
       null
@@ -161,7 +161,7 @@ let tf_deletesession =
   foreign "TF_DeleteSession" (tf_session @-> tf_status @-> returning void)
 
 let tf_extendgraph =
-  foreign "TF_ExtendGraph" (tf_session @-> ptr char @-> size_t @-> tf_status @-> returning void)
+  foreign "TF_ExtendGraph" (tf_session @-> ptr void @-> size_t @-> tf_status @-> returning void)
 
 let tf_run =
   foreign "TF_Run"
@@ -228,7 +228,7 @@ let () =
   let carray = char_list_of_string simple_pbtxt |> Ctypes.CArray.of_list char in
   tf_extendgraph
     session
-    (Ctypes.CArray.start carray)
+    (Ctypes.CArray.start carray |> to_voidp)
     (String.length simple_pbtxt |> Unsigned.Size_t.of_int)
     status;
   Printf.printf "%d %s\n%!" (tf_getcode status) (tf_message status);
@@ -246,8 +246,7 @@ let () =
     status;
   Printf.printf "%d %s\n%!" (tf_getcode status) (tf_message status);
   let output_tensor = Ctypes.CArray.get output_tensors 0 in
-  let data = Ctypes.CArray.from_ptr (tf_tensordata output_tensor) 4 in
-  for i = 0 to 3 do
-    Printf.printf "%d " (Ctypes.CArray.get data i |> Char.code)
-  done;
-  Printf.printf "\n%!"
+  let data =
+    Ctypes.CArray.from_ptr (tf_tensordata output_tensor |> from_voidp float) 1
+  in
+  Printf.printf "%f\n%!" (Ctypes.CArray.get data 0)
