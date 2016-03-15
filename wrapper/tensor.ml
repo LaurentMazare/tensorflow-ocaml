@@ -90,8 +90,7 @@ module Tensor = struct
       (Ctypes.CArray.start data)
       (Unsigned.Size_t.of_int size)
       deallocate
-      null,
-    data
+      null
 end
 
 (* TF_STATUS *)
@@ -216,7 +215,7 @@ let char_list_of_string s =
   List.rev !list
 
 let () =
-  let vector, data = Tensor.create1d 10 in
+  let vector = Tensor.create1d 10 in
   Printf.printf ">> %d %d %d\n%!"
     (tf_numdims vector) (tf_dim vector 0) (tf_tensorbytesize vector |> Unsigned.Size_t.to_int);
   let session_options = Session_options.create () in
