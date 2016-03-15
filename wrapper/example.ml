@@ -1,18 +1,6 @@
 open Wrapper
 module CArray = Ctypes.CArray
 
-let read_file filename =
-  let lines = ref [] in
-  let chan = open_in filename in
-  try
-    while true; do
-      lines := input_line chan :: !lines
-    done;
-    assert false
-  with End_of_file ->
-    close_in chan;
-    String.concat "\n" (List.rev !lines)
-
 let char_list_of_string s =
   let list = ref [] in
   for i = 0 to String.length s - 1 do
@@ -73,9 +61,9 @@ let generate_protobuf () =
   let open Graph_piqi in
   let graph_def =
     let nodes =
-      [ const_1d [ 3. ] ~name:"Const1"
-      ; const_1d [ 2. ] ~name:"Const2"
-      ; binary_op "Add" ~name:"Add1" ~lhs:"Const1" ~rhs:"Const2"
+      [ const_1d [ 4. ] ~name:"Const"
+      ; const_1d [ 2. ] ~name:"Const_1"
+      ; binary_op "Add" ~name:"add" ~lhs:"Const" ~rhs:"Const_1"
       ]
     in
     { Graph_def.node = nodes
@@ -94,17 +82,19 @@ let generate_protobuf () =
 
 let () =
   let graph_def_str = generate_protobuf () in
+  let oc = open_out "out.pb" in
+  output_string oc graph_def_str;
+  close_out oc;  
   let vector = Tensor.create1d Ctypes.float 10 in
   let session_options = Session_options.create () in
   let status = Status.create () in
   let session = Session.create session_options status in
   Printf.printf "%d %s\n%!" (Status.code status) (Status.message status);
-  let simple_pbtxt = read_file "test.pbtxt" in
-  let carray = char_list_of_string simple_pbtxt |> CArray.of_list Ctypes.char in
+  let carray = char_list_of_string graph_def_str |> CArray.of_list Ctypes.char in
   Session.extend_graph
     session
     carray
-    (String.length simple_pbtxt)
+    (String.length graph_def_str)
     status;
   Printf.printf "%d %s\n%!" (Status.code status) (Status.message status);
   let output_tensors =
