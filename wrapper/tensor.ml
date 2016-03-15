@@ -84,13 +84,14 @@ module Tensor = struct
     let elt_size = sizeof float in
     let size = elts * elt_size in
     let data = Ctypes.CArray.make char size in
-    tf_newtensor 2
+    tf_newtensor 1
       (Ctypes.CArray.of_list int64_t [ Int64.of_int elts ] |> Ctypes.CArray.start)
       1
       (Ctypes.CArray.start data)
       (Unsigned.Size_t.of_int size)
       deallocate
-      null
+      null,
+    data
 end
 
 (* TF_STATUS *)
@@ -215,7 +216,7 @@ let char_list_of_string s =
   List.rev !list
 
 let () =
-  let vector = Tensor.create1d 100 in
+  let vector, data = Tensor.create1d 10 in
   Printf.printf ">> %d %d %d\n%!"
     (tf_numdims vector) (tf_dim vector 0) (tf_tensorbytesize vector |> Unsigned.Size_t.to_int);
   let session_options = Session_options.create () in
@@ -231,4 +232,24 @@ let () =
     (Ctypes.CArray.start carray)
     (String.length simple_pbtxt |> Unsigned.Size_t.of_int)
     status;
-  Printf.printf "%d %s\n%!" (tf_getcode status) (tf_message status)
+  Printf.printf "%d %s\n%!" (tf_getcode status) (tf_message status);
+  for i = 0 to 39 do
+    Printf.printf "%d " (Ctypes.CArray.get data i |> Char.code)
+  done;
+  Printf.printf "\n%!";
+  tf_run
+    session
+    Ctypes.CArray.(of_list string [] |> start)
+    Ctypes.CArray.(of_list tf_tensor [] |> start)
+    0
+    Ctypes.CArray.(of_list string [ "add" ] |> start)
+    Ctypes.CArray.(of_list tf_tensor [ vector ] |> start)
+    1
+    Ctypes.CArray.(of_list string [ "add" ] |> start)
+    1
+    status;
+  Printf.printf "%d %s\n%!" (tf_getcode status) (tf_message status);
+  for i = 0 to 39 do
+    Printf.printf "%d " (Ctypes.CArray.get data i |> Char.code)
+  done;
+  Printf.printf "\n%!"
