@@ -78,7 +78,6 @@ let tf_tensordata =
 
 module Tensor = struct
   type t = tf_tensor
-  (* TODO: actually store references to data at top-level and only remove them in [deallocate]. *)
   let deallocate _ _ _ = ()
 
   let create1d elts =
