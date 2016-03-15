@@ -1,4 +1,5 @@
 open Wrapper
+module CArray = Ctypes.CArray
 
 let read_file filename =
   let lines = ref [] in
@@ -30,7 +31,7 @@ let () =
   let session = Session.create session_options status in
   Printf.printf "%d %s\n%!" (Status.code status) (Status.message status);
   let simple_pbtxt = read_file "test.pbtxt" in
-  let carray = char_list_of_string simple_pbtxt |> Ctypes.CArray.of_list Ctypes.char in
+  let carray = char_list_of_string simple_pbtxt |> CArray.of_list Ctypes.char in
   Session.extend_graph
     session
     carray
@@ -48,9 +49,7 @@ let () =
   Printf.printf "%d %s\n%!" (Status.code status) (Status.message status);
   match output_tensors with
   | [ output_tensor ] ->
-    let data =
-      Ctypes.CArray.from_ptr (Tensor.data output_tensor |> Ctypes.from_voidp Ctypes.float) 1
-    in
-    Printf.printf "%f\n%!" (Ctypes.CArray.get data 0)
+    let data = Tensor.data output_tensor Ctypes.float 1 in
+    Printf.printf "%f\n%!" (CArray.get data 0)
   | [] | _ :: _ :: _ -> assert false
 

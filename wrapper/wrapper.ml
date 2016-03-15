@@ -99,7 +99,8 @@ module Tensor = struct
 
   let byte_size t = tf_tensorbytesize t |> Unsigned.Size_t.to_int
 
-  let data = tf_tensordata
+  let data t typ len =
+    CArray.from_ptr (tf_tensordata t |> Ctypes.from_voidp typ) len
 end
 
 (* TF_STATUS *)

@@ -13,7 +13,7 @@ module Tensor : sig
 
   val byte_size : t -> int
 
-  val data : t -> unit Ctypes.ptr
+  val data : t -> 'a Ctypes.typ -> int -> 'a Ctypes.CArray.t
 end
 
 module Session_options : sig
