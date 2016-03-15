@@ -82,19 +82,13 @@ let generate_protobuf () =
 
 let () =
   let graph_def_str = generate_protobuf () in
-  let oc = open_out "out.pb" in
-  output_string oc graph_def_str;
-  close_out oc;  
-  let vector = Tensor.create1d Ctypes.float 10 in
   let session_options = Session_options.create () in
   let status = Status.create () in
   let session = Session.create session_options status in
   Printf.printf "%d %s\n%!" (Status.code status) (Status.message status);
-  let carray = char_list_of_string graph_def_str |> CArray.of_list Ctypes.char in
   Session.extend_graph
     session
-    carray
-    (String.length graph_def_str)
+    graph_def_str
     status;
   Printf.printf "%d %s\n%!" (Status.code status) (Status.message status);
   let output_tensors =

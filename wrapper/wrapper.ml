@@ -180,7 +180,7 @@ let tf_deletesession =
   foreign "TF_DeleteSession" (tf_session @-> tf_status @-> returning void)
 
 let tf_extendgraph =
-  foreign "TF_ExtendGraph" (tf_session @-> ptr void @-> size_t @-> tf_status @-> returning void)
+  foreign "TF_ExtendGraph" (tf_session @-> string @-> size_t @-> tf_status @-> returning void)
 
 let tf_run =
   foreign "TF_Run"
@@ -212,11 +212,11 @@ module Session = struct
       session;
     session
 
-  let extend_graph t carray len status =
+  let extend_graph t str status =
     tf_extendgraph
       t
-      (CArray.start carray |> to_voidp)
-      (Unsigned.Size_t.of_int len)
+      str
+      (String.length str |> Unsigned.Size_t.of_int)
       status
 
   let run t ~inputs ~outputs ~targets status =
