@@ -77,20 +77,29 @@ let tf_tensordata =
   foreign "TF_TensorData" (tf_tensor @-> returning (ptr void))
 
 module Tensor = struct
+  type t = tf_tensor
   (* TODO: actually store references to data at top-level and only remove them in [deallocate]. *)
   let deallocate _ _ _ = ()
 
   let create1d elts =
     let elt_size = sizeof float in
     let size = elts * elt_size in
-    let data = Ctypes.CArray.make char size in
+    let data = CArray.make char size in
     tf_newtensor 1
-      (Ctypes.CArray.of_list int64_t [ Int64.of_int elts ] |> Ctypes.CArray.start)
+      (CArray.of_list int64_t [ Int64.of_int elts ] |> CArray.start)
       1
-      (Ctypes.CArray.start data |> to_voidp)
+      (CArray.start data |> to_voidp)
       (Unsigned.Size_t.of_int size)
       deallocate
       null
+
+  let num_dims = tf_numdims
+
+  let dim = tf_dim
+
+  let byte_size t = tf_tensorbytesize t |> Unsigned.Size_t.to_int
+
+  let data = tf_tensordata
 end
 
 (* TF_STATUS *)
@@ -113,10 +122,18 @@ let tf_message =
   foreign "TF_Message" (tf_status @-> returning string)
 
 module Status = struct
+  type t = tf_status
+
   let create () =
     let status = tf_newstatus () in
     Gc.finalise tf_deletestatus status;
     status
+
+  let set = tf_setstatus
+
+  let code = tf_getcode
+
+  let message = tf_message
 end
 
 (* TF_SESSIONOPTIONS *)
@@ -141,6 +158,8 @@ let tf_deletesessionoptions =
   foreign "TF_DeleteSessionOptions" (tf_sessionoptions @-> returning void)
 
 module Session_options = struct
+  type t = tf_sessionoptions
+
   let create () =
     let session_options = tf_newsessionoptions () in
     Gc.finalise tf_deletesessionoptions session_options;
@@ -182,6 +201,8 @@ let tf_run =
     @-> returning void)
 
 module Session = struct
+  type t = tf_session
+
   let create session_options status =
     let session = tf_newsession session_options status in
     Gc.finalise
@@ -190,5 +211,29 @@ module Session = struct
         tf_deletesession session status)
       session;
     session
+
+  let extend_graph t carray len status =
+    tf_extendgraph
+      t
+      (CArray.start carray |> to_voidp)
+      (Unsigned.Size_t.of_int len)
+      status
+
+  let run t ~inputs ~outputs ~targets status =
+    let input_names, input_tensors = List.split inputs in
+    let output_len = List.length outputs in
+    let output_tensors = CArray.make tf_tensor output_len in
+    tf_run
+      t
+      CArray.(of_list string input_names |> start)
+      CArray.(of_list tf_tensor input_tensors |> start)
+      (List.length inputs)
+      CArray.(of_list string outputs |> start)
+      (CArray.start output_tensors)
+      output_len
+      CArray.(of_list string targets |> start)
+      (List.length targets)
+      status;
+    CArray.to_list output_tensors
 end
 

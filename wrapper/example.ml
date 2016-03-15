@@ -1,5 +1,4 @@
-open Tensor
-open Ctypes
+open Wrapper
 
 let read_file filename =
   let lines = ref [] in
@@ -23,37 +22,35 @@ let char_list_of_string s =
 let () =
   let vector = Tensor.create1d 10 in
   Printf.printf ">> %d %d %d\n%!"
-    (tf_numdims vector) (tf_dim vector 0) (tf_tensorbytesize vector |> Unsigned.Size_t.to_int);
+    (Tensor.num_dims vector) (Tensor.dim vector 0) (Tensor.byte_size vector);
   let session_options = Session_options.create () in
   let status = Status.create () in
-  tf_setstatus status 9 "test-message";
-  Printf.printf "%d %s\n%!" (tf_getcode status) (tf_message status);
+  Status.set status 9 "test-message";
+  Printf.printf "%d %s\n%!" (Status.code status) (Status.message status);
   let session = Session.create session_options status in
-  Printf.printf "%d %s\n%!" (tf_getcode status) (tf_message status);
+  Printf.printf "%d %s\n%!" (Status.code status) (Status.message status);
   let simple_pbtxt = read_file "test.pbtxt" in
-  let carray = char_list_of_string simple_pbtxt |> Ctypes.CArray.of_list char in
-  tf_extendgraph
+  let carray = char_list_of_string simple_pbtxt |> Ctypes.CArray.of_list Ctypes.char in
+  Session.extend_graph
     session
-    (Ctypes.CArray.start carray |> to_voidp)
-    (String.length simple_pbtxt |> Unsigned.Size_t.of_int)
+    carray
+    (String.length simple_pbtxt)
     status;
-  Printf.printf "%d %s\n%!" (tf_getcode status) (tf_message status);
-  let output_tensors = Ctypes.CArray.make tf_tensor 1 in
-  tf_run
-    session
-    Ctypes.CArray.(of_list string [] |> start)
-    Ctypes.CArray.(of_list tf_tensor [] |> start)
-    0
-    Ctypes.CArray.(of_list string [ "add" ] |> start)
-    (Ctypes.CArray.start output_tensors)
-    1
-    Ctypes.CArray.(of_list string [ "add" ] |> start)
-    1
-    status;
-  Printf.printf "%d %s\n%!" (tf_getcode status) (tf_message status);
-  let output_tensor = Ctypes.CArray.get output_tensors 0 in
-  let data =
-    Ctypes.CArray.from_ptr (tf_tensordata output_tensor |> from_voidp float) 1
+  Printf.printf "%d %s\n%!" (Status.code status) (Status.message status);
+  let output_tensors =
+    Session.run
+      session
+      ~inputs:[]
+      ~outputs:[ "add" ]
+      ~targets:[ "add" ]
+      status
   in
-  Printf.printf "%f\n%!" (Ctypes.CArray.get data 0)
+  Printf.printf "%d %s\n%!" (Status.code status) (Status.message status);
+  match output_tensors with
+  | [ output_tensor ] ->
+    let data =
+      Ctypes.CArray.from_ptr (Tensor.data output_tensor |> Ctypes.from_voidp Ctypes.float) 1
+    in
+    Printf.printf "%f\n%!" (Ctypes.CArray.get data 0)
+  | [] | _ :: _ :: _ -> assert false
 
