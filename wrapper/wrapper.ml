@@ -219,7 +219,8 @@ module Session = struct
       (String.length str |> Unsigned.Size_t.of_int)
       status
 
-  let run t ~inputs ~outputs ~targets status =
+  let run t ~inputs ~outputs ~targets =
+    let status = Status.create () in
     let input_names, input_tensors = List.split inputs in
     let output_len = List.length outputs in
     let output_tensors = CArray.make tf_tensor output_len in
@@ -234,6 +235,9 @@ module Session = struct
       CArray.(of_list string targets |> start)
       (List.length targets)
       status;
-    CArray.to_list output_tensors
+    if Status.code status = 0
+    then `Ok (CArray.to_list output_tensors)
+    else `Error (Status.message status)
+
 end
 

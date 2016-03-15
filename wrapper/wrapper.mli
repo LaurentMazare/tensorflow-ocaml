@@ -48,6 +48,5 @@ module Session : sig
     -> inputs:(string * Tensor.t) list
     -> outputs:string list
     -> targets:string list
-    -> Status.t
-    -> Tensor.t list
+    -> [ `Ok of Tensor.t list | `Error of string]
 end

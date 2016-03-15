@@ -16,18 +16,17 @@ let () =
     (Graph.Protobuf.to_string graph)
     status;
   Printf.printf "%d %s\n%!" (Status.code status) (Status.message status);
-  let output_tensors =
+  let output =
     Session.run
       session
       ~inputs:[]
       ~outputs:[ Graph.name graph ]
       ~targets:[ Graph.name graph ]
-      status
   in
-  Printf.printf "%d %s\n%!" (Status.code status) (Status.message status);
-  match output_tensors with
-  | [ output_tensor ] ->
+  match output with
+  | `Ok [ output_tensor ] ->
     let data = Tensor.data output_tensor Ctypes.float 1 in
     Printf.printf "%f\n%!" (CArray.get data 0)
-  | [] | _ :: _ :: _ -> assert false
+  | `Ok ([] | _ :: _ :: _) -> assert false
+  | `Error error -> Printf.printf "Error: %s\n%!" error
 
