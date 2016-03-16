@@ -26,12 +26,31 @@ end
 
 module Status : sig
   type t
+  type code =
+    | TF_OK
+    | TF_CANCELLED
+    | TF_UNKNOWN
+    | TF_INVALID_ARGUMENT
+    | TF_DEADLINE_EXCEEDED
+    | TF_NOT_FOUND
+    | TF_ALREADY_EXISTS
+    | TF_PERMISSION_DENIED
+    | TF_UNAUTHENTICATED
+    | TF_RESOURCE_EXHAUSTED
+    | TF_FAILED_PRECONDITION
+    | TF_ABORTED
+    | TF_OUT_OF_RANGE
+    | TF_UNIMPLEMENTED
+    | TF_INTERNAL
+    | TF_UNAVAILABLE
+    | TF_DATA_LOSS
+    | Unknown of int
 
   val create : unit -> t
 
   val set : t -> int -> string -> unit
 
-  val code : t -> int
+  val code : t -> code
 
   val message : t -> string
 end
@@ -48,5 +67,5 @@ module Session : sig
     -> inputs:(string * Tensor.t) list
     -> outputs:string list
     -> targets:string list
-    -> [ `Ok of Tensor.t list | `Error of string]
+    -> [ `Ok of Tensor.t list | `Error of (Status.code * string) ]
 end

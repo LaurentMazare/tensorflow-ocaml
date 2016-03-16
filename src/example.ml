@@ -10,12 +10,12 @@ let () =
   let session_options = Session_options.create () in
   let status = Status.create () in
   let session = Session.create session_options status in
-  Printf.printf "%d %s\n%!" (Status.code status) (Status.message status);
+  assert (Status.code status = TF_OK);
   Session.extend_graph
     session
     (Graph.Protobuf.to_protobuf graph)
     status;
-  Printf.printf "%d %s\n%!" (Status.code status) (Status.message status);
+  assert (Status.code status = TF_OK);
   let output =
     Session.run
       session
@@ -28,5 +28,6 @@ let () =
     let data = Tensor.data output_tensor Ctypes.float 2 in
     Printf.printf "%f %f\n%!" (CArray.get data 0) (CArray.get data 1)
   | `Ok ([] | _ :: _ :: _) -> assert false
-  | `Error error -> Printf.printf "Error: %s\n%!" error
+  | `Error (_code, error) ->
+      Printf.printf "Error: %s\n%!" error
 

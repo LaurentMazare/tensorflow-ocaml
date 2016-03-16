@@ -31,25 +31,6 @@ module Bindings (S : Cstubs.Types.TYPE) = struct
       ]
 end
 
-type tf_code =
-  | TF_OK
-  | TF_CANCELLED
-  | TF_UNKNOWN
-  | TF_INVALID_ARGUMENT
-  | TF_DEADLINE_EXCEEDED
-  | TF_NOT_FOUND
-  | TF_ALREADY_EXISTS
-  | TF_PERMISSION_DENIED
-  | TF_UNAUTHENTICATED
-  | TF_RESOURCE_EXHAUSTED
-  | TF_FAILED_PRECONDITION
-  | TF_ABORTED
-  | TF_OUT_OF_RANGE
-  | TF_UNIMPLEMENTED
-  | TF_INTERNAL
-  | TF_UNAVAILABLE
-  | TF_DATA_LOSS
-
 let tf_newtensor =
   foreign "TF_NewTensor"
     (int
@@ -124,6 +105,48 @@ let tf_message =
 module Status = struct
   type t = tf_status
 
+  type code =
+    | TF_OK
+    | TF_CANCELLED
+    | TF_UNKNOWN
+    | TF_INVALID_ARGUMENT
+    | TF_DEADLINE_EXCEEDED
+    | TF_NOT_FOUND
+    | TF_ALREADY_EXISTS
+    | TF_PERMISSION_DENIED
+    | TF_UNAUTHENTICATED
+    | TF_RESOURCE_EXHAUSTED
+    | TF_FAILED_PRECONDITION
+    | TF_ABORTED
+    | TF_OUT_OF_RANGE
+    | TF_UNIMPLEMENTED
+    | TF_INTERNAL
+    | TF_UNAVAILABLE
+    | TF_DATA_LOSS
+    | Unknown of int
+  
+  (* CAUTION: this has to stay in sync with [tensor_c_api.h], maybe we should generate
+     some stubs to assert this at compile time. *)
+  let code_of_int = function
+    | 0  -> TF_OK
+    | 1  -> TF_CANCELLED
+    | 2  -> TF_UNKNOWN
+    | 3  -> TF_INVALID_ARGUMENT
+    | 4  -> TF_DEADLINE_EXCEEDED
+    | 5  -> TF_NOT_FOUND
+    | 6  -> TF_ALREADY_EXISTS
+    | 7  -> TF_PERMISSION_DENIED
+    | 16 -> TF_UNAUTHENTICATED
+    | 8  -> TF_RESOURCE_EXHAUSTED
+    | 9  -> TF_FAILED_PRECONDITION
+    | 10 -> TF_ABORTED
+    | 11 -> TF_OUT_OF_RANGE
+    | 12 -> TF_UNIMPLEMENTED
+    | 13 -> TF_INTERNAL
+    | 14 -> TF_UNAVAILABLE
+    | 15 -> TF_DATA_LOSS
+    | n  -> Unknown n
+
   let create () =
     let status = tf_newstatus () in
     Gc.finalise tf_deletestatus status;
@@ -131,7 +154,7 @@ module Status = struct
 
   let set = tf_setstatus
 
-  let code = tf_getcode
+  let code t = tf_getcode t |> code_of_int
 
   let message = tf_message
 end
@@ -236,9 +259,10 @@ module Session = struct
       CArray.(of_list string targets |> start)
       (List.length targets)
       status;
-    if Status.code status = 0
-    then `Ok (CArray.to_list output_tensors)
-    else `Error (Status.message status)
+    match Status.code status with
+    | TF_OK ->
+      `Ok (CArray.to_list output_tensors)
+    | error_code -> `Error (error_code, Status.message status)
 
 end
 
