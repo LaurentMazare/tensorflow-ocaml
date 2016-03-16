@@ -59,23 +59,23 @@ module Protobuf = struct
     ; input = []
     ; device = None
     ; attr =
-      [ { Node_def_attr_entry.key = Some "dtype"
+      [ { key = Some "dtype"
         ; value =
-          Some { default_attr_value with Attr_value.type_ = Some `dt_float }
+          Some { default_attr_value with type_ = Some `dt_float }
         }
-      ; { Node_def_attr_entry.key = Some "value"
+      ; { key = Some "value"
         ; value =
           Some
             { default_attr_value with
-              Attr_value.tensor =
+              tensor =
                 Some
                   { default_tensor_proto with
-                    Tensor_proto.dtype = Some `dt_float
+                    dtype = Some `dt_float
                   ; float_val = floats
                   ; tensor_shape =
                     Some
-                      { Tensor_shape_proto.dim =
-                        [ { Tensor_shape_proto_dim.size = Some (List.length floats |> Int64.of_int); name = None } ]
+                      { dim =
+                        [ { size = Some (List.length floats |> Int64.of_int); name = None } ]
                       ; unknown_rank = None
                       }
                   }
@@ -92,7 +92,7 @@ module Protobuf = struct
     ; input
     ; device = None
     ; attr =
-      [ { Node_def_attr_entry.key = Some "T"
+      [ { key = Some "T"
         ; value =
           Some { default_attr_value with Attr_value.type_ = Some `dt_float }
         }
