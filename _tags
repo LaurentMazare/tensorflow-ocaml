@@ -1,4 +1,4 @@
 true: package(ctypes), package(ctypes.foreign)
 true: warn(-40)
 <lib>: -traverse
-<src>: include
+<piqi> or <src>: include
