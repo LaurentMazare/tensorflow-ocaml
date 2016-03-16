@@ -1,4 +1,5 @@
 true: package(ctypes), package(ctypes.foreign)
 true: warn(-40)
+<gen_ops/*>: package(core), thread
 <lib>: -traverse
 <piqi> or <src>: include
