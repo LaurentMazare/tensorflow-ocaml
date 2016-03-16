@@ -4,6 +4,27 @@
       - Return [Result.t].
     - Handle memory properly.
 *)
+
+type data_type =
+  | TF_FLOAT
+  | TF_DOUBLE
+  | TF_INT32
+  | TF_UINT8
+  | TF_INT16
+  | TF_INT8
+  | TF_STRING
+  | TF_COMPLEX
+  | TF_INT64
+  | TF_BOOL
+  | TF_QINT8
+  | TF_QUINT8
+  | TF_QINT32
+  | TF_BFLOAT16
+  | TF_QINT16
+  | TF_QUINT16
+  | TF_UINT16
+  | Unknown of int
+
 module Tensor : sig
   type t
 
@@ -16,6 +37,8 @@ module Tensor : sig
   val byte_size : t -> int
 
   val data : t -> 'a Ctypes.typ -> int -> 'a Ctypes.CArray.t
+
+  val data_type : t -> data_type
 end
 
 module Session_options : sig

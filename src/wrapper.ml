@@ -5,7 +5,7 @@ open Foreign
 type tf_tensor = unit ptr
 let tf_tensor : tf_tensor typ = ptr void
 
-type tf_datatype =
+type data_type =
   | TF_FLOAT
   | TF_DOUBLE
   | TF_INT32
@@ -23,6 +23,47 @@ type tf_datatype =
   | TF_QINT16
   | TF_QUINT16
   | TF_UINT16
+  | Unknown of int
+
+let data_type_to_int = function
+  | TF_FLOAT -> 1
+  | TF_DOUBLE -> 2
+  | TF_INT32 -> 3
+  | TF_UINT8 -> 4
+  | TF_INT16 -> 5
+  | TF_INT8 -> 6
+  | TF_STRING -> 7
+  | TF_COMPLEX -> 8
+  | TF_INT64 -> 9
+  | TF_BOOL -> 10
+  | TF_QINT8 -> 11
+  | TF_QUINT8 -> 12
+  | TF_QINT32 -> 13
+  | TF_BFLOAT16 -> 14
+  | TF_QINT16 -> 15
+  | TF_QUINT16 -> 16
+  | TF_UINT16 -> 17
+  | Unknown n -> n
+
+let int_of_data_type = function
+  | 1 -> TF_FLOAT
+  | 2 -> TF_DOUBLE
+  | 3 -> TF_INT32
+  | 4 -> TF_UINT8
+  | 5 -> TF_INT16
+  | 6 -> TF_INT8
+  | 7 -> TF_STRING
+  | 8 -> TF_COMPLEX
+  | 9 -> TF_INT64
+  | 10 -> TF_BOOL
+  | 11 -> TF_QINT8
+  | 12 -> TF_QUINT8
+  | 13 -> TF_QINT32
+  | 14 -> TF_BFLOAT16
+  | 15 -> TF_QINT16
+  | 16 -> TF_QUINT16
+  | 17 -> TF_UINT16
+  | n -> Unknown n
 
 module Bindings (S : Cstubs.Types.TYPE) = struct
   let tf_datatype =
@@ -57,6 +98,9 @@ let tf_tensorbytesize =
 let tf_tensordata =
   foreign "TF_TensorData" (tf_tensor @-> returning (ptr void))
 
+let tf_tensortype =
+  foreign "TF_TensorType" (tf_tensor @-> returning int)
+
 module Tensor = struct
   type t = tf_tensor
   let deallocate _ _ _ = ()
@@ -81,6 +125,10 @@ module Tensor = struct
 
   let data t typ len =
     CArray.from_ptr (tf_tensordata t |> Ctypes.from_voidp typ) len
+
+  let data_type t =
+    tf_tensortype t
+    |> int_of_data_type
 end
 
 (* TF_STATUS *)
