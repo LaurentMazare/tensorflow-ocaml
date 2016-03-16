@@ -15,6 +15,7 @@ end
 
 module Type = struct
   type _ t =
+    | Unit : unit -> [ `unit ] t
     | Float : unit -> [ `float ] t
     | Double : unit -> [ `double ] t
 
