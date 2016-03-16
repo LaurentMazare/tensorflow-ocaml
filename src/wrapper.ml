@@ -212,11 +212,12 @@ module Session = struct
       session;
     session
 
-  let extend_graph t str status =
+  let extend_graph t protobuf status =
+    let protobuf = Protobuf.to_string protobuf in
     tf_extendgraph
       t
-      str
-      (String.length str |> Unsigned.Size_t.of_int)
+      protobuf
+      (String.length protobuf |> Unsigned.Size_t.of_int)
       status
 
   let run t ~inputs ~outputs ~targets =

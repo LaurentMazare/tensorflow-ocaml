@@ -105,7 +105,7 @@ module Protobuf = struct
   let unary_op op ~arg ~name =
     nary op ~input:[ arg ] ~name
 
-  let to_string t =
+  let to_protobuf t =
     let rec walk { name; t_ } =
       match t_ with
       | Const floats ->
@@ -138,6 +138,7 @@ module Protobuf = struct
       ; library = None
       }
     in
-    let obuf = gen_graph_def graph_def in
-    Piqirun.to_string obuf
+    gen_graph_def graph_def
+    |> Piqirun.to_string
+    |> Protobuf.of_string
 end

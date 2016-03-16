@@ -9,5 +9,5 @@ val exp : t -> t
 val name : t -> string
 
 module Protobuf : sig
-  val to_string : t -> string
+  val to_protobuf : t -> Protobuf.t
 end

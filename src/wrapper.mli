@@ -41,7 +41,7 @@ module Session : sig
 
   val create : Session_options.t -> Status.t -> t
 
-  val extend_graph : t -> string -> Status.t -> unit
+  val extend_graph : t -> Protobuf.t -> Status.t -> unit
 
   val run
     :  t

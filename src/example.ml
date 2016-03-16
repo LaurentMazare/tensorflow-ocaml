@@ -13,7 +13,7 @@ let () =
   Printf.printf "%d %s\n%!" (Status.code status) (Status.message status);
   Session.extend_graph
     session
-    (Graph.Protobuf.to_string graph)
+    (Graph.Protobuf.to_protobuf graph)
     status;
   Printf.printf "%d %s\n%!" (Status.code status) (Status.message status);
   let output =
