@@ -124,19 +124,27 @@ module Op = struct
     | otherwise -> String.uncapitalize otherwise
 end
 
+let same_input_and_output_type (op : Op.t) ~alpha =
+  List.find_map op.inputs ~f:(fun input ->
+    match input.type_, input.name with
+    | Polymorphic (alpha', _), Some name when alpha = alpha' -> Some name
+    | _ -> None)
+
 let output_type_string op =
   match op.Op.output_type with
-  | Fixed `float -> "Type.Float ()", false
-  | Fixed `double -> "Type.Double ()", false
-  | Unit -> "Type.Unit ()", false
+  | Fixed `float -> "Type.Float ()"
+  | Fixed `double -> "Type.Double ()"
+  | Unit -> "Type.Unit ()"
   | Polymorphic (alpha, _) ->
-    List.find_map op.inputs ~f:(fun input ->
-      match input.type_, input.name with
-      | Polymorphic (alpha', _), Some name when alpha = alpha' -> Some name
-      | _ -> None)
-    |> function
-    | Some input_name -> sprintf "%s.output_type" input_name, false
-    | None -> "type_", true
+    match same_input_and_output_type op ~alpha with
+    | Some input_name -> sprintf "%s.output_type" input_name
+    | None -> "type_"
+
+let needs_variable_for_output_type op =
+  match op.Op.output_type with
+  | Unit | Fixed _ -> false
+  | Polymorphic (alpha, _) ->
+    same_input_and_output_type op ~alpha |> Option.is_none
 
 let gen_mli ops =
   let out_channel = Out_channel.create (sprintf "%s.mli" output_file) in
@@ -146,7 +154,7 @@ let gen_mli ops =
       Out_channel.output_char out_channel '\n') s
   in
   let handle_one_op (op : Op.t) =
-    let _, needs_variable_for_output_type = output_type_string op in
+    let needs_variable_for_output_type = needs_variable_for_output_type op in
     p "val %s" (Op.caml_name op);
     p "  :  ?name:string";
     if needs_variable_for_output_type
@@ -167,7 +175,7 @@ let gen_ml ops =
       Out_channel.output_char out_channel '\n') s
   in
   let handle_one_op (op : Op.t) =
-    let output_type, needs_variable_for_output_type = output_type_string op in
+    let needs_variable_for_output_type = needs_variable_for_output_type op in
     p "let %s" (Op.caml_name op);
     p "    ?(name = \"%s\")" op.name;
     if needs_variable_for_output_type
@@ -177,7 +185,7 @@ let gen_ml ops =
       p "    (%s : %s t)" name (Type.to_string input.type_));
     p "  =";
     p "  { name = Name.make_fresh ~name";
-    p "  ; output_type = %s" output_type;
+    p "  ; output_type = %s" (output_type_string op);
     let inputs =
       List.mapi op.inputs ~f:(fun idx input ->
         sprintf "P %s" (Input.name input ~idx))
