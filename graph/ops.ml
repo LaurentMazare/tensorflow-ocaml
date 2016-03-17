@@ -160,8 +160,8 @@ let applyRMSProp
 
 let assign
     ?(name = "Assign")
-    (ref : ([<  ] as 't) Node.t)
-    (value : ([<  ] as 't) Node.t)
+    (ref : 't Node.t)
+    (value : 't Node.t)
   =
   Node
     { name = Name.make_fresh ~name
@@ -361,7 +361,7 @@ let bitcast
 
 let cast
     ?(name = "Cast")
-    (x : ([<  ] as 'srcT) Node.t)
+    (x : 'srcT Node.t)
   =
   Node
     { name = Name.make_fresh ~name
@@ -448,7 +448,7 @@ let cos
 
 let countUpTo
     ?(name = "CountUpTo")
-    (ref : ([<  ] as 't) Node.t)
+    (ref : 't Node.t)
   =
   Node
     { name = Name.make_fresh ~name
@@ -471,7 +471,7 @@ let cross
 
 let depthToSpace
     ?(name = "DepthToSpace")
-    (input : ([<  ] as 't) Node.t)
+    (input : 't Node.t)
   =
   Node
     { name = Name.make_fresh ~name
@@ -494,7 +494,7 @@ let depthwiseConv2dNative
 
 let destroyTemporaryVariable
     ?(name = "DestroyTemporaryVariable")
-    (ref : ([<  ] as 't) Node.t)
+    (ref : 't Node.t)
   =
   Node
     { name = Name.make_fresh ~name
@@ -585,7 +585,7 @@ let eluGrad
 
 let enter
     ?(name = "Enter")
-    (data : ([<  ] as 't) Node.t)
+    (data : 't Node.t)
   =
   Node
     { name = Name.make_fresh ~name
@@ -618,7 +618,7 @@ let erfc
 
 let exit
     ?(name = "Exit")
-    (data : ([<  ] as 't) Node.t)
+    (data : 't Node.t)
   =
   Node
     { name = Name.make_fresh ~name
@@ -651,8 +651,8 @@ let floor
 
 let gather
     ?(name = "Gather")
-    (params : ([<  ] as 'tparams) Node.t)
-    (indices : ([<  ] as 'tindices) Node.t)
+    (params : 'tparams Node.t)
+    (indices : 'tindices Node.t)
   =
   Node
     { name = Name.make_fresh ~name
@@ -674,7 +674,7 @@ let hSVToRGB
 
 let identity
     ?(name = "Identity")
-    (input : ([<  ] as 't) Node.t)
+    (input : 't Node.t)
   =
   Node
     { name = Name.make_fresh ~name
@@ -850,7 +850,7 @@ let maxPoolGradWithArgmax
     ?(name = "MaxPoolGradWithArgmax")
     (input : [ `float ] Node.t)
     (grad : [ `float ] Node.t)
-    (argmax : ([<  ] as 'targmax) Node.t)
+    (argmax : 'targmax Node.t)
   =
   Node
     { name = Name.make_fresh ~name
@@ -920,7 +920,7 @@ let neg
 
 let nextIteration
     ?(name = "NextIteration")
-    (data : ([<  ] as 't) Node.t)
+    (data : 't Node.t)
   =
   Node
     { name = Name.make_fresh ~name
@@ -941,7 +941,7 @@ let noOp
 
 let pack
     ?(name = "Pack")
-    (values : ([<  ] as 't) Node.t)
+    (values : 't Node.t)
   =
   Node
     { name = Name.make_fresh ~name
@@ -985,7 +985,7 @@ let rGBToHSV
 
 let randomShuffle
     ?(name = "RandomShuffle")
-    (value : ([<  ] as 't) Node.t)
+    (value : 't Node.t)
   =
   Node
     { name = Name.make_fresh ~name
@@ -996,7 +996,7 @@ let randomShuffle
 
 let randomStandardNormal
     ?(name = "RandomStandardNormal")
-    (shape : ([<  ] as 't) Node.t)
+    (shape : 't Node.t)
   =
   Node
     { name = Name.make_fresh ~name
@@ -1007,7 +1007,7 @@ let randomStandardNormal
 
 let randomUniform
     ?(name = "RandomUniform")
-    (shape : ([<  ] as 't) Node.t)
+    (shape : 't Node.t)
   =
   Node
     { name = Name.make_fresh ~name
@@ -1018,9 +1018,9 @@ let randomUniform
 
 let randomUniformInt
     ?(name = "RandomUniformInt")
-    (shape : ([<  ] as 't) Node.t)
-    (minval : ([<  ] as 'tout) Node.t)
-    (maxval : ([<  ] as 'tout) Node.t)
+    (shape : 't Node.t)
+    (minval : 'tout Node.t)
+    (maxval : 'tout Node.t)
   =
   Node
     { name = Name.make_fresh ~name
@@ -1031,7 +1031,7 @@ let randomUniformInt
 
 let refEnter
     ?(name = "RefEnter")
-    (data : ([<  ] as 't) Node.t)
+    (data : 't Node.t)
   =
   Node
     { name = Name.make_fresh ~name
@@ -1042,7 +1042,7 @@ let refEnter
 
 let refExit
     ?(name = "RefExit")
-    (data : ([<  ] as 't) Node.t)
+    (data : 't Node.t)
   =
   Node
     { name = Name.make_fresh ~name
@@ -1053,7 +1053,7 @@ let refExit
 
 let refIdentity
     ?(name = "RefIdentity")
-    (input : ([<  ] as 't) Node.t)
+    (input : 't Node.t)
   =
   Node
     { name = Name.make_fresh ~name
@@ -1064,7 +1064,7 @@ let refIdentity
 
 let refNextIteration
     ?(name = "RefNextIteration")
-    (data : ([<  ] as 't) Node.t)
+    (data : 't Node.t)
   =
   Node
     { name = Name.make_fresh ~name
@@ -1145,7 +1145,7 @@ let rsqrt
 let scatterAdd
     ?(name = "ScatterAdd")
     (ref : ([< `float | `double ] as 't) Node.t)
-    (indices : ([<  ] as 'tindices) Node.t)
+    (indices : 'tindices Node.t)
     (updates : ([< `float | `double ] as 't) Node.t)
   =
   Node
@@ -1158,7 +1158,7 @@ let scatterAdd
 let scatterSub
     ?(name = "ScatterSub")
     (ref : ([< `float | `double ] as 't) Node.t)
-    (indices : ([<  ] as 'tindices) Node.t)
+    (indices : 'tindices Node.t)
     (updates : ([< `float | `double ] as 't) Node.t)
   =
   Node
@@ -1170,9 +1170,9 @@ let scatterSub
 
 let scatterUpdate
     ?(name = "ScatterUpdate")
-    (ref : ([<  ] as 't) Node.t)
-    (indices : ([<  ] as 'tindices) Node.t)
-    (updates : ([<  ] as 't) Node.t)
+    (ref : 't Node.t)
+    (indices : 'tindices Node.t)
+    (updates : 't Node.t)
   =
   Node
     { name = Name.make_fresh ~name
@@ -1184,7 +1184,7 @@ let scatterUpdate
 let segmentMax
     ?(name = "SegmentMax")
     (data : ([< `float | `double ] as 't) Node.t)
-    (segment_ids : ([<  ] as 'tindices) Node.t)
+    (segment_ids : 'tindices Node.t)
   =
   Node
     { name = Name.make_fresh ~name
@@ -1196,7 +1196,7 @@ let segmentMax
 let segmentMean
     ?(name = "SegmentMean")
     (data : ([< `float | `double ] as 't) Node.t)
-    (segment_ids : ([<  ] as 'tindices) Node.t)
+    (segment_ids : 'tindices Node.t)
   =
   Node
     { name = Name.make_fresh ~name
@@ -1208,7 +1208,7 @@ let segmentMean
 let segmentMin
     ?(name = "SegmentMin")
     (data : ([< `float | `double ] as 't) Node.t)
-    (segment_ids : ([<  ] as 'tindices) Node.t)
+    (segment_ids : 'tindices Node.t)
   =
   Node
     { name = Name.make_fresh ~name
@@ -1220,7 +1220,7 @@ let segmentMin
 let segmentProd
     ?(name = "SegmentProd")
     (data : ([< `float | `double ] as 't) Node.t)
-    (segment_ids : ([<  ] as 'tindices) Node.t)
+    (segment_ids : 'tindices Node.t)
   =
   Node
     { name = Name.make_fresh ~name
@@ -1232,7 +1232,7 @@ let segmentProd
 let segmentSum
     ?(name = "SegmentSum")
     (data : ([< `float | `double ] as 't) Node.t)
-    (segment_ids : ([<  ] as 'tindices) Node.t)
+    (segment_ids : 'tindices Node.t)
   =
   Node
     { name = Name.make_fresh ~name
@@ -1287,9 +1287,9 @@ let sin
 
 let slice
     ?(name = "Slice")
-    (input : ([<  ] as 't) Node.t)
-    (begin : ([<  ] as 'index) Node.t)
-    (size : ([<  ] as 'index) Node.t)
+    (input : 't Node.t)
+    (begin : 'index Node.t)
+    (size : 'index Node.t)
   =
   Node
     { name = Name.make_fresh ~name
@@ -1357,7 +1357,7 @@ let softsignGrad
 
 let spaceToDepth
     ?(name = "SpaceToDepth")
-    (input : ([<  ] as 't) Node.t)
+    (input : 't Node.t)
   =
   Node
     { name = Name.make_fresh ~name
@@ -1372,7 +1372,7 @@ let sparseApplyAdagrad
     (accum : ([< `float | `double ] as 't) Node.t)
     (lr : ([< `float | `double ] as 't) Node.t)
     (grad : ([< `float | `double ] as 't) Node.t)
-    (indices : ([<  ] as 'tindices) Node.t)
+    (indices : 'tindices Node.t)
   =
   Node
     { name = Name.make_fresh ~name
@@ -1387,7 +1387,7 @@ let sparseApplyFtrl
     (accum : ([< `float | `double ] as 't) Node.t)
     (linear : ([< `float | `double ] as 't) Node.t)
     (grad : ([< `float | `double ] as 't) Node.t)
-    (indices : ([<  ] as 'tindices) Node.t)
+    (indices : 'tindices Node.t)
     (lr : ([< `float | `double ] as 't) Node.t)
     (l1 : ([< `float | `double ] as 't) Node.t)
     (l2 : ([< `float | `double ] as 't) Node.t)
@@ -1406,7 +1406,7 @@ let sparseApplyMomentum
     (accum : ([< `float | `double ] as 't) Node.t)
     (lr : ([< `float | `double ] as 't) Node.t)
     (grad : ([< `float | `double ] as 't) Node.t)
-    (indices : ([<  ] as 'tindices) Node.t)
+    (indices : 'tindices Node.t)
     (momentum : ([< `float | `double ] as 't) Node.t)
   =
   Node
@@ -1430,10 +1430,10 @@ let sparseMatMul
 
 let sparseToDense
     ?(name = "SparseToDense")
-    (sparse_indices : ([<  ] as 'tindices) Node.t)
-    (output_shape : ([<  ] as 'tindices) Node.t)
-    (sparse_values : ([<  ] as 't) Node.t)
-    (default_value : ([<  ] as 't) Node.t)
+    (sparse_indices : 'tindices Node.t)
+    (output_shape : 'tindices Node.t)
+    (sparse_values : 't Node.t)
+    (default_value : 't Node.t)
   =
   Node
     { name = Name.make_fresh ~name
@@ -1478,7 +1478,7 @@ let squaredDifference
 
 let squeeze
     ?(name = "Squeeze")
-    (input : ([<  ] as 't) Node.t)
+    (input : 't Node.t)
   =
   Node
     { name = Name.make_fresh ~name
@@ -1489,7 +1489,7 @@ let squeeze
 
 let stopGradient
     ?(name = "StopGradient")
-    (input : ([<  ] as 't) Node.t)
+    (input : 't Node.t)
   =
   Node
     { name = Name.make_fresh ~name
@@ -1533,7 +1533,7 @@ let temporaryVariable
 
 let truncatedNormal
     ?(name = "TruncatedNormal")
-    (shape : ([<  ] as 't) Node.t)
+    (shape : 't Node.t)
   =
   Node
     { name = Name.make_fresh ~name
@@ -1544,7 +1544,7 @@ let truncatedNormal
 
 let unpack
     ?(name = "Unpack")
-    (value : ([<  ] as 't) Node.t)
+    (value : 't Node.t)
   =
   Node
     { name = Name.make_fresh ~name
@@ -1565,7 +1565,7 @@ let variable
 
 let zerosLike
     ?(name = "ZerosLike")
-    (x : ([<  ] as 't) Node.t)
+    (x : 't Node.t)
   =
   Node
     { name = Name.make_fresh ~name

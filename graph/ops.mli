@@ -92,9 +92,9 @@ val applyRMSProp
 
 val assign
   :  ?name:string
-  -> ([<  ] as 't) Node.t
-  -> ([<  ] as 't) Node.t
-  -> ([<  ] as 't) Node.t
+  -> 't Node.t
+  -> 't Node.t
+  -> 't Node.t
 
 val assignAdd
   :  ?name:string
@@ -191,8 +191,8 @@ val bitcast
 
 val cast
   :  ?name:string
-  -> ([<  ] as 'srcT) Node.t
-  -> ([<  ] as 'dstT) Node.t
+  -> 'srcT Node.t
+  -> 'dstT Node.t
 
 val ceil
   :  ?name:string
@@ -211,7 +211,7 @@ val cholesky
 
 val const
   :  ?name:string
-  -> ([<  ] as 'dtype) Node.t
+  -> 'dtype Node.t
 
 val controlTrigger
   :  ?name:string
@@ -230,8 +230,8 @@ val cos
 
 val countUpTo
   :  ?name:string
-  -> ([<  ] as 't) Node.t
-  -> ([<  ] as 't) Node.t
+  -> 't Node.t
+  -> 't Node.t
 
 val cross
   :  ?name:string
@@ -241,8 +241,8 @@ val cross
 
 val depthToSpace
   :  ?name:string
-  -> ([<  ] as 't) Node.t
-  -> ([<  ] as 't) Node.t
+  -> 't Node.t
+  -> 't Node.t
 
 val depthwiseConv2dNative
   :  ?name:string
@@ -252,8 +252,8 @@ val depthwiseConv2dNative
 
 val destroyTemporaryVariable
   :  ?name:string
-  -> ([<  ] as 't) Node.t
-  -> ([<  ] as 't) Node.t
+  -> 't Node.t
+  -> 't Node.t
 
 val diag
   :  ?name:string
@@ -295,8 +295,8 @@ val eluGrad
 
 val enter
   :  ?name:string
-  -> ([<  ] as 't) Node.t
-  -> ([<  ] as 't) Node.t
+  -> 't Node.t
+  -> 't Node.t
 
 val erf
   :  ?name:string
@@ -310,8 +310,8 @@ val erfc
 
 val exit
   :  ?name:string
-  -> ([<  ] as 't) Node.t
-  -> ([<  ] as 't) Node.t
+  -> 't Node.t
+  -> 't Node.t
 
 val exp
   :  ?name:string
@@ -325,9 +325,9 @@ val floor
 
 val gather
   :  ?name:string
-  -> ([<  ] as 'tparams) Node.t
-  -> ([<  ] as 'tindices) Node.t
-  -> ([<  ] as 'tparams) Node.t
+  -> 'tparams Node.t
+  -> 'tindices Node.t
+  -> 'tparams Node.t
 
 val hSVToRGB
   :  ?name:string
@@ -336,8 +336,8 @@ val hSVToRGB
 
 val identity
   :  ?name:string
-  -> ([<  ] as 't) Node.t
-  -> ([<  ] as 't) Node.t
+  -> 't Node.t
+  -> 't Node.t
 
 val inv
   :  ?name:string
@@ -422,7 +422,7 @@ val maxPoolGradWithArgmax
   :  ?name:string
   -> [ `float ] Node.t
   -> [ `float ] Node.t
-  -> ([<  ] as 'targmax) Node.t
+  -> 'targmax Node.t
   -> [ `float ] Node.t
 
 val maximum
@@ -456,8 +456,8 @@ val neg
 
 val nextIteration
   :  ?name:string
-  -> ([<  ] as 't) Node.t
-  -> ([<  ] as 't) Node.t
+  -> 't Node.t
+  -> 't Node.t
 
 val noOp
   :  ?name:string
@@ -465,12 +465,12 @@ val noOp
 
 val pack
   :  ?name:string
-  -> ([<  ] as 't) Node.t
-  -> ([<  ] as 't) Node.t
+  -> 't Node.t
+  -> 't Node.t
 
 val placeholder
   :  ?name:string
-  -> ([<  ] as 'dtype) Node.t
+  -> 'dtype Node.t
 
 val pow
   :  ?name:string
@@ -485,45 +485,45 @@ val rGBToHSV
 
 val randomShuffle
   :  ?name:string
-  -> ([<  ] as 't) Node.t
-  -> ([<  ] as 't) Node.t
+  -> 't Node.t
+  -> 't Node.t
 
 val randomStandardNormal
   :  ?name:string
-  -> ([<  ] as 't) Node.t
+  -> 't Node.t
   -> ([< `float | `double ] as 'dtype) Node.t
 
 val randomUniform
   :  ?name:string
-  -> ([<  ] as 't) Node.t
+  -> 't Node.t
   -> ([< `float | `double ] as 'dtype) Node.t
 
 val randomUniformInt
   :  ?name:string
-  -> ([<  ] as 't) Node.t
-  -> ([<  ] as 'tout) Node.t
-  -> ([<  ] as 'tout) Node.t
-  -> ([<  ] as 'tout) Node.t
+  -> 't Node.t
+  -> 'tout Node.t
+  -> 'tout Node.t
+  -> 'tout Node.t
 
 val refEnter
   :  ?name:string
-  -> ([<  ] as 't) Node.t
-  -> ([<  ] as 't) Node.t
+  -> 't Node.t
+  -> 't Node.t
 
 val refExit
   :  ?name:string
-  -> ([<  ] as 't) Node.t
-  -> ([<  ] as 't) Node.t
+  -> 't Node.t
+  -> 't Node.t
 
 val refIdentity
   :  ?name:string
-  -> ([<  ] as 't) Node.t
-  -> ([<  ] as 't) Node.t
+  -> 't Node.t
+  -> 't Node.t
 
 val refNextIteration
   :  ?name:string
-  -> ([<  ] as 't) Node.t
-  -> ([<  ] as 't) Node.t
+  -> 't Node.t
+  -> 't Node.t
 
 val relu
   :  ?name:string
@@ -561,52 +561,52 @@ val rsqrt
 val scatterAdd
   :  ?name:string
   -> ([< `float | `double ] as 't) Node.t
-  -> ([<  ] as 'tindices) Node.t
+  -> 'tindices Node.t
   -> ([< `float | `double ] as 't) Node.t
   -> ([< `float | `double ] as 't) Node.t
 
 val scatterSub
   :  ?name:string
   -> ([< `float | `double ] as 't) Node.t
-  -> ([<  ] as 'tindices) Node.t
+  -> 'tindices Node.t
   -> ([< `float | `double ] as 't) Node.t
   -> ([< `float | `double ] as 't) Node.t
 
 val scatterUpdate
   :  ?name:string
-  -> ([<  ] as 't) Node.t
-  -> ([<  ] as 'tindices) Node.t
-  -> ([<  ] as 't) Node.t
-  -> ([<  ] as 't) Node.t
+  -> 't Node.t
+  -> 'tindices Node.t
+  -> 't Node.t
+  -> 't Node.t
 
 val segmentMax
   :  ?name:string
   -> ([< `float | `double ] as 't) Node.t
-  -> ([<  ] as 'tindices) Node.t
+  -> 'tindices Node.t
   -> ([< `float | `double ] as 't) Node.t
 
 val segmentMean
   :  ?name:string
   -> ([< `float | `double ] as 't) Node.t
-  -> ([<  ] as 'tindices) Node.t
+  -> 'tindices Node.t
   -> ([< `float | `double ] as 't) Node.t
 
 val segmentMin
   :  ?name:string
   -> ([< `float | `double ] as 't) Node.t
-  -> ([<  ] as 'tindices) Node.t
+  -> 'tindices Node.t
   -> ([< `float | `double ] as 't) Node.t
 
 val segmentProd
   :  ?name:string
   -> ([< `float | `double ] as 't) Node.t
-  -> ([<  ] as 'tindices) Node.t
+  -> 'tindices Node.t
   -> ([< `float | `double ] as 't) Node.t
 
 val segmentSum
   :  ?name:string
   -> ([< `float | `double ] as 't) Node.t
-  -> ([<  ] as 'tindices) Node.t
+  -> 'tindices Node.t
   -> ([< `float | `double ] as 't) Node.t
 
 val selfAdjointEig
@@ -631,10 +631,10 @@ val sin
 
 val slice
   :  ?name:string
-  -> ([<  ] as 't) Node.t
-  -> ([<  ] as 'index) Node.t
-  -> ([<  ] as 'index) Node.t
-  -> ([<  ] as 't) Node.t
+  -> 't Node.t
+  -> 'index Node.t
+  -> 'index Node.t
+  -> 't Node.t
 
 val softmax
   :  ?name:string
@@ -665,8 +665,8 @@ val softsignGrad
 
 val spaceToDepth
   :  ?name:string
-  -> ([<  ] as 't) Node.t
-  -> ([<  ] as 't) Node.t
+  -> 't Node.t
+  -> 't Node.t
 
 val sparseApplyAdagrad
   :  ?name:string
@@ -674,7 +674,7 @@ val sparseApplyAdagrad
   -> ([< `float | `double ] as 't) Node.t
   -> ([< `float | `double ] as 't) Node.t
   -> ([< `float | `double ] as 't) Node.t
-  -> ([<  ] as 'tindices) Node.t
+  -> 'tindices Node.t
   -> ([< `float | `double ] as 't) Node.t
 
 val sparseApplyFtrl
@@ -683,7 +683,7 @@ val sparseApplyFtrl
   -> ([< `float | `double ] as 't) Node.t
   -> ([< `float | `double ] as 't) Node.t
   -> ([< `float | `double ] as 't) Node.t
-  -> ([<  ] as 'tindices) Node.t
+  -> 'tindices Node.t
   -> ([< `float | `double ] as 't) Node.t
   -> ([< `float | `double ] as 't) Node.t
   -> ([< `float | `double ] as 't) Node.t
@@ -696,7 +696,7 @@ val sparseApplyMomentum
   -> ([< `float | `double ] as 't) Node.t
   -> ([< `float | `double ] as 't) Node.t
   -> ([< `float | `double ] as 't) Node.t
-  -> ([<  ] as 'tindices) Node.t
+  -> 'tindices Node.t
   -> ([< `float | `double ] as 't) Node.t
   -> ([< `float | `double ] as 't) Node.t
 
@@ -708,11 +708,11 @@ val sparseMatMul
 
 val sparseToDense
   :  ?name:string
-  -> ([<  ] as 'tindices) Node.t
-  -> ([<  ] as 'tindices) Node.t
-  -> ([<  ] as 't) Node.t
-  -> ([<  ] as 't) Node.t
-  -> ([<  ] as 't) Node.t
+  -> 'tindices Node.t
+  -> 'tindices Node.t
+  -> 't Node.t
+  -> 't Node.t
+  -> 't Node.t
 
 val sqrt
   :  ?name:string
@@ -732,13 +732,13 @@ val squaredDifference
 
 val squeeze
   :  ?name:string
-  -> ([<  ] as 't) Node.t
-  -> ([<  ] as 't) Node.t
+  -> 't Node.t
+  -> 't Node.t
 
 val stopGradient
   :  ?name:string
-  -> ([<  ] as 't) Node.t
-  -> ([<  ] as 't) Node.t
+  -> 't Node.t
+  -> 't Node.t
 
 val sub
   :  ?name:string
@@ -753,24 +753,24 @@ val tanh
 
 val temporaryVariable
   :  ?name:string
-  -> ([<  ] as 'dtype) Node.t
+  -> 'dtype Node.t
 
 val truncatedNormal
   :  ?name:string
-  -> ([<  ] as 't) Node.t
+  -> 't Node.t
   -> ([< `float | `double ] as 'dtype) Node.t
 
 val unpack
   :  ?name:string
-  -> ([<  ] as 't) Node.t
-  -> ([<  ] as 't) Node.t
+  -> 't Node.t
+  -> 't Node.t
 
 val variable
   :  ?name:string
-  -> ([<  ] as 'dtype) Node.t
+  -> 'dtype Node.t
 
 val zerosLike
   :  ?name:string
-  -> ([<  ] as 't) Node.t
-  -> ([<  ] as 't) Node.t
+  -> 't Node.t
+  -> 't Node.t
 

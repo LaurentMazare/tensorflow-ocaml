@@ -19,12 +19,13 @@ let types_to_string = function
 
 module Type = struct
   type t =
-    | Polymorphic of string * type_ list
+    | Polymorphic of string * [ `allow_only of type_ list | `allow_all ]
     | Fixed of type_
     | Unit
 
   let to_string = function
-    | Polymorphic (alpha, types) ->
+    | Polymorphic (alpha, `allow_all) -> alpha
+    | Polymorphic (alpha, `allow_only types) ->
       List.map types ~f:types_to_string
       |> String.concat ~sep:" | "
       |> fun types -> sprintf "([< %s ] as %s)" types alpha
@@ -62,9 +63,9 @@ module Op = struct
       in
       begin
         match List.Assoc.find types type_attr with
-        | None -> Type.Polymorphic (alpha, [])
+        | None -> Type.Polymorphic (alpha, `allow_all)
         | Some types ->
-          Polymorphic (alpha, types)
+          Polymorphic (alpha, `allow_only types)
       end
     | None ->
       match arg.type_ with
