@@ -54,7 +54,7 @@ let extract_types (attrs : Op_def_piqi.op_def_attr_def list) =
     | _ -> None)
 
 let gen_mli ops =
-  let out_channel = open_out (Printf.sprintf "%s.mli" output_file) in
+  let out_channel = Out_channel.create (Printf.sprintf "%s.mli" output_file) in
   let handle_one_op (op : Op_def_piqi.Op_def.t) =
     let buffer = Buffer.create 128 in
     let p s =
@@ -83,7 +83,7 @@ let gen_mli ops =
       Printf.printf "Error reading op %s: %s.\n%!" name str
   in
   List.iter ops ~f:handle_one_op;
-  close_out out_channel
+  Out_channel.close out_channel
 
 let gen_ml _ops = ()
 
