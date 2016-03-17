@@ -132,9 +132,9 @@ let same_input_and_output_type (op : Op.t) ~alpha =
 
 let output_type_string op =
   match op.Op.output_type with
-  | Fixed `float -> "Type.Float ()"
-  | Fixed `double -> "Type.Double ()"
-  | Unit -> "Type.Unit ()"
+  | Fixed `float -> "Type.Float"
+  | Fixed `double -> "Type.Double"
+  | Unit -> "Type.Unit"
   | Polymorphic (alpha, _) ->
     match same_input_and_output_type op ~alpha with
     | Some input_name -> sprintf "%s.output_type" input_name

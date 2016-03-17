@@ -39,7 +39,7 @@ let adjustContrast
     (max_value : [ `float ] t)
   =
   { name = Name.make_fresh ~name
-  ; output_type = Type.Float ()
+  ; output_type = Type.Float
   ; inputs = [ P images; P contrast_factor; P min_value; P max_value ]
   ; attributes = []
   }
@@ -50,7 +50,7 @@ let adjustContrastv2
     (contrast_factor : [ `float ] t)
   =
   { name = Name.make_fresh ~name
-  ; output_type = Type.Float ()
+  ; output_type = Type.Float
   ; inputs = [ P images; P contrast_factor ]
   ; attributes = []
   }
@@ -387,7 +387,7 @@ let controlTrigger
     ?(name = "ControlTrigger")
   =
   { name = Name.make_fresh ~name
-  ; output_type = Type.Unit ()
+  ; output_type = Type.Unit
   ; inputs = [  ]
   ; attributes = []
   }
@@ -512,7 +512,7 @@ let drawBoundingBoxes
     (boxes : [ `float ] t)
   =
   { name = Name.make_fresh ~name
-  ; output_type = Type.Float ()
+  ; output_type = Type.Float
   ; inputs = [ P images; P boxes ]
   ; attributes = []
   }
@@ -614,7 +614,7 @@ let hSVToRGB
     (images : [ `float ] t)
   =
   { name = Name.make_fresh ~name
-  ; output_type = Type.Float ()
+  ; output_type = Type.Float
   ; inputs = [ P images ]
   ; attributes = []
   }
@@ -654,7 +654,7 @@ let lRN
     (input : [ `float ] t)
   =
   { name = Name.make_fresh ~name
-  ; output_type = Type.Float ()
+  ; output_type = Type.Float
   ; inputs = [ P input ]
   ; attributes = []
   }
@@ -666,7 +666,7 @@ let lRNGrad
     (output_image : [ `float ] t)
   =
   { name = Name.make_fresh ~name
-  ; output_type = Type.Float ()
+  ; output_type = Type.Float
   ; inputs = [ P input_grads; P input_image; P output_image ]
   ; attributes = []
   }
@@ -761,7 +761,7 @@ let maxPool
     (input : [ `float ] t)
   =
   { name = Name.make_fresh ~name
-  ; output_type = Type.Float ()
+  ; output_type = Type.Float
   ; inputs = [ P input ]
   ; attributes = []
   }
@@ -773,7 +773,7 @@ let maxPoolGrad
     (grad : [ `float ] t)
   =
   { name = Name.make_fresh ~name
-  ; output_type = Type.Float ()
+  ; output_type = Type.Float
   ; inputs = [ P orig_input; P orig_output; P grad ]
   ; attributes = []
   }
@@ -785,7 +785,7 @@ let maxPoolGradWithArgmax
     (argmax : 'targmax t)
   =
   { name = Name.make_fresh ~name
-  ; output_type = Type.Float ()
+  ; output_type = Type.Float
   ; inputs = [ P input; P grad; P argmax ]
   ; attributes = []
   }
@@ -858,7 +858,7 @@ let noOp
     ?(name = "NoOp")
   =
   { name = Name.make_fresh ~name
-  ; output_type = Type.Unit ()
+  ; output_type = Type.Unit
   ; inputs = [  ]
   ; attributes = []
   }
@@ -899,7 +899,7 @@ let rGBToHSV
     (images : [ `float ] t)
   =
   { name = Name.make_fresh ~name
-  ; output_type = Type.Float ()
+  ; output_type = Type.Float
   ; inputs = [ P images ]
   ; attributes = []
   }
@@ -1309,7 +1309,7 @@ let sparseMatMul
     (b : [ `float ] t)
   =
   { name = Name.make_fresh ~name
-  ; output_type = Type.Float ()
+  ; output_type = Type.Float
   ; inputs = [ P a; P b ]
   ; attributes = []
   }
