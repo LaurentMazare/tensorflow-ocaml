@@ -85,18 +85,16 @@ end
 let gen_mli ops =
   let out_channel = Out_channel.create (sprintf "%s.mli" output_file) in
   let handle_one_op (op : Op.t) =
-    let buffer = Buffer.create 128 in
     let p s =
       ksprintf (fun line ->
-        Buffer.add_string buffer line;
-        Buffer.add_char buffer '\n') s
+        Out_channel.output_string out_channel line;
+        Out_channel.output_char out_channel '\n') s
     in
     p "val %s" (Op.caml_name op);
     p "  :  ?name:string";
     List.iter op.input_types ~f:(fun typ -> p "  -> %s Node.t" typ);
     p "  -> %s Node.t" op.output_type;
     p "";
-    Buffer.output_buffer out_channel buffer
   in
   List.iter ops ~f:handle_one_op;
   Out_channel.close out_channel
