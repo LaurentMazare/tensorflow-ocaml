@@ -186,13 +186,13 @@ val biasAddV1
 
 val bitcast
   :  ?name:string
-  -> type_ : (([< `float | `double ] as 'type__) as 'output_type_) Node.Type.t
+  -> type_ : ([< `float | `double ] as 'type__) Node.Type.t
   -> ([< `float | `double ] as 't) Node.t
   -> ([< `float | `double ] as 'type__) Node.t
 
 val cast
   :  ?name:string
-  -> type_ : ('dstT as 'output_type_) Node.Type.t
+  -> type_ : 'dstT Node.Type.t
   -> 'srcT Node.t
   -> 'dstT Node.t
 
@@ -213,7 +213,7 @@ val cholesky
 
 val const
   :  ?name:string
-  -> type_ : ('dtype as 'output_type_) Node.Type.t
+  -> type_ : 'dtype Node.Type.t
   -> 'dtype Node.t
 
 val controlTrigger
@@ -473,7 +473,7 @@ val pack
 
 val placeholder
   :  ?name:string
-  -> type_ : ('dtype as 'output_type_) Node.Type.t
+  -> type_ : 'dtype Node.Type.t
   -> 'dtype Node.t
 
 val pow
@@ -494,13 +494,13 @@ val randomShuffle
 
 val randomStandardNormal
   :  ?name:string
-  -> type_ : (([< `float | `double ] as 'dtype) as 'output_type_) Node.Type.t
+  -> type_ : ([< `float | `double ] as 'dtype) Node.Type.t
   -> 't Node.t
   -> ([< `float | `double ] as 'dtype) Node.t
 
 val randomUniform
   :  ?name:string
-  -> type_ : (([< `float | `double ] as 'dtype) as 'output_type_) Node.Type.t
+  -> type_ : ([< `float | `double ] as 'dtype) Node.Type.t
   -> 't Node.t
   -> ([< `float | `double ] as 'dtype) Node.t
 
@@ -759,12 +759,12 @@ val tanh
 
 val temporaryVariable
   :  ?name:string
-  -> type_ : ('dtype as 'output_type_) Node.Type.t
+  -> type_ : 'dtype Node.Type.t
   -> 'dtype Node.t
 
 val truncatedNormal
   :  ?name:string
-  -> type_ : (([< `float | `double ] as 'dtype) as 'output_type_) Node.Type.t
+  -> type_ : ([< `float | `double ] as 'dtype) Node.Type.t
   -> 't Node.t
   -> ([< `float | `double ] as 'dtype) Node.t
 
@@ -775,7 +775,7 @@ val unpack
 
 val variable
   :  ?name:string
-  -> type_ : ('dtype as 'output_type_) Node.Type.t
+  -> type_ : 'dtype Node.Type.t
   -> 'dtype Node.t
 
 val zerosLike

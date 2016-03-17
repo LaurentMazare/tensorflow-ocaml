@@ -150,7 +150,7 @@ let gen_mli ops =
     p "val %s" (Op.caml_name op);
     p "  :  ?name:string";
     if needs_variable_for_output_type
-    then p "  -> type_ : (%s as 'output_type_) Node.Type.t" (Type.to_string op.output_type);
+    then p "  -> type_ : %s Node.Type.t" (Type.to_string op.output_type);
     List.iter op.inputs ~f:(fun { Input.name = _; type_ } ->
       p "  -> %s Node.t" (Type.to_string type_));
     p "  -> %s Node.t" (Type.to_string op.output_type);
