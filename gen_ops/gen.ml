@@ -8,10 +8,22 @@ let value_exn = function
   | None -> raise (Not_supported "value_exn")
   | Some value -> value
 
+module Input = struct
+  type t =
+    { name : string option
+    ; type_ : string
+    }
+
+  let name t ~idx =
+    match t.name with
+    | Some name -> name
+    | None -> sprintf "x%d" idx
+end
+
 module Op = struct
   type t =
     { name : string
-    ; input_types : string list 
+    ; inputs : Input.t list 
     ; output_type : string
     }
 
@@ -64,8 +76,11 @@ module Op = struct
     let name = value_exn op.name in
     try
       let types = extract_types op.attr in
-      let input_types =
-        List.map op.input_arg ~f:(read_type types)
+      let inputs =
+        List.map op.input_arg ~f:(fun input_arg ->
+          { Input.name = input_arg.name
+          ; type_ = read_type types input_arg
+          })
       in
       let output_type =
         match op.output_arg with
@@ -73,7 +88,7 @@ module Op = struct
         | _ :: _ :: _ -> raise (Not_supported "multiple outputs")
         | [ output_arg ] -> read_type types output_arg
       in
-      Ok { name; input_types; output_type }
+      Ok { name; inputs; output_type }
     with
     | Not_supported str ->
       Error (sprintf "%s: %s" name str)
@@ -94,8 +109,8 @@ let gen_mli ops =
   let handle_one_op (op : Op.t) =
     p "val %s" (Op.caml_name op);
     p "  :  ?name:string";
-    List.iter op.input_types ~f:(fun typ ->
-      p "  -> %s Node.t" typ);
+    List.iter op.inputs ~f:(fun { Input.name = _; type_ } ->
+      p "  -> %s Node.t" type_);
     p "  -> %s Node.t" op.output_type;
     p "";
   in
@@ -112,16 +127,17 @@ let gen_ml ops =
   let handle_one_op (op : Op.t) =
     p "let %s" (Op.caml_name op);
     p "    ?(name = \"%s\")" op.name;
-    List.iteri op.input_types ~f:(fun i typ ->
-      p "    (x%d : %s Node.t)" i typ);
+    List.iteri op.inputs ~f:(fun idx input ->
+      let name = Input.name input ~idx in
+      p "    (%s : %s Node.t)" name input.type_);
     p "  =";
     p "  Node";
     p "    { name = Name.make_fresh ~name";
     (* TODO: adapt these... *)
     p "    ; output_type = TODO";
     let inputs =
-      List.mapi op.input_types ~f:(fun i _typ ->
-        sprintf "P x%d" i)
+      List.mapi op.inputs ~f:(fun idx input ->
+        sprintf "P %s" (Input.name input ~idx))
       |> String.concat ~sep:"; "
     in
     p "    ; inputs = [ %s ]" inputs;
