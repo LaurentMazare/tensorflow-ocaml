@@ -156,15 +156,29 @@ let gen_ml ops =
     p "  =";
     p "  Node";
     p "    { name = Name.make_fresh ~name";
-    (* TODO: adapt these... *)
-    p "    ; output_type = TODO";
+    let output_type =
+      match op.output_type with
+      | Fixed `float -> "Type.(P Float)"
+      | Fixed `double -> "Type.(P Double)"
+      | Unit -> "Type.(P Unit)"
+      | Polymorphic (alpha, _) ->
+        List.find_map op.inputs ~f:(fun input ->
+          match input.type_, input.name with
+          | Polymorphic (alpha', _), Some name when alpha = alpha' -> Some name
+          | _ -> None)
+        |> function
+        | Some input_name -> sprintf "%s.output_type" input_name
+        | None -> "TODO: add a parameter"
+    in
+    p "    ; output_type = %s" output_type;
     let inputs =
       List.mapi op.inputs ~f:(fun idx input ->
         sprintf "P %s" (Input.name input ~idx))
       |> String.concat ~sep:"; "
     in
     p "    ; inputs = [ %s ]" inputs;
-    p "    ; attributes = [ TODO ]";
+    (* TODO: adapt this... *)
+    p "    ; attributes = []";
     p "    }";
     p "";
   in
