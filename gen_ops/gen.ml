@@ -75,6 +75,11 @@ module Op = struct
     with
     | Not_supported str ->
       Error (sprintf "%s: %s" name str)
+
+  let caml_name t =
+    match t.name with
+    | "Mod" -> "mod_"
+    | otherwise -> String.uncapitalize otherwise
 end
 
 let gen_mli ops =
@@ -86,7 +91,7 @@ let gen_mli ops =
         Buffer.add_string buffer line;
         Buffer.add_char buffer '\n') s
     in
-    p "val %s" (String.uncapitalize op.name);
+    p "val %s" (Op.caml_name op);
     p "  :  ?name:string";
     List.iter op.input_types ~f:(fun typ -> p "  -> %s Node.t" typ);
     p "  -> %s Node.t" op.output_type;
