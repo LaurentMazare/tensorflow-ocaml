@@ -8,6 +8,10 @@ let value_exn = function
   | None -> raise (Not_supported "value_exn")
   | Some value -> value
 
+let types_to_string = function
+  | `float -> "`float"
+  | `double -> "`double"
+
 module Input = struct
   type t =
     { name : string option
@@ -40,7 +44,8 @@ module Op = struct
         match List.Assoc.find types type_attr with
         | None -> alpha
         | Some types ->
-          String.concat types ~sep:" | "
+          List.map types ~f:types_to_string
+          |> String.concat ~sep:" | "
           |> fun types -> sprintf "([< %s ] as %s)" types alpha
       end
     | None ->
@@ -63,8 +68,8 @@ module Op = struct
             | Some allowed_values ->
               List.filter_map allowed_values.type_ (fun typ ->
                 match typ with
-                | `dt_float -> Some "`float"
-                | `dt_double -> Some "`double"
+                | `dt_float -> Some `float
+                | `dt_double -> Some `double
                 | _ -> None)
         in
         if allowed_values = []
