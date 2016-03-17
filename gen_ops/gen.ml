@@ -84,12 +84,12 @@ end
 
 let gen_mli ops =
   let out_channel = Out_channel.create (sprintf "%s.mli" output_file) in
+  let p s =
+    ksprintf (fun line ->
+      Out_channel.output_string out_channel line;
+      Out_channel.output_char out_channel '\n') s
+  in
   let handle_one_op (op : Op.t) =
-    let p s =
-      ksprintf (fun line ->
-        Out_channel.output_string out_channel line;
-        Out_channel.output_char out_channel '\n') s
-    in
     p "val %s" (Op.caml_name op);
     p "  :  ?name:string";
     List.iter op.input_types ~f:(fun typ -> p "  -> %s Node.t" typ);
@@ -101,18 +101,27 @@ let gen_mli ops =
 
 let gen_ml ops =
   let out_channel = Out_channel.create (sprintf "%s.ml" output_file) in
+  let p s =
+    ksprintf (fun line ->
+      Out_channel.output_string out_channel line;
+      Out_channel.output_char out_channel '\n') s
+  in
   let handle_one_op (op : Op.t) =
-    let p s =
-      ksprintf (fun line ->
-        Out_channel.output_string out_channel line;
-        Out_channel.output_char out_channel '\n') s
-    in
     p "let %s" (Op.caml_name op);
-    p "    ?(name:string)";
-    List.iteri op.input_types ~f:(fun i typ -> p "  (x%d : %s Node.t)" i typ);
-    p "  = assert false";
+    p "    ?(name = \"%s\")" op.name;
+    List.iteri op.input_types ~f:(fun i typ -> p "    (x%d : %s Node.t)" i typ);
+    p "  =";
+    p "  Node";
+    p "    { name = Name.make_fresh ~name";
+    (* TODO: adapt these... *)
+    p "    ; output_type = x.output_type";
+    p "    ; inputs = [ P x ]";
+    p "    ; attributes = [ \"T\", Type (P x.output_type) ]";
+    p "    }";
     p "";
   in
+  p "open Node";
+  p "";
   List.iter ops ~f:handle_one_op;
   Out_channel.close out_channel
 
