@@ -99,7 +99,22 @@ let gen_mli ops =
   List.iter ops ~f:handle_one_op;
   Out_channel.close out_channel
 
-let gen_ml _ops = ()
+let gen_ml ops =
+  let out_channel = Out_channel.create (sprintf "%s.ml" output_file) in
+  let handle_one_op (op : Op.t) =
+    let p s =
+      ksprintf (fun line ->
+        Out_channel.output_string out_channel line;
+        Out_channel.output_char out_channel '\n') s
+    in
+    p "let %s" (Op.caml_name op);
+    p "    ?(name:string)";
+    List.iteri op.input_types ~f:(fun i typ -> p "  (x%d : %s Node.t)" i typ);
+    p "  = assert false";
+    p "";
+  in
+  List.iter ops ~f:handle_one_op;
+  Out_channel.close out_channel
 
 let run () =
   let ops =
