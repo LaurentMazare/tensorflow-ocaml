@@ -1,6 +1,12 @@
 open Core.Std
 exception Not_supported of string
 
+module Op = struct
+  type t =
+    { name : string
+    }
+end
+
 let value_exn = function
   | None -> raise (Not_supported "value_exn")
   | Some value -> value
@@ -22,7 +28,7 @@ let read_type types (arg : Op_def_piqi.op_def_arg_def) =
       | None -> alpha
       | Some types ->
         String.concat types ~sep:" | "
-        |> fun types -> Printf.sprintf "([< %s ] as %s)" types alpha
+        |> fun types -> sprintf "([< %s ] as %s)" types alpha
     end
   | None ->
     match arg.type_ with
@@ -54,11 +60,11 @@ let extract_types (attrs : Op_def_piqi.op_def_attr_def list) =
     | _ -> None)
 
 let gen_mli ops =
-  let out_channel = Out_channel.create (Printf.sprintf "%s.mli" output_file) in
+  let out_channel = Out_channel.create (sprintf "%s.mli" output_file) in
   let handle_one_op (op : Op_def_piqi.Op_def.t) =
     let buffer = Buffer.create 128 in
     let p s =
-      Printf.ksprintf (fun line ->
+      ksprintf (fun line ->
         Buffer.add_string buffer line;
         Buffer.add_char buffer '\n') s
     in
@@ -80,7 +86,7 @@ let gen_mli ops =
       Buffer.output_buffer out_channel buffer
     with
     | Not_supported str ->
-      Printf.printf "Error reading op %s: %s.\n%!" name str
+      printf "Error reading op %s: %s.\n%!" name str
   in
   List.iter ops ~f:handle_one_op;
   Out_channel.close out_channel
@@ -94,7 +100,7 @@ let run () =
     |> Op_def_piqi.parse_op_list
     |> fun op_list -> op_list.op
   in
-  Printf.printf "Found %d ops.\n%!" (List.length ops);
+  printf "Found %d ops.\n%!" (List.length ops);
   gen_mli ops;
   gen_ml ops
 
