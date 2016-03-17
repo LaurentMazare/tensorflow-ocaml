@@ -8,14 +8,34 @@ let value_exn = function
   | None -> raise (Not_supported "value_exn")
   | Some value -> value
 
+type type_ =
+  [ `float
+  | `double
+  ]
+
 let types_to_string = function
   | `float -> "`float"
   | `double -> "`double"
 
+module Type = struct
+  type t =
+    | Polymorphic of string * type_ list
+    | Fixed of type_
+    | Unit
+
+  let to_string = function
+    | Polymorphic (alpha, types) ->
+      List.map types ~f:types_to_string
+      |> String.concat ~sep:" | "
+      |> fun types -> sprintf "([< %s ] as %s)" types alpha
+    | Fixed type_ -> sprintf "[ %s ]" (types_to_string type_)
+    | Unit -> "[ `unit ]"
+end
+
 module Input = struct
   type t =
     { name : string option
-    ; type_ : string
+    ; type_ : Type.t
     }
 
   let name t ~idx =
@@ -28,7 +48,7 @@ module Op = struct
   type t =
     { name : string
     ; inputs : Input.t list 
-    ; output_type : string
+    ; output_type : Type.t
     }
 
   let read_type types (arg : Op_def_piqi.op_def_arg_def) =
@@ -42,16 +62,14 @@ module Op = struct
       in
       begin
         match List.Assoc.find types type_attr with
-        | None -> alpha
+        | None -> Type.Polymorphic (alpha, [])
         | Some types ->
-          List.map types ~f:types_to_string
-          |> String.concat ~sep:" | "
-          |> fun types -> sprintf "([< %s ] as %s)" types alpha
+          Polymorphic (alpha, types)
       end
     | None ->
       match arg.type_ with
-      | Some `dt_float -> "[ `float ]"
-      | Some `dt_double -> "[ `double ]"
+      | Some `dt_float -> Fixed `float
+      | Some `dt_double -> Fixed `double
       | Some _ -> raise (Not_supported "unknown output type")
       | None -> raise (Not_supported "no output type")
 
@@ -89,7 +107,7 @@ module Op = struct
       in
       let output_type =
         match op.output_arg with
-        | [] -> "[ `unit ]"
+        | [] -> Type.Unit
         | _ :: _ :: _ -> raise (Not_supported "multiple outputs")
         | [ output_arg ] -> read_type types output_arg
       in
@@ -115,8 +133,8 @@ let gen_mli ops =
     p "val %s" (Op.caml_name op);
     p "  :  ?name:string";
     List.iter op.inputs ~f:(fun { Input.name = _; type_ } ->
-      p "  -> %s Node.t" type_);
-    p "  -> %s Node.t" op.output_type;
+      p "  -> %s Node.t" (Type.to_string type_));
+    p "  -> %s Node.t" (Type.to_string op.output_type);
     p "";
   in
   List.iter ops ~f:handle_one_op;
@@ -134,7 +152,7 @@ let gen_ml ops =
     p "    ?(name = \"%s\")" op.name;
     List.iteri op.inputs ~f:(fun idx input ->
       let name = Input.name input ~idx in
-      p "    (%s : %s Node.t)" name input.type_);
+      p "    (%s : %s Node.t)" name (Type.to_string input.type_));
     p "  =";
     p "  Node";
     p "    { name = Name.make_fresh ~name";
