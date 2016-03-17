@@ -323,20 +323,22 @@ let biasAddV1
 
 let bitcast
     ?(name = "Bitcast")
+    ~type_
     (input : ([< `float | `double ] as 't) t)
   =
   { name = Name.make_fresh ~name
-  ; output_type = typ_
+  ; output_type = type_
   ; inputs = [ P input ]
   ; attributes = []
   }
 
 let cast
     ?(name = "Cast")
+    ~type_
     (x : 'srcT t)
   =
   { name = Name.make_fresh ~name
-  ; output_type = typ_
+  ; output_type = type_
   ; inputs = [ P x ]
   ; attributes = []
   }
@@ -373,9 +375,10 @@ let cholesky
 
 let const
     ?(name = "Const")
+    ~type_
   =
   { name = Name.make_fresh ~name
-  ; output_type = typ_
+  ; output_type = type_
   ; inputs = [  ]
   ; attributes = []
   }
@@ -872,9 +875,10 @@ let pack
 
 let placeholder
     ?(name = "Placeholder")
+    ~type_
   =
   { name = Name.make_fresh ~name
-  ; output_type = typ_
+  ; output_type = type_
   ; inputs = [  ]
   ; attributes = []
   }
@@ -912,20 +916,22 @@ let randomShuffle
 
 let randomStandardNormal
     ?(name = "RandomStandardNormal")
+    ~type_
     (shape : 't t)
   =
   { name = Name.make_fresh ~name
-  ; output_type = typ_
+  ; output_type = type_
   ; inputs = [ P shape ]
   ; attributes = []
   }
 
 let randomUniform
     ?(name = "RandomUniform")
+    ~type_
     (shape : 't t)
   =
   { name = Name.make_fresh ~name
-  ; output_type = typ_
+  ; output_type = type_
   ; inputs = [ P shape ]
   ; attributes = []
   }
@@ -1395,19 +1401,21 @@ let tanh
 
 let temporaryVariable
     ?(name = "TemporaryVariable")
+    ~type_
   =
   { name = Name.make_fresh ~name
-  ; output_type = typ_
+  ; output_type = type_
   ; inputs = [  ]
   ; attributes = []
   }
 
 let truncatedNormal
     ?(name = "TruncatedNormal")
+    ~type_
     (shape : 't t)
   =
   { name = Name.make_fresh ~name
-  ; output_type = typ_
+  ; output_type = type_
   ; inputs = [ P shape ]
   ; attributes = []
   }
@@ -1424,9 +1432,10 @@ let unpack
 
 let variable
     ?(name = "Variable")
+    ~type_
   =
   { name = Name.make_fresh ~name
-  ; output_type = typ_
+  ; output_type = type_
   ; inputs = [  ]
   ; attributes = []
   }

@@ -124,6 +124,20 @@ module Op = struct
     | otherwise -> String.uncapitalize otherwise
 end
 
+let output_type_string op =
+  match op.Op.output_type with
+  | Fixed `float -> "Type.Float ()", false
+  | Fixed `double -> "Type.Double ()", false
+  | Unit -> "Type.Unit ()", false
+  | Polymorphic (alpha, _) ->
+    List.find_map op.inputs ~f:(fun input ->
+      match input.type_, input.name with
+      | Polymorphic (alpha', _), Some name when alpha = alpha' -> Some name
+      | _ -> None)
+    |> function
+    | Some input_name -> sprintf "%s.output_type" input_name, false
+    | None -> "type_", true
+
 let gen_mli ops =
   let out_channel = Out_channel.create (sprintf "%s.mli" output_file) in
   let p s =
@@ -132,8 +146,11 @@ let gen_mli ops =
       Out_channel.output_char out_channel '\n') s
   in
   let handle_one_op (op : Op.t) =
+    let _, needs_variable_for_output_type = output_type_string op in
     p "val %s" (Op.caml_name op);
     p "  :  ?name:string";
+    if needs_variable_for_output_type
+    then p "  -> type_ : (%s as 'output_type_) Node.Type.t" (Type.to_string op.output_type);
     List.iter op.inputs ~f:(fun { Input.name = _; type_ } ->
       p "  -> %s Node.t" (Type.to_string type_));
     p "  -> %s Node.t" (Type.to_string op.output_type);
@@ -150,27 +167,16 @@ let gen_ml ops =
       Out_channel.output_char out_channel '\n') s
   in
   let handle_one_op (op : Op.t) =
+    let output_type, needs_variable_for_output_type = output_type_string op in
     p "let %s" (Op.caml_name op);
     p "    ?(name = \"%s\")" op.name;
+    if needs_variable_for_output_type
+    then p "    ~type_";
     List.iteri op.inputs ~f:(fun idx input ->
       let name = Input.name input ~idx in
       p "    (%s : %s t)" name (Type.to_string input.type_));
     p "  =";
     p "  { name = Name.make_fresh ~name";
-    let output_type =
-      match op.output_type with
-      | Fixed `float -> "Type.Float ()"
-      | Fixed `double -> "Type.Double ()"
-      | Unit -> "Type.Unit ()"
-      | Polymorphic (alpha, _) ->
-        List.find_map op.inputs ~f:(fun input ->
-          match input.type_, input.name with
-          | Polymorphic (alpha', _), Some name when alpha = alpha' -> Some name
-          | _ -> None)
-        |> function
-        | Some input_name -> sprintf "%s.output_type" input_name
-        | None -> "typ_"
-    in
     p "  ; output_type = %s" output_type;
     let inputs =
       List.mapi op.inputs ~f:(fun idx input ->
