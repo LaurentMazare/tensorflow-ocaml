@@ -2,7 +2,7 @@ open Core.Std
 exception Not_supported of string
 
 let ops_file = "gen_ops/ops.pb"
-let output_file = "generated_ops"
+let output_file = "graph/ops"
 
 let value_exn = function
   | None -> raise (Not_supported "value_exn")
