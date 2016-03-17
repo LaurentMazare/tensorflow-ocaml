@@ -64,7 +64,9 @@ module Op = struct
     let name = value_exn op.name in
     try
       let types = extract_types op.attr in
-      let input_types = List.map op.input_arg ~f:(read_type types) in
+      let input_types =
+        List.map op.input_arg ~f:(read_type types)
+      in
       let output_type =
         match op.output_arg with
         | [] -> "[ `unit ]"
@@ -92,7 +94,8 @@ let gen_mli ops =
   let handle_one_op (op : Op.t) =
     p "val %s" (Op.caml_name op);
     p "  :  ?name:string";
-    List.iter op.input_types ~f:(fun typ -> p "  -> %s Node.t" typ);
+    List.iter op.input_types ~f:(fun typ ->
+      p "  -> %s Node.t" typ);
     p "  -> %s Node.t" op.output_type;
     p "";
   in
@@ -109,14 +112,20 @@ let gen_ml ops =
   let handle_one_op (op : Op.t) =
     p "let %s" (Op.caml_name op);
     p "    ?(name = \"%s\")" op.name;
-    List.iteri op.input_types ~f:(fun i typ -> p "    (x%d : %s Node.t)" i typ);
+    List.iteri op.input_types ~f:(fun i typ ->
+      p "    (x%d : %s Node.t)" i typ);
     p "  =";
     p "  Node";
     p "    { name = Name.make_fresh ~name";
     (* TODO: adapt these... *)
-    p "    ; output_type = x.output_type";
-    p "    ; inputs = [ P x ]";
-    p "    ; attributes = [ \"T\", Type (P x.output_type) ]";
+    p "    ; output_type = TODO";
+    let inputs =
+      List.mapi op.input_types ~f:(fun i _typ ->
+        sprintf "P x%d" i)
+      |> String.concat ~sep:"; "
+    in
+    p "    ; inputs = [ %s ]" inputs;
+    p "    ; attributes = [ TODO ]";
     p "    }";
     p "";
   in
