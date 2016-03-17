@@ -41,6 +41,7 @@ module Input = struct
 
   let name t ~idx =
     match t.name with
+    | Some "begin" -> "begin__"
     | Some name -> name
     | None -> sprintf "x%d" idx
 end
@@ -153,15 +154,14 @@ let gen_ml ops =
     p "    ?(name = \"%s\")" op.name;
     List.iteri op.inputs ~f:(fun idx input ->
       let name = Input.name input ~idx in
-      p "    (%s : %s Node.t)" name (Type.to_string input.type_));
+      p "    (%s : %s t)" name (Type.to_string input.type_));
     p "  =";
-    p "  Node";
-    p "    { name = Name.make_fresh ~name";
+    p "  { name = Name.make_fresh ~name";
     let output_type =
       match op.output_type with
-      | Fixed `float -> "Type.(P Float)"
-      | Fixed `double -> "Type.(P Double)"
-      | Unit -> "Type.(P Unit)"
+      | Fixed `float -> "Type.Float ()"
+      | Fixed `double -> "Type.Double ()"
+      | Unit -> "Type.Unit ()"
       | Polymorphic (alpha, _) ->
         List.find_map op.inputs ~f:(fun input ->
           match input.type_, input.name with
@@ -169,18 +169,18 @@ let gen_ml ops =
           | _ -> None)
         |> function
         | Some input_name -> sprintf "%s.output_type" input_name
-        | None -> "TODO: add a parameter"
+        | None -> "typ_"
     in
-    p "    ; output_type = %s" output_type;
+    p "  ; output_type = %s" output_type;
     let inputs =
       List.mapi op.inputs ~f:(fun idx input ->
         sprintf "P %s" (Input.name input ~idx))
       |> String.concat ~sep:"; "
     in
-    p "    ; inputs = [ %s ]" inputs;
+    p "  ; inputs = [ %s ]" inputs;
     (* TODO: adapt this... *)
-    p "    ; attributes = []";
-    p "    }";
+    p "  ; attributes = []";
+    p "  }";
     p "";
   in
   p "open Node";
