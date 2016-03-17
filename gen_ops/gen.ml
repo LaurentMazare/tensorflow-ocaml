@@ -33,7 +33,7 @@ module Op = struct
       let alpha =
         let type_attr = String.uncapitalize type_attr in
         if type_attr = "type"
-        then "'type'"
+        then "'type__"
         else "'" ^ type_attr
       in
       begin
