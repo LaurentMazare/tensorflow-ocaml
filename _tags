@@ -1,5 +1,6 @@
 true: package(ctypes), package(ctypes.foreign)
-true: warn(-40)
+not <piqi/*>: warn(A-4-29-40-41-42-44-45-48)
+not <piqi/*>: warn_error(A-4-29-40-41-42-44-45-48)
 <gen_ops/*>: package(core), thread
 <lib>: -traverse
 <piqi> or <src>: include

@@ -30,7 +30,7 @@ let add lhs rhs =
 
 let sub lhs rhs =
   { name = fresh_name ()
-  ; t_ = Add (lhs, rhs)
+  ; t_ = Sub (lhs, rhs)
   }
 
 let mul lhs rhs =

@@ -4,10 +4,6 @@ exception Not_supported of string
 let ops_file = "gen_ops/ops.pb"
 let output_file = "src/ops"
 
-let value_exn = function
-  | None -> raise (Not_supported "value_exn")
-  | Some value -> value
-
 type type_ =
   [ `float
   | `double
@@ -76,7 +72,7 @@ module Op = struct
       | None -> raise (Not_supported "no output type")
 
   let extract_types (attrs : Op_def_piqi.op_def_attr_def list) =
-    List.filter_map attrs (fun (attr : Op_def_piqi.op_def_attr_def) ->
+    List.filter_map attrs ~f:(fun (attr : Op_def_piqi.op_def_attr_def) ->
       match attr.name, attr.type_ with
       | Some name, Some "type" ->
         let allowed_values =
@@ -86,7 +82,7 @@ module Op = struct
             match allowed_values.list with
             | None -> []
             | Some allowed_values ->
-              List.filter_map allowed_values.type_ (fun typ ->
+              List.filter_map allowed_values.type_ ~f:(fun typ ->
                 match typ with
                 | `dt_float -> Some `float
                 | `dt_double -> Some `double
@@ -98,7 +94,7 @@ module Op = struct
       | _ -> None)
 
   let create (op : Op_def_piqi.Op_def.t) =
-    let name = value_exn op.name in
+    let name = Option.value_exn op.name in
     try
       let types = extract_types op.attr in
       let inputs =

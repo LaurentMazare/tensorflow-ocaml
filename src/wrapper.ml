@@ -65,13 +65,6 @@ let int_of_data_type = function
   | 17 -> TF_UINT16
   | n -> Unknown n
 
-module Bindings (S : Cstubs.Types.TYPE) = struct
-  let tf_datatype =
-    S.enum "TF_DataType"
-      [ TF_FLOAT, S.constant "TF_FLOAT" S.int64_t
-      ]
-end
-
 let tf_newtensor =
   foreign "TF_NewTensor"
     (int
@@ -314,3 +307,10 @@ module Session = struct
 
 end
 
+let () =
+  ignore
+    ( data_type_to_int
+    , tf_deletetensor
+    , tf_settarget
+    , tf_setconfig
+    , tf_closesession)
