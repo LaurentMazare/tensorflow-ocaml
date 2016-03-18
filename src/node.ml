@@ -58,6 +58,16 @@ module Type = struct
     | P String -> "String"
 end
 
+(* This is used for float/double, maybe we should introduce another GADT to handle this
+   in a generic way ? *)
+module Tensor_float = struct
+  type t =
+    { type_ : Type.p (* Has to be Float or Double. *)
+    ; shape : int list
+    ; values : float list
+    }
+end
+
 type attr =
   | String of string
   | Int of int
@@ -65,6 +75,7 @@ type attr =
   | Bool of bool
   | Type of Type.p
   | List of attr list
+  | Tensor_float of Tensor_float.t
 
 type 'a t =
   { name : Name.t
