@@ -4,11 +4,8 @@ exception Not_supported of string
 let ops_file = "gen_ops/ops.pb"
 let output_file = "src/ops"
 
-let types_to_string = function
-  | Node.Type.P Node.Type.Float -> "`float"
-  | Node.Type.P Node.Type.Double -> "`double"
-  | Node.Type.P Node.Type.Int32 -> "`int32"
-  | Node.Type.P Node.Type.Unit -> "`unit"
+let types_to_string type_ =
+  "`" ^ String.uncapitalize (Node.Type.to_string type_)
 
 module Type = struct
   type t =
@@ -33,6 +30,7 @@ module Input = struct
   let name t ~idx =
     match t.name with
     | Some "begin" -> "begin__"
+    | Some "in" -> "in__"
     | Some name -> name
     | None -> sprintf "x%d" idx
 end
@@ -63,11 +61,11 @@ module Op = struct
       Some type_attr, type_
     | None ->
       match arg.type_ with
-      | None -> raise (Not_supported "no output type")
+      | None -> raise (Not_supported "no input/output type")
       | Some dt_type ->
         match Node.Type.of_dt_type dt_type with
         | Some p -> None, Fixed p
-        | None -> raise (Not_supported "unknown output type")
+        | None -> raise (Not_supported "unknown input/output type")
 
   let extract_types (attrs : Op_def_piqi.op_def_attr_def list) =
     List.filter_map attrs ~f:(fun (attr : Op_def_piqi.op_def_attr_def) ->
@@ -122,10 +120,7 @@ let same_input_and_output_type (op : Op.t) ~alpha =
 
 let output_type_string op =
   match op.Op.output_type with
-  | Fixed (Node.Type.P Node.Type.Float) -> "Type.Float"
-  | Fixed (Node.Type.P Node.Type.Double) -> "Type.Double"
-  | Fixed (Node.Type.P Node.Type.Int32) -> "Type.Int32"
-  | Fixed (Node.Type.P Node.Type.Unit) -> "Type.Unit"
+  | Fixed p -> "Type." ^ Node.Type.to_string p
   | Polymorphic (alpha, _) ->
     match same_input_and_output_type op ~alpha with
     | Some input_name -> sprintf "%s.output_type" input_name

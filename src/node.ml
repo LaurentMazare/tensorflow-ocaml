@@ -14,11 +14,16 @@ end = struct
 end
 
 module Type = struct
+  (* We rely on all variants to be of the form | Variant : [ `variant ] t. *)
   type _ t =
     | Unit : [ `unit ] t
     | Float : [ `float ] t
     | Double : [ `double ] t
     | Int32 : [ `int32 ] t
+    | Int64 : [ `int64 ] t
+    | Complex64 : [ `complex64 ] t
+    | Bool : [ `bool ] t
+    | String : [ `string ] t
 
   type p = P : _ t -> p
 
@@ -27,12 +32,30 @@ module Type = struct
     | P Float -> `dt_float
     | P Double -> `dt_double
     | P Int32 -> `dt_int32
+    | P Int64 -> `dt_int64
+    | P Complex64 -> `dt_complex64
+    | P Bool -> `dt_bool
+    | P String -> `dt_string
 
   let of_dt_type = function
     | `dt_float -> Some (P Float)
     | `dt_double -> Some (P Double)
     | `dt_int32 -> Some (P Int32)
+    | `dt_int64 -> Some (P Int64)
+    | `dt_complex64 -> Some (P Complex64)
+    | `dt_bool -> Some (P Bool)
+    | `dt_string -> Some (P String)
     | _ -> None
+
+  let to_string = function
+    | P Unit -> "Unit"
+    | P Float -> "Float"
+    | P Double -> "Double"
+    | P Int32 -> "Int32"
+    | P Int64 -> "Int64"
+    | P Complex64 -> "Complex64"
+    | P Bool -> "Bool"
+    | P String -> "String"
 end
 
 type attr =

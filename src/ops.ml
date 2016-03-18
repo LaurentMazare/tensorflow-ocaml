@@ -2,7 +2,7 @@ open Node
 
 let abs
     ?(name = "Abs")
-    (x : ([< `float | `double | `int32 ] as 't) t)
+    (x : ([< `float | `double | `int32 | `int64 ] as 't) t)
   =
   { name = Name.make_fresh ~name
   ; op_name = "Abs"
@@ -15,8 +15,8 @@ let abs
 
 let add
     ?(name = "Add")
-    (x : ([< `float | `double | `int32 ] as 't) t)
-    (y : ([< `float | `double | `int32 ] as 't) t)
+    (x : ([< `float | `double | `int32 | `int64 | `complex64 | `string ] as 't) t)
+    (y : ([< `float | `double | `int32 | `int64 | `complex64 | `string ] as 't) t)
   =
   { name = Name.make_fresh ~name
   ; op_name = "Add"
@@ -29,7 +29,7 @@ let add
 
 let addN
     ?(name = "AddN")
-    (inputs : ([< `float | `double | `int32 ] as 't) t)
+    (inputs : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
   =
   { name = Name.make_fresh ~name
   ; op_name = "AddN"
@@ -42,7 +42,7 @@ let addN
 
 let adjustContrast
     ?(name = "AdjustContrast")
-    (images : ([< `int32 | `float | `double ] as 't) t)
+    (images : ([< `int32 | `int64 | `float | `double ] as 't) t)
     (contrast_factor : [ `float ] t)
     (min_value : [ `float ] t)
     (max_value : [ `float ] t)
@@ -68,12 +68,38 @@ let adjustContrastv2
     ]
   }
 
+let all
+    ?(name = "All")
+    (input : [ `bool ] t)
+    (reduction_indices : [ `int32 ] t)
+  =
+  { name = Name.make_fresh ~name
+  ; op_name = "All"
+  ; output_type = Type.Bool
+  ; inputs = [ P input; P reduction_indices ]
+  ; attributes = [
+    ]
+  }
+
+let any
+    ?(name = "Any")
+    (input : [ `bool ] t)
+    (reduction_indices : [ `int32 ] t)
+  =
+  { name = Name.make_fresh ~name
+  ; op_name = "Any"
+  ; output_type = Type.Bool
+  ; inputs = [ P input; P reduction_indices ]
+  ; attributes = [
+    ]
+  }
+
 let applyAdagrad
     ?(name = "ApplyAdagrad")
-    (var : ([< `float | `double | `int32 ] as 't) t)
-    (accum : ([< `float | `double | `int32 ] as 't) t)
-    (lr : ([< `float | `double | `int32 ] as 't) t)
-    (grad : ([< `float | `double | `int32 ] as 't) t)
+    (var : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (accum : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (lr : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (grad : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
   =
   { name = Name.make_fresh ~name
   ; op_name = "ApplyAdagrad"
@@ -86,16 +112,16 @@ let applyAdagrad
 
 let applyAdam
     ?(name = "ApplyAdam")
-    (var : ([< `float | `double | `int32 ] as 't) t)
-    (m : ([< `float | `double | `int32 ] as 't) t)
-    (v : ([< `float | `double | `int32 ] as 't) t)
-    (beta1_power : ([< `float | `double | `int32 ] as 't) t)
-    (beta2_power : ([< `float | `double | `int32 ] as 't) t)
-    (lr : ([< `float | `double | `int32 ] as 't) t)
-    (beta1 : ([< `float | `double | `int32 ] as 't) t)
-    (beta2 : ([< `float | `double | `int32 ] as 't) t)
-    (epsilon : ([< `float | `double | `int32 ] as 't) t)
-    (grad : ([< `float | `double | `int32 ] as 't) t)
+    (var : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (m : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (v : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (beta1_power : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (beta2_power : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (lr : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (beta1 : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (beta2 : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (epsilon : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (grad : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
   =
   { name = Name.make_fresh ~name
   ; op_name = "ApplyAdam"
@@ -108,14 +134,14 @@ let applyAdam
 
 let applyFtrl
     ?(name = "ApplyFtrl")
-    (var : ([< `float | `double | `int32 ] as 't) t)
-    (accum : ([< `float | `double | `int32 ] as 't) t)
-    (linear : ([< `float | `double | `int32 ] as 't) t)
-    (grad : ([< `float | `double | `int32 ] as 't) t)
-    (lr : ([< `float | `double | `int32 ] as 't) t)
-    (l1 : ([< `float | `double | `int32 ] as 't) t)
-    (l2 : ([< `float | `double | `int32 ] as 't) t)
-    (lr_power : ([< `float | `double | `int32 ] as 't) t)
+    (var : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (accum : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (linear : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (grad : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (lr : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (l1 : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (l2 : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (lr_power : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
   =
   { name = Name.make_fresh ~name
   ; op_name = "ApplyFtrl"
@@ -128,9 +154,9 @@ let applyFtrl
 
 let applyGradientDescent
     ?(name = "ApplyGradientDescent")
-    (var : ([< `float | `double | `int32 ] as 't) t)
-    (alpha : ([< `float | `double | `int32 ] as 't) t)
-    (delta : ([< `float | `double | `int32 ] as 't) t)
+    (var : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (alpha : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (delta : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
   =
   { name = Name.make_fresh ~name
   ; op_name = "ApplyGradientDescent"
@@ -143,11 +169,11 @@ let applyGradientDescent
 
 let applyMomentum
     ?(name = "ApplyMomentum")
-    (var : ([< `float | `double | `int32 ] as 't) t)
-    (accum : ([< `float | `double | `int32 ] as 't) t)
-    (lr : ([< `float | `double | `int32 ] as 't) t)
-    (grad : ([< `float | `double | `int32 ] as 't) t)
-    (momentum : ([< `float | `double | `int32 ] as 't) t)
+    (var : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (accum : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (lr : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (grad : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (momentum : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
   =
   { name = Name.make_fresh ~name
   ; op_name = "ApplyMomentum"
@@ -160,14 +186,14 @@ let applyMomentum
 
 let applyRMSProp
     ?(name = "ApplyRMSProp")
-    (var : ([< `float | `double | `int32 ] as 't) t)
-    (ms : ([< `float | `double | `int32 ] as 't) t)
-    (mom : ([< `float | `double | `int32 ] as 't) t)
-    (lr : ([< `float | `double | `int32 ] as 't) t)
-    (rho : ([< `float | `double | `int32 ] as 't) t)
-    (momentum : ([< `float | `double | `int32 ] as 't) t)
-    (epsilon : ([< `float | `double | `int32 ] as 't) t)
-    (grad : ([< `float | `double | `int32 ] as 't) t)
+    (var : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (ms : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (mom : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (lr : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (rho : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (momentum : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (epsilon : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (grad : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
   =
   { name = Name.make_fresh ~name
   ; op_name = "ApplyRMSProp"
@@ -175,6 +201,32 @@ let applyRMSProp
   ; inputs = [ P var; P ms; P mom; P lr; P rho; P momentum; P epsilon; P grad ]
   ; attributes = [
       "T", Type (P var.output_type);
+    ]
+  }
+
+let argMax
+    ?(name = "ArgMax")
+    (input : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (dimension : [ `int32 ] t)
+  =
+  { name = Name.make_fresh ~name
+  ; op_name = "ArgMax"
+  ; output_type = Type.Int64
+  ; inputs = [ P input; P dimension ]
+  ; attributes = [
+    ]
+  }
+
+let argMin
+    ?(name = "ArgMin")
+    (input : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (dimension : [ `int32 ] t)
+  =
+  { name = Name.make_fresh ~name
+  ; op_name = "ArgMin"
+  ; output_type = Type.Int64
+  ; inputs = [ P input; P dimension ]
+  ; attributes = [
     ]
   }
 
@@ -194,8 +246,8 @@ let assign
 
 let assignAdd
     ?(name = "AssignAdd")
-    (ref : ([< `float | `double | `int32 ] as 't) t)
-    (value : ([< `float | `double | `int32 ] as 't) t)
+    (ref : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (value : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
   =
   { name = Name.make_fresh ~name
   ; op_name = "AssignAdd"
@@ -208,8 +260,8 @@ let assignAdd
 
 let assignSub
     ?(name = "AssignSub")
-    (ref : ([< `float | `double | `int32 ] as 't) t)
-    (value : ([< `float | `double | `int32 ] as 't) t)
+    (ref : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (value : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
   =
   { name = Name.make_fresh ~name
   ; op_name = "AssignSub"
@@ -262,8 +314,8 @@ let batchCholesky
 
 let batchMatMul
     ?(name = "BatchMatMul")
-    (x : ([< `float | `double | `int32 ] as 't) t)
-    (y : ([< `float | `double | `int32 ] as 't) t)
+    (x : ([< `float | `double | `int32 | `complex64 ] as 't) t)
+    (y : ([< `float | `double | `int32 | `complex64 ] as 't) t)
   =
   { name = Name.make_fresh ~name
   ; op_name = "BatchMatMul"
@@ -345,11 +397,11 @@ let batchMatrixTriangularSolve
 
 let batchNormWithGlobalNormalization
     ?(name = "BatchNormWithGlobalNormalization")
-    (t : ([< `float | `double | `int32 ] as 't) t)
-    (m : ([< `float | `double | `int32 ] as 't) t)
-    (v : ([< `float | `double | `int32 ] as 't) t)
-    (beta : ([< `float | `double | `int32 ] as 't) t)
-    (gamma : ([< `float | `double | `int32 ] as 't) t)
+    (t : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (m : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (v : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (beta : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (gamma : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
   =
   { name = Name.make_fresh ~name
   ; op_name = "BatchNormWithGlobalNormalization"
@@ -375,8 +427,8 @@ let batchSelfAdjointEig
 
 let biasAdd
     ?(name = "BiasAdd")
-    (value : ([< `float | `double | `int32 ] as 't) t)
-    (bias : ([< `float | `double | `int32 ] as 't) t)
+    (value : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (bias : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
   =
   { name = Name.make_fresh ~name
   ; op_name = "BiasAdd"
@@ -389,7 +441,7 @@ let biasAdd
 
 let biasAddGrad
     ?(name = "BiasAddGrad")
-    (out_backprop : ([< `float | `double | `int32 ] as 't) t)
+    (out_backprop : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
   =
   { name = Name.make_fresh ~name
   ; op_name = "BiasAddGrad"
@@ -402,8 +454,8 @@ let biasAddGrad
 
 let biasAddV1
     ?(name = "BiasAddV1")
-    (value : ([< `float | `double | `int32 ] as 't) t)
-    (bias : ([< `float | `double | `int32 ] as 't) t)
+    (value : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (bias : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
   =
   { name = Name.make_fresh ~name
   ; op_name = "BiasAddV1"
@@ -417,7 +469,7 @@ let biasAddV1
 let bitcast
     ?(name = "Bitcast")
     ~type_
-    (input : ([< `float | `double | `int32 ] as 't) t)
+    (input : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
   =
   { name = Name.make_fresh ~name
   ; op_name = "Bitcast"
@@ -481,6 +533,31 @@ let cholesky
     ]
   }
 
+let complex
+    ?(name = "Complex")
+    (real : [ `float ] t)
+    (imag : [ `float ] t)
+  =
+  { name = Name.make_fresh ~name
+  ; op_name = "Complex"
+  ; output_type = Type.Complex64
+  ; inputs = [ P real; P imag ]
+  ; attributes = [
+    ]
+  }
+
+let complexAbs
+    ?(name = "ComplexAbs")
+    (x : [ `complex64 ] t)
+  =
+  { name = Name.make_fresh ~name
+  ; op_name = "ComplexAbs"
+  ; output_type = Type.Float
+  ; inputs = [ P x ]
+  ; attributes = [
+    ]
+  }
+
 let concat
     ?(name = "Concat")
     (concat_dim : [ `int32 ] t)
@@ -504,6 +581,18 @@ let concatOffset
   ; op_name = "ConcatOffset"
   ; output_type = Type.Int32
   ; inputs = [ P concat_dim; P shape ]
+  ; attributes = [
+    ]
+  }
+
+let conj
+    ?(name = "Conj")
+    (in__ : [ `complex64 ] t)
+  =
+  { name = Name.make_fresh ~name
+  ; op_name = "Conj"
+  ; output_type = Type.Complex64
+  ; inputs = [ P in__ ]
   ; attributes = [
     ]
   }
@@ -579,7 +668,7 @@ let conv2DBackpropInput
 
 let cos
     ?(name = "Cos")
-    (x : ([< `float | `double | `int32 ] as 't) t)
+    (x : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
   =
   { name = Name.make_fresh ~name
   ; op_name = "Cos"
@@ -592,7 +681,7 @@ let cos
 
 let countUpTo
     ?(name = "CountUpTo")
-    (ref : ([< `int32 ] as 't) t)
+    (ref : ([< `int32 | `int64 ] as 't) t)
   =
   { name = Name.make_fresh ~name
   ; op_name = "CountUpTo"
@@ -605,8 +694,8 @@ let countUpTo
 
 let cross
     ?(name = "Cross")
-    (a : ([< `float | `double | `int32 ] as 't) t)
-    (b : ([< `float | `double | `int32 ] as 't) t)
+    (a : ([< `float | `double | `int32 | `int64 ] as 't) t)
+    (b : ([< `float | `double | `int32 | `int64 ] as 't) t)
   =
   { name = Name.make_fresh ~name
   ; op_name = "Cross"
@@ -614,6 +703,46 @@ let cross
   ; inputs = [ P a; P b ]
   ; attributes = [
       "T", Type (P a.output_type);
+    ]
+  }
+
+let decodeJSONExample
+    ?(name = "DecodeJSONExample")
+    (json_examples : [ `string ] t)
+  =
+  { name = Name.make_fresh ~name
+  ; op_name = "DecodeJSONExample"
+  ; output_type = Type.String
+  ; inputs = [ P json_examples ]
+  ; attributes = [
+    ]
+  }
+
+let decodePng
+    ?(name = "DecodePng")
+    ~type_
+    (contents : [ `string ] t)
+  =
+  { name = Name.make_fresh ~name
+  ; op_name = "DecodePng"
+  ; output_type = type_
+  ; inputs = [ P contents ]
+  ; attributes = [
+      "dtype", Type (P type_);
+    ]
+  }
+
+let decodeRaw
+    ?(name = "DecodeRaw")
+    ~type_
+    (bytes : [ `string ] t)
+  =
+  { name = Name.make_fresh ~name
+  ; op_name = "DecodeRaw"
+  ; output_type = type_
+  ; inputs = [ P bytes ]
+  ; attributes = [
+      "out_type", Type (P type_);
     ]
   }
 
@@ -689,7 +818,7 @@ let destroyTemporaryVariable
 
 let diag
     ?(name = "Diag")
-    (diagonal : ([< `float | `double | `int32 ] as 't) t)
+    (diagonal : ([< `float | `double | `int32 | `int64 ] as 't) t)
   =
   { name = Name.make_fresh ~name
   ; op_name = "Diag"
@@ -702,7 +831,7 @@ let diag
 
 let diagPart
     ?(name = "DiagPart")
-    (input : ([< `float | `double | `int32 ] as 't) t)
+    (input : ([< `float | `double | `int32 | `int64 ] as 't) t)
   =
   { name = Name.make_fresh ~name
   ; op_name = "DiagPart"
@@ -715,7 +844,7 @@ let diagPart
 
 let digamma
     ?(name = "Digamma")
-    (x : ([< `float | `double | `int32 ] as 't) t)
+    (x : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
   =
   { name = Name.make_fresh ~name
   ; op_name = "Digamma"
@@ -728,8 +857,8 @@ let digamma
 
 let div
     ?(name = "Div")
-    (x : ([< `float | `double | `int32 ] as 't) t)
-    (y : ([< `float | `double | `int32 ] as 't) t)
+    (x : ([< `float | `double | `int32 | `int64 | `complex64 ] as 't) t)
+    (y : ([< `float | `double | `int32 | `int64 | `complex64 ] as 't) t)
   =
   { name = Name.make_fresh ~name
   ; op_name = "Div"
@@ -781,6 +910,23 @@ let dynamicStitch
     ]
   }
 
+let editDistance
+    ?(name = "EditDistance")
+    (hypothesis_indices : [ `int64 ] t)
+    (hypothesis_values : 't t)
+    (hypothesis_shape : [ `int64 ] t)
+    (truth_indices : [ `int64 ] t)
+    (truth_values : 't t)
+    (truth_shape : [ `int64 ] t)
+  =
+  { name = Name.make_fresh ~name
+  ; op_name = "EditDistance"
+  ; output_type = Type.Float
+  ; inputs = [ P hypothesis_indices; P hypothesis_values; P hypothesis_shape; P truth_indices; P truth_values; P truth_shape ]
+  ; attributes = [
+    ]
+  }
+
 let elu
     ?(name = "Elu")
     (features : ([< `float | `double ] as 't) t)
@@ -808,6 +954,18 @@ let eluGrad
     ]
   }
 
+let encodePng
+    ?(name = "EncodePng")
+    (image : 't t)
+  =
+  { name = Name.make_fresh ~name
+  ; op_name = "EncodePng"
+  ; output_type = Type.String
+  ; inputs = [ P image ]
+  ; attributes = [
+    ]
+  }
+
 let enter
     ?(name = "Enter")
     (data : 't t)
@@ -821,9 +979,22 @@ let enter
     ]
   }
 
+let equal
+    ?(name = "Equal")
+    (x : ([< `float | `double | `int32 | `int64 | `complex64 | `string ] as 't) t)
+    (y : ([< `float | `double | `int32 | `int64 | `complex64 | `string ] as 't) t)
+  =
+  { name = Name.make_fresh ~name
+  ; op_name = "Equal"
+  ; output_type = Type.Bool
+  ; inputs = [ P x; P y ]
+  ; attributes = [
+    ]
+  }
+
 let erf
     ?(name = "Erf")
-    (x : ([< `float | `double | `int32 ] as 't) t)
+    (x : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
   =
   { name = Name.make_fresh ~name
   ; op_name = "Erf"
@@ -836,7 +1007,7 @@ let erf
 
 let erfc
     ?(name = "Erfc")
-    (x : ([< `float | `double | `int32 ] as 't) t)
+    (x : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
   =
   { name = Name.make_fresh ~name
   ; op_name = "Erfc"
@@ -862,7 +1033,7 @@ let exit
 
 let exp
     ?(name = "Exp")
-    (x : ([< `float | `double | `int32 ] as 't) t)
+    (x : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
   =
   { name = Name.make_fresh ~name
   ; op_name = "Exp"
@@ -901,6 +1072,42 @@ let extractGlimpse
     ]
   }
 
+let fFT2D
+    ?(name = "FFT2D")
+    (in__ : [ `complex64 ] t)
+  =
+  { name = Name.make_fresh ~name
+  ; op_name = "FFT2D"
+  ; output_type = Type.Complex64
+  ; inputs = [ P in__ ]
+  ; attributes = [
+    ]
+  }
+
+let fIFOQueue
+    ?(name = "FIFOQueue")
+    ()
+  =
+  { name = Name.make_fresh ~name
+  ; op_name = "FIFOQueue"
+  ; output_type = Type.String
+  ; inputs = [  ]
+  ; attributes = [
+    ]
+  }
+
+let fact
+    ?(name = "Fact")
+    ()
+  =
+  { name = Name.make_fresh ~name
+  ; op_name = "Fact"
+  ; output_type = Type.String
+  ; inputs = [  ]
+  ; attributes = [
+    ]
+  }
+
 let fill
     ?(name = "Fill")
     (dims : [ `int32 ] t)
@@ -912,6 +1119,18 @@ let fill
   ; inputs = [ P dims; P value ]
   ; attributes = [
       "T", Type (P value.output_type);
+    ]
+  }
+
+let fixedLengthRecordReader
+    ?(name = "FixedLengthRecordReader")
+    ()
+  =
+  { name = Name.make_fresh ~name
+  ; op_name = "FixedLengthRecordReader"
+  ; output_type = Type.String
+  ; inputs = [  ]
+  ; attributes = [
     ]
   }
 
@@ -931,7 +1150,7 @@ let floor
 let gather
     ?(name = "Gather")
     (params : 'tparams t)
-    (indices : ([< `int32 ] as 'tindices) t)
+    (indices : ([< `int32 | `int64 ] as 'tindices) t)
   =
   { name = Name.make_fresh ~name
   ; op_name = "Gather"
@@ -939,6 +1158,32 @@ let gather
   ; inputs = [ P params; P indices ]
   ; attributes = [
       "Tparams", Type (P params.output_type);
+    ]
+  }
+
+let greater
+    ?(name = "Greater")
+    (x : ([< `float | `double | `int32 | `int64 ] as 't) t)
+    (y : ([< `float | `double | `int32 | `int64 ] as 't) t)
+  =
+  { name = Name.make_fresh ~name
+  ; op_name = "Greater"
+  ; output_type = Type.Bool
+  ; inputs = [ P x; P y ]
+  ; attributes = [
+    ]
+  }
+
+let greaterEqual
+    ?(name = "GreaterEqual")
+    (x : ([< `float | `double | `int32 | `int64 ] as 't) t)
+    (y : ([< `float | `double | `int32 | `int64 ] as 't) t)
+  =
+  { name = Name.make_fresh ~name
+  ; op_name = "GreaterEqual"
+  ; output_type = Type.Bool
+  ; inputs = [ P x; P y ]
+  ; attributes = [
     ]
   }
 
@@ -950,6 +1195,43 @@ let hSVToRGB
   ; op_name = "HSVToRGB"
   ; output_type = Type.Float
   ; inputs = [ P images ]
+  ; attributes = [
+    ]
+  }
+
+let hashTable
+    ?(name = "HashTable")
+    ()
+  =
+  { name = Name.make_fresh ~name
+  ; op_name = "HashTable"
+  ; output_type = Type.String
+  ; inputs = [  ]
+  ; attributes = [
+    ]
+  }
+
+let histogramSummary
+    ?(name = "HistogramSummary")
+    (tag : [ `string ] t)
+    (values : ([< `float | `double | `int32 | `int64 ] as 't) t)
+  =
+  { name = Name.make_fresh ~name
+  ; op_name = "HistogramSummary"
+  ; output_type = Type.String
+  ; inputs = [ P tag; P values ]
+  ; attributes = [
+    ]
+  }
+
+let iFFT2D
+    ?(name = "IFFT2D")
+    (in__ : [ `complex64 ] t)
+  =
+  { name = Name.make_fresh ~name
+  ; op_name = "IFFT2D"
+  ; output_type = Type.Complex64
+  ; inputs = [ P in__ ]
   ; attributes = [
     ]
   }
@@ -967,9 +1249,73 @@ let identity
     ]
   }
 
+let identityReader
+    ?(name = "IdentityReader")
+    ()
+  =
+  { name = Name.make_fresh ~name
+  ; op_name = "IdentityReader"
+  ; output_type = Type.String
+  ; inputs = [  ]
+  ; attributes = [
+    ]
+  }
+
+let imag
+    ?(name = "Imag")
+    (in__ : [ `complex64 ] t)
+  =
+  { name = Name.make_fresh ~name
+  ; op_name = "Imag"
+  ; output_type = Type.Float
+  ; inputs = [ P in__ ]
+  ; attributes = [
+    ]
+  }
+
+let imageSummary
+    ?(name = "ImageSummary")
+    (tag : [ `string ] t)
+    (tensor : ([< `float ] as 't) t)
+  =
+  { name = Name.make_fresh ~name
+  ; op_name = "ImageSummary"
+  ; output_type = Type.String
+  ; inputs = [ P tag; P tensor ]
+  ; attributes = [
+    ]
+  }
+
+let inTopK
+    ?(name = "InTopK")
+    (predictions : [ `float ] t)
+    (targets : ([< `int32 | `int64 ] as 't) t)
+  =
+  { name = Name.make_fresh ~name
+  ; op_name = "InTopK"
+  ; output_type = Type.Bool
+  ; inputs = [ P predictions; P targets ]
+  ; attributes = [
+    ]
+  }
+
+let initializeTable
+    ?(name = "InitializeTable")
+    (table_handle : [ `string ] t)
+    (keys : 'tkey t)
+    (values : 'tval t)
+  =
+  { name = Name.make_fresh ~name
+  ; op_name = "InitializeTable"
+  ; output_type = Type.Unit
+  ; inputs = [ P table_handle; P keys; P values ]
+  ; attributes = [
+    ]
+  }
+
 let inv
     ?(name = "Inv")
-    (x : ([< `float | `double | `int32 ] as 't) t)
+    (x : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
   =
   { name = Name.make_fresh ~name
   ; op_name = "Inv"
@@ -992,9 +1338,45 @@ let invertPermutation
     ]
   }
 
+let isFinite
+    ?(name = "IsFinite")
+    (x : ([< `float | `double ] as 't) t)
+  =
+  { name = Name.make_fresh ~name
+  ; op_name = "IsFinite"
+  ; output_type = Type.Bool
+  ; inputs = [ P x ]
+  ; attributes = [
+    ]
+  }
+
+let isInf
+    ?(name = "IsInf")
+    (x : ([< `float | `double ] as 't) t)
+  =
+  { name = Name.make_fresh ~name
+  ; op_name = "IsInf"
+  ; output_type = Type.Bool
+  ; inputs = [ P x ]
+  ; attributes = [
+    ]
+  }
+
+let isNan
+    ?(name = "IsNan")
+    (x : ([< `float | `double ] as 't) t)
+  =
+  { name = Name.make_fresh ~name
+  ; op_name = "IsNan"
+  ; output_type = Type.Bool
+  ; inputs = [ P x ]
+  ; attributes = [
+    ]
+  }
+
 let l2Loss
     ?(name = "L2Loss")
-    (t : ([< `float | `double | `int32 ] as 't) t)
+    (t : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
   =
   { name = Name.make_fresh ~name
   ; op_name = "L2Loss"
@@ -1031,9 +1413,35 @@ let lRNGrad
     ]
   }
 
+let less
+    ?(name = "Less")
+    (x : ([< `float | `double | `int32 | `int64 ] as 't) t)
+    (y : ([< `float | `double | `int32 | `int64 ] as 't) t)
+  =
+  { name = Name.make_fresh ~name
+  ; op_name = "Less"
+  ; output_type = Type.Bool
+  ; inputs = [ P x; P y ]
+  ; attributes = [
+    ]
+  }
+
+let lessEqual
+    ?(name = "LessEqual")
+    (x : ([< `float | `double | `int32 | `int64 ] as 't) t)
+    (y : ([< `float | `double | `int32 | `int64 ] as 't) t)
+  =
+  { name = Name.make_fresh ~name
+  ; op_name = "LessEqual"
+  ; output_type = Type.Bool
+  ; inputs = [ P x; P y ]
+  ; attributes = [
+    ]
+  }
+
 let lgamma
     ?(name = "Lgamma")
-    (x : ([< `float | `double | `int32 ] as 't) t)
+    (x : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
   =
   { name = Name.make_fresh ~name
   ; op_name = "Lgamma"
@@ -1061,7 +1469,7 @@ let linSpace
 
 let log
     ?(name = "Log")
-    (x : ([< `float | `double | `int32 ] as 't) t)
+    (x : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
   =
   { name = Name.make_fresh ~name
   ; op_name = "Log"
@@ -1072,10 +1480,87 @@ let log
     ]
   }
 
+let logicalAnd
+    ?(name = "LogicalAnd")
+    (x : [ `bool ] t)
+    (y : [ `bool ] t)
+  =
+  { name = Name.make_fresh ~name
+  ; op_name = "LogicalAnd"
+  ; output_type = Type.Bool
+  ; inputs = [ P x; P y ]
+  ; attributes = [
+    ]
+  }
+
+let logicalNot
+    ?(name = "LogicalNot")
+    (x : [ `bool ] t)
+  =
+  { name = Name.make_fresh ~name
+  ; op_name = "LogicalNot"
+  ; output_type = Type.Bool
+  ; inputs = [ P x ]
+  ; attributes = [
+    ]
+  }
+
+let logicalOr
+    ?(name = "LogicalOr")
+    (x : [ `bool ] t)
+    (y : [ `bool ] t)
+  =
+  { name = Name.make_fresh ~name
+  ; op_name = "LogicalOr"
+  ; output_type = Type.Bool
+  ; inputs = [ P x; P y ]
+  ; attributes = [
+    ]
+  }
+
+let lookupTableFind
+    ?(name = "LookupTableFind")
+    (table_handle : [ `string ] t)
+    (keys : 'tin t)
+    (default_value : 'tout t)
+  =
+  { name = Name.make_fresh ~name
+  ; op_name = "LookupTableFind"
+  ; output_type = default_value.output_type
+  ; inputs = [ P table_handle; P keys; P default_value ]
+  ; attributes = [
+      "Tout", Type (P default_value.output_type);
+    ]
+  }
+
+let lookupTableSize
+    ?(name = "LookupTableSize")
+    (table_handle : [ `string ] t)
+  =
+  { name = Name.make_fresh ~name
+  ; op_name = "LookupTableSize"
+  ; output_type = Type.Int64
+  ; inputs = [ P table_handle ]
+  ; attributes = [
+    ]
+  }
+
+let loopCond
+    ?(name = "LoopCond")
+    (input : [ `bool ] t)
+  =
+  { name = Name.make_fresh ~name
+  ; op_name = "LoopCond"
+  ; output_type = Type.Bool
+  ; inputs = [ P input ]
+  ; attributes = [
+    ]
+  }
+
 let matMul
     ?(name = "MatMul")
-    (a : ([< `float | `double | `int32 ] as 't) t)
-    (b : ([< `float | `double | `int32 ] as 't) t)
+    (a : ([< `float | `double | `int32 | `complex64 ] as 't) t)
+    (b : ([< `float | `double | `int32 | `complex64 ] as 't) t)
   =
   { name = Name.make_fresh ~name
   ; op_name = "MatMul"
@@ -1083,6 +1568,18 @@ let matMul
   ; inputs = [ P a; P b ]
   ; attributes = [
       "T", Type (P a.output_type);
+    ]
+  }
+
+let matchingFiles
+    ?(name = "MatchingFiles")
+    (pattern : [ `string ] t)
+  =
+  { name = Name.make_fresh ~name
+  ; op_name = "MatchingFiles"
+  ; output_type = Type.String
+  ; inputs = [ P pattern ]
+  ; attributes = [
     ]
   }
 
@@ -1157,7 +1654,7 @@ let matrixTriangularSolve
 
 let max
     ?(name = "Max")
-    (input : ([< `float | `double | `int32 ] as 't) t)
+    (input : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (reduction_indices : [ `int32 ] t)
   =
   { name = Name.make_fresh ~name
@@ -1199,7 +1696,7 @@ let maxPoolGradWithArgmax
     ?(name = "MaxPoolGradWithArgmax")
     (input : [ `float ] t)
     (grad : [ `float ] t)
-    (argmax : ([< `int32 ] as 'targmax) t)
+    (argmax : ([< `int32 | `int64 ] as 'targmax) t)
   =
   { name = Name.make_fresh ~name
   ; op_name = "MaxPoolGradWithArgmax"
@@ -1211,8 +1708,8 @@ let maxPoolGradWithArgmax
 
 let maximum
     ?(name = "Maximum")
-    (x : ([< `float | `double | `int32 ] as 't) t)
-    (y : ([< `float | `double | `int32 ] as 't) t)
+    (x : ([< `float | `double | `int32 | `int64 ] as 't) t)
+    (y : ([< `float | `double | `int32 | `int64 ] as 't) t)
   =
   { name = Name.make_fresh ~name
   ; op_name = "Maximum"
@@ -1225,7 +1722,7 @@ let maximum
 
 let mean
     ?(name = "Mean")
-    (input : ([< `float | `double | `int32 ] as 't) t)
+    (input : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (reduction_indices : [ `int32 ] t)
   =
   { name = Name.make_fresh ~name
@@ -1237,9 +1734,21 @@ let mean
     ]
   }
 
+let mergeSummary
+    ?(name = "MergeSummary")
+    (inputs : [ `string ] t)
+  =
+  { name = Name.make_fresh ~name
+  ; op_name = "MergeSummary"
+  ; output_type = Type.String
+  ; inputs = [ P inputs ]
+  ; attributes = [
+    ]
+  }
+
 let min
     ?(name = "Min")
-    (input : ([< `float | `double | `int32 ] as 't) t)
+    (input : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (reduction_indices : [ `int32 ] t)
   =
   { name = Name.make_fresh ~name
@@ -1253,8 +1762,8 @@ let min
 
 let minimum
     ?(name = "Minimum")
-    (x : ([< `float | `double | `int32 ] as 't) t)
-    (y : ([< `float | `double | `int32 ] as 't) t)
+    (x : ([< `float | `double | `int32 | `int64 ] as 't) t)
+    (y : ([< `float | `double | `int32 | `int64 ] as 't) t)
   =
   { name = Name.make_fresh ~name
   ; op_name = "Minimum"
@@ -1295,8 +1804,8 @@ let mirrorPadGrad
 
 let mod_
     ?(name = "Mod")
-    (x : ([< `int32 | `float | `double ] as 't) t)
-    (y : ([< `int32 | `float | `double ] as 't) t)
+    (x : ([< `int32 | `int64 | `float | `double ] as 't) t)
+    (y : ([< `int32 | `int64 | `float | `double ] as 't) t)
   =
   { name = Name.make_fresh ~name
   ; op_name = "Mod"
@@ -1309,8 +1818,8 @@ let mod_
 
 let mul
     ?(name = "Mul")
-    (x : ([< `float | `double | `int32 ] as 't) t)
-    (y : ([< `float | `double | `int32 ] as 't) t)
+    (x : ([< `float | `double | `int32 | `int64 | `complex64 ] as 't) t)
+    (y : ([< `float | `double | `int32 | `int64 | `complex64 ] as 't) t)
   =
   { name = Name.make_fresh ~name
   ; op_name = "Mul"
@@ -1323,7 +1832,7 @@ let mul
 
 let neg
     ?(name = "Neg")
-    (x : ([< `float | `double | `int32 ] as 't) t)
+    (x : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
   =
   { name = Name.make_fresh ~name
   ; op_name = "Neg"
@@ -1375,6 +1884,35 @@ let noOp
     ]
   }
 
+let notEqual
+    ?(name = "NotEqual")
+    (x : ([< `float | `double | `int32 | `int64 | `complex64 | `string ] as 't) t)
+    (y : ([< `float | `double | `int32 | `int64 | `complex64 | `string ] as 't) t)
+  =
+  { name = Name.make_fresh ~name
+  ; op_name = "NotEqual"
+  ; output_type = Type.Bool
+  ; inputs = [ P x; P y ]
+  ; attributes = [
+    ]
+  }
+
+let oneHot
+    ?(name = "OneHot")
+    (indices : [ `int64 ] t)
+    (depth : [ `int32 ] t)
+    (on_value : 't t)
+    (off_value : 't t)
+  =
+  { name = Name.make_fresh ~name
+  ; op_name = "OneHot"
+  ; output_type = on_value.output_type
+  ; inputs = [ P indices; P depth; P on_value; P off_value ]
+  ; attributes = [
+      "T", Type (P on_value.output_type);
+    ]
+  }
+
 let pack
     ?(name = "Pack")
     (values : 't t)
@@ -1402,6 +1940,18 @@ let pad
     ]
   }
 
+let paddingFIFOQueue
+    ?(name = "PaddingFIFOQueue")
+    ()
+  =
+  { name = Name.make_fresh ~name
+  ; op_name = "PaddingFIFOQueue"
+  ; output_type = Type.String
+  ; inputs = [  ]
+  ; attributes = [
+    ]
+  }
+
 let placeholder
     ?(name = "Placeholder")
     ~type_
@@ -1417,8 +1967,8 @@ let placeholder
 
 let pow
     ?(name = "Pow")
-    (x : ([< `float | `double | `int32 ] as 't) t)
-    (y : ([< `float | `double | `int32 ] as 't) t)
+    (x : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (y : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
   =
   { name = Name.make_fresh ~name
   ; op_name = "Pow"
@@ -1431,7 +1981,7 @@ let pow
 
 let prod
     ?(name = "Prod")
-    (input : ([< `float | `double | `int32 ] as 't) t)
+    (input : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (reduction_indices : [ `int32 ] t)
   =
   { name = Name.make_fresh ~name
@@ -1440,6 +1990,30 @@ let prod
   ; inputs = [ P input; P reduction_indices ]
   ; attributes = [
       "T", Type (P input.output_type);
+    ]
+  }
+
+let queueClose
+    ?(name = "QueueClose")
+    (handle : [ `string ] t)
+  =
+  { name = Name.make_fresh ~name
+  ; op_name = "QueueClose"
+  ; output_type = Type.Unit
+  ; inputs = [ P handle ]
+  ; attributes = [
+    ]
+  }
+
+let queueSize
+    ?(name = "QueueSize")
+    (handle : [ `string ] t)
+  =
+  { name = Name.make_fresh ~name
+  ; op_name = "QueueSize"
+  ; output_type = Type.Int32
+  ; inputs = [ P handle ]
+  ; attributes = [
     ]
   }
 
@@ -1452,6 +2026,20 @@ let rGBToHSV
   ; output_type = Type.Float
   ; inputs = [ P images ]
   ; attributes = [
+    ]
+  }
+
+let randomCrop
+    ?(name = "RandomCrop")
+    (image : ([< `int32 | `int64 | `float | `double ] as 't) t)
+    (size : [ `int64 ] t)
+  =
+  { name = Name.make_fresh ~name
+  ; op_name = "RandomCrop"
+  ; output_type = image.output_type
+  ; inputs = [ P image; P size ]
+  ; attributes = [
+      "T", Type (P image.output_type);
     ]
   }
 
@@ -1468,10 +2056,22 @@ let randomShuffle
     ]
   }
 
+let randomShuffleQueue
+    ?(name = "RandomShuffleQueue")
+    ()
+  =
+  { name = Name.make_fresh ~name
+  ; op_name = "RandomShuffleQueue"
+  ; output_type = Type.String
+  ; inputs = [  ]
+  ; attributes = [
+    ]
+  }
+
 let randomStandardNormal
     ?(name = "RandomStandardNormal")
     ~type_
-    (shape : ([< `int32 ] as 't) t)
+    (shape : ([< `int32 | `int64 ] as 't) t)
   =
   { name = Name.make_fresh ~name
   ; op_name = "RandomStandardNormal"
@@ -1485,7 +2085,7 @@ let randomStandardNormal
 let randomUniform
     ?(name = "RandomUniform")
     ~type_
-    (shape : ([< `int32 ] as 't) t)
+    (shape : ([< `int32 | `int64 ] as 't) t)
   =
   { name = Name.make_fresh ~name
   ; op_name = "RandomUniform"
@@ -1498,9 +2098,9 @@ let randomUniform
 
 let randomUniformInt
     ?(name = "RandomUniformInt")
-    (shape : ([< `int32 ] as 't) t)
-    (minval : ([< `int32 ] as 'tout) t)
-    (maxval : ([< `int32 ] as 'tout) t)
+    (shape : ([< `int32 | `int64 ] as 't) t)
+    (minval : ([< `int32 | `int64 ] as 'tout) t)
+    (maxval : ([< `int32 | `int64 ] as 'tout) t)
   =
   { name = Name.make_fresh ~name
   ; op_name = "RandomUniformInt"
@@ -1533,6 +2133,91 @@ let rank
   ; op_name = "Rank"
   ; output_type = Type.Int32
   ; inputs = [ P input ]
+  ; attributes = [
+    ]
+  }
+
+let readFile
+    ?(name = "ReadFile")
+    (filename : [ `string ] t)
+  =
+  { name = Name.make_fresh ~name
+  ; op_name = "ReadFile"
+  ; output_type = Type.String
+  ; inputs = [ P filename ]
+  ; attributes = [
+    ]
+  }
+
+let readerNumRecordsProduced
+    ?(name = "ReaderNumRecordsProduced")
+    (reader_handle : [ `string ] t)
+  =
+  { name = Name.make_fresh ~name
+  ; op_name = "ReaderNumRecordsProduced"
+  ; output_type = Type.Int64
+  ; inputs = [ P reader_handle ]
+  ; attributes = [
+    ]
+  }
+
+let readerNumWorkUnitsCompleted
+    ?(name = "ReaderNumWorkUnitsCompleted")
+    (reader_handle : [ `string ] t)
+  =
+  { name = Name.make_fresh ~name
+  ; op_name = "ReaderNumWorkUnitsCompleted"
+  ; output_type = Type.Int64
+  ; inputs = [ P reader_handle ]
+  ; attributes = [
+    ]
+  }
+
+let readerReset
+    ?(name = "ReaderReset")
+    (reader_handle : [ `string ] t)
+  =
+  { name = Name.make_fresh ~name
+  ; op_name = "ReaderReset"
+  ; output_type = Type.Unit
+  ; inputs = [ P reader_handle ]
+  ; attributes = [
+    ]
+  }
+
+let readerRestoreState
+    ?(name = "ReaderRestoreState")
+    (reader_handle : [ `string ] t)
+    (state : [ `string ] t)
+  =
+  { name = Name.make_fresh ~name
+  ; op_name = "ReaderRestoreState"
+  ; output_type = Type.Unit
+  ; inputs = [ P reader_handle; P state ]
+  ; attributes = [
+    ]
+  }
+
+let readerSerializeState
+    ?(name = "ReaderSerializeState")
+    (reader_handle : [ `string ] t)
+  =
+  { name = Name.make_fresh ~name
+  ; op_name = "ReaderSerializeState"
+  ; output_type = Type.String
+  ; inputs = [ P reader_handle ]
+  ; attributes = [
+    ]
+  }
+
+let real
+    ?(name = "Real")
+    (in__ : [ `complex64 ] t)
+  =
+  { name = Name.make_fresh ~name
+  ; op_name = "Real"
+  ; output_type = Type.Float
+  ; inputs = [ P in__ ]
   ; attributes = [
     ]
   }
@@ -1605,7 +2290,7 @@ let refSelect
 
 let relu
     ?(name = "Relu")
-    (features : ([< `float | `double | `int32 ] as 't) t)
+    (features : ([< `float | `double | `int32 | `int64 ] as 't) t)
   =
   { name = Name.make_fresh ~name
   ; op_name = "Relu"
@@ -1618,7 +2303,7 @@ let relu
 
 let relu6
     ?(name = "Relu6")
-    (features : ([< `float | `double | `int32 ] as 't) t)
+    (features : ([< `float | `double | `int32 | `int64 ] as 't) t)
   =
   { name = Name.make_fresh ~name
   ; op_name = "Relu6"
@@ -1631,8 +2316,8 @@ let relu6
 
 let relu6Grad
     ?(name = "Relu6Grad")
-    (gradients : ([< `float | `double | `int32 ] as 't) t)
-    (features : ([< `float | `double | `int32 ] as 't) t)
+    (gradients : ([< `float | `double | `int32 | `int64 ] as 't) t)
+    (features : ([< `float | `double | `int32 | `int64 ] as 't) t)
   =
   { name = Name.make_fresh ~name
   ; op_name = "Relu6Grad"
@@ -1645,8 +2330,8 @@ let relu6Grad
 
 let reluGrad
     ?(name = "ReluGrad")
-    (gradients : ([< `float | `double | `int32 ] as 't) t)
-    (features : ([< `float | `double | `int32 ] as 't) t)
+    (gradients : ([< `float | `double | `int32 | `int64 ] as 't) t)
+    (features : ([< `float | `double | `int32 | `int64 ] as 't) t)
   =
   { name = Name.make_fresh ~name
   ; op_name = "ReluGrad"
@@ -1673,7 +2358,7 @@ let reshape
 
 let resizeArea
     ?(name = "ResizeArea")
-    (images : ([< `int32 | `float | `double ] as 't) t)
+    (images : ([< `int32 | `int64 | `float | `double ] as 't) t)
     (size : [ `int32 ] t)
   =
   { name = Name.make_fresh ~name
@@ -1686,7 +2371,7 @@ let resizeArea
 
 let resizeBicubic
     ?(name = "ResizeBicubic")
-    (images : ([< `int32 | `float | `double ] as 't) t)
+    (images : ([< `int32 | `int64 | `float | `double ] as 't) t)
     (size : [ `int32 ] t)
   =
   { name = Name.make_fresh ~name
@@ -1699,7 +2384,7 @@ let resizeBicubic
 
 let resizeBilinear
     ?(name = "ResizeBilinear")
-    (images : ([< `int32 | `float | `double ] as 't) t)
+    (images : ([< `int32 | `int64 | `float | `double ] as 't) t)
     (size : [ `int32 ] t)
   =
   { name = Name.make_fresh ~name
@@ -1726,7 +2411,7 @@ let resizeBilinearGrad
 
 let resizeNearestNeighbor
     ?(name = "ResizeNearestNeighbor")
-    (images : ([< `int32 | `float | `double ] as 't) t)
+    (images : ([< `int32 | `int64 | `float | `double ] as 't) t)
     (size : [ `int32 ] t)
   =
   { name = Name.make_fresh ~name
@@ -1752,9 +2437,68 @@ let resizeNearestNeighborGrad
     ]
   }
 
+let restore
+    ?(name = "Restore")
+    ~type_
+    (file_pattern : [ `string ] t)
+    (tensor_name : [ `string ] t)
+  =
+  { name = Name.make_fresh ~name
+  ; op_name = "Restore"
+  ; output_type = type_
+  ; inputs = [ P file_pattern; P tensor_name ]
+  ; attributes = [
+      "dt", Type (P type_);
+    ]
+  }
+
+let restoreSlice
+    ?(name = "RestoreSlice")
+    ~type_
+    (file_pattern : [ `string ] t)
+    (tensor_name : [ `string ] t)
+    (shape_and_slice : [ `string ] t)
+  =
+  { name = Name.make_fresh ~name
+  ; op_name = "RestoreSlice"
+  ; output_type = type_
+  ; inputs = [ P file_pattern; P tensor_name; P shape_and_slice ]
+  ; attributes = [
+      "dt", Type (P type_);
+    ]
+  }
+
+let reverse
+    ?(name = "Reverse")
+    (tensor : ([< `int32 | `bool | `float | `double ] as 't) t)
+    (dims : [ `bool ] t)
+  =
+  { name = Name.make_fresh ~name
+  ; op_name = "Reverse"
+  ; output_type = tensor.output_type
+  ; inputs = [ P tensor; P dims ]
+  ; attributes = [
+      "T", Type (P tensor.output_type);
+    ]
+  }
+
+let reverseSequence
+    ?(name = "ReverseSequence")
+    (input : 't t)
+    (seq_lengths : [ `int64 ] t)
+  =
+  { name = Name.make_fresh ~name
+  ; op_name = "ReverseSequence"
+  ; output_type = input.output_type
+  ; inputs = [ P input; P seq_lengths ]
+  ; attributes = [
+      "T", Type (P input.output_type);
+    ]
+  }
+
 let rsqrt
     ?(name = "Rsqrt")
-    (x : ([< `float | `double | `int32 ] as 't) t)
+    (x : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
   =
   { name = Name.make_fresh ~name
   ; op_name = "Rsqrt"
@@ -1765,11 +2509,24 @@ let rsqrt
     ]
   }
 
+let scalarSummary
+    ?(name = "ScalarSummary")
+    (tags : [ `string ] t)
+    (values : ([< `float | `double | `int32 | `int64 ] as 't) t)
+  =
+  { name = Name.make_fresh ~name
+  ; op_name = "ScalarSummary"
+  ; output_type = Type.String
+  ; inputs = [ P tags; P values ]
+  ; attributes = [
+    ]
+  }
+
 let scatterAdd
     ?(name = "ScatterAdd")
-    (ref : ([< `float | `double | `int32 ] as 't) t)
-    (indices : ([< `int32 ] as 'tindices) t)
-    (updates : ([< `float | `double | `int32 ] as 't) t)
+    (ref : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (indices : ([< `int32 | `int64 ] as 'tindices) t)
+    (updates : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
   =
   { name = Name.make_fresh ~name
   ; op_name = "ScatterAdd"
@@ -1782,9 +2539,9 @@ let scatterAdd
 
 let scatterSub
     ?(name = "ScatterSub")
-    (ref : ([< `float | `double | `int32 ] as 't) t)
-    (indices : ([< `int32 ] as 'tindices) t)
-    (updates : ([< `float | `double | `int32 ] as 't) t)
+    (ref : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (indices : ([< `int32 | `int64 ] as 'tindices) t)
+    (updates : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
   =
   { name = Name.make_fresh ~name
   ; op_name = "ScatterSub"
@@ -1798,7 +2555,7 @@ let scatterSub
 let scatterUpdate
     ?(name = "ScatterUpdate")
     (ref : 't t)
-    (indices : ([< `int32 ] as 'tindices) t)
+    (indices : ([< `int32 | `int64 ] as 'tindices) t)
     (updates : 't t)
   =
   { name = Name.make_fresh ~name
@@ -1812,8 +2569,8 @@ let scatterUpdate
 
 let segmentMax
     ?(name = "SegmentMax")
-    (data : ([< `float | `double | `int32 ] as 't) t)
-    (segment_ids : ([< `int32 ] as 'tindices) t)
+    (data : ([< `float | `double | `int32 | `int64 ] as 't) t)
+    (segment_ids : ([< `int32 | `int64 ] as 'tindices) t)
   =
   { name = Name.make_fresh ~name
   ; op_name = "SegmentMax"
@@ -1826,8 +2583,8 @@ let segmentMax
 
 let segmentMean
     ?(name = "SegmentMean")
-    (data : ([< `float | `double | `int32 ] as 't) t)
-    (segment_ids : ([< `int32 ] as 'tindices) t)
+    (data : ([< `float | `double | `int32 | `int64 ] as 't) t)
+    (segment_ids : ([< `int32 | `int64 ] as 'tindices) t)
   =
   { name = Name.make_fresh ~name
   ; op_name = "SegmentMean"
@@ -1840,8 +2597,8 @@ let segmentMean
 
 let segmentMin
     ?(name = "SegmentMin")
-    (data : ([< `float | `double | `int32 ] as 't) t)
-    (segment_ids : ([< `int32 ] as 'tindices) t)
+    (data : ([< `float | `double | `int32 | `int64 ] as 't) t)
+    (segment_ids : ([< `int32 | `int64 ] as 'tindices) t)
   =
   { name = Name.make_fresh ~name
   ; op_name = "SegmentMin"
@@ -1854,8 +2611,8 @@ let segmentMin
 
 let segmentProd
     ?(name = "SegmentProd")
-    (data : ([< `float | `double | `int32 ] as 't) t)
-    (segment_ids : ([< `int32 ] as 'tindices) t)
+    (data : ([< `float | `double | `int32 | `int64 ] as 't) t)
+    (segment_ids : ([< `int32 | `int64 ] as 'tindices) t)
   =
   { name = Name.make_fresh ~name
   ; op_name = "SegmentProd"
@@ -1868,8 +2625,8 @@ let segmentProd
 
 let segmentSum
     ?(name = "SegmentSum")
-    (data : ([< `float | `double | `int32 ] as 't) t)
-    (segment_ids : ([< `int32 ] as 'tindices) t)
+    (data : ([< `float | `double | `int32 | `int64 ] as 't) t)
+    (segment_ids : ([< `int32 | `int64 ] as 'tindices) t)
   =
   { name = Name.make_fresh ~name
   ; op_name = "SegmentSum"
@@ -1877,6 +2634,21 @@ let segmentSum
   ; inputs = [ P data; P segment_ids ]
   ; attributes = [
       "T", Type (P data.output_type);
+    ]
+  }
+
+let select
+    ?(name = "Select")
+    (condition : [ `bool ] t)
+    (t : 't t)
+    (e : 't t)
+  =
+  { name = Name.make_fresh ~name
+  ; op_name = "Select"
+  ; output_type = t.output_type
+  ; inputs = [ P condition; P t; P e ]
+  ; attributes = [
+      "T", Type (P t.output_type);
     ]
   }
 
@@ -1890,6 +2662,34 @@ let selfAdjointEig
   ; inputs = [ P input ]
   ; attributes = [
       "T", Type (P input.output_type);
+    ]
+  }
+
+let serializeManySparse
+    ?(name = "SerializeManySparse")
+    (sparse_indices : [ `int64 ] t)
+    (sparse_values : 't t)
+    (sparse_shape : [ `int64 ] t)
+  =
+  { name = Name.make_fresh ~name
+  ; op_name = "SerializeManySparse"
+  ; output_type = Type.String
+  ; inputs = [ P sparse_indices; P sparse_values; P sparse_shape ]
+  ; attributes = [
+    ]
+  }
+
+let serializeSparse
+    ?(name = "SerializeSparse")
+    (sparse_indices : [ `int64 ] t)
+    (sparse_values : 't t)
+    (sparse_shape : [ `int64 ] t)
+  =
+  { name = Name.make_fresh ~name
+  ; op_name = "SerializeSparse"
+  ; output_type = Type.String
+  ; inputs = [ P sparse_indices; P sparse_values; P sparse_shape ]
+  ; attributes = [
     ]
   }
 
@@ -1917,9 +2717,36 @@ let shapeN
     ]
   }
 
+let shardedFilename
+    ?(name = "ShardedFilename")
+    (basename : [ `string ] t)
+    (shard : [ `int32 ] t)
+    (num_shards : [ `int32 ] t)
+  =
+  { name = Name.make_fresh ~name
+  ; op_name = "ShardedFilename"
+  ; output_type = Type.String
+  ; inputs = [ P basename; P shard; P num_shards ]
+  ; attributes = [
+    ]
+  }
+
+let shardedFilespec
+    ?(name = "ShardedFilespec")
+    (basename : [ `string ] t)
+    (num_shards : [ `int32 ] t)
+  =
+  { name = Name.make_fresh ~name
+  ; op_name = "ShardedFilespec"
+  ; output_type = Type.String
+  ; inputs = [ P basename; P num_shards ]
+  ; attributes = [
+    ]
+  }
+
 let sigmoid
     ?(name = "Sigmoid")
-    (x : ([< `float | `double | `int32 ] as 't) t)
+    (x : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
   =
   { name = Name.make_fresh ~name
   ; op_name = "Sigmoid"
@@ -1932,7 +2759,7 @@ let sigmoid
 
 let sign
     ?(name = "Sign")
-    (x : ([< `float | `double | `int32 ] as 't) t)
+    (x : ([< `float | `double | `int32 | `int64 ] as 't) t)
   =
   { name = Name.make_fresh ~name
   ; op_name = "Sign"
@@ -1945,7 +2772,7 @@ let sign
 
 let sin
     ?(name = "Sin")
-    (x : ([< `float | `double | `int32 ] as 't) t)
+    (x : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
   =
   { name = Name.make_fresh ~name
   ; op_name = "Sin"
@@ -1971,8 +2798,8 @@ let size
 let slice
     ?(name = "Slice")
     (input : 't t)
-    (begin__ : ([< `int32 ] as 'index) t)
-    (size : ([< `int32 ] as 'index) t)
+    (begin__ : ([< `int32 | `int64 ] as 'index) t)
+    (size : ([< `int32 | `int64 ] as 'index) t)
   =
   { name = Name.make_fresh ~name
   ; op_name = "Slice"
@@ -1998,7 +2825,7 @@ let softmax
 
 let softplus
     ?(name = "Softplus")
-    (features : ([< `float | `double | `int32 ] as 't) t)
+    (features : ([< `float | `double | `int32 | `int64 ] as 't) t)
   =
   { name = Name.make_fresh ~name
   ; op_name = "Softplus"
@@ -2011,8 +2838,8 @@ let softplus
 
 let softplusGrad
     ?(name = "SoftplusGrad")
-    (gradients : ([< `float | `double | `int32 ] as 't) t)
-    (features : ([< `float | `double | `int32 ] as 't) t)
+    (gradients : ([< `float | `double | `int32 | `int64 ] as 't) t)
+    (features : ([< `float | `double | `int32 | `int64 ] as 't) t)
   =
   { name = Name.make_fresh ~name
   ; op_name = "SoftplusGrad"
@@ -2025,7 +2852,7 @@ let softplusGrad
 
 let softsign
     ?(name = "Softsign")
-    (features : ([< `float | `double | `int32 ] as 't) t)
+    (features : ([< `float | `double | `int32 | `int64 ] as 't) t)
   =
   { name = Name.make_fresh ~name
   ; op_name = "Softsign"
@@ -2038,8 +2865,8 @@ let softsign
 
 let softsignGrad
     ?(name = "SoftsignGrad")
-    (gradients : ([< `float | `double | `int32 ] as 't) t)
-    (features : ([< `float | `double | `int32 ] as 't) t)
+    (gradients : ([< `float | `double | `int32 | `int64 ] as 't) t)
+    (features : ([< `float | `double | `int32 | `int64 ] as 't) t)
   =
   { name = Name.make_fresh ~name
   ; op_name = "SoftsignGrad"
@@ -2065,11 +2892,11 @@ let spaceToDepth
 
 let sparseApplyAdagrad
     ?(name = "SparseApplyAdagrad")
-    (var : ([< `float | `double | `int32 ] as 't) t)
-    (accum : ([< `float | `double | `int32 ] as 't) t)
-    (lr : ([< `float | `double | `int32 ] as 't) t)
-    (grad : ([< `float | `double | `int32 ] as 't) t)
-    (indices : ([< `int32 ] as 'tindices) t)
+    (var : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (accum : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (lr : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (grad : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (indices : ([< `int32 | `int64 ] as 'tindices) t)
   =
   { name = Name.make_fresh ~name
   ; op_name = "SparseApplyAdagrad"
@@ -2082,15 +2909,15 @@ let sparseApplyAdagrad
 
 let sparseApplyFtrl
     ?(name = "SparseApplyFtrl")
-    (var : ([< `float | `double | `int32 ] as 't) t)
-    (accum : ([< `float | `double | `int32 ] as 't) t)
-    (linear : ([< `float | `double | `int32 ] as 't) t)
-    (grad : ([< `float | `double | `int32 ] as 't) t)
-    (indices : ([< `int32 ] as 'tindices) t)
-    (lr : ([< `float | `double | `int32 ] as 't) t)
-    (l1 : ([< `float | `double | `int32 ] as 't) t)
-    (l2 : ([< `float | `double | `int32 ] as 't) t)
-    (lr_power : ([< `float | `double | `int32 ] as 't) t)
+    (var : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (accum : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (linear : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (grad : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (indices : ([< `int32 | `int64 ] as 'tindices) t)
+    (lr : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (l1 : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (l2 : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (lr_power : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
   =
   { name = Name.make_fresh ~name
   ; op_name = "SparseApplyFtrl"
@@ -2103,12 +2930,12 @@ let sparseApplyFtrl
 
 let sparseApplyMomentum
     ?(name = "SparseApplyMomentum")
-    (var : ([< `float | `double | `int32 ] as 't) t)
-    (accum : ([< `float | `double | `int32 ] as 't) t)
-    (lr : ([< `float | `double | `int32 ] as 't) t)
-    (grad : ([< `float | `double | `int32 ] as 't) t)
-    (indices : ([< `int32 ] as 'tindices) t)
-    (momentum : ([< `float | `double | `int32 ] as 't) t)
+    (var : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (accum : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (lr : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (grad : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (indices : ([< `int32 | `int64 ] as 'tindices) t)
+    (momentum : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
   =
   { name = Name.make_fresh ~name
   ; op_name = "SparseApplyMomentum"
@@ -2196,7 +3023,7 @@ let sparseSegmentSqrtNGrad
 
 let sparseSegmentSum
     ?(name = "SparseSegmentSum")
-    (data : ([< `float | `double | `int32 ] as 't) t)
+    (data : ([< `float | `double | `int32 | `int64 ] as 't) t)
     (indices : [ `int32 ] t)
     (segment_ids : [ `int32 ] t)
   =
@@ -2209,10 +3036,26 @@ let sparseSegmentSum
     ]
   }
 
+let sparseTensorDenseMatMul
+    ?(name = "SparseTensorDenseMatMul")
+    (a_indices : [ `int64 ] t)
+    (a_values : 't t)
+    (a_shape : [ `int64 ] t)
+    (b : 't t)
+  =
+  { name = Name.make_fresh ~name
+  ; op_name = "SparseTensorDenseMatMul"
+  ; output_type = a_values.output_type
+  ; inputs = [ P a_indices; P a_values; P a_shape; P b ]
+  ; attributes = [
+      "T", Type (P a_values.output_type);
+    ]
+  }
+
 let sparseToDense
     ?(name = "SparseToDense")
-    (sparse_indices : ([< `int32 ] as 'tindices) t)
-    (output_shape : ([< `int32 ] as 'tindices) t)
+    (sparse_indices : ([< `int32 | `int64 ] as 'tindices) t)
+    (output_shape : ([< `int32 | `int64 ] as 'tindices) t)
     (sparse_values : 't t)
     (default_value : 't t)
   =
@@ -2241,7 +3084,7 @@ let split
 
 let sqrt
     ?(name = "Sqrt")
-    (x : ([< `float | `double | `int32 ] as 't) t)
+    (x : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
   =
   { name = Name.make_fresh ~name
   ; op_name = "Sqrt"
@@ -2254,7 +3097,7 @@ let sqrt
 
 let square
     ?(name = "Square")
-    (x : ([< `float | `double | `int32 ] as 't) t)
+    (x : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
   =
   { name = Name.make_fresh ~name
   ; op_name = "Square"
@@ -2267,8 +3110,8 @@ let square
 
 let squaredDifference
     ?(name = "SquaredDifference")
-    (x : ([< `float | `double | `int32 ] as 't) t)
-    (y : ([< `float | `double | `int32 ] as 't) t)
+    (x : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (y : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
   =
   { name = Name.make_fresh ~name
   ; op_name = "SquaredDifference"
@@ -2292,6 +3135,58 @@ let squeeze
     ]
   }
 
+let stack
+    ?(name = "Stack")
+    ()
+  =
+  { name = Name.make_fresh ~name
+  ; op_name = "Stack"
+  ; output_type = Type.String
+  ; inputs = [  ]
+  ; attributes = [
+    ]
+  }
+
+let stackClose
+    ?(name = "StackClose")
+    (handle : [ `string ] t)
+  =
+  { name = Name.make_fresh ~name
+  ; op_name = "StackClose"
+  ; output_type = Type.Unit
+  ; inputs = [ P handle ]
+  ; attributes = [
+    ]
+  }
+
+let stackPop
+    ?(name = "StackPop")
+    ~type_
+    (handle : [ `string ] t)
+  =
+  { name = Name.make_fresh ~name
+  ; op_name = "StackPop"
+  ; output_type = type_
+  ; inputs = [ P handle ]
+  ; attributes = [
+      "elem_type", Type (P type_);
+    ]
+  }
+
+let stackPush
+    ?(name = "StackPush")
+    (handle : [ `string ] t)
+    (elem : 't t)
+  =
+  { name = Name.make_fresh ~name
+  ; op_name = "StackPush"
+  ; output_type = elem.output_type
+  ; inputs = [ P handle; P elem ]
+  ; attributes = [
+      "T", Type (P elem.output_type);
+    ]
+  }
+
 let stopGradient
     ?(name = "StopGradient")
     (input : 't t)
@@ -2305,10 +3200,36 @@ let stopGradient
     ]
   }
 
+let stringToHashBucket
+    ?(name = "StringToHashBucket")
+    (string_tensor : [ `string ] t)
+  =
+  { name = Name.make_fresh ~name
+  ; op_name = "StringToHashBucket"
+  ; output_type = Type.Int64
+  ; inputs = [ P string_tensor ]
+  ; attributes = [
+    ]
+  }
+
+let stringToNumber
+    ?(name = "StringToNumber")
+    ~type_
+    (string_tensor : [ `string ] t)
+  =
+  { name = Name.make_fresh ~name
+  ; op_name = "StringToNumber"
+  ; output_type = type_
+  ; inputs = [ P string_tensor ]
+  ; attributes = [
+      "out_type", Type (P type_);
+    ]
+  }
+
 let sub
     ?(name = "Sub")
-    (x : ([< `float | `double | `int32 ] as 't) t)
-    (y : ([< `float | `double | `int32 ] as 't) t)
+    (x : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (y : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
   =
   { name = Name.make_fresh ~name
   ; op_name = "Sub"
@@ -2321,7 +3242,7 @@ let sub
 
 let sum
     ?(name = "Sum")
-    (input : ([< `float | `double | `int32 ] as 't) t)
+    (input : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (reduction_indices : [ `int32 ] t)
   =
   { name = Name.make_fresh ~name
@@ -2333,9 +3254,21 @@ let sum
     ]
   }
 
+let tFRecordReader
+    ?(name = "TFRecordReader")
+    ()
+  =
+  { name = Name.make_fresh ~name
+  ; op_name = "TFRecordReader"
+  ; output_type = Type.String
+  ; inputs = [  ]
+  ; attributes = [
+    ]
+  }
+
 let tanh
     ?(name = "Tanh")
-    (x : ([< `float | `double | `int32 ] as 't) t)
+    (x : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
   =
   { name = Name.make_fresh ~name
   ; op_name = "Tanh"
@@ -2356,6 +3289,143 @@ let temporaryVariable
   ; inputs = [  ]
   ; attributes = [
       "dtype", Type (P type_);
+    ]
+  }
+
+let tensorArray
+    ?(name = "TensorArray")
+    (size : [ `int32 ] t)
+  =
+  { name = Name.make_fresh ~name
+  ; op_name = "TensorArray"
+  ; output_type = Type.String
+  ; inputs = [ P size ]
+  ; attributes = [
+    ]
+  }
+
+let tensorArrayClose
+    ?(name = "TensorArrayClose")
+    (handle : [ `string ] t)
+  =
+  { name = Name.make_fresh ~name
+  ; op_name = "TensorArrayClose"
+  ; output_type = Type.Unit
+  ; inputs = [ P handle ]
+  ; attributes = [
+    ]
+  }
+
+let tensorArrayGrad
+    ?(name = "TensorArrayGrad")
+    (handle : [ `string ] t)
+    (flow_in : [ `float ] t)
+  =
+  { name = Name.make_fresh ~name
+  ; op_name = "TensorArrayGrad"
+  ; output_type = Type.String
+  ; inputs = [ P handle; P flow_in ]
+  ; attributes = [
+    ]
+  }
+
+let tensorArrayPack
+    ?(name = "TensorArrayPack")
+    ~type_
+    (handle : [ `string ] t)
+    (flow_in : [ `float ] t)
+  =
+  { name = Name.make_fresh ~name
+  ; op_name = "TensorArrayPack"
+  ; output_type = type_
+  ; inputs = [ P handle; P flow_in ]
+  ; attributes = [
+      "dtype", Type (P type_);
+    ]
+  }
+
+let tensorArrayRead
+    ?(name = "TensorArrayRead")
+    ~type_
+    (handle : [ `string ] t)
+    (index : [ `int32 ] t)
+    (flow_in : [ `float ] t)
+  =
+  { name = Name.make_fresh ~name
+  ; op_name = "TensorArrayRead"
+  ; output_type = type_
+  ; inputs = [ P handle; P index; P flow_in ]
+  ; attributes = [
+      "dtype", Type (P type_);
+    ]
+  }
+
+let tensorArraySize
+    ?(name = "TensorArraySize")
+    (handle : [ `string ] t)
+    (flow_in : [ `float ] t)
+  =
+  { name = Name.make_fresh ~name
+  ; op_name = "TensorArraySize"
+  ; output_type = Type.Int32
+  ; inputs = [ P handle; P flow_in ]
+  ; attributes = [
+    ]
+  }
+
+let tensorArraySplit
+    ?(name = "TensorArraySplit")
+    (handle : [ `string ] t)
+    (value : 't t)
+    (lengths : [ `int64 ] t)
+    (flow_in : [ `float ] t)
+  =
+  { name = Name.make_fresh ~name
+  ; op_name = "TensorArraySplit"
+  ; output_type = Type.Float
+  ; inputs = [ P handle; P value; P lengths; P flow_in ]
+  ; attributes = [
+    ]
+  }
+
+let tensorArrayUnpack
+    ?(name = "TensorArrayUnpack")
+    (handle : [ `string ] t)
+    (value : 't t)
+    (flow_in : [ `float ] t)
+  =
+  { name = Name.make_fresh ~name
+  ; op_name = "TensorArrayUnpack"
+  ; output_type = Type.Float
+  ; inputs = [ P handle; P value; P flow_in ]
+  ; attributes = [
+    ]
+  }
+
+let tensorArrayWrite
+    ?(name = "TensorArrayWrite")
+    (handle : [ `string ] t)
+    (index : [ `int32 ] t)
+    (value : 't t)
+    (flow_in : [ `float ] t)
+  =
+  { name = Name.make_fresh ~name
+  ; op_name = "TensorArrayWrite"
+  ; output_type = Type.Float
+  ; inputs = [ P handle; P index; P value; P flow_in ]
+  ; attributes = [
+    ]
+  }
+
+let textLineReader
+    ?(name = "TextLineReader")
+    ()
+  =
+  { name = Name.make_fresh ~name
+  ; op_name = "TextLineReader"
+  ; output_type = Type.String
+  ; inputs = [  ]
+  ; attributes = [
     ]
   }
 
@@ -2404,7 +3474,7 @@ let transpose
 let truncatedNormal
     ?(name = "TruncatedNormal")
     ~type_
-    (shape : ([< `int32 ] as 't) t)
+    (shape : ([< `int32 | `int64 ] as 't) t)
   =
   { name = Name.make_fresh ~name
   ; op_name = "TruncatedNormal"
@@ -2430,8 +3500,8 @@ let unpack
 
 let unsortedSegmentSum
     ?(name = "UnsortedSegmentSum")
-    (data : ([< `float | `double | `int32 ] as 't) t)
-    (segment_ids : ([< `int32 ] as 'tindices) t)
+    (data : ([< `float | `double | `int32 | `int64 ] as 't) t)
+    (segment_ids : ([< `int32 | `int64 ] as 'tindices) t)
     (num_segments : [ `int32 ] t)
   =
   { name = Name.make_fresh ~name
@@ -2453,6 +3523,30 @@ let variable
   ; inputs = [  ]
   ; attributes = [
       "dtype", Type (P type_);
+    ]
+  }
+
+let where
+    ?(name = "Where")
+    (input : [ `bool ] t)
+  =
+  { name = Name.make_fresh ~name
+  ; op_name = "Where"
+  ; output_type = Type.Int64
+  ; inputs = [ P input ]
+  ; attributes = [
+    ]
+  }
+
+let wholeFileReader
+    ?(name = "WholeFileReader")
+    ()
+  =
+  { name = Name.make_fresh ~name
+  ; op_name = "WholeFileReader"
+  ; output_type = Type.String
+  ; inputs = [  ]
+  ; attributes = [
     ]
   }
 

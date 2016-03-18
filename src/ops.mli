@@ -1,22 +1,22 @@
 val abs
   :  ?name:string
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
+  -> ([< `float | `double | `int32 | `int64 ] as 't) Node.t
+  -> ([< `float | `double | `int32 | `int64 ] as 't) Node.t
 
 val add
   :  ?name:string
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
+  -> ([< `float | `double | `int32 | `int64 | `complex64 | `string ] as 't) Node.t
+  -> ([< `float | `double | `int32 | `int64 | `complex64 | `string ] as 't) Node.t
+  -> ([< `float | `double | `int32 | `int64 | `complex64 | `string ] as 't) Node.t
 
 val addN
   :  ?name:string
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
 
 val adjustContrast
   :  ?name:string
-  -> ([< `int32 | `float | `double ] as 't) Node.t
+  -> ([< `int32 | `int64 | `float | `double ] as 't) Node.t
   -> [ `float ] Node.t
   -> [ `float ] Node.t
   -> [ `float ] Node.t
@@ -28,67 +28,91 @@ val adjustContrastv2
   -> [ `float ] Node.t
   -> [ `float ] Node.t
 
+val all
+  :  ?name:string
+  -> [ `bool ] Node.t
+  -> [ `int32 ] Node.t
+  -> [ `bool ] Node.t
+
+val any
+  :  ?name:string
+  -> [ `bool ] Node.t
+  -> [ `int32 ] Node.t
+  -> [ `bool ] Node.t
+
 val applyAdagrad
   :  ?name:string
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
 
 val applyAdam
   :  ?name:string
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
 
 val applyFtrl
   :  ?name:string
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
 
 val applyGradientDescent
   :  ?name:string
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
 
 val applyMomentum
   :  ?name:string
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
 
 val applyRMSProp
   :  ?name:string
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
+
+val argMax
+  :  ?name:string
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
+  -> [ `int32 ] Node.t
+  -> [ `int64 ] Node.t
+
+val argMin
+  :  ?name:string
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
+  -> [ `int32 ] Node.t
+  -> [ `int64 ] Node.t
 
 val assign
   :  ?name:string
@@ -98,15 +122,15 @@ val assign
 
 val assignAdd
   :  ?name:string
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
 
 val assignSub
   :  ?name:string
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
 
 val avgPool
   :  ?name:string
@@ -126,9 +150,9 @@ val batchCholesky
 
 val batchMatMul
   :  ?name:string
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
+  -> ([< `float | `double | `int32 | `complex64 ] as 't) Node.t
+  -> ([< `float | `double | `int32 | `complex64 ] as 't) Node.t
+  -> ([< `float | `double | `int32 | `complex64 ] as 't) Node.t
 
 val batchMatrixDeterminant
   :  ?name:string
@@ -161,12 +185,12 @@ val batchMatrixTriangularSolve
 
 val batchNormWithGlobalNormalization
   :  ?name:string
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
 
 val batchSelfAdjointEig
   :  ?name:string
@@ -175,26 +199,26 @@ val batchSelfAdjointEig
 
 val biasAdd
   :  ?name:string
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
 
 val biasAddGrad
   :  ?name:string
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
 
 val biasAddV1
   :  ?name:string
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
 
 val bitcast
   :  ?name:string
-  -> type_ : ([< `float | `double | `int32 ] as 'type__) Node.Type.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 'type__) Node.t
+  -> type_ : ([< `float | `double | `int64 | `int32 | `complex64 ] as 'type__) Node.Type.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 'type__) Node.t
 
 val cast
   :  ?name:string
@@ -217,6 +241,17 @@ val cholesky
   -> ([< `double | `float ] as 't) Node.t
   -> ([< `double | `float ] as 't) Node.t
 
+val complex
+  :  ?name:string
+  -> [ `float ] Node.t
+  -> [ `float ] Node.t
+  -> [ `complex64 ] Node.t
+
+val complexAbs
+  :  ?name:string
+  -> [ `complex64 ] Node.t
+  -> [ `float ] Node.t
+
 val concat
   :  ?name:string
   -> [ `int32 ] Node.t
@@ -228,6 +263,11 @@ val concatOffset
   -> [ `int32 ] Node.t
   -> [ `int32 ] Node.t
   -> [ `int32 ] Node.t
+
+val conj
+  :  ?name:string
+  -> [ `complex64 ] Node.t
+  -> [ `complex64 ] Node.t
 
 val const
   :  ?name:string
@@ -261,19 +301,36 @@ val conv2DBackpropInput
 
 val cos
   :  ?name:string
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
+  -> ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) Node.t
+  -> ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) Node.t
 
 val countUpTo
   :  ?name:string
-  -> ([< `int32 ] as 't) Node.t
-  -> ([< `int32 ] as 't) Node.t
+  -> ([< `int32 | `int64 ] as 't) Node.t
+  -> ([< `int32 | `int64 ] as 't) Node.t
 
 val cross
   :  ?name:string
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
+  -> ([< `float | `double | `int32 | `int64 ] as 't) Node.t
+  -> ([< `float | `double | `int32 | `int64 ] as 't) Node.t
+  -> ([< `float | `double | `int32 | `int64 ] as 't) Node.t
+
+val decodeJSONExample
+  :  ?name:string
+  -> [ `string ] Node.t
+  -> [ `string ] Node.t
+
+val decodePng
+  :  ?name:string
+  -> type_ : 'dtype Node.Type.t
+  -> [ `string ] Node.t
+  -> 'dtype Node.t
+
+val decodeRaw
+  :  ?name:string
+  -> type_ : ([< `float | `double | `int32 | `int64 ] as 'out_type) Node.Type.t
+  -> [ `string ] Node.t
+  -> ([< `float | `double | `int32 | `int64 ] as 'out_type) Node.t
 
 val depthToSpace
   :  ?name:string
@@ -307,24 +364,24 @@ val destroyTemporaryVariable
 
 val diag
   :  ?name:string
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
+  -> ([< `float | `double | `int32 | `int64 ] as 't) Node.t
+  -> ([< `float | `double | `int32 | `int64 ] as 't) Node.t
 
 val diagPart
   :  ?name:string
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
+  -> ([< `float | `double | `int32 | `int64 ] as 't) Node.t
+  -> ([< `float | `double | `int32 | `int64 ] as 't) Node.t
 
 val digamma
   :  ?name:string
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
+  -> ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) Node.t
+  -> ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) Node.t
 
 val div
   :  ?name:string
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
+  -> ([< `float | `double | `int32 | `int64 | `complex64 ] as 't) Node.t
+  -> ([< `float | `double | `int32 | `int64 | `complex64 ] as 't) Node.t
+  -> ([< `float | `double | `int32 | `int64 | `complex64 ] as 't) Node.t
 
 val drawBoundingBoxes
   :  ?name:string
@@ -344,6 +401,16 @@ val dynamicStitch
   -> 't Node.t
   -> 't Node.t
 
+val editDistance
+  :  ?name:string
+  -> [ `int64 ] Node.t
+  -> 't Node.t
+  -> [ `int64 ] Node.t
+  -> [ `int64 ] Node.t
+  -> 't Node.t
+  -> [ `int64 ] Node.t
+  -> [ `float ] Node.t
+
 val elu
   :  ?name:string
   -> ([< `float | `double ] as 't) Node.t
@@ -355,20 +422,31 @@ val eluGrad
   -> ([< `float | `double ] as 't) Node.t
   -> ([< `float | `double ] as 't) Node.t
 
+val encodePng
+  :  ?name:string
+  -> 't Node.t
+  -> [ `string ] Node.t
+
 val enter
   :  ?name:string
   -> 't Node.t
   -> 't Node.t
 
+val equal
+  :  ?name:string
+  -> ([< `float | `double | `int32 | `int64 | `complex64 | `string ] as 't) Node.t
+  -> ([< `float | `double | `int32 | `int64 | `complex64 | `string ] as 't) Node.t
+  -> [ `bool ] Node.t
+
 val erf
   :  ?name:string
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
+  -> ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) Node.t
+  -> ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) Node.t
 
 val erfc
   :  ?name:string
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
+  -> ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) Node.t
+  -> ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) Node.t
 
 val exit
   :  ?name:string
@@ -377,8 +455,8 @@ val exit
 
 val exp
   :  ?name:string
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
+  -> ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) Node.t
+  -> ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) Node.t
 
 val expandDims
   :  ?name:string
@@ -393,11 +471,31 @@ val extractGlimpse
   -> [ `float ] Node.t
   -> [ `float ] Node.t
 
+val fFT2D
+  :  ?name:string
+  -> [ `complex64 ] Node.t
+  -> [ `complex64 ] Node.t
+
+val fIFOQueue
+  :  ?name:string
+  -> unit
+  -> [ `string ] Node.t
+
+val fact
+  :  ?name:string
+  -> unit
+  -> [ `string ] Node.t
+
 val fill
   :  ?name:string
   -> [ `int32 ] Node.t
   -> 't Node.t
   -> 't Node.t
+
+val fixedLengthRecordReader
+  :  ?name:string
+  -> unit
+  -> [ `string ] Node.t
 
 val floor
   :  ?name:string
@@ -407,33 +505,105 @@ val floor
 val gather
   :  ?name:string
   -> 'tparams Node.t
-  -> ([< `int32 ] as 'tindices) Node.t
+  -> ([< `int32 | `int64 ] as 'tindices) Node.t
   -> 'tparams Node.t
+
+val greater
+  :  ?name:string
+  -> ([< `float | `double | `int32 | `int64 ] as 't) Node.t
+  -> ([< `float | `double | `int32 | `int64 ] as 't) Node.t
+  -> [ `bool ] Node.t
+
+val greaterEqual
+  :  ?name:string
+  -> ([< `float | `double | `int32 | `int64 ] as 't) Node.t
+  -> ([< `float | `double | `int32 | `int64 ] as 't) Node.t
+  -> [ `bool ] Node.t
 
 val hSVToRGB
   :  ?name:string
   -> [ `float ] Node.t
   -> [ `float ] Node.t
 
+val hashTable
+  :  ?name:string
+  -> unit
+  -> [ `string ] Node.t
+
+val histogramSummary
+  :  ?name:string
+  -> [ `string ] Node.t
+  -> ([< `float | `double | `int32 | `int64 ] as 't) Node.t
+  -> [ `string ] Node.t
+
+val iFFT2D
+  :  ?name:string
+  -> [ `complex64 ] Node.t
+  -> [ `complex64 ] Node.t
+
 val identity
   :  ?name:string
   -> 't Node.t
   -> 't Node.t
 
+val identityReader
+  :  ?name:string
+  -> unit
+  -> [ `string ] Node.t
+
+val imag
+  :  ?name:string
+  -> [ `complex64 ] Node.t
+  -> [ `float ] Node.t
+
+val imageSummary
+  :  ?name:string
+  -> [ `string ] Node.t
+  -> ([< `float ] as 't) Node.t
+  -> [ `string ] Node.t
+
+val inTopK
+  :  ?name:string
+  -> [ `float ] Node.t
+  -> ([< `int32 | `int64 ] as 't) Node.t
+  -> [ `bool ] Node.t
+
+val initializeTable
+  :  ?name:string
+  -> [ `string ] Node.t
+  -> 'tkey Node.t
+  -> 'tval Node.t
+  -> [ `unit ] Node.t
+
 val inv
   :  ?name:string
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
+  -> ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) Node.t
+  -> ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) Node.t
 
 val invertPermutation
   :  ?name:string
   -> [ `int32 ] Node.t
   -> [ `int32 ] Node.t
 
+val isFinite
+  :  ?name:string
+  -> ([< `float | `double ] as 't) Node.t
+  -> [ `bool ] Node.t
+
+val isInf
+  :  ?name:string
+  -> ([< `float | `double ] as 't) Node.t
+  -> [ `bool ] Node.t
+
+val isNan
+  :  ?name:string
+  -> ([< `float | `double ] as 't) Node.t
+  -> [ `bool ] Node.t
+
 val l2Loss
   :  ?name:string
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
 
 val lRN
   :  ?name:string
@@ -447,10 +617,22 @@ val lRNGrad
   -> [ `float ] Node.t
   -> [ `float ] Node.t
 
+val less
+  :  ?name:string
+  -> ([< `float | `double | `int32 | `int64 ] as 't) Node.t
+  -> ([< `float | `double | `int32 | `int64 ] as 't) Node.t
+  -> [ `bool ] Node.t
+
+val lessEqual
+  :  ?name:string
+  -> ([< `float | `double | `int32 | `int64 ] as 't) Node.t
+  -> ([< `float | `double | `int32 | `int64 ] as 't) Node.t
+  -> [ `bool ] Node.t
+
 val lgamma
   :  ?name:string
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
+  -> ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) Node.t
+  -> ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) Node.t
 
 val linSpace
   :  ?name:string
@@ -461,14 +643,53 @@ val linSpace
 
 val log
   :  ?name:string
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
+  -> ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) Node.t
+  -> ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) Node.t
+
+val logicalAnd
+  :  ?name:string
+  -> [ `bool ] Node.t
+  -> [ `bool ] Node.t
+  -> [ `bool ] Node.t
+
+val logicalNot
+  :  ?name:string
+  -> [ `bool ] Node.t
+  -> [ `bool ] Node.t
+
+val logicalOr
+  :  ?name:string
+  -> [ `bool ] Node.t
+  -> [ `bool ] Node.t
+  -> [ `bool ] Node.t
+
+val lookupTableFind
+  :  ?name:string
+  -> [ `string ] Node.t
+  -> 'tin Node.t
+  -> 'tout Node.t
+  -> 'tout Node.t
+
+val lookupTableSize
+  :  ?name:string
+  -> [ `string ] Node.t
+  -> [ `int64 ] Node.t
+
+val loopCond
+  :  ?name:string
+  -> [ `bool ] Node.t
+  -> [ `bool ] Node.t
 
 val matMul
   :  ?name:string
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
+  -> ([< `float | `double | `int32 | `complex64 ] as 't) Node.t
+  -> ([< `float | `double | `int32 | `complex64 ] as 't) Node.t
+  -> ([< `float | `double | `int32 | `complex64 ] as 't) Node.t
+
+val matchingFiles
+  :  ?name:string
+  -> [ `string ] Node.t
+  -> [ `string ] Node.t
 
 val matrixDeterminant
   :  ?name:string
@@ -501,9 +722,9 @@ val matrixTriangularSolve
 
 val max
   :  ?name:string
-  -> ([< `float | `double | `int32 ] as 't) Node.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
   -> [ `int32 ] Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
 
 val maxPool
   :  ?name:string
@@ -521,32 +742,37 @@ val maxPoolGradWithArgmax
   :  ?name:string
   -> [ `float ] Node.t
   -> [ `float ] Node.t
-  -> ([< `int32 ] as 'targmax) Node.t
+  -> ([< `int32 | `int64 ] as 'targmax) Node.t
   -> [ `float ] Node.t
 
 val maximum
   :  ?name:string
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
+  -> ([< `float | `double | `int32 | `int64 ] as 't) Node.t
+  -> ([< `float | `double | `int32 | `int64 ] as 't) Node.t
+  -> ([< `float | `double | `int32 | `int64 ] as 't) Node.t
 
 val mean
   :  ?name:string
-  -> ([< `float | `double | `int32 ] as 't) Node.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
   -> [ `int32 ] Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
+
+val mergeSummary
+  :  ?name:string
+  -> [ `string ] Node.t
+  -> [ `string ] Node.t
 
 val min
   :  ?name:string
-  -> ([< `float | `double | `int32 ] as 't) Node.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
   -> [ `int32 ] Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
 
 val minimum
   :  ?name:string
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
+  -> ([< `float | `double | `int32 | `int64 ] as 't) Node.t
+  -> ([< `float | `double | `int32 | `int64 ] as 't) Node.t
+  -> ([< `float | `double | `int32 | `int64 ] as 't) Node.t
 
 val mirrorPad
   :  ?name:string
@@ -562,20 +788,20 @@ val mirrorPadGrad
 
 val mod_
   :  ?name:string
-  -> ([< `int32 | `float | `double ] as 't) Node.t
-  -> ([< `int32 | `float | `double ] as 't) Node.t
-  -> ([< `int32 | `float | `double ] as 't) Node.t
+  -> ([< `int32 | `int64 | `float | `double ] as 't) Node.t
+  -> ([< `int32 | `int64 | `float | `double ] as 't) Node.t
+  -> ([< `int32 | `int64 | `float | `double ] as 't) Node.t
 
 val mul
   :  ?name:string
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
+  -> ([< `float | `double | `int32 | `int64 | `complex64 ] as 't) Node.t
+  -> ([< `float | `double | `int32 | `int64 | `complex64 ] as 't) Node.t
+  -> ([< `float | `double | `int32 | `int64 | `complex64 ] as 't) Node.t
 
 val neg
   :  ?name:string
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
+  -> ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) Node.t
+  -> ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) Node.t
 
 val negTrain
   :  ?name:string
@@ -596,6 +822,20 @@ val noOp
   -> unit
   -> [ `unit ] Node.t
 
+val notEqual
+  :  ?name:string
+  -> ([< `float | `double | `int32 | `int64 | `complex64 | `string ] as 't) Node.t
+  -> ([< `float | `double | `int32 | `int64 | `complex64 | `string ] as 't) Node.t
+  -> [ `bool ] Node.t
+
+val oneHot
+  :  ?name:string
+  -> [ `int64 ] Node.t
+  -> [ `int32 ] Node.t
+  -> 't Node.t
+  -> 't Node.t
+  -> 't Node.t
+
 val pack
   :  ?name:string
   -> 't Node.t
@@ -607,6 +847,11 @@ val pad
   -> [ `int32 ] Node.t
   -> 't Node.t
 
+val paddingFIFOQueue
+  :  ?name:string
+  -> unit
+  -> [ `string ] Node.t
+
 val placeholder
   :  ?name:string
   -> type_ : 'dtype Node.Type.t
@@ -614,44 +859,65 @@ val placeholder
 
 val pow
   :  ?name:string
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
+  -> ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) Node.t
+  -> ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) Node.t
+  -> ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) Node.t
 
 val prod
   :  ?name:string
-  -> ([< `float | `double | `int32 ] as 't) Node.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
   -> [ `int32 ] Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
+
+val queueClose
+  :  ?name:string
+  -> [ `string ] Node.t
+  -> [ `unit ] Node.t
+
+val queueSize
+  :  ?name:string
+  -> [ `string ] Node.t
+  -> [ `int32 ] Node.t
 
 val rGBToHSV
   :  ?name:string
   -> [ `float ] Node.t
   -> [ `float ] Node.t
 
+val randomCrop
+  :  ?name:string
+  -> ([< `int32 | `int64 | `float | `double ] as 't) Node.t
+  -> [ `int64 ] Node.t
+  -> ([< `int32 | `int64 | `float | `double ] as 't) Node.t
+
 val randomShuffle
   :  ?name:string
   -> 't Node.t
   -> 't Node.t
 
+val randomShuffleQueue
+  :  ?name:string
+  -> unit
+  -> [ `string ] Node.t
+
 val randomStandardNormal
   :  ?name:string
   -> type_ : ([< `float | `double ] as 'dtype) Node.Type.t
-  -> ([< `int32 ] as 't) Node.t
+  -> ([< `int32 | `int64 ] as 't) Node.t
   -> ([< `float | `double ] as 'dtype) Node.t
 
 val randomUniform
   :  ?name:string
   -> type_ : ([< `float | `double ] as 'dtype) Node.Type.t
-  -> ([< `int32 ] as 't) Node.t
+  -> ([< `int32 | `int64 ] as 't) Node.t
   -> ([< `float | `double ] as 'dtype) Node.t
 
 val randomUniformInt
   :  ?name:string
-  -> ([< `int32 ] as 't) Node.t
-  -> ([< `int32 ] as 'tout) Node.t
-  -> ([< `int32 ] as 'tout) Node.t
-  -> ([< `int32 ] as 'tout) Node.t
+  -> ([< `int32 | `int64 ] as 't) Node.t
+  -> ([< `int32 | `int64 ] as 'tout) Node.t
+  -> ([< `int32 | `int64 ] as 'tout) Node.t
+  -> ([< `int32 | `int64 ] as 'tout) Node.t
 
 val range
   :  ?name:string
@@ -664,6 +930,42 @@ val rank
   :  ?name:string
   -> 't Node.t
   -> [ `int32 ] Node.t
+
+val readFile
+  :  ?name:string
+  -> [ `string ] Node.t
+  -> [ `string ] Node.t
+
+val readerNumRecordsProduced
+  :  ?name:string
+  -> [ `string ] Node.t
+  -> [ `int64 ] Node.t
+
+val readerNumWorkUnitsCompleted
+  :  ?name:string
+  -> [ `string ] Node.t
+  -> [ `int64 ] Node.t
+
+val readerReset
+  :  ?name:string
+  -> [ `string ] Node.t
+  -> [ `unit ] Node.t
+
+val readerRestoreState
+  :  ?name:string
+  -> [ `string ] Node.t
+  -> [ `string ] Node.t
+  -> [ `unit ] Node.t
+
+val readerSerializeState
+  :  ?name:string
+  -> [ `string ] Node.t
+  -> [ `string ] Node.t
+
+val real
+  :  ?name:string
+  -> [ `complex64 ] Node.t
+  -> [ `float ] Node.t
 
 val refEnter
   :  ?name:string
@@ -693,25 +995,25 @@ val refSelect
 
 val relu
   :  ?name:string
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
+  -> ([< `float | `double | `int32 | `int64 ] as 't) Node.t
+  -> ([< `float | `double | `int32 | `int64 ] as 't) Node.t
 
 val relu6
   :  ?name:string
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
+  -> ([< `float | `double | `int32 | `int64 ] as 't) Node.t
+  -> ([< `float | `double | `int32 | `int64 ] as 't) Node.t
 
 val relu6Grad
   :  ?name:string
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
+  -> ([< `float | `double | `int32 | `int64 ] as 't) Node.t
+  -> ([< `float | `double | `int32 | `int64 ] as 't) Node.t
+  -> ([< `float | `double | `int32 | `int64 ] as 't) Node.t
 
 val reluGrad
   :  ?name:string
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
+  -> ([< `float | `double | `int32 | `int64 ] as 't) Node.t
+  -> ([< `float | `double | `int32 | `int64 ] as 't) Node.t
+  -> ([< `float | `double | `int32 | `int64 ] as 't) Node.t
 
 val reshape
   :  ?name:string
@@ -721,19 +1023,19 @@ val reshape
 
 val resizeArea
   :  ?name:string
-  -> ([< `int32 | `float | `double ] as 't) Node.t
+  -> ([< `int32 | `int64 | `float | `double ] as 't) Node.t
   -> [ `int32 ] Node.t
   -> [ `float ] Node.t
 
 val resizeBicubic
   :  ?name:string
-  -> ([< `int32 | `float | `double ] as 't) Node.t
+  -> ([< `int32 | `int64 | `float | `double ] as 't) Node.t
   -> [ `int32 ] Node.t
   -> [ `float ] Node.t
 
 val resizeBilinear
   :  ?name:string
-  -> ([< `int32 | `float | `double ] as 't) Node.t
+  -> ([< `int32 | `int64 | `float | `double ] as 't) Node.t
   -> [ `int32 ] Node.t
   -> [ `float ] Node.t
 
@@ -745,9 +1047,9 @@ val resizeBilinearGrad
 
 val resizeNearestNeighbor
   :  ?name:string
-  -> ([< `int32 | `float | `double ] as 't) Node.t
+  -> ([< `int32 | `int64 | `float | `double ] as 't) Node.t
   -> [ `int32 ] Node.t
-  -> ([< `int32 | `float | `double ] as 't) Node.t
+  -> ([< `int32 | `int64 | `float | `double ] as 't) Node.t
 
 val resizeNearestNeighborGrad
   :  ?name:string
@@ -755,66 +1057,120 @@ val resizeNearestNeighborGrad
   -> [ `int32 ] Node.t
   -> ([< `int32 | `float | `double ] as 't) Node.t
 
+val restore
+  :  ?name:string
+  -> type_ : 'dt Node.Type.t
+  -> [ `string ] Node.t
+  -> [ `string ] Node.t
+  -> 'dt Node.t
+
+val restoreSlice
+  :  ?name:string
+  -> type_ : 'dt Node.Type.t
+  -> [ `string ] Node.t
+  -> [ `string ] Node.t
+  -> [ `string ] Node.t
+  -> 'dt Node.t
+
+val reverse
+  :  ?name:string
+  -> ([< `int32 | `bool | `float | `double ] as 't) Node.t
+  -> [ `bool ] Node.t
+  -> ([< `int32 | `bool | `float | `double ] as 't) Node.t
+
+val reverseSequence
+  :  ?name:string
+  -> 't Node.t
+  -> [ `int64 ] Node.t
+  -> 't Node.t
+
 val rsqrt
   :  ?name:string
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
+  -> ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) Node.t
+  -> ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) Node.t
+
+val scalarSummary
+  :  ?name:string
+  -> [ `string ] Node.t
+  -> ([< `float | `double | `int32 | `int64 ] as 't) Node.t
+  -> [ `string ] Node.t
 
 val scatterAdd
   :  ?name:string
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `int32 ] as 'tindices) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
+  -> ([< `int32 | `int64 ] as 'tindices) Node.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
 
 val scatterSub
   :  ?name:string
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `int32 ] as 'tindices) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
+  -> ([< `int32 | `int64 ] as 'tindices) Node.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
 
 val scatterUpdate
   :  ?name:string
   -> 't Node.t
-  -> ([< `int32 ] as 'tindices) Node.t
+  -> ([< `int32 | `int64 ] as 'tindices) Node.t
   -> 't Node.t
   -> 't Node.t
 
 val segmentMax
   :  ?name:string
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `int32 ] as 'tindices) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
+  -> ([< `float | `double | `int32 | `int64 ] as 't) Node.t
+  -> ([< `int32 | `int64 ] as 'tindices) Node.t
+  -> ([< `float | `double | `int32 | `int64 ] as 't) Node.t
 
 val segmentMean
   :  ?name:string
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `int32 ] as 'tindices) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
+  -> ([< `float | `double | `int32 | `int64 ] as 't) Node.t
+  -> ([< `int32 | `int64 ] as 'tindices) Node.t
+  -> ([< `float | `double | `int32 | `int64 ] as 't) Node.t
 
 val segmentMin
   :  ?name:string
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `int32 ] as 'tindices) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
+  -> ([< `float | `double | `int32 | `int64 ] as 't) Node.t
+  -> ([< `int32 | `int64 ] as 'tindices) Node.t
+  -> ([< `float | `double | `int32 | `int64 ] as 't) Node.t
 
 val segmentProd
   :  ?name:string
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `int32 ] as 'tindices) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
+  -> ([< `float | `double | `int32 | `int64 ] as 't) Node.t
+  -> ([< `int32 | `int64 ] as 'tindices) Node.t
+  -> ([< `float | `double | `int32 | `int64 ] as 't) Node.t
 
 val segmentSum
   :  ?name:string
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `int32 ] as 'tindices) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
+  -> ([< `float | `double | `int32 | `int64 ] as 't) Node.t
+  -> ([< `int32 | `int64 ] as 'tindices) Node.t
+  -> ([< `float | `double | `int32 | `int64 ] as 't) Node.t
+
+val select
+  :  ?name:string
+  -> [ `bool ] Node.t
+  -> 't Node.t
+  -> 't Node.t
+  -> 't Node.t
 
 val selfAdjointEig
   :  ?name:string
   -> ([< `double | `float ] as 't) Node.t
   -> ([< `double | `float ] as 't) Node.t
+
+val serializeManySparse
+  :  ?name:string
+  -> [ `int64 ] Node.t
+  -> 't Node.t
+  -> [ `int64 ] Node.t
+  -> [ `string ] Node.t
+
+val serializeSparse
+  :  ?name:string
+  -> [ `int64 ] Node.t
+  -> 't Node.t
+  -> [ `int64 ] Node.t
+  -> [ `string ] Node.t
 
 val shape
   :  ?name:string
@@ -826,20 +1182,33 @@ val shapeN
   -> 't Node.t
   -> [ `int32 ] Node.t
 
+val shardedFilename
+  :  ?name:string
+  -> [ `string ] Node.t
+  -> [ `int32 ] Node.t
+  -> [ `int32 ] Node.t
+  -> [ `string ] Node.t
+
+val shardedFilespec
+  :  ?name:string
+  -> [ `string ] Node.t
+  -> [ `int32 ] Node.t
+  -> [ `string ] Node.t
+
 val sigmoid
   :  ?name:string
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
+  -> ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) Node.t
+  -> ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) Node.t
 
 val sign
   :  ?name:string
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
+  -> ([< `float | `double | `int32 | `int64 ] as 't) Node.t
+  -> ([< `float | `double | `int32 | `int64 ] as 't) Node.t
 
 val sin
   :  ?name:string
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
+  -> ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) Node.t
+  -> ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) Node.t
 
 val size
   :  ?name:string
@@ -849,8 +1218,8 @@ val size
 val slice
   :  ?name:string
   -> 't Node.t
-  -> ([< `int32 ] as 'index) Node.t
-  -> ([< `int32 ] as 'index) Node.t
+  -> ([< `int32 | `int64 ] as 'index) Node.t
+  -> ([< `int32 | `int64 ] as 'index) Node.t
   -> 't Node.t
 
 val softmax
@@ -860,25 +1229,25 @@ val softmax
 
 val softplus
   :  ?name:string
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
+  -> ([< `float | `double | `int32 | `int64 ] as 't) Node.t
+  -> ([< `float | `double | `int32 | `int64 ] as 't) Node.t
 
 val softplusGrad
   :  ?name:string
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
+  -> ([< `float | `double | `int32 | `int64 ] as 't) Node.t
+  -> ([< `float | `double | `int32 | `int64 ] as 't) Node.t
+  -> ([< `float | `double | `int32 | `int64 ] as 't) Node.t
 
 val softsign
   :  ?name:string
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
+  -> ([< `float | `double | `int32 | `int64 ] as 't) Node.t
+  -> ([< `float | `double | `int32 | `int64 ] as 't) Node.t
 
 val softsignGrad
   :  ?name:string
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
+  -> ([< `float | `double | `int32 | `int64 ] as 't) Node.t
+  -> ([< `float | `double | `int32 | `int64 ] as 't) Node.t
+  -> ([< `float | `double | `int32 | `int64 ] as 't) Node.t
 
 val spaceToDepth
   :  ?name:string
@@ -887,35 +1256,35 @@ val spaceToDepth
 
 val sparseApplyAdagrad
   :  ?name:string
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `int32 ] as 'tindices) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
+  -> ([< `int32 | `int64 ] as 'tindices) Node.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
 
 val sparseApplyFtrl
   :  ?name:string
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `int32 ] as 'tindices) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
+  -> ([< `int32 | `int64 ] as 'tindices) Node.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
 
 val sparseApplyMomentum
   :  ?name:string
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `int32 ] as 'tindices) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
+  -> ([< `int32 | `int64 ] as 'tindices) Node.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
 
 val sparseMatMul
   :  ?name:string
@@ -955,15 +1324,23 @@ val sparseSegmentSqrtNGrad
 
 val sparseSegmentSum
   :  ?name:string
-  -> ([< `float | `double | `int32 ] as 't) Node.t
+  -> ([< `float | `double | `int32 | `int64 ] as 't) Node.t
   -> [ `int32 ] Node.t
   -> [ `int32 ] Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
+  -> ([< `float | `double | `int32 | `int64 ] as 't) Node.t
+
+val sparseTensorDenseMatMul
+  :  ?name:string
+  -> [ `int64 ] Node.t
+  -> 't Node.t
+  -> [ `int64 ] Node.t
+  -> 't Node.t
+  -> 't Node.t
 
 val sparseToDense
   :  ?name:string
-  -> ([< `int32 ] as 'tindices) Node.t
-  -> ([< `int32 ] as 'tindices) Node.t
+  -> ([< `int32 | `int64 ] as 'tindices) Node.t
+  -> ([< `int32 | `int64 ] as 'tindices) Node.t
   -> 't Node.t
   -> 't Node.t
   -> 't Node.t
@@ -976,22 +1353,44 @@ val split
 
 val sqrt
   :  ?name:string
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
+  -> ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) Node.t
+  -> ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) Node.t
 
 val square
   :  ?name:string
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
+  -> ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) Node.t
+  -> ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) Node.t
 
 val squaredDifference
   :  ?name:string
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
+  -> ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) Node.t
+  -> ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) Node.t
+  -> ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) Node.t
 
 val squeeze
   :  ?name:string
+  -> 't Node.t
+  -> 't Node.t
+
+val stack
+  :  ?name:string
+  -> unit
+  -> [ `string ] Node.t
+
+val stackClose
+  :  ?name:string
+  -> [ `string ] Node.t
+  -> [ `unit ] Node.t
+
+val stackPop
+  :  ?name:string
+  -> type_ : 'elem_type Node.Type.t
+  -> [ `string ] Node.t
+  -> 'elem_type Node.t
+
+val stackPush
+  :  ?name:string
+  -> [ `string ] Node.t
   -> 't Node.t
   -> 't Node.t
 
@@ -1000,27 +1399,108 @@ val stopGradient
   -> 't Node.t
   -> 't Node.t
 
+val stringToHashBucket
+  :  ?name:string
+  -> [ `string ] Node.t
+  -> [ `int64 ] Node.t
+
+val stringToNumber
+  :  ?name:string
+  -> type_ : ([< `float | `int32 ] as 'out_type) Node.Type.t
+  -> [ `string ] Node.t
+  -> ([< `float | `int32 ] as 'out_type) Node.t
+
 val sub
   :  ?name:string
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
+  -> ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) Node.t
+  -> ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) Node.t
+  -> ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) Node.t
 
 val sum
   :  ?name:string
-  -> ([< `float | `double | `int32 ] as 't) Node.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
   -> [ `int32 ] Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
+
+val tFRecordReader
+  :  ?name:string
+  -> unit
+  -> [ `string ] Node.t
 
 val tanh
   :  ?name:string
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
+  -> ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) Node.t
+  -> ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) Node.t
 
 val temporaryVariable
   :  ?name:string
   -> type_ : 'dtype Node.Type.t
   -> 'dtype Node.t
+
+val tensorArray
+  :  ?name:string
+  -> [ `int32 ] Node.t
+  -> [ `string ] Node.t
+
+val tensorArrayClose
+  :  ?name:string
+  -> [ `string ] Node.t
+  -> [ `unit ] Node.t
+
+val tensorArrayGrad
+  :  ?name:string
+  -> [ `string ] Node.t
+  -> [ `float ] Node.t
+  -> [ `string ] Node.t
+
+val tensorArrayPack
+  :  ?name:string
+  -> type_ : 'dtype Node.Type.t
+  -> [ `string ] Node.t
+  -> [ `float ] Node.t
+  -> 'dtype Node.t
+
+val tensorArrayRead
+  :  ?name:string
+  -> type_ : 'dtype Node.Type.t
+  -> [ `string ] Node.t
+  -> [ `int32 ] Node.t
+  -> [ `float ] Node.t
+  -> 'dtype Node.t
+
+val tensorArraySize
+  :  ?name:string
+  -> [ `string ] Node.t
+  -> [ `float ] Node.t
+  -> [ `int32 ] Node.t
+
+val tensorArraySplit
+  :  ?name:string
+  -> [ `string ] Node.t
+  -> 't Node.t
+  -> [ `int64 ] Node.t
+  -> [ `float ] Node.t
+  -> [ `float ] Node.t
+
+val tensorArrayUnpack
+  :  ?name:string
+  -> [ `string ] Node.t
+  -> 't Node.t
+  -> [ `float ] Node.t
+  -> [ `float ] Node.t
+
+val tensorArrayWrite
+  :  ?name:string
+  -> [ `string ] Node.t
+  -> [ `int32 ] Node.t
+  -> 't Node.t
+  -> [ `float ] Node.t
+  -> [ `float ] Node.t
+
+val textLineReader
+  :  ?name:string
+  -> unit
+  -> [ `string ] Node.t
 
 val tile
   :  ?name:string
@@ -1043,7 +1523,7 @@ val transpose
 val truncatedNormal
   :  ?name:string
   -> type_ : ([< `float | `double ] as 'dtype) Node.Type.t
-  -> ([< `int32 ] as 't) Node.t
+  -> ([< `int32 | `int64 ] as 't) Node.t
   -> ([< `float | `double ] as 'dtype) Node.t
 
 val unpack
@@ -1053,15 +1533,25 @@ val unpack
 
 val unsortedSegmentSum
   :  ?name:string
-  -> ([< `float | `double | `int32 ] as 't) Node.t
-  -> ([< `int32 ] as 'tindices) Node.t
+  -> ([< `float | `double | `int32 | `int64 ] as 't) Node.t
+  -> ([< `int32 | `int64 ] as 'tindices) Node.t
   -> [ `int32 ] Node.t
-  -> ([< `float | `double | `int32 ] as 't) Node.t
+  -> ([< `float | `double | `int32 | `int64 ] as 't) Node.t
 
 val variable
   :  ?name:string
   -> type_ : 'dtype Node.Type.t
   -> 'dtype Node.t
+
+val where
+  :  ?name:string
+  -> [ `bool ] Node.t
+  -> [ `int64 ] Node.t
+
+val wholeFileReader
+  :  ?name:string
+  -> unit
+  -> [ `string ] Node.t
 
 val zerosLike
   :  ?name:string
