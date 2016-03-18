@@ -3,6 +3,10 @@ exception Not_supported of string
 
 let ops_file = "gen_ops/ops.pb"
 let output_file = "src/ops"
+let do_not_generate_these_ops =
+  String.Set.of_list
+    [ "Const"
+    ]
 
 let types_to_string type_ =
   "`" ^ String.uncapitalize (Node.Type.to_string type_)
@@ -212,7 +216,10 @@ let run () =
   let ops =
     List.filter_map ops ~f:(fun op ->
       match Op.create op with
-      | Ok op -> Some op
+      | Ok op ->
+          if Set.mem do_not_generate_these_ops op.name
+          then None
+          else Some op
       | Error err -> printf "Error %s\n" err; None)
   in
   gen_mli ops;

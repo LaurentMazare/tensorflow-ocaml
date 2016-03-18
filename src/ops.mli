@@ -269,12 +269,6 @@ val conj
   -> [ `complex64 ] Node.t
   -> [ `complex64 ] Node.t
 
-val const
-  :  ?name:string
-  -> type_ : 'dtype Node.Type.t
-  -> unit
-  -> 'dtype Node.t
-
 val controlTrigger
   :  ?name:string
   -> unit

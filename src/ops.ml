@@ -597,20 +597,6 @@ let conj
     ]
   }
 
-let const
-    ?(name = "Const")
-    ~type_
-    ()
-  =
-  { name = Name.make_fresh ~name
-  ; op_name = "Const"
-  ; output_type = type_
-  ; inputs = [  ]
-  ; attributes = [
-      "dtype", Type (P type_);
-    ]
-  }
-
 let controlTrigger
     ?(name = "ControlTrigger")
     ()
