@@ -6,15 +6,62 @@ let to_string x = x
 open Node
 open Graph_piqi
 
-let default_attr_value = default_attr_value ()
+let create_attr_value
+    ?s
+    ?i
+    ?f
+    ?b
+    ?type_
+    ?shape
+    ?tensor
+    ?list
+    ?func
+    ?placeholder
+    ()
+  =
+  { Attr_value.s
+  ;  i
+  ;  f
+  ;  b
+  ;  type_
+  ;  shape
+  ;  tensor
+  ;  list
+  ;  func
+  ;  placeholder
+  }
+
 let default_tensor_proto = default_tensor_proto ()
 
 let of_attribute name value =
   let value =
     match value with
+    | String s -> Some (create_attr_value ~s ())
+    | Int i -> Some (create_attr_value ~i:(Int64.of_int i) ())
+    | Float f -> Some (create_attr_value ~f ())
+    | Bool b -> Some (create_attr_value ~b ())
     | Type type_ ->
-      let type_ = Type.to_dt_type type_ in
-      Some { default_attr_value with Attr_value.type_ = Some type_ }
+      Some (create_attr_value ~type_:(Type.to_dt_type type_) ())
+    | Shape shape ->
+      let unknown_rank =
+        match shape with
+        | [] -> Some true
+        | _ :: _ -> None
+      in
+      let dim =
+        List.map
+          (fun { Node.Dim.size; name } ->
+            { Tensor_shape_proto_dim.size = Some (Int64.of_int size)
+            ; name
+            })
+          shape
+      in
+      let shape =
+        { Tensor_shape_proto.dim
+        ; unknown_rank
+        }
+      in
+      Some (create_attr_value ~shape ())
     | Tensor_float tensor_float ->
       let tensor =
         { default_tensor_proto with
@@ -30,7 +77,7 @@ let of_attribute name value =
             }
         }
       in
-      Some { default_attr_value with tensor = Some tensor }
+      Some (create_attr_value ~tensor ())
    (* TODO *)
     | _ -> None
   in

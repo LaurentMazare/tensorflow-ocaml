@@ -11,6 +11,7 @@ let abs
   ; attributes = [
       "T", Type (P x.output_type);
     ]
+  ; output_name = None
   }
 
 let add
@@ -25,6 +26,7 @@ let add
   ; attributes = [
       "T", Type (P x.output_type);
     ]
+  ; output_name = None
   }
 
 let addN
@@ -38,6 +40,7 @@ let addN
   ; attributes = [
       "T", Type (P inputs.output_type);
     ]
+  ; output_name = None
   }
 
 let adjustContrast
@@ -53,6 +56,7 @@ let adjustContrast
   ; inputs = [ P images; P contrast_factor; P min_value; P max_value ]
   ; attributes = [
     ]
+  ; output_name = None
   }
 
 let adjustContrastv2
@@ -66,6 +70,7 @@ let adjustContrastv2
   ; inputs = [ P images; P contrast_factor ]
   ; attributes = [
     ]
+  ; output_name = None
   }
 
 let all
@@ -79,6 +84,7 @@ let all
   ; inputs = [ P input; P reduction_indices ]
   ; attributes = [
     ]
+  ; output_name = None
   }
 
 let any
@@ -92,6 +98,7 @@ let any
   ; inputs = [ P input; P reduction_indices ]
   ; attributes = [
     ]
+  ; output_name = None
   }
 
 let applyAdagrad
@@ -108,6 +115,7 @@ let applyAdagrad
   ; attributes = [
       "T", Type (P var.output_type);
     ]
+  ; output_name = None
   }
 
 let applyAdam
@@ -130,6 +138,7 @@ let applyAdam
   ; attributes = [
       "T", Type (P var.output_type);
     ]
+  ; output_name = None
   }
 
 let applyFtrl
@@ -150,6 +159,7 @@ let applyFtrl
   ; attributes = [
       "T", Type (P var.output_type);
     ]
+  ; output_name = None
   }
 
 let applyGradientDescent
@@ -165,6 +175,7 @@ let applyGradientDescent
   ; attributes = [
       "T", Type (P var.output_type);
     ]
+  ; output_name = None
   }
 
 let applyMomentum
@@ -182,6 +193,7 @@ let applyMomentum
   ; attributes = [
       "T", Type (P var.output_type);
     ]
+  ; output_name = None
   }
 
 let applyRMSProp
@@ -202,6 +214,7 @@ let applyRMSProp
   ; attributes = [
       "T", Type (P var.output_type);
     ]
+  ; output_name = None
   }
 
 let argMax
@@ -215,6 +228,7 @@ let argMax
   ; inputs = [ P input; P dimension ]
   ; attributes = [
     ]
+  ; output_name = None
   }
 
 let argMin
@@ -228,6 +242,7 @@ let argMin
   ; inputs = [ P input; P dimension ]
   ; attributes = [
     ]
+  ; output_name = None
   }
 
 let assign
@@ -242,6 +257,7 @@ let assign
   ; attributes = [
       "T", Type (P ref.output_type);
     ]
+  ; output_name = None
   }
 
 let assignAdd
@@ -256,6 +272,7 @@ let assignAdd
   ; attributes = [
       "T", Type (P ref.output_type);
     ]
+  ; output_name = None
   }
 
 let assignSub
@@ -270,6 +287,7 @@ let assignSub
   ; attributes = [
       "T", Type (P ref.output_type);
     ]
+  ; output_name = None
   }
 
 let avgPool
@@ -283,6 +301,7 @@ let avgPool
   ; attributes = [
       "T", Type (P value.output_type);
     ]
+  ; output_name = None
   }
 
 let avgPoolGrad
@@ -297,6 +316,7 @@ let avgPoolGrad
   ; attributes = [
       "T", Type (P grad.output_type);
     ]
+  ; output_name = None
   }
 
 let batchCholesky
@@ -310,6 +330,7 @@ let batchCholesky
   ; attributes = [
       "T", Type (P input.output_type);
     ]
+  ; output_name = None
   }
 
 let batchMatMul
@@ -324,6 +345,7 @@ let batchMatMul
   ; attributes = [
       "T", Type (P x.output_type);
     ]
+  ; output_name = None
   }
 
 let batchMatrixDeterminant
@@ -337,6 +359,7 @@ let batchMatrixDeterminant
   ; attributes = [
       "T", Type (P input.output_type);
     ]
+  ; output_name = None
   }
 
 let batchMatrixInverse
@@ -350,6 +373,7 @@ let batchMatrixInverse
   ; attributes = [
       "T", Type (P input.output_type);
     ]
+  ; output_name = None
   }
 
 let batchMatrixSolve
@@ -364,6 +388,7 @@ let batchMatrixSolve
   ; attributes = [
       "T", Type (P matrix.output_type);
     ]
+  ; output_name = None
   }
 
 let batchMatrixSolveLs
@@ -379,6 +404,7 @@ let batchMatrixSolveLs
   ; attributes = [
       "T", Type (P matrix.output_type);
     ]
+  ; output_name = None
   }
 
 let batchMatrixTriangularSolve
@@ -393,6 +419,7 @@ let batchMatrixTriangularSolve
   ; attributes = [
       "T", Type (P matrix.output_type);
     ]
+  ; output_name = None
   }
 
 let batchNormWithGlobalNormalization
@@ -410,6 +437,7 @@ let batchNormWithGlobalNormalization
   ; attributes = [
       "T", Type (P t.output_type);
     ]
+  ; output_name = None
   }
 
 let batchSelfAdjointEig
@@ -423,6 +451,7 @@ let batchSelfAdjointEig
   ; attributes = [
       "T", Type (P input.output_type);
     ]
+  ; output_name = None
   }
 
 let biasAdd
@@ -437,6 +466,7 @@ let biasAdd
   ; attributes = [
       "T", Type (P value.output_type);
     ]
+  ; output_name = None
   }
 
 let biasAddGrad
@@ -450,6 +480,7 @@ let biasAddGrad
   ; attributes = [
       "T", Type (P out_backprop.output_type);
     ]
+  ; output_name = None
   }
 
 let biasAddV1
@@ -464,6 +495,7 @@ let biasAddV1
   ; attributes = [
       "T", Type (P value.output_type);
     ]
+  ; output_name = None
   }
 
 let bitcast
@@ -478,6 +510,7 @@ let bitcast
   ; attributes = [
       "type", Type (P type_);
     ]
+  ; output_name = None
   }
 
 let cast
@@ -492,6 +525,7 @@ let cast
   ; attributes = [
       "DstT", Type (P type_);
     ]
+  ; output_name = None
   }
 
 let ceil
@@ -505,6 +539,7 @@ let ceil
   ; attributes = [
       "T", Type (P x.output_type);
     ]
+  ; output_name = None
   }
 
 let checkNumerics
@@ -518,6 +553,7 @@ let checkNumerics
   ; attributes = [
       "T", Type (P tensor.output_type);
     ]
+  ; output_name = None
   }
 
 let cholesky
@@ -531,6 +567,7 @@ let cholesky
   ; attributes = [
       "T", Type (P input.output_type);
     ]
+  ; output_name = None
   }
 
 let complex
@@ -544,6 +581,7 @@ let complex
   ; inputs = [ P real; P imag ]
   ; attributes = [
     ]
+  ; output_name = None
   }
 
 let complexAbs
@@ -556,6 +594,7 @@ let complexAbs
   ; inputs = [ P x ]
   ; attributes = [
     ]
+  ; output_name = None
   }
 
 let concat
@@ -570,6 +609,7 @@ let concat
   ; attributes = [
       "T", Type (P values.output_type);
     ]
+  ; output_name = None
   }
 
 let concatOffset
@@ -583,6 +623,7 @@ let concatOffset
   ; inputs = [ P concat_dim; P shape ]
   ; attributes = [
     ]
+  ; output_name = None
   }
 
 let conj
@@ -595,6 +636,7 @@ let conj
   ; inputs = [ P in__ ]
   ; attributes = [
     ]
+  ; output_name = None
   }
 
 let controlTrigger
@@ -607,6 +649,7 @@ let controlTrigger
   ; inputs = [  ]
   ; attributes = [
     ]
+  ; output_name = None
   }
 
 let conv2D
@@ -621,6 +664,7 @@ let conv2D
   ; attributes = [
       "T", Type (P input.output_type);
     ]
+  ; output_name = None
   }
 
 let conv2DBackpropFilter
@@ -636,6 +680,7 @@ let conv2DBackpropFilter
   ; attributes = [
       "T", Type (P input.output_type);
     ]
+  ; output_name = None
   }
 
 let conv2DBackpropInput
@@ -651,6 +696,7 @@ let conv2DBackpropInput
   ; attributes = [
       "T", Type (P filter.output_type);
     ]
+  ; output_name = None
   }
 
 let cos
@@ -664,6 +710,7 @@ let cos
   ; attributes = [
       "T", Type (P x.output_type);
     ]
+  ; output_name = None
   }
 
 let countUpTo
@@ -677,6 +724,7 @@ let countUpTo
   ; attributes = [
       "T", Type (P ref.output_type);
     ]
+  ; output_name = None
   }
 
 let cross
@@ -691,6 +739,7 @@ let cross
   ; attributes = [
       "T", Type (P a.output_type);
     ]
+  ; output_name = None
   }
 
 let decodeJSONExample
@@ -703,6 +752,7 @@ let decodeJSONExample
   ; inputs = [ P json_examples ]
   ; attributes = [
     ]
+  ; output_name = None
   }
 
 let decodePng
@@ -717,6 +767,7 @@ let decodePng
   ; attributes = [
       "dtype", Type (P type_);
     ]
+  ; output_name = None
   }
 
 let decodeRaw
@@ -731,6 +782,7 @@ let decodeRaw
   ; attributes = [
       "out_type", Type (P type_);
     ]
+  ; output_name = None
   }
 
 let depthToSpace
@@ -744,6 +796,7 @@ let depthToSpace
   ; attributes = [
       "T", Type (P input.output_type);
     ]
+  ; output_name = None
   }
 
 let depthwiseConv2dNative
@@ -758,6 +811,7 @@ let depthwiseConv2dNative
   ; attributes = [
       "T", Type (P input.output_type);
     ]
+  ; output_name = None
   }
 
 let depthwiseConv2dNativeBackpropFilter
@@ -773,6 +827,7 @@ let depthwiseConv2dNativeBackpropFilter
   ; attributes = [
       "T", Type (P input.output_type);
     ]
+  ; output_name = None
   }
 
 let depthwiseConv2dNativeBackpropInput
@@ -788,6 +843,7 @@ let depthwiseConv2dNativeBackpropInput
   ; attributes = [
       "T", Type (P filter.output_type);
     ]
+  ; output_name = None
   }
 
 let destroyTemporaryVariable
@@ -801,6 +857,7 @@ let destroyTemporaryVariable
   ; attributes = [
       "T", Type (P ref.output_type);
     ]
+  ; output_name = None
   }
 
 let diag
@@ -814,6 +871,7 @@ let diag
   ; attributes = [
       "T", Type (P diagonal.output_type);
     ]
+  ; output_name = None
   }
 
 let diagPart
@@ -827,6 +885,7 @@ let diagPart
   ; attributes = [
       "T", Type (P input.output_type);
     ]
+  ; output_name = None
   }
 
 let digamma
@@ -840,6 +899,7 @@ let digamma
   ; attributes = [
       "T", Type (P x.output_type);
     ]
+  ; output_name = None
   }
 
 let div
@@ -854,6 +914,7 @@ let div
   ; attributes = [
       "T", Type (P x.output_type);
     ]
+  ; output_name = None
   }
 
 let drawBoundingBoxes
@@ -867,6 +928,7 @@ let drawBoundingBoxes
   ; inputs = [ P images; P boxes ]
   ; attributes = [
     ]
+  ; output_name = None
   }
 
 let dynamicPartition
@@ -881,6 +943,7 @@ let dynamicPartition
   ; attributes = [
       "T", Type (P data.output_type);
     ]
+  ; output_name = None
   }
 
 let dynamicStitch
@@ -895,6 +958,7 @@ let dynamicStitch
   ; attributes = [
       "T", Type (P data.output_type);
     ]
+  ; output_name = None
   }
 
 let editDistance
@@ -912,6 +976,7 @@ let editDistance
   ; inputs = [ P hypothesis_indices; P hypothesis_values; P hypothesis_shape; P truth_indices; P truth_values; P truth_shape ]
   ; attributes = [
     ]
+  ; output_name = None
   }
 
 let elu
@@ -925,6 +990,7 @@ let elu
   ; attributes = [
       "T", Type (P features.output_type);
     ]
+  ; output_name = None
   }
 
 let eluGrad
@@ -939,6 +1005,7 @@ let eluGrad
   ; attributes = [
       "T", Type (P gradients.output_type);
     ]
+  ; output_name = None
   }
 
 let encodePng
@@ -951,6 +1018,7 @@ let encodePng
   ; inputs = [ P image ]
   ; attributes = [
     ]
+  ; output_name = None
   }
 
 let enter
@@ -964,6 +1032,7 @@ let enter
   ; attributes = [
       "T", Type (P data.output_type);
     ]
+  ; output_name = None
   }
 
 let equal
@@ -977,6 +1046,7 @@ let equal
   ; inputs = [ P x; P y ]
   ; attributes = [
     ]
+  ; output_name = None
   }
 
 let erf
@@ -990,6 +1060,7 @@ let erf
   ; attributes = [
       "T", Type (P x.output_type);
     ]
+  ; output_name = None
   }
 
 let erfc
@@ -1003,6 +1074,7 @@ let erfc
   ; attributes = [
       "T", Type (P x.output_type);
     ]
+  ; output_name = None
   }
 
 let exit
@@ -1016,6 +1088,7 @@ let exit
   ; attributes = [
       "T", Type (P data.output_type);
     ]
+  ; output_name = None
   }
 
 let exp
@@ -1029,6 +1102,7 @@ let exp
   ; attributes = [
       "T", Type (P x.output_type);
     ]
+  ; output_name = None
   }
 
 let expandDims
@@ -1043,6 +1117,7 @@ let expandDims
   ; attributes = [
       "T", Type (P input.output_type);
     ]
+  ; output_name = None
   }
 
 let extractGlimpse
@@ -1057,6 +1132,7 @@ let extractGlimpse
   ; inputs = [ P input; P size; P offsets ]
   ; attributes = [
     ]
+  ; output_name = None
   }
 
 let fFT2D
@@ -1069,6 +1145,7 @@ let fFT2D
   ; inputs = [ P in__ ]
   ; attributes = [
     ]
+  ; output_name = None
   }
 
 let fIFOQueue
@@ -1081,6 +1158,7 @@ let fIFOQueue
   ; inputs = [  ]
   ; attributes = [
     ]
+  ; output_name = None
   }
 
 let fact
@@ -1093,6 +1171,7 @@ let fact
   ; inputs = [  ]
   ; attributes = [
     ]
+  ; output_name = None
   }
 
 let fill
@@ -1107,6 +1186,7 @@ let fill
   ; attributes = [
       "T", Type (P value.output_type);
     ]
+  ; output_name = None
   }
 
 let fixedLengthRecordReader
@@ -1119,6 +1199,7 @@ let fixedLengthRecordReader
   ; inputs = [  ]
   ; attributes = [
     ]
+  ; output_name = None
   }
 
 let floor
@@ -1132,6 +1213,7 @@ let floor
   ; attributes = [
       "T", Type (P x.output_type);
     ]
+  ; output_name = None
   }
 
 let gather
@@ -1146,6 +1228,7 @@ let gather
   ; attributes = [
       "Tparams", Type (P params.output_type);
     ]
+  ; output_name = None
   }
 
 let greater
@@ -1159,6 +1242,7 @@ let greater
   ; inputs = [ P x; P y ]
   ; attributes = [
     ]
+  ; output_name = None
   }
 
 let greaterEqual
@@ -1172,6 +1256,7 @@ let greaterEqual
   ; inputs = [ P x; P y ]
   ; attributes = [
     ]
+  ; output_name = None
   }
 
 let hSVToRGB
@@ -1184,6 +1269,7 @@ let hSVToRGB
   ; inputs = [ P images ]
   ; attributes = [
     ]
+  ; output_name = None
   }
 
 let hashTable
@@ -1196,6 +1282,7 @@ let hashTable
   ; inputs = [  ]
   ; attributes = [
     ]
+  ; output_name = None
   }
 
 let histogramSummary
@@ -1209,6 +1296,7 @@ let histogramSummary
   ; inputs = [ P tag; P values ]
   ; attributes = [
     ]
+  ; output_name = None
   }
 
 let iFFT2D
@@ -1221,6 +1309,7 @@ let iFFT2D
   ; inputs = [ P in__ ]
   ; attributes = [
     ]
+  ; output_name = None
   }
 
 let identity
@@ -1234,6 +1323,7 @@ let identity
   ; attributes = [
       "T", Type (P input.output_type);
     ]
+  ; output_name = None
   }
 
 let identityReader
@@ -1246,6 +1336,7 @@ let identityReader
   ; inputs = [  ]
   ; attributes = [
     ]
+  ; output_name = None
   }
 
 let imag
@@ -1258,6 +1349,7 @@ let imag
   ; inputs = [ P in__ ]
   ; attributes = [
     ]
+  ; output_name = None
   }
 
 let imageSummary
@@ -1271,6 +1363,7 @@ let imageSummary
   ; inputs = [ P tag; P tensor ]
   ; attributes = [
     ]
+  ; output_name = None
   }
 
 let inTopK
@@ -1284,6 +1377,7 @@ let inTopK
   ; inputs = [ P predictions; P targets ]
   ; attributes = [
     ]
+  ; output_name = None
   }
 
 let initializeTable
@@ -1298,6 +1392,7 @@ let initializeTable
   ; inputs = [ P table_handle; P keys; P values ]
   ; attributes = [
     ]
+  ; output_name = None
   }
 
 let inv
@@ -1311,6 +1406,7 @@ let inv
   ; attributes = [
       "T", Type (P x.output_type);
     ]
+  ; output_name = None
   }
 
 let invertPermutation
@@ -1323,6 +1419,7 @@ let invertPermutation
   ; inputs = [ P x ]
   ; attributes = [
     ]
+  ; output_name = None
   }
 
 let isFinite
@@ -1335,6 +1432,7 @@ let isFinite
   ; inputs = [ P x ]
   ; attributes = [
     ]
+  ; output_name = None
   }
 
 let isInf
@@ -1347,6 +1445,7 @@ let isInf
   ; inputs = [ P x ]
   ; attributes = [
     ]
+  ; output_name = None
   }
 
 let isNan
@@ -1359,6 +1458,7 @@ let isNan
   ; inputs = [ P x ]
   ; attributes = [
     ]
+  ; output_name = None
   }
 
 let l2Loss
@@ -1372,6 +1472,7 @@ let l2Loss
   ; attributes = [
       "T", Type (P t.output_type);
     ]
+  ; output_name = None
   }
 
 let lRN
@@ -1384,6 +1485,7 @@ let lRN
   ; inputs = [ P input ]
   ; attributes = [
     ]
+  ; output_name = None
   }
 
 let lRNGrad
@@ -1398,6 +1500,7 @@ let lRNGrad
   ; inputs = [ P input_grads; P input_image; P output_image ]
   ; attributes = [
     ]
+  ; output_name = None
   }
 
 let less
@@ -1411,6 +1514,7 @@ let less
   ; inputs = [ P x; P y ]
   ; attributes = [
     ]
+  ; output_name = None
   }
 
 let lessEqual
@@ -1424,6 +1528,7 @@ let lessEqual
   ; inputs = [ P x; P y ]
   ; attributes = [
     ]
+  ; output_name = None
   }
 
 let lgamma
@@ -1437,6 +1542,7 @@ let lgamma
   ; attributes = [
       "T", Type (P x.output_type);
     ]
+  ; output_name = None
   }
 
 let linSpace
@@ -1452,6 +1558,7 @@ let linSpace
   ; attributes = [
       "T", Type (P start.output_type);
     ]
+  ; output_name = None
   }
 
 let log
@@ -1465,6 +1572,7 @@ let log
   ; attributes = [
       "T", Type (P x.output_type);
     ]
+  ; output_name = None
   }
 
 let logicalAnd
@@ -1478,6 +1586,7 @@ let logicalAnd
   ; inputs = [ P x; P y ]
   ; attributes = [
     ]
+  ; output_name = None
   }
 
 let logicalNot
@@ -1490,6 +1599,7 @@ let logicalNot
   ; inputs = [ P x ]
   ; attributes = [
     ]
+  ; output_name = None
   }
 
 let logicalOr
@@ -1503,6 +1613,7 @@ let logicalOr
   ; inputs = [ P x; P y ]
   ; attributes = [
     ]
+  ; output_name = None
   }
 
 let lookupTableFind
@@ -1518,6 +1629,7 @@ let lookupTableFind
   ; attributes = [
       "Tout", Type (P default_value.output_type);
     ]
+  ; output_name = None
   }
 
 let lookupTableSize
@@ -1530,6 +1642,7 @@ let lookupTableSize
   ; inputs = [ P table_handle ]
   ; attributes = [
     ]
+  ; output_name = None
   }
 
 let loopCond
@@ -1542,6 +1655,7 @@ let loopCond
   ; inputs = [ P input ]
   ; attributes = [
     ]
+  ; output_name = None
   }
 
 let matMul
@@ -1556,6 +1670,7 @@ let matMul
   ; attributes = [
       "T", Type (P a.output_type);
     ]
+  ; output_name = None
   }
 
 let matchingFiles
@@ -1568,6 +1683,7 @@ let matchingFiles
   ; inputs = [ P pattern ]
   ; attributes = [
     ]
+  ; output_name = None
   }
 
 let matrixDeterminant
@@ -1581,6 +1697,7 @@ let matrixDeterminant
   ; attributes = [
       "T", Type (P input.output_type);
     ]
+  ; output_name = None
   }
 
 let matrixInverse
@@ -1594,6 +1711,7 @@ let matrixInverse
   ; attributes = [
       "T", Type (P input.output_type);
     ]
+  ; output_name = None
   }
 
 let matrixSolve
@@ -1608,6 +1726,7 @@ let matrixSolve
   ; attributes = [
       "T", Type (P matrix.output_type);
     ]
+  ; output_name = None
   }
 
 let matrixSolveLs
@@ -1623,6 +1742,7 @@ let matrixSolveLs
   ; attributes = [
       "T", Type (P matrix.output_type);
     ]
+  ; output_name = None
   }
 
 let matrixTriangularSolve
@@ -1637,6 +1757,7 @@ let matrixTriangularSolve
   ; attributes = [
       "T", Type (P matrix.output_type);
     ]
+  ; output_name = None
   }
 
 let max
@@ -1651,6 +1772,7 @@ let max
   ; attributes = [
       "T", Type (P input.output_type);
     ]
+  ; output_name = None
   }
 
 let maxPool
@@ -1663,6 +1785,7 @@ let maxPool
   ; inputs = [ P input ]
   ; attributes = [
     ]
+  ; output_name = None
   }
 
 let maxPoolGrad
@@ -1677,6 +1800,7 @@ let maxPoolGrad
   ; inputs = [ P orig_input; P orig_output; P grad ]
   ; attributes = [
     ]
+  ; output_name = None
   }
 
 let maxPoolGradWithArgmax
@@ -1691,6 +1815,7 @@ let maxPoolGradWithArgmax
   ; inputs = [ P input; P grad; P argmax ]
   ; attributes = [
     ]
+  ; output_name = None
   }
 
 let maximum
@@ -1705,6 +1830,7 @@ let maximum
   ; attributes = [
       "T", Type (P x.output_type);
     ]
+  ; output_name = None
   }
 
 let mean
@@ -1719,6 +1845,7 @@ let mean
   ; attributes = [
       "T", Type (P input.output_type);
     ]
+  ; output_name = None
   }
 
 let mergeSummary
@@ -1731,6 +1858,7 @@ let mergeSummary
   ; inputs = [ P inputs ]
   ; attributes = [
     ]
+  ; output_name = None
   }
 
 let min
@@ -1745,6 +1873,7 @@ let min
   ; attributes = [
       "T", Type (P input.output_type);
     ]
+  ; output_name = None
   }
 
 let minimum
@@ -1759,6 +1888,7 @@ let minimum
   ; attributes = [
       "T", Type (P x.output_type);
     ]
+  ; output_name = None
   }
 
 let mirrorPad
@@ -1773,6 +1903,7 @@ let mirrorPad
   ; attributes = [
       "T", Type (P input.output_type);
     ]
+  ; output_name = None
   }
 
 let mirrorPadGrad
@@ -1787,6 +1918,7 @@ let mirrorPadGrad
   ; attributes = [
       "T", Type (P input.output_type);
     ]
+  ; output_name = None
   }
 
 let mod_
@@ -1801,6 +1933,7 @@ let mod_
   ; attributes = [
       "T", Type (P x.output_type);
     ]
+  ; output_name = None
   }
 
 let mul
@@ -1815,6 +1948,7 @@ let mul
   ; attributes = [
       "T", Type (P x.output_type);
     ]
+  ; output_name = None
   }
 
 let neg
@@ -1828,6 +1962,7 @@ let neg
   ; attributes = [
       "T", Type (P x.output_type);
     ]
+  ; output_name = None
   }
 
 let negTrain
@@ -1844,6 +1979,7 @@ let negTrain
   ; inputs = [ P w_in; P w_out; P examples; P labels; P lr ]
   ; attributes = [
     ]
+  ; output_name = None
   }
 
 let nextIteration
@@ -1857,6 +1993,7 @@ let nextIteration
   ; attributes = [
       "T", Type (P data.output_type);
     ]
+  ; output_name = None
   }
 
 let noOp
@@ -1869,6 +2006,7 @@ let noOp
   ; inputs = [  ]
   ; attributes = [
     ]
+  ; output_name = None
   }
 
 let notEqual
@@ -1882,6 +2020,7 @@ let notEqual
   ; inputs = [ P x; P y ]
   ; attributes = [
     ]
+  ; output_name = None
   }
 
 let oneHot
@@ -1898,6 +2037,7 @@ let oneHot
   ; attributes = [
       "T", Type (P on_value.output_type);
     ]
+  ; output_name = None
   }
 
 let pack
@@ -1911,6 +2051,7 @@ let pack
   ; attributes = [
       "T", Type (P values.output_type);
     ]
+  ; output_name = None
   }
 
 let pad
@@ -1925,6 +2066,7 @@ let pad
   ; attributes = [
       "T", Type (P input.output_type);
     ]
+  ; output_name = None
   }
 
 let paddingFIFOQueue
@@ -1937,6 +2079,7 @@ let paddingFIFOQueue
   ; inputs = [  ]
   ; attributes = [
     ]
+  ; output_name = None
   }
 
 let placeholder
@@ -1951,6 +2094,7 @@ let placeholder
   ; attributes = [
       "dtype", Type (P type_);
     ]
+  ; output_name = None
   }
 
 let pow
@@ -1965,6 +2109,7 @@ let pow
   ; attributes = [
       "T", Type (P x.output_type);
     ]
+  ; output_name = None
   }
 
 let prod
@@ -1979,6 +2124,7 @@ let prod
   ; attributes = [
       "T", Type (P input.output_type);
     ]
+  ; output_name = None
   }
 
 let queueClose
@@ -1991,6 +2137,7 @@ let queueClose
   ; inputs = [ P handle ]
   ; attributes = [
     ]
+  ; output_name = None
   }
 
 let queueSize
@@ -2003,6 +2150,7 @@ let queueSize
   ; inputs = [ P handle ]
   ; attributes = [
     ]
+  ; output_name = None
   }
 
 let rGBToHSV
@@ -2015,6 +2163,7 @@ let rGBToHSV
   ; inputs = [ P images ]
   ; attributes = [
     ]
+  ; output_name = None
   }
 
 let randomCrop
@@ -2029,6 +2178,7 @@ let randomCrop
   ; attributes = [
       "T", Type (P image.output_type);
     ]
+  ; output_name = None
   }
 
 let randomShuffle
@@ -2042,6 +2192,7 @@ let randomShuffle
   ; attributes = [
       "T", Type (P value.output_type);
     ]
+  ; output_name = None
   }
 
 let randomShuffleQueue
@@ -2054,6 +2205,7 @@ let randomShuffleQueue
   ; inputs = [  ]
   ; attributes = [
     ]
+  ; output_name = None
   }
 
 let randomStandardNormal
@@ -2068,6 +2220,7 @@ let randomStandardNormal
   ; attributes = [
       "dtype", Type (P type_);
     ]
+  ; output_name = None
   }
 
 let randomUniform
@@ -2082,6 +2235,7 @@ let randomUniform
   ; attributes = [
       "dtype", Type (P type_);
     ]
+  ; output_name = None
   }
 
 let randomUniformInt
@@ -2097,6 +2251,7 @@ let randomUniformInt
   ; attributes = [
       "Tout", Type (P minval.output_type);
     ]
+  ; output_name = None
   }
 
 let range
@@ -2111,6 +2266,7 @@ let range
   ; inputs = [ P start; P limit; P delta ]
   ; attributes = [
     ]
+  ; output_name = None
   }
 
 let rank
@@ -2123,6 +2279,7 @@ let rank
   ; inputs = [ P input ]
   ; attributes = [
     ]
+  ; output_name = None
   }
 
 let readFile
@@ -2135,6 +2292,7 @@ let readFile
   ; inputs = [ P filename ]
   ; attributes = [
     ]
+  ; output_name = None
   }
 
 let readerNumRecordsProduced
@@ -2147,6 +2305,7 @@ let readerNumRecordsProduced
   ; inputs = [ P reader_handle ]
   ; attributes = [
     ]
+  ; output_name = None
   }
 
 let readerNumWorkUnitsCompleted
@@ -2159,6 +2318,7 @@ let readerNumWorkUnitsCompleted
   ; inputs = [ P reader_handle ]
   ; attributes = [
     ]
+  ; output_name = None
   }
 
 let readerReset
@@ -2171,6 +2331,7 @@ let readerReset
   ; inputs = [ P reader_handle ]
   ; attributes = [
     ]
+  ; output_name = None
   }
 
 let readerRestoreState
@@ -2184,6 +2345,7 @@ let readerRestoreState
   ; inputs = [ P reader_handle; P state ]
   ; attributes = [
     ]
+  ; output_name = None
   }
 
 let readerSerializeState
@@ -2196,6 +2358,7 @@ let readerSerializeState
   ; inputs = [ P reader_handle ]
   ; attributes = [
     ]
+  ; output_name = None
   }
 
 let real
@@ -2208,6 +2371,7 @@ let real
   ; inputs = [ P in__ ]
   ; attributes = [
     ]
+  ; output_name = None
   }
 
 let refEnter
@@ -2221,6 +2385,7 @@ let refEnter
   ; attributes = [
       "T", Type (P data.output_type);
     ]
+  ; output_name = None
   }
 
 let refExit
@@ -2234,6 +2399,7 @@ let refExit
   ; attributes = [
       "T", Type (P data.output_type);
     ]
+  ; output_name = None
   }
 
 let refIdentity
@@ -2247,6 +2413,7 @@ let refIdentity
   ; attributes = [
       "T", Type (P input.output_type);
     ]
+  ; output_name = None
   }
 
 let refNextIteration
@@ -2260,6 +2427,7 @@ let refNextIteration
   ; attributes = [
       "T", Type (P data.output_type);
     ]
+  ; output_name = None
   }
 
 let refSelect
@@ -2274,6 +2442,7 @@ let refSelect
   ; attributes = [
       "T", Type (P inputs.output_type);
     ]
+  ; output_name = None
   }
 
 let relu
@@ -2287,6 +2456,7 @@ let relu
   ; attributes = [
       "T", Type (P features.output_type);
     ]
+  ; output_name = None
   }
 
 let relu6
@@ -2300,6 +2470,7 @@ let relu6
   ; attributes = [
       "T", Type (P features.output_type);
     ]
+  ; output_name = None
   }
 
 let relu6Grad
@@ -2314,6 +2485,7 @@ let relu6Grad
   ; attributes = [
       "T", Type (P gradients.output_type);
     ]
+  ; output_name = None
   }
 
 let reluGrad
@@ -2328,6 +2500,7 @@ let reluGrad
   ; attributes = [
       "T", Type (P gradients.output_type);
     ]
+  ; output_name = None
   }
 
 let reshape
@@ -2342,6 +2515,7 @@ let reshape
   ; attributes = [
       "T", Type (P tensor.output_type);
     ]
+  ; output_name = None
   }
 
 let resizeArea
@@ -2355,6 +2529,7 @@ let resizeArea
   ; inputs = [ P images; P size ]
   ; attributes = [
     ]
+  ; output_name = None
   }
 
 let resizeBicubic
@@ -2368,6 +2543,7 @@ let resizeBicubic
   ; inputs = [ P images; P size ]
   ; attributes = [
     ]
+  ; output_name = None
   }
 
 let resizeBilinear
@@ -2381,6 +2557,7 @@ let resizeBilinear
   ; inputs = [ P images; P size ]
   ; attributes = [
     ]
+  ; output_name = None
   }
 
 let resizeBilinearGrad
@@ -2395,6 +2572,7 @@ let resizeBilinearGrad
   ; attributes = [
       "T", Type (P original_image.output_type);
     ]
+  ; output_name = None
   }
 
 let resizeNearestNeighbor
@@ -2409,6 +2587,7 @@ let resizeNearestNeighbor
   ; attributes = [
       "T", Type (P images.output_type);
     ]
+  ; output_name = None
   }
 
 let resizeNearestNeighborGrad
@@ -2423,6 +2602,7 @@ let resizeNearestNeighborGrad
   ; attributes = [
       "T", Type (P grads.output_type);
     ]
+  ; output_name = None
   }
 
 let restore
@@ -2438,6 +2618,7 @@ let restore
   ; attributes = [
       "dt", Type (P type_);
     ]
+  ; output_name = None
   }
 
 let restoreSlice
@@ -2454,6 +2635,7 @@ let restoreSlice
   ; attributes = [
       "dt", Type (P type_);
     ]
+  ; output_name = None
   }
 
 let reverse
@@ -2468,6 +2650,7 @@ let reverse
   ; attributes = [
       "T", Type (P tensor.output_type);
     ]
+  ; output_name = None
   }
 
 let reverseSequence
@@ -2482,6 +2665,7 @@ let reverseSequence
   ; attributes = [
       "T", Type (P input.output_type);
     ]
+  ; output_name = None
   }
 
 let rsqrt
@@ -2495,6 +2679,7 @@ let rsqrt
   ; attributes = [
       "T", Type (P x.output_type);
     ]
+  ; output_name = None
   }
 
 let scalarSummary
@@ -2508,6 +2693,7 @@ let scalarSummary
   ; inputs = [ P tags; P values ]
   ; attributes = [
     ]
+  ; output_name = None
   }
 
 let scatterAdd
@@ -2523,6 +2709,7 @@ let scatterAdd
   ; attributes = [
       "T", Type (P ref.output_type);
     ]
+  ; output_name = None
   }
 
 let scatterSub
@@ -2538,6 +2725,7 @@ let scatterSub
   ; attributes = [
       "T", Type (P ref.output_type);
     ]
+  ; output_name = None
   }
 
 let scatterUpdate
@@ -2553,6 +2741,7 @@ let scatterUpdate
   ; attributes = [
       "T", Type (P ref.output_type);
     ]
+  ; output_name = None
   }
 
 let segmentMax
@@ -2567,6 +2756,7 @@ let segmentMax
   ; attributes = [
       "T", Type (P data.output_type);
     ]
+  ; output_name = None
   }
 
 let segmentMean
@@ -2581,6 +2771,7 @@ let segmentMean
   ; attributes = [
       "T", Type (P data.output_type);
     ]
+  ; output_name = None
   }
 
 let segmentMin
@@ -2595,6 +2786,7 @@ let segmentMin
   ; attributes = [
       "T", Type (P data.output_type);
     ]
+  ; output_name = None
   }
 
 let segmentProd
@@ -2609,6 +2801,7 @@ let segmentProd
   ; attributes = [
       "T", Type (P data.output_type);
     ]
+  ; output_name = None
   }
 
 let segmentSum
@@ -2623,6 +2816,7 @@ let segmentSum
   ; attributes = [
       "T", Type (P data.output_type);
     ]
+  ; output_name = None
   }
 
 let select
@@ -2638,6 +2832,7 @@ let select
   ; attributes = [
       "T", Type (P t.output_type);
     ]
+  ; output_name = None
   }
 
 let selfAdjointEig
@@ -2651,6 +2846,7 @@ let selfAdjointEig
   ; attributes = [
       "T", Type (P input.output_type);
     ]
+  ; output_name = None
   }
 
 let serializeManySparse
@@ -2665,6 +2861,7 @@ let serializeManySparse
   ; inputs = [ P sparse_indices; P sparse_values; P sparse_shape ]
   ; attributes = [
     ]
+  ; output_name = None
   }
 
 let serializeSparse
@@ -2679,6 +2876,7 @@ let serializeSparse
   ; inputs = [ P sparse_indices; P sparse_values; P sparse_shape ]
   ; attributes = [
     ]
+  ; output_name = None
   }
 
 let shape
@@ -2691,6 +2889,7 @@ let shape
   ; inputs = [ P input ]
   ; attributes = [
     ]
+  ; output_name = None
   }
 
 let shapeN
@@ -2703,6 +2902,7 @@ let shapeN
   ; inputs = [ P input ]
   ; attributes = [
     ]
+  ; output_name = None
   }
 
 let shardedFilename
@@ -2717,6 +2917,7 @@ let shardedFilename
   ; inputs = [ P basename; P shard; P num_shards ]
   ; attributes = [
     ]
+  ; output_name = None
   }
 
 let shardedFilespec
@@ -2730,6 +2931,7 @@ let shardedFilespec
   ; inputs = [ P basename; P num_shards ]
   ; attributes = [
     ]
+  ; output_name = None
   }
 
 let sigmoid
@@ -2743,6 +2945,7 @@ let sigmoid
   ; attributes = [
       "T", Type (P x.output_type);
     ]
+  ; output_name = None
   }
 
 let sign
@@ -2756,6 +2959,7 @@ let sign
   ; attributes = [
       "T", Type (P x.output_type);
     ]
+  ; output_name = None
   }
 
 let sin
@@ -2769,6 +2973,7 @@ let sin
   ; attributes = [
       "T", Type (P x.output_type);
     ]
+  ; output_name = None
   }
 
 let size
@@ -2781,6 +2986,7 @@ let size
   ; inputs = [ P input ]
   ; attributes = [
     ]
+  ; output_name = None
   }
 
 let slice
@@ -2796,6 +3002,7 @@ let slice
   ; attributes = [
       "T", Type (P input.output_type);
     ]
+  ; output_name = None
   }
 
 let softmax
@@ -2809,6 +3016,7 @@ let softmax
   ; attributes = [
       "T", Type (P logits.output_type);
     ]
+  ; output_name = None
   }
 
 let softplus
@@ -2822,6 +3030,7 @@ let softplus
   ; attributes = [
       "T", Type (P features.output_type);
     ]
+  ; output_name = None
   }
 
 let softplusGrad
@@ -2836,6 +3045,7 @@ let softplusGrad
   ; attributes = [
       "T", Type (P gradients.output_type);
     ]
+  ; output_name = None
   }
 
 let softsign
@@ -2849,6 +3059,7 @@ let softsign
   ; attributes = [
       "T", Type (P features.output_type);
     ]
+  ; output_name = None
   }
 
 let softsignGrad
@@ -2863,6 +3074,7 @@ let softsignGrad
   ; attributes = [
       "T", Type (P gradients.output_type);
     ]
+  ; output_name = None
   }
 
 let spaceToDepth
@@ -2876,6 +3088,7 @@ let spaceToDepth
   ; attributes = [
       "T", Type (P input.output_type);
     ]
+  ; output_name = None
   }
 
 let sparseApplyAdagrad
@@ -2893,6 +3106,7 @@ let sparseApplyAdagrad
   ; attributes = [
       "T", Type (P var.output_type);
     ]
+  ; output_name = None
   }
 
 let sparseApplyFtrl
@@ -2914,6 +3128,7 @@ let sparseApplyFtrl
   ; attributes = [
       "T", Type (P var.output_type);
     ]
+  ; output_name = None
   }
 
 let sparseApplyMomentum
@@ -2932,6 +3147,7 @@ let sparseApplyMomentum
   ; attributes = [
       "T", Type (P var.output_type);
     ]
+  ; output_name = None
   }
 
 let sparseMatMul
@@ -2945,6 +3161,7 @@ let sparseMatMul
   ; inputs = [ P a; P b ]
   ; attributes = [
     ]
+  ; output_name = None
   }
 
 let sparseSegmentMean
@@ -2960,6 +3177,7 @@ let sparseSegmentMean
   ; attributes = [
       "T", Type (P data.output_type);
     ]
+  ; output_name = None
   }
 
 let sparseSegmentMeanGrad
@@ -2976,6 +3194,7 @@ let sparseSegmentMeanGrad
   ; attributes = [
       "T", Type (P grad.output_type);
     ]
+  ; output_name = None
   }
 
 let sparseSegmentSqrtN
@@ -2991,6 +3210,7 @@ let sparseSegmentSqrtN
   ; attributes = [
       "T", Type (P data.output_type);
     ]
+  ; output_name = None
   }
 
 let sparseSegmentSqrtNGrad
@@ -3007,6 +3227,7 @@ let sparseSegmentSqrtNGrad
   ; attributes = [
       "T", Type (P grad.output_type);
     ]
+  ; output_name = None
   }
 
 let sparseSegmentSum
@@ -3022,6 +3243,7 @@ let sparseSegmentSum
   ; attributes = [
       "T", Type (P data.output_type);
     ]
+  ; output_name = None
   }
 
 let sparseTensorDenseMatMul
@@ -3038,6 +3260,7 @@ let sparseTensorDenseMatMul
   ; attributes = [
       "T", Type (P a_values.output_type);
     ]
+  ; output_name = None
   }
 
 let sparseToDense
@@ -3054,6 +3277,7 @@ let sparseToDense
   ; attributes = [
       "T", Type (P sparse_values.output_type);
     ]
+  ; output_name = None
   }
 
 let split
@@ -3068,6 +3292,7 @@ let split
   ; attributes = [
       "T", Type (P value.output_type);
     ]
+  ; output_name = None
   }
 
 let sqrt
@@ -3081,6 +3306,7 @@ let sqrt
   ; attributes = [
       "T", Type (P x.output_type);
     ]
+  ; output_name = None
   }
 
 let square
@@ -3094,6 +3320,7 @@ let square
   ; attributes = [
       "T", Type (P x.output_type);
     ]
+  ; output_name = None
   }
 
 let squaredDifference
@@ -3108,6 +3335,7 @@ let squaredDifference
   ; attributes = [
       "T", Type (P x.output_type);
     ]
+  ; output_name = None
   }
 
 let squeeze
@@ -3121,6 +3349,7 @@ let squeeze
   ; attributes = [
       "T", Type (P input.output_type);
     ]
+  ; output_name = None
   }
 
 let stack
@@ -3133,6 +3362,7 @@ let stack
   ; inputs = [  ]
   ; attributes = [
     ]
+  ; output_name = None
   }
 
 let stackClose
@@ -3145,6 +3375,7 @@ let stackClose
   ; inputs = [ P handle ]
   ; attributes = [
     ]
+  ; output_name = None
   }
 
 let stackPop
@@ -3159,6 +3390,7 @@ let stackPop
   ; attributes = [
       "elem_type", Type (P type_);
     ]
+  ; output_name = None
   }
 
 let stackPush
@@ -3173,6 +3405,7 @@ let stackPush
   ; attributes = [
       "T", Type (P elem.output_type);
     ]
+  ; output_name = None
   }
 
 let stopGradient
@@ -3186,6 +3419,7 @@ let stopGradient
   ; attributes = [
       "T", Type (P input.output_type);
     ]
+  ; output_name = None
   }
 
 let stringToHashBucket
@@ -3198,6 +3432,7 @@ let stringToHashBucket
   ; inputs = [ P string_tensor ]
   ; attributes = [
     ]
+  ; output_name = None
   }
 
 let stringToNumber
@@ -3212,6 +3447,7 @@ let stringToNumber
   ; attributes = [
       "out_type", Type (P type_);
     ]
+  ; output_name = None
   }
 
 let sub
@@ -3226,6 +3462,7 @@ let sub
   ; attributes = [
       "T", Type (P x.output_type);
     ]
+  ; output_name = None
   }
 
 let sum
@@ -3240,6 +3477,7 @@ let sum
   ; attributes = [
       "T", Type (P input.output_type);
     ]
+  ; output_name = None
   }
 
 let tFRecordReader
@@ -3252,6 +3490,7 @@ let tFRecordReader
   ; inputs = [  ]
   ; attributes = [
     ]
+  ; output_name = None
   }
 
 let tanh
@@ -3265,6 +3504,7 @@ let tanh
   ; attributes = [
       "T", Type (P x.output_type);
     ]
+  ; output_name = None
   }
 
 let temporaryVariable
@@ -3279,6 +3519,7 @@ let temporaryVariable
   ; attributes = [
       "dtype", Type (P type_);
     ]
+  ; output_name = None
   }
 
 let tensorArray
@@ -3291,6 +3532,7 @@ let tensorArray
   ; inputs = [ P size ]
   ; attributes = [
     ]
+  ; output_name = None
   }
 
 let tensorArrayClose
@@ -3303,6 +3545,7 @@ let tensorArrayClose
   ; inputs = [ P handle ]
   ; attributes = [
     ]
+  ; output_name = None
   }
 
 let tensorArrayGrad
@@ -3316,6 +3559,7 @@ let tensorArrayGrad
   ; inputs = [ P handle; P flow_in ]
   ; attributes = [
     ]
+  ; output_name = None
   }
 
 let tensorArrayPack
@@ -3331,6 +3575,7 @@ let tensorArrayPack
   ; attributes = [
       "dtype", Type (P type_);
     ]
+  ; output_name = None
   }
 
 let tensorArrayRead
@@ -3347,6 +3592,7 @@ let tensorArrayRead
   ; attributes = [
       "dtype", Type (P type_);
     ]
+  ; output_name = None
   }
 
 let tensorArraySize
@@ -3360,6 +3606,7 @@ let tensorArraySize
   ; inputs = [ P handle; P flow_in ]
   ; attributes = [
     ]
+  ; output_name = None
   }
 
 let tensorArraySplit
@@ -3375,6 +3622,7 @@ let tensorArraySplit
   ; inputs = [ P handle; P value; P lengths; P flow_in ]
   ; attributes = [
     ]
+  ; output_name = None
   }
 
 let tensorArrayUnpack
@@ -3389,6 +3637,7 @@ let tensorArrayUnpack
   ; inputs = [ P handle; P value; P flow_in ]
   ; attributes = [
     ]
+  ; output_name = None
   }
 
 let tensorArrayWrite
@@ -3404,6 +3653,7 @@ let tensorArrayWrite
   ; inputs = [ P handle; P index; P value; P flow_in ]
   ; attributes = [
     ]
+  ; output_name = None
   }
 
 let textLineReader
@@ -3416,6 +3666,7 @@ let textLineReader
   ; inputs = [  ]
   ; attributes = [
     ]
+  ; output_name = None
   }
 
 let tile
@@ -3430,6 +3681,7 @@ let tile
   ; attributes = [
       "T", Type (P input.output_type);
     ]
+  ; output_name = None
   }
 
 let tileGrad
@@ -3444,6 +3696,7 @@ let tileGrad
   ; attributes = [
       "T", Type (P input.output_type);
     ]
+  ; output_name = None
   }
 
 let transpose
@@ -3458,6 +3711,7 @@ let transpose
   ; attributes = [
       "T", Type (P x.output_type);
     ]
+  ; output_name = None
   }
 
 let truncatedNormal
@@ -3472,6 +3726,7 @@ let truncatedNormal
   ; attributes = [
       "dtype", Type (P type_);
     ]
+  ; output_name = None
   }
 
 let unpack
@@ -3485,6 +3740,7 @@ let unpack
   ; attributes = [
       "T", Type (P value.output_type);
     ]
+  ; output_name = None
   }
 
 let unsortedSegmentSum
@@ -3500,6 +3756,7 @@ let unsortedSegmentSum
   ; attributes = [
       "T", Type (P data.output_type);
     ]
+  ; output_name = None
   }
 
 let variable
@@ -3514,6 +3771,7 @@ let variable
   ; attributes = [
       "dtype", Type (P type_);
     ]
+  ; output_name = None
   }
 
 let where
@@ -3526,6 +3784,7 @@ let where
   ; inputs = [ P input ]
   ; attributes = [
     ]
+  ; output_name = None
   }
 
 let wholeFileReader
@@ -3538,6 +3797,7 @@ let wholeFileReader
   ; inputs = [  ]
   ; attributes = [
     ]
+  ; output_name = None
   }
 
 let zerosLike
@@ -3551,5 +3811,6 @@ let zerosLike
   ; attributes = [
       "T", Type (P x.output_type);
     ]
+  ; output_name = None
   }
 

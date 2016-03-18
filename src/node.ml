@@ -62,10 +62,20 @@ end
    in a generic way ? *)
 module Tensor_float = struct
   type t =
+(*    { type_ : [< `float | `double ] Type.t *)
     { type_ : Type.p (* Has to be Float or Double. *)
     ; shape : int list
     ; values : float list
     }
+end
+
+module Dim = struct
+  type t =
+    { size : int
+    ; name : string option
+    }
+
+  let create ?name size = { size; name }
 end
 
 type attr =
@@ -76,6 +86,7 @@ type attr =
   | Type of Type.p
   | List of attr list
   | Tensor_float of Tensor_float.t
+  | Shape of Dim.t list
 
 type 'a t =
   { name : Name.t
@@ -83,5 +94,6 @@ type 'a t =
   ; output_type : 'a Type.t
   ; inputs : p list
   ; attributes : (string * attr) list
+  ; output_name : string option (* Only used for multiple outputs. *)
   }
 and p = P : _ t -> p

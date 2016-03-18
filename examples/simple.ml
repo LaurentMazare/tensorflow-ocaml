@@ -9,11 +9,17 @@ let ok_exn (result : 'a Session.result) ~context =
     |> failwith
 
 let () =
+  let input_tensor = Tensor.create1d Ctypes.float 3 in
+  let data = Tensor.data input_tensor Ctypes.float 3 in
+  CArray.set data 0 1.;
+  CArray.set data 1 2.;
+  CArray.set data 2 6.;
+  let placeholder = Ops.placeholder ~name:"x" ~type_:Float () in
   let node =
-    Ops.add
-      (Ops_m.const_float_1d ~type_:Float [ 2.; 1.; 1. ])
-      (Ops_m.const_float_1d ~type_:Float [ -1.; 3.; 0. ])
-    |> Ops.exp
+    Ops.sub
+      (Ops_m.const_float_1d ~type_:Float [ 2.; 1.; 4. ])
+      placeholder
+    |> Ops.abs
   in
   let session_options = Session_options.create () in
   let session =
@@ -27,7 +33,7 @@ let () =
   let output =
     Session.run
       session
-      ~inputs:[]
+      ~inputs:[ placeholder.name |> Node.Name.to_string, input_tensor ]
       ~outputs:[ node.name |> Node.Name.to_string ]
       ~targets:[ node.name |> Node.Name.to_string ]
     |> ok_exn ~context:"session run"

@@ -14,6 +14,7 @@ let const_float_1d
       "dtype", Type (P type_);
       "value", Tensor_float { type_ = P type_; shape = [ List.length values ]; values };
     ]
+  ; output_name = None
   }
 
 

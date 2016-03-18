@@ -197,6 +197,7 @@ let gen_ml ops =
     Option.iter op.output_type_name ~f:(fun output_type_name ->
       p "      \"%s\", Type (P %s);" output_type_name output_type_string);
     p "    ]";
+    p "  ; output_name = None";
     p "  }";
     p "";
   in
