@@ -4,8 +4,8 @@ module CArray = Ctypes.CArray
 let () =
   let node =
     Ops.add
-      (Ops.const ~type_:Float ())
-      (Ops.const ~type_:Float ())
+      (Ops_m.const_float_1d ~type_:Float [ 2.; 9.; 12. ])
+      (Ops_m.const_float_1d ~type_:Float [ 1.; 3.; 5. ])
   in
   let session_options = Session_options.create () in
   let status = Status.create () in
