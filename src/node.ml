@@ -18,6 +18,7 @@ module Type = struct
     | Unit : [ `unit ] t
     | Float : [ `float ] t
     | Double : [ `double ] t
+    | Int32 : [ `int32 ] t
 
   type p = P : _ t -> p
 
@@ -25,6 +26,13 @@ module Type = struct
     | P Unit -> assert false
     | P Float -> `dt_float
     | P Double -> `dt_double
+    | P Int32 -> `dt_int32
+
+  let of_dt_type = function
+    | `dt_float -> Some (P Float)
+    | `dt_double -> Some (P Double)
+    | `dt_int32 -> Some (P Int32)
+    | _ -> None
 end
 
 type attr =

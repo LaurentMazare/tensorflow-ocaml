@@ -7,6 +7,7 @@ let output_file = "src/ops"
 let types_to_string = function
   | Node.Type.P Node.Type.Float -> "`float"
   | Node.Type.P Node.Type.Double -> "`double"
+  | Node.Type.P Node.Type.Int32 -> "`int32"
   | Node.Type.P Node.Type.Unit -> "`unit"
 
 module Type = struct
@@ -62,10 +63,11 @@ module Op = struct
       Some type_attr, type_
     | None ->
       match arg.type_ with
-      | Some `dt_float -> None, Fixed (P Float)
-      | Some `dt_double -> None, Fixed (P Double)
-      | Some _ -> raise (Not_supported "unknown output type")
       | None -> raise (Not_supported "no output type")
+      | Some dt_type ->
+        match Node.Type.of_dt_type dt_type with
+        | Some p -> None, Fixed p
+        | None -> raise (Not_supported "unknown output type")
 
   let extract_types (attrs : Op_def_piqi.op_def_attr_def list) =
     List.filter_map attrs ~f:(fun (attr : Op_def_piqi.op_def_attr_def) ->
@@ -78,11 +80,7 @@ module Op = struct
             match allowed_values.list with
             | None -> []
             | Some allowed_values ->
-              List.filter_map allowed_values.type_ ~f:(fun typ ->
-                match typ with
-                | `dt_float -> Some Node.Type.(P Float)
-                | `dt_double -> Some Node.Type.(P Double)
-                | _ -> None)
+              List.filter_map allowed_values.type_ ~f:Node.Type.of_dt_type
         in
         if allowed_values = []
         then None
@@ -126,6 +124,7 @@ let output_type_string op =
   match op.Op.output_type with
   | Fixed (Node.Type.P Node.Type.Float) -> "Type.Float"
   | Fixed (Node.Type.P Node.Type.Double) -> "Type.Double"
+  | Fixed (Node.Type.P Node.Type.Int32) -> "Type.Int32"
   | Fixed (Node.Type.P Node.Type.Unit) -> "Type.Unit"
   | Polymorphic (alpha, _) ->
     match same_input_and_output_type op ~alpha with
