@@ -15,7 +15,13 @@ let () =
     session
     (Graph.Protobuf.to_protobuf graph)
     status;
-  assert (Status.code status = TF_OK);
+  begin
+    match Status.code status with
+    | TF_OK -> ()
+    | _ ->
+      Printf.sprintf "Error building graph: %s\n%!" (Status.message status)
+      |> failwith
+  end;
   let output =
     Session.run
       session
