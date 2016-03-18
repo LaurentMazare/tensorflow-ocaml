@@ -41,6 +41,7 @@ module Op = struct
     { name : string
     ; inputs : Input.t list 
     ; output_type : Type.t
+    ; output_type_name : string option
     }
 
   let read_type types (arg : Op_def_piqi.op_def_arg_def) =
@@ -52,16 +53,17 @@ module Op = struct
         then "'type__"
         else "'" ^ type_attr
       in
-      begin
+      let type_ =
         match List.Assoc.find types type_attr with
         | None -> Type.Polymorphic (alpha, `allow_all)
         | Some types ->
           Polymorphic (alpha, `allow_only types)
-      end
+      in
+      Some type_attr, type_
     | None ->
       match arg.type_ with
-      | Some `dt_float -> Fixed (P Float)
-      | Some `dt_double -> Fixed (P Double)
+      | Some `dt_float -> None, Fixed (P Float)
+      | Some `dt_double -> None, Fixed (P Double)
       | Some _ -> raise (Not_supported "unknown output type")
       | None -> raise (Not_supported "no output type")
 
@@ -94,16 +96,16 @@ module Op = struct
       let inputs =
         List.map op.input_arg ~f:(fun input_arg ->
           { Input.name = input_arg.name
-          ; type_ = read_type types input_arg
+          ; type_ = read_type types input_arg |> snd
           })
       in
-      let output_type =
+      let output_type_name, output_type =
         match op.output_arg with
-        | [] -> Type.Fixed (P Unit)
+        | [] -> None, Type.Fixed (P Unit)
         | _ :: _ :: _ -> raise (Not_supported "multiple outputs")
         | [ output_arg ] -> read_type types output_arg
       in
-      Ok { name; inputs; output_type }
+      Ok { name; inputs; output_type; output_type_name }
     with
     | Not_supported str ->
       Error (sprintf "%s: %s" name str)
@@ -177,18 +179,20 @@ let gen_ml ops =
       p "    (%s : %s t)" name (Type.to_string input.type_));
     if List.is_empty op.inputs && not needs_variable_for_output_type
     then p "    ()";
+    let output_type_string = output_type_string op in
     p "  =";
     p "  { name = Name.make_fresh ~name";
-    p "  ; output_type = %s" (output_type_string op);
+    p "  ; output_type = %s" output_type_string;
     let inputs =
       List.mapi op.inputs ~f:(fun idx input ->
         sprintf "P %s" (Input.name input ~idx))
       |> String.concat ~sep:"; "
     in
     p "  ; inputs = [ %s ]" inputs;
-    (* TODO: adapt this... *)
-    p "  ; attributes =";
-    p "    [";
+    (* TODO: handle more attributes... *)
+    p "  ; attributes = [";
+    Option.iter op.output_type_name ~f:(fun output_type_name ->
+      p "      \"%s\", Type (P %s);" output_type_name output_type_string);
     p "    ]";
     p "  }";
     p "";

@@ -7,8 +7,8 @@ let abs
   { name = Name.make_fresh ~name
   ; output_type = x.output_type
   ; inputs = [ P x ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P x.output_type);
     ]
   }
 
@@ -20,8 +20,8 @@ let add
   { name = Name.make_fresh ~name
   ; output_type = x.output_type
   ; inputs = [ P x; P y ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P x.output_type);
     ]
   }
 
@@ -32,8 +32,8 @@ let addN
   { name = Name.make_fresh ~name
   ; output_type = inputs.output_type
   ; inputs = [ P inputs ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P inputs.output_type);
     ]
   }
 
@@ -47,8 +47,7 @@ let adjustContrast
   { name = Name.make_fresh ~name
   ; output_type = Type.Float
   ; inputs = [ P images; P contrast_factor; P min_value; P max_value ]
-  ; attributes =
-    [
+  ; attributes = [
     ]
   }
 
@@ -60,8 +59,7 @@ let adjustContrastv2
   { name = Name.make_fresh ~name
   ; output_type = Type.Float
   ; inputs = [ P images; P contrast_factor ]
-  ; attributes =
-    [
+  ; attributes = [
     ]
   }
 
@@ -75,8 +73,8 @@ let applyAdagrad
   { name = Name.make_fresh ~name
   ; output_type = var.output_type
   ; inputs = [ P var; P accum; P lr; P grad ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P var.output_type);
     ]
   }
 
@@ -96,8 +94,8 @@ let applyAdam
   { name = Name.make_fresh ~name
   ; output_type = var.output_type
   ; inputs = [ P var; P m; P v; P beta1_power; P beta2_power; P lr; P beta1; P beta2; P epsilon; P grad ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P var.output_type);
     ]
   }
 
@@ -115,8 +113,8 @@ let applyFtrl
   { name = Name.make_fresh ~name
   ; output_type = var.output_type
   ; inputs = [ P var; P accum; P linear; P grad; P lr; P l1; P l2; P lr_power ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P var.output_type);
     ]
   }
 
@@ -129,8 +127,8 @@ let applyGradientDescent
   { name = Name.make_fresh ~name
   ; output_type = var.output_type
   ; inputs = [ P var; P alpha; P delta ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P var.output_type);
     ]
   }
 
@@ -145,8 +143,8 @@ let applyMomentum
   { name = Name.make_fresh ~name
   ; output_type = var.output_type
   ; inputs = [ P var; P accum; P lr; P grad; P momentum ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P var.output_type);
     ]
   }
 
@@ -164,8 +162,8 @@ let applyRMSProp
   { name = Name.make_fresh ~name
   ; output_type = var.output_type
   ; inputs = [ P var; P ms; P mom; P lr; P rho; P momentum; P epsilon; P grad ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P var.output_type);
     ]
   }
 
@@ -177,8 +175,8 @@ let assign
   { name = Name.make_fresh ~name
   ; output_type = ref.output_type
   ; inputs = [ P ref; P value ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P ref.output_type);
     ]
   }
 
@@ -190,8 +188,8 @@ let assignAdd
   { name = Name.make_fresh ~name
   ; output_type = ref.output_type
   ; inputs = [ P ref; P value ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P ref.output_type);
     ]
   }
 
@@ -203,8 +201,8 @@ let assignSub
   { name = Name.make_fresh ~name
   ; output_type = ref.output_type
   ; inputs = [ P ref; P value ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P ref.output_type);
     ]
   }
 
@@ -215,8 +213,8 @@ let avgPool
   { name = Name.make_fresh ~name
   ; output_type = value.output_type
   ; inputs = [ P value ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P value.output_type);
     ]
   }
 
@@ -227,8 +225,8 @@ let batchCholesky
   { name = Name.make_fresh ~name
   ; output_type = input.output_type
   ; inputs = [ P input ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P input.output_type);
     ]
   }
 
@@ -240,8 +238,8 @@ let batchMatMul
   { name = Name.make_fresh ~name
   ; output_type = x.output_type
   ; inputs = [ P x; P y ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P x.output_type);
     ]
   }
 
@@ -252,8 +250,8 @@ let batchMatrixDeterminant
   { name = Name.make_fresh ~name
   ; output_type = input.output_type
   ; inputs = [ P input ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P input.output_type);
     ]
   }
 
@@ -264,8 +262,8 @@ let batchMatrixInverse
   { name = Name.make_fresh ~name
   ; output_type = input.output_type
   ; inputs = [ P input ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P input.output_type);
     ]
   }
 
@@ -277,8 +275,8 @@ let batchMatrixSolve
   { name = Name.make_fresh ~name
   ; output_type = matrix.output_type
   ; inputs = [ P matrix; P rhs ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P matrix.output_type);
     ]
   }
 
@@ -291,8 +289,8 @@ let batchMatrixSolveLs
   { name = Name.make_fresh ~name
   ; output_type = matrix.output_type
   ; inputs = [ P matrix; P rhs; P l2_regularizer ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P matrix.output_type);
     ]
   }
 
@@ -304,8 +302,8 @@ let batchMatrixTriangularSolve
   { name = Name.make_fresh ~name
   ; output_type = matrix.output_type
   ; inputs = [ P matrix; P rhs ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P matrix.output_type);
     ]
   }
 
@@ -320,8 +318,8 @@ let batchNormWithGlobalNormalization
   { name = Name.make_fresh ~name
   ; output_type = t.output_type
   ; inputs = [ P t; P m; P v; P beta; P gamma ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P t.output_type);
     ]
   }
 
@@ -332,8 +330,8 @@ let batchSelfAdjointEig
   { name = Name.make_fresh ~name
   ; output_type = input.output_type
   ; inputs = [ P input ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P input.output_type);
     ]
   }
 
@@ -345,8 +343,8 @@ let biasAdd
   { name = Name.make_fresh ~name
   ; output_type = value.output_type
   ; inputs = [ P value; P bias ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P value.output_type);
     ]
   }
 
@@ -357,8 +355,8 @@ let biasAddGrad
   { name = Name.make_fresh ~name
   ; output_type = out_backprop.output_type
   ; inputs = [ P out_backprop ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P out_backprop.output_type);
     ]
   }
 
@@ -370,8 +368,8 @@ let biasAddV1
   { name = Name.make_fresh ~name
   ; output_type = value.output_type
   ; inputs = [ P value; P bias ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P value.output_type);
     ]
   }
 
@@ -383,8 +381,8 @@ let bitcast
   { name = Name.make_fresh ~name
   ; output_type = type_
   ; inputs = [ P input ]
-  ; attributes =
-    [
+  ; attributes = [
+      "type", Type (P type_);
     ]
   }
 
@@ -396,8 +394,8 @@ let cast
   { name = Name.make_fresh ~name
   ; output_type = type_
   ; inputs = [ P x ]
-  ; attributes =
-    [
+  ; attributes = [
+      "DstT", Type (P type_);
     ]
   }
 
@@ -408,8 +406,8 @@ let ceil
   { name = Name.make_fresh ~name
   ; output_type = x.output_type
   ; inputs = [ P x ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P x.output_type);
     ]
   }
 
@@ -420,8 +418,8 @@ let checkNumerics
   { name = Name.make_fresh ~name
   ; output_type = tensor.output_type
   ; inputs = [ P tensor ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P tensor.output_type);
     ]
   }
 
@@ -432,8 +430,8 @@ let cholesky
   { name = Name.make_fresh ~name
   ; output_type = input.output_type
   ; inputs = [ P input ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P input.output_type);
     ]
   }
 
@@ -444,8 +442,8 @@ let const
   { name = Name.make_fresh ~name
   ; output_type = type_
   ; inputs = [  ]
-  ; attributes =
-    [
+  ; attributes = [
+      "dtype", Type (P type_);
     ]
   }
 
@@ -456,8 +454,7 @@ let controlTrigger
   { name = Name.make_fresh ~name
   ; output_type = Type.Unit
   ; inputs = [  ]
-  ; attributes =
-    [
+  ; attributes = [
     ]
   }
 
@@ -469,8 +466,8 @@ let conv2D
   { name = Name.make_fresh ~name
   ; output_type = input.output_type
   ; inputs = [ P input; P filter ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P input.output_type);
     ]
   }
 
@@ -481,8 +478,8 @@ let cos
   { name = Name.make_fresh ~name
   ; output_type = x.output_type
   ; inputs = [ P x ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P x.output_type);
     ]
   }
 
@@ -493,8 +490,8 @@ let countUpTo
   { name = Name.make_fresh ~name
   ; output_type = ref.output_type
   ; inputs = [ P ref ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P ref.output_type);
     ]
   }
 
@@ -506,8 +503,8 @@ let cross
   { name = Name.make_fresh ~name
   ; output_type = a.output_type
   ; inputs = [ P a; P b ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P a.output_type);
     ]
   }
 
@@ -518,8 +515,8 @@ let depthToSpace
   { name = Name.make_fresh ~name
   ; output_type = input.output_type
   ; inputs = [ P input ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P input.output_type);
     ]
   }
 
@@ -531,8 +528,8 @@ let depthwiseConv2dNative
   { name = Name.make_fresh ~name
   ; output_type = input.output_type
   ; inputs = [ P input; P filter ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P input.output_type);
     ]
   }
 
@@ -543,8 +540,8 @@ let destroyTemporaryVariable
   { name = Name.make_fresh ~name
   ; output_type = ref.output_type
   ; inputs = [ P ref ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P ref.output_type);
     ]
   }
 
@@ -555,8 +552,8 @@ let diag
   { name = Name.make_fresh ~name
   ; output_type = diagonal.output_type
   ; inputs = [ P diagonal ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P diagonal.output_type);
     ]
   }
 
@@ -567,8 +564,8 @@ let diagPart
   { name = Name.make_fresh ~name
   ; output_type = input.output_type
   ; inputs = [ P input ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P input.output_type);
     ]
   }
 
@@ -579,8 +576,8 @@ let digamma
   { name = Name.make_fresh ~name
   ; output_type = x.output_type
   ; inputs = [ P x ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P x.output_type);
     ]
   }
 
@@ -592,8 +589,8 @@ let div
   { name = Name.make_fresh ~name
   ; output_type = x.output_type
   ; inputs = [ P x; P y ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P x.output_type);
     ]
   }
 
@@ -605,8 +602,7 @@ let drawBoundingBoxes
   { name = Name.make_fresh ~name
   ; output_type = Type.Float
   ; inputs = [ P images; P boxes ]
-  ; attributes =
-    [
+  ; attributes = [
     ]
   }
 
@@ -617,8 +613,8 @@ let elu
   { name = Name.make_fresh ~name
   ; output_type = features.output_type
   ; inputs = [ P features ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P features.output_type);
     ]
   }
 
@@ -630,8 +626,8 @@ let eluGrad
   { name = Name.make_fresh ~name
   ; output_type = gradients.output_type
   ; inputs = [ P gradients; P outputs ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P gradients.output_type);
     ]
   }
 
@@ -642,8 +638,8 @@ let enter
   { name = Name.make_fresh ~name
   ; output_type = data.output_type
   ; inputs = [ P data ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P data.output_type);
     ]
   }
 
@@ -654,8 +650,8 @@ let erf
   { name = Name.make_fresh ~name
   ; output_type = x.output_type
   ; inputs = [ P x ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P x.output_type);
     ]
   }
 
@@ -666,8 +662,8 @@ let erfc
   { name = Name.make_fresh ~name
   ; output_type = x.output_type
   ; inputs = [ P x ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P x.output_type);
     ]
   }
 
@@ -678,8 +674,8 @@ let exit
   { name = Name.make_fresh ~name
   ; output_type = data.output_type
   ; inputs = [ P data ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P data.output_type);
     ]
   }
 
@@ -690,8 +686,8 @@ let exp
   { name = Name.make_fresh ~name
   ; output_type = x.output_type
   ; inputs = [ P x ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P x.output_type);
     ]
   }
 
@@ -702,8 +698,8 @@ let floor
   { name = Name.make_fresh ~name
   ; output_type = x.output_type
   ; inputs = [ P x ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P x.output_type);
     ]
   }
 
@@ -715,8 +711,8 @@ let gather
   { name = Name.make_fresh ~name
   ; output_type = params.output_type
   ; inputs = [ P params; P indices ]
-  ; attributes =
-    [
+  ; attributes = [
+      "Tparams", Type (P params.output_type);
     ]
   }
 
@@ -727,8 +723,7 @@ let hSVToRGB
   { name = Name.make_fresh ~name
   ; output_type = Type.Float
   ; inputs = [ P images ]
-  ; attributes =
-    [
+  ; attributes = [
     ]
   }
 
@@ -739,8 +734,8 @@ let identity
   { name = Name.make_fresh ~name
   ; output_type = input.output_type
   ; inputs = [ P input ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P input.output_type);
     ]
   }
 
@@ -751,8 +746,8 @@ let inv
   { name = Name.make_fresh ~name
   ; output_type = x.output_type
   ; inputs = [ P x ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P x.output_type);
     ]
   }
 
@@ -763,8 +758,8 @@ let l2Loss
   { name = Name.make_fresh ~name
   ; output_type = t.output_type
   ; inputs = [ P t ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P t.output_type);
     ]
   }
 
@@ -775,8 +770,7 @@ let lRN
   { name = Name.make_fresh ~name
   ; output_type = Type.Float
   ; inputs = [ P input ]
-  ; attributes =
-    [
+  ; attributes = [
     ]
   }
 
@@ -789,8 +783,7 @@ let lRNGrad
   { name = Name.make_fresh ~name
   ; output_type = Type.Float
   ; inputs = [ P input_grads; P input_image; P output_image ]
-  ; attributes =
-    [
+  ; attributes = [
     ]
   }
 
@@ -801,8 +794,8 @@ let lgamma
   { name = Name.make_fresh ~name
   ; output_type = x.output_type
   ; inputs = [ P x ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P x.output_type);
     ]
   }
 
@@ -813,8 +806,8 @@ let log
   { name = Name.make_fresh ~name
   ; output_type = x.output_type
   ; inputs = [ P x ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P x.output_type);
     ]
   }
 
@@ -826,8 +819,8 @@ let matMul
   { name = Name.make_fresh ~name
   ; output_type = a.output_type
   ; inputs = [ P a; P b ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P a.output_type);
     ]
   }
 
@@ -838,8 +831,8 @@ let matrixDeterminant
   { name = Name.make_fresh ~name
   ; output_type = input.output_type
   ; inputs = [ P input ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P input.output_type);
     ]
   }
 
@@ -850,8 +843,8 @@ let matrixInverse
   { name = Name.make_fresh ~name
   ; output_type = input.output_type
   ; inputs = [ P input ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P input.output_type);
     ]
   }
 
@@ -863,8 +856,8 @@ let matrixSolve
   { name = Name.make_fresh ~name
   ; output_type = matrix.output_type
   ; inputs = [ P matrix; P rhs ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P matrix.output_type);
     ]
   }
 
@@ -877,8 +870,8 @@ let matrixSolveLs
   { name = Name.make_fresh ~name
   ; output_type = matrix.output_type
   ; inputs = [ P matrix; P rhs; P l2_regularizer ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P matrix.output_type);
     ]
   }
 
@@ -890,8 +883,8 @@ let matrixTriangularSolve
   { name = Name.make_fresh ~name
   ; output_type = matrix.output_type
   ; inputs = [ P matrix; P rhs ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P matrix.output_type);
     ]
   }
 
@@ -902,8 +895,7 @@ let maxPool
   { name = Name.make_fresh ~name
   ; output_type = Type.Float
   ; inputs = [ P input ]
-  ; attributes =
-    [
+  ; attributes = [
     ]
   }
 
@@ -916,8 +908,7 @@ let maxPoolGrad
   { name = Name.make_fresh ~name
   ; output_type = Type.Float
   ; inputs = [ P orig_input; P orig_output; P grad ]
-  ; attributes =
-    [
+  ; attributes = [
     ]
   }
 
@@ -930,8 +921,7 @@ let maxPoolGradWithArgmax
   { name = Name.make_fresh ~name
   ; output_type = Type.Float
   ; inputs = [ P input; P grad; P argmax ]
-  ; attributes =
-    [
+  ; attributes = [
     ]
   }
 
@@ -943,8 +933,8 @@ let maximum
   { name = Name.make_fresh ~name
   ; output_type = x.output_type
   ; inputs = [ P x; P y ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P x.output_type);
     ]
   }
 
@@ -956,8 +946,8 @@ let minimum
   { name = Name.make_fresh ~name
   ; output_type = x.output_type
   ; inputs = [ P x; P y ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P x.output_type);
     ]
   }
 
@@ -969,8 +959,8 @@ let mod_
   { name = Name.make_fresh ~name
   ; output_type = x.output_type
   ; inputs = [ P x; P y ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P x.output_type);
     ]
   }
 
@@ -982,8 +972,8 @@ let mul
   { name = Name.make_fresh ~name
   ; output_type = x.output_type
   ; inputs = [ P x; P y ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P x.output_type);
     ]
   }
 
@@ -994,8 +984,8 @@ let neg
   { name = Name.make_fresh ~name
   ; output_type = x.output_type
   ; inputs = [ P x ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P x.output_type);
     ]
   }
 
@@ -1006,8 +996,8 @@ let nextIteration
   { name = Name.make_fresh ~name
   ; output_type = data.output_type
   ; inputs = [ P data ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P data.output_type);
     ]
   }
 
@@ -1018,8 +1008,7 @@ let noOp
   { name = Name.make_fresh ~name
   ; output_type = Type.Unit
   ; inputs = [  ]
-  ; attributes =
-    [
+  ; attributes = [
     ]
   }
 
@@ -1030,8 +1019,8 @@ let pack
   { name = Name.make_fresh ~name
   ; output_type = values.output_type
   ; inputs = [ P values ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P values.output_type);
     ]
   }
 
@@ -1042,8 +1031,8 @@ let placeholder
   { name = Name.make_fresh ~name
   ; output_type = type_
   ; inputs = [  ]
-  ; attributes =
-    [
+  ; attributes = [
+      "dtype", Type (P type_);
     ]
   }
 
@@ -1055,8 +1044,8 @@ let pow
   { name = Name.make_fresh ~name
   ; output_type = x.output_type
   ; inputs = [ P x; P y ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P x.output_type);
     ]
   }
 
@@ -1067,8 +1056,7 @@ let rGBToHSV
   { name = Name.make_fresh ~name
   ; output_type = Type.Float
   ; inputs = [ P images ]
-  ; attributes =
-    [
+  ; attributes = [
     ]
   }
 
@@ -1079,8 +1067,8 @@ let randomShuffle
   { name = Name.make_fresh ~name
   ; output_type = value.output_type
   ; inputs = [ P value ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P value.output_type);
     ]
   }
 
@@ -1092,8 +1080,8 @@ let randomStandardNormal
   { name = Name.make_fresh ~name
   ; output_type = type_
   ; inputs = [ P shape ]
-  ; attributes =
-    [
+  ; attributes = [
+      "dtype", Type (P type_);
     ]
   }
 
@@ -1105,8 +1093,8 @@ let randomUniform
   { name = Name.make_fresh ~name
   ; output_type = type_
   ; inputs = [ P shape ]
-  ; attributes =
-    [
+  ; attributes = [
+      "dtype", Type (P type_);
     ]
   }
 
@@ -1119,8 +1107,8 @@ let randomUniformInt
   { name = Name.make_fresh ~name
   ; output_type = minval.output_type
   ; inputs = [ P shape; P minval; P maxval ]
-  ; attributes =
-    [
+  ; attributes = [
+      "Tout", Type (P minval.output_type);
     ]
   }
 
@@ -1131,8 +1119,8 @@ let refEnter
   { name = Name.make_fresh ~name
   ; output_type = data.output_type
   ; inputs = [ P data ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P data.output_type);
     ]
   }
 
@@ -1143,8 +1131,8 @@ let refExit
   { name = Name.make_fresh ~name
   ; output_type = data.output_type
   ; inputs = [ P data ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P data.output_type);
     ]
   }
 
@@ -1155,8 +1143,8 @@ let refIdentity
   { name = Name.make_fresh ~name
   ; output_type = input.output_type
   ; inputs = [ P input ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P input.output_type);
     ]
   }
 
@@ -1167,8 +1155,8 @@ let refNextIteration
   { name = Name.make_fresh ~name
   ; output_type = data.output_type
   ; inputs = [ P data ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P data.output_type);
     ]
   }
 
@@ -1179,8 +1167,8 @@ let relu
   { name = Name.make_fresh ~name
   ; output_type = features.output_type
   ; inputs = [ P features ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P features.output_type);
     ]
   }
 
@@ -1191,8 +1179,8 @@ let relu6
   { name = Name.make_fresh ~name
   ; output_type = features.output_type
   ; inputs = [ P features ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P features.output_type);
     ]
   }
 
@@ -1204,8 +1192,8 @@ let relu6Grad
   { name = Name.make_fresh ~name
   ; output_type = gradients.output_type
   ; inputs = [ P gradients; P features ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P gradients.output_type);
     ]
   }
 
@@ -1217,8 +1205,8 @@ let reluGrad
   { name = Name.make_fresh ~name
   ; output_type = gradients.output_type
   ; inputs = [ P gradients; P features ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P gradients.output_type);
     ]
   }
 
@@ -1230,8 +1218,8 @@ let resizeBilinearGrad
   { name = Name.make_fresh ~name
   ; output_type = original_image.output_type
   ; inputs = [ P grads; P original_image ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P original_image.output_type);
     ]
   }
 
@@ -1242,8 +1230,8 @@ let rsqrt
   { name = Name.make_fresh ~name
   ; output_type = x.output_type
   ; inputs = [ P x ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P x.output_type);
     ]
   }
 
@@ -1256,8 +1244,8 @@ let scatterAdd
   { name = Name.make_fresh ~name
   ; output_type = ref.output_type
   ; inputs = [ P ref; P indices; P updates ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P ref.output_type);
     ]
   }
 
@@ -1270,8 +1258,8 @@ let scatterSub
   { name = Name.make_fresh ~name
   ; output_type = ref.output_type
   ; inputs = [ P ref; P indices; P updates ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P ref.output_type);
     ]
   }
 
@@ -1284,8 +1272,8 @@ let scatterUpdate
   { name = Name.make_fresh ~name
   ; output_type = ref.output_type
   ; inputs = [ P ref; P indices; P updates ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P ref.output_type);
     ]
   }
 
@@ -1297,8 +1285,8 @@ let segmentMax
   { name = Name.make_fresh ~name
   ; output_type = data.output_type
   ; inputs = [ P data; P segment_ids ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P data.output_type);
     ]
   }
 
@@ -1310,8 +1298,8 @@ let segmentMean
   { name = Name.make_fresh ~name
   ; output_type = data.output_type
   ; inputs = [ P data; P segment_ids ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P data.output_type);
     ]
   }
 
@@ -1323,8 +1311,8 @@ let segmentMin
   { name = Name.make_fresh ~name
   ; output_type = data.output_type
   ; inputs = [ P data; P segment_ids ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P data.output_type);
     ]
   }
 
@@ -1336,8 +1324,8 @@ let segmentProd
   { name = Name.make_fresh ~name
   ; output_type = data.output_type
   ; inputs = [ P data; P segment_ids ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P data.output_type);
     ]
   }
 
@@ -1349,8 +1337,8 @@ let segmentSum
   { name = Name.make_fresh ~name
   ; output_type = data.output_type
   ; inputs = [ P data; P segment_ids ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P data.output_type);
     ]
   }
 
@@ -1361,8 +1349,8 @@ let selfAdjointEig
   { name = Name.make_fresh ~name
   ; output_type = input.output_type
   ; inputs = [ P input ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P input.output_type);
     ]
   }
 
@@ -1373,8 +1361,8 @@ let sigmoid
   { name = Name.make_fresh ~name
   ; output_type = x.output_type
   ; inputs = [ P x ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P x.output_type);
     ]
   }
 
@@ -1385,8 +1373,8 @@ let sign
   { name = Name.make_fresh ~name
   ; output_type = x.output_type
   ; inputs = [ P x ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P x.output_type);
     ]
   }
 
@@ -1397,8 +1385,8 @@ let sin
   { name = Name.make_fresh ~name
   ; output_type = x.output_type
   ; inputs = [ P x ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P x.output_type);
     ]
   }
 
@@ -1411,8 +1399,8 @@ let slice
   { name = Name.make_fresh ~name
   ; output_type = input.output_type
   ; inputs = [ P input; P begin__; P size ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P input.output_type);
     ]
   }
 
@@ -1423,8 +1411,8 @@ let softmax
   { name = Name.make_fresh ~name
   ; output_type = logits.output_type
   ; inputs = [ P logits ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P logits.output_type);
     ]
   }
 
@@ -1435,8 +1423,8 @@ let softplus
   { name = Name.make_fresh ~name
   ; output_type = features.output_type
   ; inputs = [ P features ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P features.output_type);
     ]
   }
 
@@ -1448,8 +1436,8 @@ let softplusGrad
   { name = Name.make_fresh ~name
   ; output_type = gradients.output_type
   ; inputs = [ P gradients; P features ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P gradients.output_type);
     ]
   }
 
@@ -1460,8 +1448,8 @@ let softsign
   { name = Name.make_fresh ~name
   ; output_type = features.output_type
   ; inputs = [ P features ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P features.output_type);
     ]
   }
 
@@ -1473,8 +1461,8 @@ let softsignGrad
   { name = Name.make_fresh ~name
   ; output_type = gradients.output_type
   ; inputs = [ P gradients; P features ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P gradients.output_type);
     ]
   }
 
@@ -1485,8 +1473,8 @@ let spaceToDepth
   { name = Name.make_fresh ~name
   ; output_type = input.output_type
   ; inputs = [ P input ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P input.output_type);
     ]
   }
 
@@ -1501,8 +1489,8 @@ let sparseApplyAdagrad
   { name = Name.make_fresh ~name
   ; output_type = var.output_type
   ; inputs = [ P var; P accum; P lr; P grad; P indices ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P var.output_type);
     ]
   }
 
@@ -1521,8 +1509,8 @@ let sparseApplyFtrl
   { name = Name.make_fresh ~name
   ; output_type = var.output_type
   ; inputs = [ P var; P accum; P linear; P grad; P indices; P lr; P l1; P l2; P lr_power ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P var.output_type);
     ]
   }
 
@@ -1538,8 +1526,8 @@ let sparseApplyMomentum
   { name = Name.make_fresh ~name
   ; output_type = var.output_type
   ; inputs = [ P var; P accum; P lr; P grad; P indices; P momentum ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P var.output_type);
     ]
   }
 
@@ -1551,8 +1539,7 @@ let sparseMatMul
   { name = Name.make_fresh ~name
   ; output_type = Type.Float
   ; inputs = [ P a; P b ]
-  ; attributes =
-    [
+  ; attributes = [
     ]
   }
 
@@ -1566,8 +1553,8 @@ let sparseToDense
   { name = Name.make_fresh ~name
   ; output_type = sparse_values.output_type
   ; inputs = [ P sparse_indices; P output_shape; P sparse_values; P default_value ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P sparse_values.output_type);
     ]
   }
 
@@ -1578,8 +1565,8 @@ let sqrt
   { name = Name.make_fresh ~name
   ; output_type = x.output_type
   ; inputs = [ P x ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P x.output_type);
     ]
   }
 
@@ -1590,8 +1577,8 @@ let square
   { name = Name.make_fresh ~name
   ; output_type = x.output_type
   ; inputs = [ P x ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P x.output_type);
     ]
   }
 
@@ -1603,8 +1590,8 @@ let squaredDifference
   { name = Name.make_fresh ~name
   ; output_type = x.output_type
   ; inputs = [ P x; P y ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P x.output_type);
     ]
   }
 
@@ -1615,8 +1602,8 @@ let squeeze
   { name = Name.make_fresh ~name
   ; output_type = input.output_type
   ; inputs = [ P input ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P input.output_type);
     ]
   }
 
@@ -1627,8 +1614,8 @@ let stopGradient
   { name = Name.make_fresh ~name
   ; output_type = input.output_type
   ; inputs = [ P input ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P input.output_type);
     ]
   }
 
@@ -1640,8 +1627,8 @@ let sub
   { name = Name.make_fresh ~name
   ; output_type = x.output_type
   ; inputs = [ P x; P y ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P x.output_type);
     ]
   }
 
@@ -1652,8 +1639,8 @@ let tanh
   { name = Name.make_fresh ~name
   ; output_type = x.output_type
   ; inputs = [ P x ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P x.output_type);
     ]
   }
 
@@ -1664,8 +1651,8 @@ let temporaryVariable
   { name = Name.make_fresh ~name
   ; output_type = type_
   ; inputs = [  ]
-  ; attributes =
-    [
+  ; attributes = [
+      "dtype", Type (P type_);
     ]
   }
 
@@ -1677,8 +1664,8 @@ let truncatedNormal
   { name = Name.make_fresh ~name
   ; output_type = type_
   ; inputs = [ P shape ]
-  ; attributes =
-    [
+  ; attributes = [
+      "dtype", Type (P type_);
     ]
   }
 
@@ -1689,8 +1676,8 @@ let unpack
   { name = Name.make_fresh ~name
   ; output_type = value.output_type
   ; inputs = [ P value ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P value.output_type);
     ]
   }
 
@@ -1701,8 +1688,8 @@ let variable
   { name = Name.make_fresh ~name
   ; output_type = type_
   ; inputs = [  ]
-  ; attributes =
-    [
+  ; attributes = [
+      "dtype", Type (P type_);
     ]
   }
 
@@ -1713,8 +1700,8 @@ let zerosLike
   { name = Name.make_fresh ~name
   ; output_type = x.output_type
   ; inputs = [ P x ]
-  ; attributes =
-    [
+  ; attributes = [
+      "T", Type (P x.output_type);
     ]
   }
 
