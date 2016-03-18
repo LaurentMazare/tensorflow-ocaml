@@ -272,6 +272,7 @@ val conj
 val const
   :  ?name:string
   -> type_ : 'dtype Node.Type.t
+  -> unit
   -> 'dtype Node.t
 
 val controlTrigger
@@ -855,6 +856,7 @@ val paddingFIFOQueue
 val placeholder
   :  ?name:string
   -> type_ : 'dtype Node.Type.t
+  -> unit
   -> 'dtype Node.t
 
 val pow
@@ -1435,6 +1437,7 @@ val tanh
 val temporaryVariable
   :  ?name:string
   -> type_ : 'dtype Node.Type.t
+  -> unit
   -> 'dtype Node.t
 
 val tensorArray
@@ -1541,6 +1544,7 @@ val unsortedSegmentSum
 val variable
   :  ?name:string
   -> type_ : 'dtype Node.Type.t
+  -> unit
   -> 'dtype Node.t
 
 val where

@@ -600,6 +600,7 @@ let conj
 let const
     ?(name = "Const")
     ~type_
+    ()
   =
   { name = Name.make_fresh ~name
   ; op_name = "Const"
@@ -1955,6 +1956,7 @@ let paddingFIFOQueue
 let placeholder
     ?(name = "Placeholder")
     ~type_
+    ()
   =
   { name = Name.make_fresh ~name
   ; op_name = "Placeholder"
@@ -3282,6 +3284,7 @@ let tanh
 let temporaryVariable
     ?(name = "TemporaryVariable")
     ~type_
+    ()
   =
   { name = Name.make_fresh ~name
   ; op_name = "TemporaryVariable"
@@ -3516,6 +3519,7 @@ let unsortedSegmentSum
 let variable
     ?(name = "Variable")
     ~type_
+    ()
   =
   { name = Name.make_fresh ~name
   ; op_name = "Variable"
