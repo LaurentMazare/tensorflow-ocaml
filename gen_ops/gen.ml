@@ -151,6 +151,8 @@ let gen_mli ops =
     then p "  -> type_ : %s Node.Type.t" (Type.to_string op.output_type);
     List.iter op.inputs ~f:(fun { Input.name = _; type_ } ->
       p "  -> %s Node.t" (Type.to_string type_));
+    if List.is_empty op.inputs && not needs_variable_for_output_type
+    then p "  -> unit";
     p "  -> %s Node.t" (Type.to_string op.output_type);
     p "";
   in
@@ -173,6 +175,8 @@ let gen_ml ops =
     List.iteri op.inputs ~f:(fun idx input ->
       let name = Input.name input ~idx in
       p "    (%s : %s t)" name (Type.to_string input.type_));
+    if List.is_empty op.inputs && not needs_variable_for_output_type
+    then p "    ()";
     p "  =";
     p "  { name = Name.make_fresh ~name";
     p "  ; output_type = %s" (output_type_string op);
@@ -183,7 +187,9 @@ let gen_ml ops =
     in
     p "  ; inputs = [ %s ]" inputs;
     (* TODO: adapt this... *)
-    p "  ; attributes = []";
+    p "  ; attributes =";
+    p "    [";
+    p "    ]";
     p "  }";
     p "";
   in

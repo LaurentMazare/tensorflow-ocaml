@@ -218,6 +218,7 @@ val const
 
 val controlTrigger
   :  ?name:string
+  -> unit
   -> [ `unit ] Node.t
 
 val conv2D
@@ -464,6 +465,7 @@ val nextIteration
 
 val noOp
   :  ?name:string
+  -> unit
   -> [ `unit ] Node.t
 
 val pack

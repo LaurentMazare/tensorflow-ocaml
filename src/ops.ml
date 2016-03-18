@@ -7,7 +7,9 @@ let abs
   { name = Name.make_fresh ~name
   ; output_type = x.output_type
   ; inputs = [ P x ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let add
@@ -18,7 +20,9 @@ let add
   { name = Name.make_fresh ~name
   ; output_type = x.output_type
   ; inputs = [ P x; P y ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let addN
@@ -28,7 +32,9 @@ let addN
   { name = Name.make_fresh ~name
   ; output_type = inputs.output_type
   ; inputs = [ P inputs ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let adjustContrast
@@ -41,7 +47,9 @@ let adjustContrast
   { name = Name.make_fresh ~name
   ; output_type = Type.Float
   ; inputs = [ P images; P contrast_factor; P min_value; P max_value ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let adjustContrastv2
@@ -52,7 +60,9 @@ let adjustContrastv2
   { name = Name.make_fresh ~name
   ; output_type = Type.Float
   ; inputs = [ P images; P contrast_factor ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let applyAdagrad
@@ -65,7 +75,9 @@ let applyAdagrad
   { name = Name.make_fresh ~name
   ; output_type = var.output_type
   ; inputs = [ P var; P accum; P lr; P grad ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let applyAdam
@@ -84,7 +96,9 @@ let applyAdam
   { name = Name.make_fresh ~name
   ; output_type = var.output_type
   ; inputs = [ P var; P m; P v; P beta1_power; P beta2_power; P lr; P beta1; P beta2; P epsilon; P grad ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let applyFtrl
@@ -101,7 +115,9 @@ let applyFtrl
   { name = Name.make_fresh ~name
   ; output_type = var.output_type
   ; inputs = [ P var; P accum; P linear; P grad; P lr; P l1; P l2; P lr_power ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let applyGradientDescent
@@ -113,7 +129,9 @@ let applyGradientDescent
   { name = Name.make_fresh ~name
   ; output_type = var.output_type
   ; inputs = [ P var; P alpha; P delta ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let applyMomentum
@@ -127,7 +145,9 @@ let applyMomentum
   { name = Name.make_fresh ~name
   ; output_type = var.output_type
   ; inputs = [ P var; P accum; P lr; P grad; P momentum ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let applyRMSProp
@@ -144,7 +164,9 @@ let applyRMSProp
   { name = Name.make_fresh ~name
   ; output_type = var.output_type
   ; inputs = [ P var; P ms; P mom; P lr; P rho; P momentum; P epsilon; P grad ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let assign
@@ -155,7 +177,9 @@ let assign
   { name = Name.make_fresh ~name
   ; output_type = ref.output_type
   ; inputs = [ P ref; P value ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let assignAdd
@@ -166,7 +190,9 @@ let assignAdd
   { name = Name.make_fresh ~name
   ; output_type = ref.output_type
   ; inputs = [ P ref; P value ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let assignSub
@@ -177,7 +203,9 @@ let assignSub
   { name = Name.make_fresh ~name
   ; output_type = ref.output_type
   ; inputs = [ P ref; P value ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let avgPool
@@ -187,7 +215,9 @@ let avgPool
   { name = Name.make_fresh ~name
   ; output_type = value.output_type
   ; inputs = [ P value ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let batchCholesky
@@ -197,7 +227,9 @@ let batchCholesky
   { name = Name.make_fresh ~name
   ; output_type = input.output_type
   ; inputs = [ P input ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let batchMatMul
@@ -208,7 +240,9 @@ let batchMatMul
   { name = Name.make_fresh ~name
   ; output_type = x.output_type
   ; inputs = [ P x; P y ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let batchMatrixDeterminant
@@ -218,7 +252,9 @@ let batchMatrixDeterminant
   { name = Name.make_fresh ~name
   ; output_type = input.output_type
   ; inputs = [ P input ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let batchMatrixInverse
@@ -228,7 +264,9 @@ let batchMatrixInverse
   { name = Name.make_fresh ~name
   ; output_type = input.output_type
   ; inputs = [ P input ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let batchMatrixSolve
@@ -239,7 +277,9 @@ let batchMatrixSolve
   { name = Name.make_fresh ~name
   ; output_type = matrix.output_type
   ; inputs = [ P matrix; P rhs ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let batchMatrixSolveLs
@@ -251,7 +291,9 @@ let batchMatrixSolveLs
   { name = Name.make_fresh ~name
   ; output_type = matrix.output_type
   ; inputs = [ P matrix; P rhs; P l2_regularizer ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let batchMatrixTriangularSolve
@@ -262,7 +304,9 @@ let batchMatrixTriangularSolve
   { name = Name.make_fresh ~name
   ; output_type = matrix.output_type
   ; inputs = [ P matrix; P rhs ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let batchNormWithGlobalNormalization
@@ -276,7 +320,9 @@ let batchNormWithGlobalNormalization
   { name = Name.make_fresh ~name
   ; output_type = t.output_type
   ; inputs = [ P t; P m; P v; P beta; P gamma ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let batchSelfAdjointEig
@@ -286,7 +332,9 @@ let batchSelfAdjointEig
   { name = Name.make_fresh ~name
   ; output_type = input.output_type
   ; inputs = [ P input ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let biasAdd
@@ -297,7 +345,9 @@ let biasAdd
   { name = Name.make_fresh ~name
   ; output_type = value.output_type
   ; inputs = [ P value; P bias ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let biasAddGrad
@@ -307,7 +357,9 @@ let biasAddGrad
   { name = Name.make_fresh ~name
   ; output_type = out_backprop.output_type
   ; inputs = [ P out_backprop ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let biasAddV1
@@ -318,7 +370,9 @@ let biasAddV1
   { name = Name.make_fresh ~name
   ; output_type = value.output_type
   ; inputs = [ P value; P bias ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let bitcast
@@ -329,7 +383,9 @@ let bitcast
   { name = Name.make_fresh ~name
   ; output_type = type_
   ; inputs = [ P input ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let cast
@@ -340,7 +396,9 @@ let cast
   { name = Name.make_fresh ~name
   ; output_type = type_
   ; inputs = [ P x ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let ceil
@@ -350,7 +408,9 @@ let ceil
   { name = Name.make_fresh ~name
   ; output_type = x.output_type
   ; inputs = [ P x ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let checkNumerics
@@ -360,7 +420,9 @@ let checkNumerics
   { name = Name.make_fresh ~name
   ; output_type = tensor.output_type
   ; inputs = [ P tensor ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let cholesky
@@ -370,7 +432,9 @@ let cholesky
   { name = Name.make_fresh ~name
   ; output_type = input.output_type
   ; inputs = [ P input ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let const
@@ -380,16 +444,21 @@ let const
   { name = Name.make_fresh ~name
   ; output_type = type_
   ; inputs = [  ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let controlTrigger
     ?(name = "ControlTrigger")
+    ()
   =
   { name = Name.make_fresh ~name
   ; output_type = Type.Unit
   ; inputs = [  ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let conv2D
@@ -400,7 +469,9 @@ let conv2D
   { name = Name.make_fresh ~name
   ; output_type = input.output_type
   ; inputs = [ P input; P filter ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let cos
@@ -410,7 +481,9 @@ let cos
   { name = Name.make_fresh ~name
   ; output_type = x.output_type
   ; inputs = [ P x ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let countUpTo
@@ -420,7 +493,9 @@ let countUpTo
   { name = Name.make_fresh ~name
   ; output_type = ref.output_type
   ; inputs = [ P ref ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let cross
@@ -431,7 +506,9 @@ let cross
   { name = Name.make_fresh ~name
   ; output_type = a.output_type
   ; inputs = [ P a; P b ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let depthToSpace
@@ -441,7 +518,9 @@ let depthToSpace
   { name = Name.make_fresh ~name
   ; output_type = input.output_type
   ; inputs = [ P input ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let depthwiseConv2dNative
@@ -452,7 +531,9 @@ let depthwiseConv2dNative
   { name = Name.make_fresh ~name
   ; output_type = input.output_type
   ; inputs = [ P input; P filter ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let destroyTemporaryVariable
@@ -462,7 +543,9 @@ let destroyTemporaryVariable
   { name = Name.make_fresh ~name
   ; output_type = ref.output_type
   ; inputs = [ P ref ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let diag
@@ -472,7 +555,9 @@ let diag
   { name = Name.make_fresh ~name
   ; output_type = diagonal.output_type
   ; inputs = [ P diagonal ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let diagPart
@@ -482,7 +567,9 @@ let diagPart
   { name = Name.make_fresh ~name
   ; output_type = input.output_type
   ; inputs = [ P input ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let digamma
@@ -492,7 +579,9 @@ let digamma
   { name = Name.make_fresh ~name
   ; output_type = x.output_type
   ; inputs = [ P x ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let div
@@ -503,7 +592,9 @@ let div
   { name = Name.make_fresh ~name
   ; output_type = x.output_type
   ; inputs = [ P x; P y ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let drawBoundingBoxes
@@ -514,7 +605,9 @@ let drawBoundingBoxes
   { name = Name.make_fresh ~name
   ; output_type = Type.Float
   ; inputs = [ P images; P boxes ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let elu
@@ -524,7 +617,9 @@ let elu
   { name = Name.make_fresh ~name
   ; output_type = features.output_type
   ; inputs = [ P features ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let eluGrad
@@ -535,7 +630,9 @@ let eluGrad
   { name = Name.make_fresh ~name
   ; output_type = gradients.output_type
   ; inputs = [ P gradients; P outputs ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let enter
@@ -545,7 +642,9 @@ let enter
   { name = Name.make_fresh ~name
   ; output_type = data.output_type
   ; inputs = [ P data ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let erf
@@ -555,7 +654,9 @@ let erf
   { name = Name.make_fresh ~name
   ; output_type = x.output_type
   ; inputs = [ P x ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let erfc
@@ -565,7 +666,9 @@ let erfc
   { name = Name.make_fresh ~name
   ; output_type = x.output_type
   ; inputs = [ P x ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let exit
@@ -575,7 +678,9 @@ let exit
   { name = Name.make_fresh ~name
   ; output_type = data.output_type
   ; inputs = [ P data ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let exp
@@ -585,7 +690,9 @@ let exp
   { name = Name.make_fresh ~name
   ; output_type = x.output_type
   ; inputs = [ P x ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let floor
@@ -595,7 +702,9 @@ let floor
   { name = Name.make_fresh ~name
   ; output_type = x.output_type
   ; inputs = [ P x ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let gather
@@ -606,7 +715,9 @@ let gather
   { name = Name.make_fresh ~name
   ; output_type = params.output_type
   ; inputs = [ P params; P indices ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let hSVToRGB
@@ -616,7 +727,9 @@ let hSVToRGB
   { name = Name.make_fresh ~name
   ; output_type = Type.Float
   ; inputs = [ P images ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let identity
@@ -626,7 +739,9 @@ let identity
   { name = Name.make_fresh ~name
   ; output_type = input.output_type
   ; inputs = [ P input ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let inv
@@ -636,7 +751,9 @@ let inv
   { name = Name.make_fresh ~name
   ; output_type = x.output_type
   ; inputs = [ P x ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let l2Loss
@@ -646,7 +763,9 @@ let l2Loss
   { name = Name.make_fresh ~name
   ; output_type = t.output_type
   ; inputs = [ P t ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let lRN
@@ -656,7 +775,9 @@ let lRN
   { name = Name.make_fresh ~name
   ; output_type = Type.Float
   ; inputs = [ P input ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let lRNGrad
@@ -668,7 +789,9 @@ let lRNGrad
   { name = Name.make_fresh ~name
   ; output_type = Type.Float
   ; inputs = [ P input_grads; P input_image; P output_image ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let lgamma
@@ -678,7 +801,9 @@ let lgamma
   { name = Name.make_fresh ~name
   ; output_type = x.output_type
   ; inputs = [ P x ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let log
@@ -688,7 +813,9 @@ let log
   { name = Name.make_fresh ~name
   ; output_type = x.output_type
   ; inputs = [ P x ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let matMul
@@ -699,7 +826,9 @@ let matMul
   { name = Name.make_fresh ~name
   ; output_type = a.output_type
   ; inputs = [ P a; P b ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let matrixDeterminant
@@ -709,7 +838,9 @@ let matrixDeterminant
   { name = Name.make_fresh ~name
   ; output_type = input.output_type
   ; inputs = [ P input ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let matrixInverse
@@ -719,7 +850,9 @@ let matrixInverse
   { name = Name.make_fresh ~name
   ; output_type = input.output_type
   ; inputs = [ P input ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let matrixSolve
@@ -730,7 +863,9 @@ let matrixSolve
   { name = Name.make_fresh ~name
   ; output_type = matrix.output_type
   ; inputs = [ P matrix; P rhs ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let matrixSolveLs
@@ -742,7 +877,9 @@ let matrixSolveLs
   { name = Name.make_fresh ~name
   ; output_type = matrix.output_type
   ; inputs = [ P matrix; P rhs; P l2_regularizer ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let matrixTriangularSolve
@@ -753,7 +890,9 @@ let matrixTriangularSolve
   { name = Name.make_fresh ~name
   ; output_type = matrix.output_type
   ; inputs = [ P matrix; P rhs ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let maxPool
@@ -763,7 +902,9 @@ let maxPool
   { name = Name.make_fresh ~name
   ; output_type = Type.Float
   ; inputs = [ P input ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let maxPoolGrad
@@ -775,7 +916,9 @@ let maxPoolGrad
   { name = Name.make_fresh ~name
   ; output_type = Type.Float
   ; inputs = [ P orig_input; P orig_output; P grad ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let maxPoolGradWithArgmax
@@ -787,7 +930,9 @@ let maxPoolGradWithArgmax
   { name = Name.make_fresh ~name
   ; output_type = Type.Float
   ; inputs = [ P input; P grad; P argmax ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let maximum
@@ -798,7 +943,9 @@ let maximum
   { name = Name.make_fresh ~name
   ; output_type = x.output_type
   ; inputs = [ P x; P y ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let minimum
@@ -809,7 +956,9 @@ let minimum
   { name = Name.make_fresh ~name
   ; output_type = x.output_type
   ; inputs = [ P x; P y ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let mod_
@@ -820,7 +969,9 @@ let mod_
   { name = Name.make_fresh ~name
   ; output_type = x.output_type
   ; inputs = [ P x; P y ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let mul
@@ -831,7 +982,9 @@ let mul
   { name = Name.make_fresh ~name
   ; output_type = x.output_type
   ; inputs = [ P x; P y ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let neg
@@ -841,7 +994,9 @@ let neg
   { name = Name.make_fresh ~name
   ; output_type = x.output_type
   ; inputs = [ P x ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let nextIteration
@@ -851,16 +1006,21 @@ let nextIteration
   { name = Name.make_fresh ~name
   ; output_type = data.output_type
   ; inputs = [ P data ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let noOp
     ?(name = "NoOp")
+    ()
   =
   { name = Name.make_fresh ~name
   ; output_type = Type.Unit
   ; inputs = [  ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let pack
@@ -870,7 +1030,9 @@ let pack
   { name = Name.make_fresh ~name
   ; output_type = values.output_type
   ; inputs = [ P values ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let placeholder
@@ -880,7 +1042,9 @@ let placeholder
   { name = Name.make_fresh ~name
   ; output_type = type_
   ; inputs = [  ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let pow
@@ -891,7 +1055,9 @@ let pow
   { name = Name.make_fresh ~name
   ; output_type = x.output_type
   ; inputs = [ P x; P y ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let rGBToHSV
@@ -901,7 +1067,9 @@ let rGBToHSV
   { name = Name.make_fresh ~name
   ; output_type = Type.Float
   ; inputs = [ P images ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let randomShuffle
@@ -911,7 +1079,9 @@ let randomShuffle
   { name = Name.make_fresh ~name
   ; output_type = value.output_type
   ; inputs = [ P value ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let randomStandardNormal
@@ -922,7 +1092,9 @@ let randomStandardNormal
   { name = Name.make_fresh ~name
   ; output_type = type_
   ; inputs = [ P shape ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let randomUniform
@@ -933,7 +1105,9 @@ let randomUniform
   { name = Name.make_fresh ~name
   ; output_type = type_
   ; inputs = [ P shape ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let randomUniformInt
@@ -945,7 +1119,9 @@ let randomUniformInt
   { name = Name.make_fresh ~name
   ; output_type = minval.output_type
   ; inputs = [ P shape; P minval; P maxval ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let refEnter
@@ -955,7 +1131,9 @@ let refEnter
   { name = Name.make_fresh ~name
   ; output_type = data.output_type
   ; inputs = [ P data ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let refExit
@@ -965,7 +1143,9 @@ let refExit
   { name = Name.make_fresh ~name
   ; output_type = data.output_type
   ; inputs = [ P data ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let refIdentity
@@ -975,7 +1155,9 @@ let refIdentity
   { name = Name.make_fresh ~name
   ; output_type = input.output_type
   ; inputs = [ P input ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let refNextIteration
@@ -985,7 +1167,9 @@ let refNextIteration
   { name = Name.make_fresh ~name
   ; output_type = data.output_type
   ; inputs = [ P data ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let relu
@@ -995,7 +1179,9 @@ let relu
   { name = Name.make_fresh ~name
   ; output_type = features.output_type
   ; inputs = [ P features ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let relu6
@@ -1005,7 +1191,9 @@ let relu6
   { name = Name.make_fresh ~name
   ; output_type = features.output_type
   ; inputs = [ P features ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let relu6Grad
@@ -1016,7 +1204,9 @@ let relu6Grad
   { name = Name.make_fresh ~name
   ; output_type = gradients.output_type
   ; inputs = [ P gradients; P features ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let reluGrad
@@ -1027,7 +1217,9 @@ let reluGrad
   { name = Name.make_fresh ~name
   ; output_type = gradients.output_type
   ; inputs = [ P gradients; P features ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let resizeBilinearGrad
@@ -1038,7 +1230,9 @@ let resizeBilinearGrad
   { name = Name.make_fresh ~name
   ; output_type = original_image.output_type
   ; inputs = [ P grads; P original_image ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let rsqrt
@@ -1048,7 +1242,9 @@ let rsqrt
   { name = Name.make_fresh ~name
   ; output_type = x.output_type
   ; inputs = [ P x ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let scatterAdd
@@ -1060,7 +1256,9 @@ let scatterAdd
   { name = Name.make_fresh ~name
   ; output_type = ref.output_type
   ; inputs = [ P ref; P indices; P updates ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let scatterSub
@@ -1072,7 +1270,9 @@ let scatterSub
   { name = Name.make_fresh ~name
   ; output_type = ref.output_type
   ; inputs = [ P ref; P indices; P updates ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let scatterUpdate
@@ -1084,7 +1284,9 @@ let scatterUpdate
   { name = Name.make_fresh ~name
   ; output_type = ref.output_type
   ; inputs = [ P ref; P indices; P updates ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let segmentMax
@@ -1095,7 +1297,9 @@ let segmentMax
   { name = Name.make_fresh ~name
   ; output_type = data.output_type
   ; inputs = [ P data; P segment_ids ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let segmentMean
@@ -1106,7 +1310,9 @@ let segmentMean
   { name = Name.make_fresh ~name
   ; output_type = data.output_type
   ; inputs = [ P data; P segment_ids ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let segmentMin
@@ -1117,7 +1323,9 @@ let segmentMin
   { name = Name.make_fresh ~name
   ; output_type = data.output_type
   ; inputs = [ P data; P segment_ids ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let segmentProd
@@ -1128,7 +1336,9 @@ let segmentProd
   { name = Name.make_fresh ~name
   ; output_type = data.output_type
   ; inputs = [ P data; P segment_ids ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let segmentSum
@@ -1139,7 +1349,9 @@ let segmentSum
   { name = Name.make_fresh ~name
   ; output_type = data.output_type
   ; inputs = [ P data; P segment_ids ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let selfAdjointEig
@@ -1149,7 +1361,9 @@ let selfAdjointEig
   { name = Name.make_fresh ~name
   ; output_type = input.output_type
   ; inputs = [ P input ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let sigmoid
@@ -1159,7 +1373,9 @@ let sigmoid
   { name = Name.make_fresh ~name
   ; output_type = x.output_type
   ; inputs = [ P x ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let sign
@@ -1169,7 +1385,9 @@ let sign
   { name = Name.make_fresh ~name
   ; output_type = x.output_type
   ; inputs = [ P x ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let sin
@@ -1179,7 +1397,9 @@ let sin
   { name = Name.make_fresh ~name
   ; output_type = x.output_type
   ; inputs = [ P x ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let slice
@@ -1191,7 +1411,9 @@ let slice
   { name = Name.make_fresh ~name
   ; output_type = input.output_type
   ; inputs = [ P input; P begin__; P size ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let softmax
@@ -1201,7 +1423,9 @@ let softmax
   { name = Name.make_fresh ~name
   ; output_type = logits.output_type
   ; inputs = [ P logits ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let softplus
@@ -1211,7 +1435,9 @@ let softplus
   { name = Name.make_fresh ~name
   ; output_type = features.output_type
   ; inputs = [ P features ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let softplusGrad
@@ -1222,7 +1448,9 @@ let softplusGrad
   { name = Name.make_fresh ~name
   ; output_type = gradients.output_type
   ; inputs = [ P gradients; P features ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let softsign
@@ -1232,7 +1460,9 @@ let softsign
   { name = Name.make_fresh ~name
   ; output_type = features.output_type
   ; inputs = [ P features ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let softsignGrad
@@ -1243,7 +1473,9 @@ let softsignGrad
   { name = Name.make_fresh ~name
   ; output_type = gradients.output_type
   ; inputs = [ P gradients; P features ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let spaceToDepth
@@ -1253,7 +1485,9 @@ let spaceToDepth
   { name = Name.make_fresh ~name
   ; output_type = input.output_type
   ; inputs = [ P input ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let sparseApplyAdagrad
@@ -1267,7 +1501,9 @@ let sparseApplyAdagrad
   { name = Name.make_fresh ~name
   ; output_type = var.output_type
   ; inputs = [ P var; P accum; P lr; P grad; P indices ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let sparseApplyFtrl
@@ -1285,7 +1521,9 @@ let sparseApplyFtrl
   { name = Name.make_fresh ~name
   ; output_type = var.output_type
   ; inputs = [ P var; P accum; P linear; P grad; P indices; P lr; P l1; P l2; P lr_power ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let sparseApplyMomentum
@@ -1300,7 +1538,9 @@ let sparseApplyMomentum
   { name = Name.make_fresh ~name
   ; output_type = var.output_type
   ; inputs = [ P var; P accum; P lr; P grad; P indices; P momentum ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let sparseMatMul
@@ -1311,7 +1551,9 @@ let sparseMatMul
   { name = Name.make_fresh ~name
   ; output_type = Type.Float
   ; inputs = [ P a; P b ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let sparseToDense
@@ -1324,7 +1566,9 @@ let sparseToDense
   { name = Name.make_fresh ~name
   ; output_type = sparse_values.output_type
   ; inputs = [ P sparse_indices; P output_shape; P sparse_values; P default_value ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let sqrt
@@ -1334,7 +1578,9 @@ let sqrt
   { name = Name.make_fresh ~name
   ; output_type = x.output_type
   ; inputs = [ P x ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let square
@@ -1344,7 +1590,9 @@ let square
   { name = Name.make_fresh ~name
   ; output_type = x.output_type
   ; inputs = [ P x ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let squaredDifference
@@ -1355,7 +1603,9 @@ let squaredDifference
   { name = Name.make_fresh ~name
   ; output_type = x.output_type
   ; inputs = [ P x; P y ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let squeeze
@@ -1365,7 +1615,9 @@ let squeeze
   { name = Name.make_fresh ~name
   ; output_type = input.output_type
   ; inputs = [ P input ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let stopGradient
@@ -1375,7 +1627,9 @@ let stopGradient
   { name = Name.make_fresh ~name
   ; output_type = input.output_type
   ; inputs = [ P input ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let sub
@@ -1386,7 +1640,9 @@ let sub
   { name = Name.make_fresh ~name
   ; output_type = x.output_type
   ; inputs = [ P x; P y ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let tanh
@@ -1396,7 +1652,9 @@ let tanh
   { name = Name.make_fresh ~name
   ; output_type = x.output_type
   ; inputs = [ P x ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let temporaryVariable
@@ -1406,7 +1664,9 @@ let temporaryVariable
   { name = Name.make_fresh ~name
   ; output_type = type_
   ; inputs = [  ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let truncatedNormal
@@ -1417,7 +1677,9 @@ let truncatedNormal
   { name = Name.make_fresh ~name
   ; output_type = type_
   ; inputs = [ P shape ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let unpack
@@ -1427,7 +1689,9 @@ let unpack
   { name = Name.make_fresh ~name
   ; output_type = value.output_type
   ; inputs = [ P value ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let variable
@@ -1437,7 +1701,9 @@ let variable
   { name = Name.make_fresh ~name
   ; output_type = type_
   ; inputs = [  ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
 let zerosLike
@@ -1447,6 +1713,8 @@ let zerosLike
   { name = Name.make_fresh ~name
   ; output_type = x.output_type
   ; inputs = [ P x ]
-  ; attributes = []
+  ; attributes =
+    [
+    ]
   }
 
