@@ -33,7 +33,7 @@ let create_attr_value
 
 let default_tensor_proto = default_tensor_proto ()
 
-let of_attribute name value =
+let of_attribute (type a) name value (output_type : a Node.Type.t) =
   let value =
     match value with
     | String s -> Some (create_attr_value ~s ())
@@ -65,7 +65,7 @@ let of_attribute name value =
     | Tensor_float tensor_float ->
       let tensor =
         { default_tensor_proto with
-          dtype = Some `dt_float (* TODO: use the output type. *)
+          dtype = Some (Node.Type.to_dt_type (P output_type))
         ; float_val = tensor_float.values
         ; tensor_shape =
           Some
@@ -92,7 +92,7 @@ let of_node t =
     if Hashtbl.mem nodes t.name
     then ()
     else begin
-      let attr = List.map (fun (name, value) -> of_attribute name value) t.attributes in
+      let attr = List.map (fun (name, value) -> of_attribute name value t.output_type) t.attributes in
       let node =
         { Node_def.name = Some (Node.Name.to_string t.name)
         ; op = Some t.op_name

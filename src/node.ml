@@ -62,7 +62,6 @@ end
    in a generic way ? *)
 module Tensor_float = struct
   type t =
-(*    { type_ : [< `float | `double ] Type.t *)
     { type_ : Type.p (* Has to be Float or Double. *)
     ; shape : int list
     ; values : float list

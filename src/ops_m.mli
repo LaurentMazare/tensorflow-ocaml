@@ -1,5 +1,6 @@
-val const_float_1d
+val const_float
   :  ?name:string
-  -> type_ : 'dtype Node.Type.t
+  -> ?shape:int list
+  -> type_:'dtype Node.Type.t
   -> float list
   -> 'dtype Node.t
