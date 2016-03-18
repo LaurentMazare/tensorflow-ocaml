@@ -7,5 +7,5 @@ with graph.as_default():
   tf_res = tf_c1 + tf_c2
 
 tf.train.write_graph(graph.as_graph_def(), '.', 'simple.pbtxt', as_text=True)
-tf.train.write_graph(graph.as_graph_def(), '.', 'test.pbtxt', as_text=False)
+tf.train.write_graph(graph.as_graph_def(), '.', 'test.pb', as_text=False)
 
