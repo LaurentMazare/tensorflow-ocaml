@@ -4,20 +4,15 @@ exception Not_supported of string
 let ops_file = "gen_ops/ops.pb"
 let output_file = "src/ops"
 
-type type_ =
-  [ `float
-  | `double
-  ]
-
 let types_to_string = function
-  | `float -> "`float"
-  | `double -> "`double"
+  | Node.Type.P Node.Type.Float -> "`float"
+  | Node.Type.P Node.Type.Double -> "`double"
+  | Node.Type.P Node.Type.Unit -> "`unit"
 
 module Type = struct
   type t =
-    | Polymorphic of string * [ `allow_only of type_ list | `allow_all ]
-    | Fixed of type_
-    | Unit
+    | Polymorphic of string * [ `allow_only of Node.Type.p list | `allow_all ]
+    | Fixed of Node.Type.p
 
   let to_string = function
     | Polymorphic (alpha, `allow_all) -> alpha
@@ -26,7 +21,6 @@ module Type = struct
       |> String.concat ~sep:" | "
       |> fun types -> sprintf "([< %s ] as %s)" types alpha
     | Fixed type_ -> sprintf "[ %s ]" (types_to_string type_)
-    | Unit -> "[ `unit ]"
 end
 
 module Input = struct
@@ -66,8 +60,8 @@ module Op = struct
       end
     | None ->
       match arg.type_ with
-      | Some `dt_float -> Fixed `float
-      | Some `dt_double -> Fixed `double
+      | Some `dt_float -> Fixed (P Float)
+      | Some `dt_double -> Fixed (P Double)
       | Some _ -> raise (Not_supported "unknown output type")
       | None -> raise (Not_supported "no output type")
 
@@ -84,8 +78,8 @@ module Op = struct
             | Some allowed_values ->
               List.filter_map allowed_values.type_ ~f:(fun typ ->
                 match typ with
-                | `dt_float -> Some `float
-                | `dt_double -> Some `double
+                | `dt_float -> Some Node.Type.(P Float)
+                | `dt_double -> Some Node.Type.(P Double)
                 | _ -> None)
         in
         if allowed_values = []
@@ -105,7 +99,7 @@ module Op = struct
       in
       let output_type =
         match op.output_arg with
-        | [] -> Type.Unit
+        | [] -> Type.Fixed (P Unit)
         | _ :: _ :: _ -> raise (Not_supported "multiple outputs")
         | [ output_arg ] -> read_type types output_arg
       in
@@ -128,9 +122,9 @@ let same_input_and_output_type (op : Op.t) ~alpha =
 
 let output_type_string op =
   match op.Op.output_type with
-  | Fixed `float -> "Type.Float"
-  | Fixed `double -> "Type.Double"
-  | Unit -> "Type.Unit"
+  | Fixed (Node.Type.P Node.Type.Float) -> "Type.Float"
+  | Fixed (Node.Type.P Node.Type.Double) -> "Type.Double"
+  | Fixed (Node.Type.P Node.Type.Unit) -> "Type.Unit"
   | Polymorphic (alpha, _) ->
     match same_input_and_output_type op ~alpha with
     | Some input_name -> sprintf "%s.output_type" input_name
@@ -138,7 +132,7 @@ let output_type_string op =
 
 let needs_variable_for_output_type op =
   match op.Op.output_type with
-  | Unit | Fixed _ -> false
+  | Fixed _ -> false
   | Polymorphic (alpha, _) ->
     same_input_and_output_type op ~alpha |> Option.is_none
 
