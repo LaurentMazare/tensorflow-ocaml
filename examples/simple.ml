@@ -34,6 +34,9 @@ let () =
   in
   match output with
   | [ output_tensor ] ->
-    let data = Tensor.data output_tensor Ctypes.float 2 in
-    Printf.printf "%f %f\n%!" (CArray.get data 0) (CArray.get data 1)
+    let dim = Tensor.dim output_tensor 0 in
+    let data = Tensor.data output_tensor Ctypes.float dim in
+    for d = 0 to dim - 1 do
+      Printf.printf "%d %f\n%!" d (CArray.get data d)
+    done
   | [] | _ :: _ :: _ -> assert false
