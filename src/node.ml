@@ -32,6 +32,7 @@ type attr =
 
 type 'a t =
   { name : Name.t
+  ; op_name : string
   ; output_type : 'a Type.t
   ; inputs : p list
   ; attributes : (string * attr) list

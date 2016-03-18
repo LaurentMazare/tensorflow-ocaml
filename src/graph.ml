@@ -48,7 +48,6 @@ let exp arg =
   ; t_ = Exp arg
   }
 
-
 module Protobuf = struct
   let const_1d floats ~name =
     let open Graph_piqi in
