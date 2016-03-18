@@ -20,6 +20,11 @@ module Type = struct
     | Double : [ `double ] t
 
   type p = P : _ t -> p
+
+  let to_dt_type = function
+    | P Unit -> assert false
+    | P Float -> `dt_float
+    | P Double -> `dt_double
 end
 
 type attr =
