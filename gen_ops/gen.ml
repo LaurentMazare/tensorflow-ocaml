@@ -60,12 +60,16 @@ module Op = struct
       in
       Some type_attr, type_
     | None ->
+      let raise_not_supported msg =
+        let name = Option.value arg.name ~default:"unknown" in
+        raise (Not_supported (Printf.sprintf "%s: %s" msg name))
+      in
       match arg.type_ with
-      | None -> raise (Not_supported "no input/output type")
+      | None -> raise_not_supported "no input/output type"
       | Some dt_type ->
         match Node.Type.of_dt_type dt_type with
         | Some p -> None, Fixed p
-        | None -> raise (Not_supported "unknown input/output type")
+        | None -> raise_not_supported "unknown input/output type"
 
   let extract_types (attrs : Op_def_piqi.op_def_attr_def list) =
     List.filter_map attrs ~f:(fun (attr : Op_def_piqi.op_def_attr_def) ->
