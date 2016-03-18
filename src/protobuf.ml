@@ -79,7 +79,7 @@ let of_attribute name value =
       in
       Some (create_attr_value ~tensor ())
    (* TODO *)
-    | _ -> None
+    | List _ -> None
   in
   { Node_def_attr_entry.key = Some name
   ; value
