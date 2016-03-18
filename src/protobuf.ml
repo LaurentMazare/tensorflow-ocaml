@@ -63,10 +63,17 @@ let of_attribute (type a) name value (output_type : a Node.Type.t) =
       in
       Some (create_attr_value ~shape ())
     | Tensor_float tensor_float ->
+      let float_val, double_val =
+        match output_type with
+        | Node.Type.Float -> tensor_float.values, []
+        | Node.Type.Double -> [], tensor_float.values
+        | _ -> [], []
+      in
       let tensor =
         { default_tensor_proto with
           dtype = Some (Node.Type.to_dt_type (P output_type))
-        ; float_val = tensor_float.values
+        ; float_val
+        ; double_val
         ; tensor_shape =
           Some
             { dim =
