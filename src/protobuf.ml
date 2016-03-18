@@ -58,7 +58,7 @@ let of_node t =
       List.iter walk t.inputs
     end
   in
-  walk t;
+  walk (P t);
   let nodes = Hashtbl.fold (fun _ v acc -> v :: acc) nodes [] in
   let graph_def =
     { Graph_def.node = nodes

@@ -267,22 +267,34 @@ let tf_run =
 module Session = struct
   type t = tf_session
 
-  let create session_options status =
+  type 'a result =
+    | Ok of 'a
+    | Error of Status.t
+
+  let result_or_error status v =
+    match Status.code status with
+    | TF_OK -> Ok v
+    | _ -> Error status
+
+  let create session_options =
+    let status = Status.create () in
     let session = tf_newsession session_options status in
     Gc.finalise
       (fun session ->
         let status = Status.create () in
         tf_deletesession session status)
       session;
-    session
+    result_or_error status session
 
-  let extend_graph t protobuf status =
+  let extend_graph t protobuf =
+    let status = Status.create () in
     let protobuf = Protobuf.to_string protobuf in
     tf_extendgraph
       t
       protobuf
       (String.length protobuf |> Unsigned.Size_t.of_int)
-      status
+      status;
+    result_or_error status ()
 
   let run t ~inputs ~outputs ~targets =
     let status = Status.create () in
@@ -300,11 +312,7 @@ module Session = struct
       CArray.(of_list string targets |> start)
       (List.length targets)
       status;
-    match Status.code status with
-    | TF_OK ->
-      `Ok (CArray.to_list output_tensors)
-    | error_code -> `Error (error_code, Status.message status)
-
+    result_or_error status (CArray.to_list output_tensors)
 end
 
 let () =
@@ -313,4 +321,5 @@ let () =
     , tf_deletetensor
     , tf_settarget
     , tf_setconfig
-    , tf_closesession)
+    , tf_closesession
+    , Status.set)
