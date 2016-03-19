@@ -92,7 +92,7 @@ let of_attribute (type a) name value (output_type : a Node.Type.t) =
   ; value
   }
 
-let of_node t =
+let of_nodes ts =
   let nodes = Hashtbl.create 128 in
   let rec walk p =
     let P t = p in
@@ -112,7 +112,7 @@ let of_node t =
       List.iter walk t.inputs
     end
   in
-  walk (P t);
+  List.iter walk ts;
   let nodes = Hashtbl.fold (fun _ v acc -> v :: acc) nodes [] in
   let graph_def =
     { Graph_def.node = nodes
@@ -128,3 +128,5 @@ let of_node t =
   in
   gen_graph_def graph_def
   |> Piqirun.to_string
+
+let of_node t = of_nodes [ P t ]
