@@ -39,12 +39,24 @@ module Input = struct
     | None -> sprintf "x%d" idx
 end
 
+module Attribute = struct
+  type attr_type =
+    | String
+    | Shape
+
+  type t =
+    { name : string
+    ; attr_type : attr_type
+    }
+end
+
 module Op = struct
   type t =
     { name : string
     ; inputs : Input.t list 
     ; output_type : Type.t
     ; output_type_name : string option
+    ; attributes : Attribute.t list
     }
 
   let read_type types (arg : Op_def_piqi.op_def_arg_def) =
@@ -93,6 +105,18 @@ module Op = struct
         else Some (name, allowed_values)
       | _ -> None)
 
+  let get_attr (attr : Op_def_piqi.Op_def_attr_def.t) =
+    Option.bind attr.type_ (function
+      | "string" -> Some Attribute.String
+      | "shape" -> Some Attribute.Shape
+      (* TODO: add more... *)
+      | _ -> None
+    )
+    |> Option.map ~f:(fun attr_type ->
+      { Attribute.name = Option.value_exn attr.name
+      ; attr_type
+      })
+
   let create (op : Op_def_piqi.Op_def.t) =
     let name = Option.value_exn op.name in
     try
@@ -109,7 +133,13 @@ module Op = struct
         | _ :: _ :: _ -> raise (Not_supported "multiple outputs")
         | [ output_arg ] -> read_type types output_arg
       in
-      Ok { name; inputs; output_type; output_type_name }
+      Ok
+        { name
+        ; inputs
+        ; output_type
+        ; output_type_name
+        ; attributes = List.filter_map op.attr ~f:get_attr
+        }
     with
     | Not_supported str ->
       Error (sprintf "%s: %s" name str)
