@@ -22,7 +22,7 @@ let () =
     Ops.assign variable (Ops_m.const_float ~type_:Float [ 8.; 0.; 1. ])
   in
   let node =
-    Ops.sub variable placeholder
+    Ops.sub assign placeholder
     |> Ops.abs
   in
   let session_options = Session_options.create () in
@@ -32,7 +32,7 @@ let () =
   in
   Session.extend_graph
     session
-    (Protobuf.of_nodes [ P node; P assign ])
+    (Protobuf.of_nodes [ P node ])
     |> ok_exn ~context:"extending graph";
   let output =
     Session.run
