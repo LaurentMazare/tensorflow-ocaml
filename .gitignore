@@ -5,3 +5,4 @@
 *.cm*
 _build
 lib/*.so
+scripts/data
