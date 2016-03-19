@@ -1,5 +1,6 @@
 open Ctypes
 open Foreign
+let verbose = false
 
 (* TF_TENSOR *)
 type tf_tensor = unit ptr
@@ -95,8 +96,6 @@ let tf_tensortype =
   foreign "TF_TensorType" (tf_tensor @-> returning int)
 
 module Tensor = struct
-  (* TODO: when handled_by_ocaml is false, all the accessor functions should fail
-     as memory could have been deallocated by the C++ side. *)
   let fresh_id =
     let cnt = ref 0 in
     fun () -> incr cnt; !cnt
@@ -114,7 +113,8 @@ module Tensor = struct
 
   let deallocate _ _ id =
     let id = raw_address_of_ptr id |> Nativeint.to_int in
-    Printf.printf "Deallocating tensor %d\n%!" id;
+    if verbose
+    then Printf.printf "Deallocating tensor %d\n%!" id;
     Hashtbl.remove live_tensors id
 
   let add_finaliser t =
@@ -158,16 +158,28 @@ module Tensor = struct
       ; data = None
       }
 
-  let num_dims t = tf_numdims t.tensor
+  let assert_handled_by_ocaml t =
+    if not t.handled_by_ocaml
+    then failwith "This tensor is not handled by ocaml anymore."
 
-  let dim t = tf_dim t.tensor
+  let num_dims t =
+    assert_handled_by_ocaml t;
+    tf_numdims t.tensor
 
-  let byte_size t = tf_tensorbytesize t.tensor |> Unsigned.Size_t.to_int
+  let dim t =
+    assert_handled_by_ocaml t;
+    tf_dim t.tensor
+
+  let byte_size t =
+    assert_handled_by_ocaml t;
+    tf_tensorbytesize t.tensor |> Unsigned.Size_t.to_int
 
   let data t typ len =
+    assert_handled_by_ocaml t;
     CArray.from_ptr (tf_tensordata t.tensor |> Ctypes.from_voidp typ) len
 
   let data_type t =
+    assert_handled_by_ocaml t;
     tf_tensortype t.tensor
     |> int_of_data_type
 end
