@@ -60,11 +60,11 @@ end
 
 (* This is used for float/double, maybe we should introduce another GADT to handle this
    in a generic way ? *)
-module Tensor_float = struct
-  type t =
+module Tensor = struct
+  type 'a t =
     { type_ : Type.p (* Has to be Float or Double. *)
     ; shape : int list
-    ; values : float list
+    ; values : 'a list
     }
 end
 
@@ -84,7 +84,8 @@ type attr =
   | Bool of bool
   | Type of Type.p
   | List of attr list
-  | Tensor_float of Tensor_float.t
+  | Tensor_float of float Tensor.t
+  | Tensor_int of int Tensor.t
   | Shape of Dim.t list
 
 type 'a t =
