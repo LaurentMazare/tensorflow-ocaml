@@ -31,7 +31,7 @@ module Input = struct
     ; type_ : Type.t
     }
 
-  let name t ~idx =
+  let caml_name t ~idx =
     match t.name with
     | Some "begin" -> "begin__"
     | Some "in" -> "in__"
@@ -47,7 +47,48 @@ module Attribute = struct
   type t =
     { name : string
     ; attr_type : attr_type
+    ; has_default_value : bool
     }
+
+  let caml_name t =
+    String.uncapitalize t.name
+
+  let caml_type = function
+    | String -> "string"
+    | Shape -> "Dim.t list"
+
+  let constr = function
+    | String -> "String"
+    | Shape -> "Shape"
+
+  let mli t =
+    sprintf "%s%s:%s"
+      (if t.has_default_value then "?" else "")
+      (caml_name t)
+      (caml_type t.attr_type)
+
+  let ml_def t =
+    sprintf "%s%s"
+      (if t.has_default_value then "?" else "~")
+      (caml_name t)
+
+  let ml_apply t attribute_var =
+    let caml_name = caml_name t in
+    let updated_attributes =
+      sprintf "(\"%s\", %s %s) :: %s"
+        t.name
+        (constr t.attr_type)
+        caml_name
+        attribute_var
+    in
+    if t.has_default_value
+    then
+      sprintf "match %s with | None -> %s | Some %s -> %s"
+        caml_name
+        attribute_var
+        caml_name
+        updated_attributes
+    else updated_attributes
 end
 
 module Op = struct
@@ -115,6 +156,7 @@ module Op = struct
     |> Option.map ~f:(fun attr_type ->
       { Attribute.name = Option.value_exn attr.name
       ; attr_type
+      ; has_default_value = Option.is_some attr.default_value
       })
 
   let create (op : Op_def_piqi.Op_def.t) =
@@ -183,6 +225,8 @@ let gen_mli ops =
     p "  :  ?name:string";
     if needs_variable_for_output_type
     then p "  -> type_ : %s Node.Type.t" (Type.to_string op.output_type);
+    List.iter op.attributes ~f:(fun attribute ->
+      p "  -> %s" (Attribute.mli attribute));
     List.iter op.inputs ~f:(fun { Input.name = _; type_ } ->
       p "  -> %s Node.t" (Type.to_string type_));
     if List.is_empty op.inputs
@@ -190,6 +234,7 @@ let gen_mli ops =
     p "  -> %s Node.t" (Type.to_string op.output_type);
     p "";
   in
+  p "open Node";
   List.iter ops ~f:handle_one_op;
   Out_channel.close out_channel
 
@@ -206,27 +251,37 @@ let gen_ml ops =
     p "    ?(name = \"%s\")" op.name;
     if needs_variable_for_output_type
     then p "    ~type_";
+    List.iter op.attributes ~f:(fun attribute ->
+      p "    %s" (Attribute.ml_def attribute));
     List.iteri op.inputs ~f:(fun idx input ->
-      let name = Input.name input ~idx in
+      let name = Input.caml_name input ~idx in
       p "    (%s : %s t)" name (Type.to_string input.type_));
     if List.is_empty op.inputs
     then p "    ()";
     let output_type_string = output_type_string op in
     p "  =";
+    let type_attr =
+      match op.output_type_name with
+      | Some output_type_name ->
+        sprintf " \"%s\", Type (P %s) " output_type_name output_type_string
+      | None -> ""
+    in
+    p "  let attributes = [%s] in" type_attr;
+    List.iter op.attributes ~f:(fun attribute ->
+      p "  let attributes =";
+      p "    %s" (Attribute.ml_apply attribute "attributes");
+      p "  in";
+    );
     p "  { name = Name.make_fresh ~name";
     p "  ; op_name = \"%s\"" op.name;
     p "  ; output_type = %s" output_type_string;
     let inputs =
       List.mapi op.inputs ~f:(fun idx input ->
-        sprintf "P %s" (Input.name input ~idx))
+        sprintf "P %s" (Input.caml_name input ~idx))
       |> String.concat ~sep:"; "
     in
     p "  ; inputs = [ %s ]" inputs;
-    (* TODO: handle more attributes... *)
-    p "  ; attributes = [";
-    Option.iter op.output_type_name ~f:(fun output_type_name ->
-      p "      \"%s\", Type (P %s);" output_type_name output_type_string);
-    p "    ]";
+    p "  ; attributes";
     p "  ; output_name = None";
     p "  }";
     p "";

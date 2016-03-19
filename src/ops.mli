@@ -1,3 +1,4 @@
+open Node
 val abs
   :  ?name:string
   -> ([< `float | `double | `int32 | `int64 ] as 't) Node.t
@@ -134,11 +135,15 @@ val assignSub
 
 val avgPool
   :  ?name:string
+  -> padding:string
+  -> ?data_format:string
   -> ([< `float | `double ] as 't) Node.t
   -> ([< `float | `double ] as 't) Node.t
 
 val avgPoolGrad
   :  ?name:string
+  -> padding:string
+  -> ?data_format:string
   -> [ `int32 ] Node.t
   -> ([< `float | `double ] as 't) Node.t
   -> ([< `float | `double ] as 't) Node.t
@@ -199,12 +204,14 @@ val batchSelfAdjointEig
 
 val biasAdd
   :  ?name:string
+  -> ?data_format:string
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
 
 val biasAddGrad
   :  ?name:string
+  -> ?data_format:string
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
 
@@ -233,6 +240,7 @@ val ceil
 
 val checkNumerics
   :  ?name:string
+  -> message:string
   -> ([< `float | `double ] as 't) Node.t
   -> ([< `float | `double ] as 't) Node.t
 
@@ -276,12 +284,16 @@ val controlTrigger
 
 val conv2D
   :  ?name:string
+  -> padding:string
+  -> ?data_format:string
   -> ([< `float | `double ] as 't) Node.t
   -> ([< `float | `double ] as 't) Node.t
   -> ([< `float | `double ] as 't) Node.t
 
 val conv2DBackpropFilter
   :  ?name:string
+  -> padding:string
+  -> ?data_format:string
   -> ([< `float | `double ] as 't) Node.t
   -> [ `int32 ] Node.t
   -> ([< `float | `double ] as 't) Node.t
@@ -289,6 +301,8 @@ val conv2DBackpropFilter
 
 val conv2DBackpropInput
   :  ?name:string
+  -> padding:string
+  -> ?data_format:string
   -> [ `int32 ] Node.t
   -> ([< `float | `double ] as 't) Node.t
   -> ([< `float | `double ] as 't) Node.t
@@ -334,12 +348,14 @@ val depthToSpace
 
 val depthwiseConv2dNative
   :  ?name:string
+  -> padding:string
   -> ([< `float | `double ] as 't) Node.t
   -> ([< `float | `double ] as 't) Node.t
   -> ([< `float | `double ] as 't) Node.t
 
 val depthwiseConv2dNativeBackpropFilter
   :  ?name:string
+  -> padding:string
   -> ([< `float | `double ] as 't) Node.t
   -> [ `int32 ] Node.t
   -> ([< `float | `double ] as 't) Node.t
@@ -347,6 +363,7 @@ val depthwiseConv2dNativeBackpropFilter
 
 val depthwiseConv2dNativeBackpropInput
   :  ?name:string
+  -> padding:string
   -> [ `int32 ] Node.t
   -> ([< `float | `double ] as 't) Node.t
   -> ([< `float | `double ] as 't) Node.t
@@ -354,6 +371,7 @@ val depthwiseConv2dNativeBackpropInput
 
 val destroyTemporaryVariable
   :  ?name:string
+  -> var_name:string
   -> 't Node.t
   -> 't Node.t
 
@@ -424,6 +442,7 @@ val encodePng
 
 val enter
   :  ?name:string
+  -> frame_name:string
   -> 't Node.t
   -> 't Node.t
 
@@ -473,6 +492,8 @@ val fFT2D
 
 val fIFOQueue
   :  ?name:string
+  -> ?container:string
+  -> ?shared_name:string
   -> unit
   -> [ `string ] Node.t
 
@@ -489,6 +510,8 @@ val fill
 
 val fixedLengthRecordReader
   :  ?name:string
+  -> ?container:string
+  -> ?shared_name:string
   -> unit
   -> [ `string ] Node.t
 
@@ -522,6 +545,8 @@ val hSVToRGB
 
 val hashTable
   :  ?name:string
+  -> ?container:string
+  -> ?shared_name:string
   -> unit
   -> [ `string ] Node.t
 
@@ -543,6 +568,8 @@ val identity
 
 val identityReader
   :  ?name:string
+  -> ?container:string
+  -> ?shared_name:string
   -> unit
   -> [ `string ] Node.t
 
@@ -723,11 +750,15 @@ val max
 
 val maxPool
   :  ?name:string
+  -> padding:string
+  -> ?data_format:string
   -> [ `float ] Node.t
   -> [ `float ] Node.t
 
 val maxPoolGrad
   :  ?name:string
+  -> padding:string
+  -> ?data_format:string
   -> [ `float ] Node.t
   -> [ `float ] Node.t
   -> [ `float ] Node.t
@@ -735,6 +766,7 @@ val maxPoolGrad
 
 val maxPoolGradWithArgmax
   :  ?name:string
+  -> padding:string
   -> [ `float ] Node.t
   -> [ `float ] Node.t
   -> ([< `int32 | `int64 ] as 'targmax) Node.t
@@ -771,12 +803,14 @@ val minimum
 
 val mirrorPad
   :  ?name:string
+  -> mode:string
   -> 't Node.t
   -> [ `int32 ] Node.t
   -> 't Node.t
 
 val mirrorPadGrad
   :  ?name:string
+  -> mode:string
   -> 't Node.t
   -> [ `int32 ] Node.t
   -> 't Node.t
@@ -844,12 +878,15 @@ val pad
 
 val paddingFIFOQueue
   :  ?name:string
+  -> ?container:string
+  -> ?shared_name:string
   -> unit
   -> [ `string ] Node.t
 
 val placeholder
   :  ?name:string
   -> type_ : 'dtype Node.Type.t
+  -> ?shape:Dim.t list
   -> unit
   -> 'dtype Node.t
 
@@ -893,6 +930,8 @@ val randomShuffle
 
 val randomShuffleQueue
   :  ?name:string
+  -> ?container:string
+  -> ?shared_name:string
   -> unit
   -> [ `string ] Node.t
 
@@ -965,6 +1004,7 @@ val real
 
 val refEnter
   :  ?name:string
+  -> frame_name:string
   -> 't Node.t
   -> 't Node.t
 
@@ -1370,6 +1410,7 @@ val squeeze
 
 val stack
   :  ?name:string
+  -> ?stack_name:string
   -> unit
   -> [ `string ] Node.t
 
@@ -1420,6 +1461,8 @@ val sum
 
 val tFRecordReader
   :  ?name:string
+  -> ?container:string
+  -> ?shared_name:string
   -> unit
   -> [ `string ] Node.t
 
@@ -1431,11 +1474,14 @@ val tanh
 val temporaryVariable
   :  ?name:string
   -> type_ : 'dtype Node.Type.t
+  -> shape:Dim.t list
+  -> ?var_name:string
   -> unit
   -> 'dtype Node.t
 
 val tensorArray
   :  ?name:string
+  -> ?tensor_array_name:string
   -> [ `int32 ] Node.t
   -> [ `string ] Node.t
 
@@ -1446,6 +1492,7 @@ val tensorArrayClose
 
 val tensorArrayGrad
   :  ?name:string
+  -> source:string
   -> [ `string ] Node.t
   -> [ `float ] Node.t
   -> [ `string ] Node.t
@@ -1496,6 +1543,8 @@ val tensorArrayWrite
 
 val textLineReader
   :  ?name:string
+  -> ?container:string
+  -> ?shared_name:string
   -> unit
   -> [ `string ] Node.t
 
@@ -1538,6 +1587,9 @@ val unsortedSegmentSum
 val variable
   :  ?name:string
   -> type_ : 'dtype Node.Type.t
+  -> shape:Dim.t list
+  -> ?container:string
+  -> ?shared_name:string
   -> unit
   -> 'dtype Node.t
 
@@ -1548,6 +1600,8 @@ val where
 
 val wholeFileReader
   :  ?name:string
+  -> ?container:string
+  -> ?shared_name:string
   -> unit
   -> [ `string ] Node.t
 
