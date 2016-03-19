@@ -12,6 +12,7 @@ val add
 
 val addN
   :  ?name:string
+  -> n:int
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
 
@@ -31,18 +32,21 @@ val adjustContrastv2
 
 val all
   :  ?name:string
+  -> ?keep_dims:bool
   -> [ `bool ] Node.t
   -> [ `int32 ] Node.t
   -> [ `bool ] Node.t
 
 val any
   :  ?name:string
+  -> ?keep_dims:bool
   -> [ `bool ] Node.t
   -> [ `int32 ] Node.t
   -> [ `bool ] Node.t
 
 val applyAdagrad
   :  ?name:string
+  -> ?use_locking:bool
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
@@ -51,6 +55,7 @@ val applyAdagrad
 
 val applyAdam
   :  ?name:string
+  -> ?use_locking:bool
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
@@ -65,6 +70,7 @@ val applyAdam
 
 val applyFtrl
   :  ?name:string
+  -> ?use_locking:bool
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
@@ -77,6 +83,7 @@ val applyFtrl
 
 val applyGradientDescent
   :  ?name:string
+  -> ?use_locking:bool
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
@@ -84,6 +91,7 @@ val applyGradientDescent
 
 val applyMomentum
   :  ?name:string
+  -> ?use_locking:bool
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
@@ -93,6 +101,7 @@ val applyMomentum
 
 val applyRMSProp
   :  ?name:string
+  -> ?use_locking:bool
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
@@ -117,18 +126,22 @@ val argMin
 
 val assign
   :  ?name:string
+  -> ?validate_shape:bool
+  -> ?use_locking:bool
   -> 't Node.t
   -> 't Node.t
   -> 't Node.t
 
 val assignAdd
   :  ?name:string
+  -> ?use_locking:bool
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
 
 val assignSub
   :  ?name:string
+  -> ?use_locking:bool
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
@@ -155,6 +168,8 @@ val batchCholesky
 
 val batchMatMul
   :  ?name:string
+  -> ?adj_x:bool
+  -> ?adj_y:bool
   -> ([< `float | `double | `int32 | `complex64 ] as 't) Node.t
   -> ([< `float | `double | `int32 | `complex64 ] as 't) Node.t
   -> ([< `float | `double | `int32 | `complex64 ] as 't) Node.t
@@ -177,6 +192,7 @@ val batchMatrixSolve
 
 val batchMatrixSolveLs
   :  ?name:string
+  -> ?fast:bool
   -> ([< `float | `double ] as 't) Node.t
   -> ([< `float | `double ] as 't) Node.t
   -> [ `double ] Node.t
@@ -184,12 +200,15 @@ val batchMatrixSolveLs
 
 val batchMatrixTriangularSolve
   :  ?name:string
+  -> ?lower:bool
   -> ([< `float | `double ] as 't) Node.t
   -> ([< `float | `double ] as 't) Node.t
   -> ([< `float | `double ] as 't) Node.t
 
 val batchNormWithGlobalNormalization
   :  ?name:string
+  -> variance_epsilon:float
+  -> scale_after_normalization:bool
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
@@ -262,12 +281,14 @@ val complexAbs
 
 val concat
   :  ?name:string
+  -> n:int
   -> [ `int32 ] Node.t
   -> 't Node.t
   -> 't Node.t
 
 val concatOffset
   :  ?name:string
+  -> n:int
   -> [ `int32 ] Node.t
   -> [ `int32 ] Node.t
   -> [ `int32 ] Node.t
@@ -284,6 +305,7 @@ val controlTrigger
 
 val conv2D
   :  ?name:string
+  -> ?use_cudnn_on_gpu:bool
   -> padding:string
   -> ?data_format:string
   -> ([< `float | `double ] as 't) Node.t
@@ -292,6 +314,7 @@ val conv2D
 
 val conv2DBackpropFilter
   :  ?name:string
+  -> ?use_cudnn_on_gpu:bool
   -> padding:string
   -> ?data_format:string
   -> ([< `float | `double ] as 't) Node.t
@@ -301,6 +324,7 @@ val conv2DBackpropFilter
 
 val conv2DBackpropInput
   :  ?name:string
+  -> ?use_cudnn_on_gpu:bool
   -> padding:string
   -> ?data_format:string
   -> [ `int32 ] Node.t
@@ -315,6 +339,7 @@ val cos
 
 val countUpTo
   :  ?name:string
+  -> limit:int
   -> ([< `int32 | `int64 ] as 't) Node.t
   -> ([< `int32 | `int64 ] as 't) Node.t
 
@@ -332,17 +357,20 @@ val decodeJSONExample
 val decodePng
   :  ?name:string
   -> type_ : 'dtype Node.Type.t
+  -> ?channels:int
   -> [ `string ] Node.t
   -> 'dtype Node.t
 
 val decodeRaw
   :  ?name:string
   -> type_ : ([< `float | `double | `int32 | `int64 ] as 'out_type) Node.Type.t
+  -> ?little_endian:bool
   -> [ `string ] Node.t
   -> ([< `float | `double | `int32 | `int64 ] as 'out_type) Node.t
 
 val depthToSpace
   :  ?name:string
+  -> block_size:int
   -> 't Node.t
   -> 't Node.t
 
@@ -404,18 +432,21 @@ val drawBoundingBoxes
 
 val dynamicPartition
   :  ?name:string
+  -> num_partitions:int
   -> 't Node.t
   -> [ `int32 ] Node.t
   -> 't Node.t
 
 val dynamicStitch
   :  ?name:string
+  -> n:int
   -> [ `int32 ] Node.t
   -> 't Node.t
   -> 't Node.t
 
 val editDistance
   :  ?name:string
+  -> ?normalize:bool
   -> [ `int64 ] Node.t
   -> 't Node.t
   -> [ `int64 ] Node.t
@@ -437,12 +468,15 @@ val eluGrad
 
 val encodePng
   :  ?name:string
+  -> ?compression:int
   -> 't Node.t
   -> [ `string ] Node.t
 
 val enter
   :  ?name:string
   -> frame_name:string
+  -> ?is_constant:bool
+  -> ?parallel_iterations:int
   -> 't Node.t
   -> 't Node.t
 
@@ -480,6 +514,9 @@ val expandDims
 
 val extractGlimpse
   :  ?name:string
+  -> ?centered:bool
+  -> ?normalized:bool
+  -> ?uniform_noise:bool
   -> [ `float ] Node.t
   -> [ `int32 ] Node.t
   -> [ `float ] Node.t
@@ -492,6 +529,7 @@ val fFT2D
 
 val fIFOQueue
   :  ?name:string
+  -> ?capacity:int
   -> ?container:string
   -> ?shared_name:string
   -> unit
@@ -510,6 +548,9 @@ val fill
 
 val fixedLengthRecordReader
   :  ?name:string
+  -> ?header_bytes:int
+  -> record_bytes:int
+  -> ?footer_bytes:int
   -> ?container:string
   -> ?shared_name:string
   -> unit
@@ -522,6 +563,7 @@ val floor
 
 val gather
   :  ?name:string
+  -> ?validate_indices:bool
   -> 'tparams Node.t
   -> ([< `int32 | `int64 ] as 'tindices) Node.t
   -> 'tparams Node.t
@@ -580,12 +622,14 @@ val imag
 
 val imageSummary
   :  ?name:string
+  -> ?max_images:int
   -> [ `string ] Node.t
   -> ([< `float ] as 't) Node.t
   -> [ `string ] Node.t
 
 val inTopK
   :  ?name:string
+  -> k:int
   -> [ `float ] Node.t
   -> ([< `int32 | `int64 ] as 't) Node.t
   -> [ `bool ] Node.t
@@ -629,11 +673,19 @@ val l2Loss
 
 val lRN
   :  ?name:string
+  -> ?depth_radius:int
+  -> ?bias:float
+  -> ?alpha:float
+  -> ?beta:float
   -> [ `float ] Node.t
   -> [ `float ] Node.t
 
 val lRNGrad
   :  ?name:string
+  -> ?depth_radius:int
+  -> ?bias:float
+  -> ?alpha:float
+  -> ?beta:float
   -> [ `float ] Node.t
   -> [ `float ] Node.t
   -> [ `float ] Node.t
@@ -704,6 +756,8 @@ val loopCond
 
 val matMul
   :  ?name:string
+  -> ?transpose_a:bool
+  -> ?transpose_b:bool
   -> ([< `float | `double | `int32 | `complex64 ] as 't) Node.t
   -> ([< `float | `double | `int32 | `complex64 ] as 't) Node.t
   -> ([< `float | `double | `int32 | `complex64 ] as 't) Node.t
@@ -731,6 +785,7 @@ val matrixSolve
 
 val matrixSolveLs
   :  ?name:string
+  -> ?fast:bool
   -> ([< `float | `double ] as 't) Node.t
   -> ([< `float | `double ] as 't) Node.t
   -> [ `double ] Node.t
@@ -738,12 +793,14 @@ val matrixSolveLs
 
 val matrixTriangularSolve
   :  ?name:string
+  -> ?lower:bool
   -> ([< `float | `double ] as 't) Node.t
   -> ([< `float | `double ] as 't) Node.t
   -> ([< `float | `double ] as 't) Node.t
 
 val max
   :  ?name:string
+  -> ?keep_dims:bool
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
   -> [ `int32 ] Node.t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
@@ -780,17 +837,20 @@ val maximum
 
 val mean
   :  ?name:string
+  -> ?keep_dims:bool
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
   -> [ `int32 ] Node.t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
 
 val mergeSummary
   :  ?name:string
+  -> n:int
   -> [ `string ] Node.t
   -> [ `string ] Node.t
 
 val min
   :  ?name:string
+  -> ?keep_dims:bool
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
   -> [ `int32 ] Node.t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
@@ -834,6 +894,7 @@ val neg
 
 val negTrain
   :  ?name:string
+  -> num_negative_samples:int
   -> [ `float ] Node.t
   -> [ `float ] Node.t
   -> [ `int32 ] Node.t
@@ -859,6 +920,7 @@ val notEqual
 
 val oneHot
   :  ?name:string
+  -> ?axis:int
   -> [ `int64 ] Node.t
   -> [ `int32 ] Node.t
   -> 't Node.t
@@ -867,6 +929,7 @@ val oneHot
 
 val pack
   :  ?name:string
+  -> n:int
   -> 't Node.t
   -> 't Node.t
 
@@ -878,6 +941,7 @@ val pad
 
 val paddingFIFOQueue
   :  ?name:string
+  -> ?capacity:int
   -> ?container:string
   -> ?shared_name:string
   -> unit
@@ -898,12 +962,14 @@ val pow
 
 val prod
   :  ?name:string
+  -> ?keep_dims:bool
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
   -> [ `int32 ] Node.t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
 
 val queueClose
   :  ?name:string
+  -> ?cancel_pending_enqueues:bool
   -> [ `string ] Node.t
   -> [ `unit ] Node.t
 
@@ -919,17 +985,25 @@ val rGBToHSV
 
 val randomCrop
   :  ?name:string
+  -> ?seed:int
+  -> ?seed2:int
   -> ([< `int32 | `int64 | `float | `double ] as 't) Node.t
   -> [ `int64 ] Node.t
   -> ([< `int32 | `int64 | `float | `double ] as 't) Node.t
 
 val randomShuffle
   :  ?name:string
+  -> ?seed:int
+  -> ?seed2:int
   -> 't Node.t
   -> 't Node.t
 
 val randomShuffleQueue
   :  ?name:string
+  -> ?capacity:int
+  -> ?min_after_dequeue:int
+  -> ?seed:int
+  -> ?seed2:int
   -> ?container:string
   -> ?shared_name:string
   -> unit
@@ -938,17 +1012,23 @@ val randomShuffleQueue
 val randomStandardNormal
   :  ?name:string
   -> type_ : ([< `float | `double ] as 'dtype) Node.Type.t
+  -> ?seed:int
+  -> ?seed2:int
   -> ([< `int32 | `int64 ] as 't) Node.t
   -> ([< `float | `double ] as 'dtype) Node.t
 
 val randomUniform
   :  ?name:string
   -> type_ : ([< `float | `double ] as 'dtype) Node.Type.t
+  -> ?seed:int
+  -> ?seed2:int
   -> ([< `int32 | `int64 ] as 't) Node.t
   -> ([< `float | `double ] as 'dtype) Node.t
 
 val randomUniformInt
   :  ?name:string
+  -> ?seed:int
+  -> ?seed2:int
   -> ([< `int32 | `int64 ] as 't) Node.t
   -> ([< `int32 | `int64 ] as 'tout) Node.t
   -> ([< `int32 | `int64 ] as 'tout) Node.t
@@ -1005,6 +1085,8 @@ val real
 val refEnter
   :  ?name:string
   -> frame_name:string
+  -> ?is_constant:bool
+  -> ?parallel_iterations:int
   -> 't Node.t
   -> 't Node.t
 
@@ -1025,6 +1107,7 @@ val refNextIteration
 
 val refSelect
   :  ?name:string
+  -> n:int
   -> [ `int32 ] Node.t
   -> 't Node.t
   -> 't Node.t
@@ -1059,36 +1142,42 @@ val reshape
 
 val resizeArea
   :  ?name:string
+  -> ?align_corners:bool
   -> ([< `int32 | `int64 | `float | `double ] as 't) Node.t
   -> [ `int32 ] Node.t
   -> [ `float ] Node.t
 
 val resizeBicubic
   :  ?name:string
+  -> ?align_corners:bool
   -> ([< `int32 | `int64 | `float | `double ] as 't) Node.t
   -> [ `int32 ] Node.t
   -> [ `float ] Node.t
 
 val resizeBilinear
   :  ?name:string
+  -> ?align_corners:bool
   -> ([< `int32 | `int64 | `float | `double ] as 't) Node.t
   -> [ `int32 ] Node.t
   -> [ `float ] Node.t
 
 val resizeBilinearGrad
   :  ?name:string
+  -> ?align_corners:bool
   -> [ `float ] Node.t
   -> ([< `float | `double ] as 't) Node.t
   -> ([< `float | `double ] as 't) Node.t
 
 val resizeNearestNeighbor
   :  ?name:string
+  -> ?align_corners:bool
   -> ([< `int32 | `int64 | `float | `double ] as 't) Node.t
   -> [ `int32 ] Node.t
   -> ([< `int32 | `int64 | `float | `double ] as 't) Node.t
 
 val resizeNearestNeighborGrad
   :  ?name:string
+  -> ?align_corners:bool
   -> ([< `int32 | `float | `double ] as 't) Node.t
   -> [ `int32 ] Node.t
   -> ([< `int32 | `float | `double ] as 't) Node.t
@@ -1096,6 +1185,7 @@ val resizeNearestNeighborGrad
 val restore
   :  ?name:string
   -> type_ : 'dt Node.Type.t
+  -> ?preferred_shard:int
   -> [ `string ] Node.t
   -> [ `string ] Node.t
   -> 'dt Node.t
@@ -1103,6 +1193,7 @@ val restore
 val restoreSlice
   :  ?name:string
   -> type_ : 'dt Node.Type.t
+  -> ?preferred_shard:int
   -> [ `string ] Node.t
   -> [ `string ] Node.t
   -> [ `string ] Node.t
@@ -1116,6 +1207,8 @@ val reverse
 
 val reverseSequence
   :  ?name:string
+  -> seq_dim:int
+  -> ?batch_dim:int
   -> 't Node.t
   -> [ `int64 ] Node.t
   -> 't Node.t
@@ -1133,6 +1226,7 @@ val scalarSummary
 
 val scatterAdd
   :  ?name:string
+  -> ?use_locking:bool
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
   -> ([< `int32 | `int64 ] as 'tindices) Node.t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
@@ -1140,6 +1234,7 @@ val scatterAdd
 
 val scatterSub
   :  ?name:string
+  -> ?use_locking:bool
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
   -> ([< `int32 | `int64 ] as 'tindices) Node.t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
@@ -1147,6 +1242,7 @@ val scatterSub
 
 val scatterUpdate
   :  ?name:string
+  -> ?use_locking:bool
   -> 't Node.t
   -> ([< `int32 | `int64 ] as 'tindices) Node.t
   -> 't Node.t
@@ -1215,6 +1311,7 @@ val shape
 
 val shapeN
   :  ?name:string
+  -> n:int
   -> 't Node.t
   -> [ `int32 ] Node.t
 
@@ -1287,11 +1384,13 @@ val softsignGrad
 
 val spaceToDepth
   :  ?name:string
+  -> block_size:int
   -> 't Node.t
   -> 't Node.t
 
 val sparseApplyAdagrad
   :  ?name:string
+  -> ?use_locking:bool
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
@@ -1301,6 +1400,7 @@ val sparseApplyAdagrad
 
 val sparseApplyFtrl
   :  ?name:string
+  -> ?use_locking:bool
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
@@ -1314,6 +1414,7 @@ val sparseApplyFtrl
 
 val sparseApplyMomentum
   :  ?name:string
+  -> ?use_locking:bool
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
@@ -1324,6 +1425,10 @@ val sparseApplyMomentum
 
 val sparseMatMul
   :  ?name:string
+  -> ?transpose_a:bool
+  -> ?transpose_b:bool
+  -> ?a_is_sparse:bool
+  -> ?b_is_sparse:bool
   -> [ `float ] Node.t
   -> [ `float ] Node.t
   -> [ `float ] Node.t
@@ -1367,6 +1472,8 @@ val sparseSegmentSum
 
 val sparseTensorDenseMatMul
   :  ?name:string
+  -> ?adjoint_a:bool
+  -> ?adjoint_b:bool
   -> [ `int64 ] Node.t
   -> 't Node.t
   -> [ `int64 ] Node.t
@@ -1375,6 +1482,7 @@ val sparseTensorDenseMatMul
 
 val sparseToDense
   :  ?name:string
+  -> ?validate_indices:bool
   -> ([< `int32 | `int64 ] as 'tindices) Node.t
   -> ([< `int32 | `int64 ] as 'tindices) Node.t
   -> 't Node.t
@@ -1383,6 +1491,7 @@ val sparseToDense
 
 val split
   :  ?name:string
+  -> num_split:int
   -> [ `int32 ] Node.t
   -> 't Node.t
   -> 't Node.t
@@ -1427,6 +1536,7 @@ val stackPop
 
 val stackPush
   :  ?name:string
+  -> ?swap_memory:bool
   -> [ `string ] Node.t
   -> 't Node.t
   -> 't Node.t
@@ -1438,6 +1548,7 @@ val stopGradient
 
 val stringToHashBucket
   :  ?name:string
+  -> num_buckets:int
   -> [ `string ] Node.t
   -> [ `int64 ] Node.t
 
@@ -1455,6 +1566,7 @@ val sub
 
 val sum
   :  ?name:string
+  -> ?keep_dims:bool
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
   -> [ `int32 ] Node.t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
@@ -1481,6 +1593,7 @@ val temporaryVariable
 
 val tensorArray
   :  ?name:string
+  -> ?dynamic_size:bool
   -> ?tensor_array_name:string
   -> [ `int32 ] Node.t
   -> [ `string ] Node.t
@@ -1543,6 +1656,7 @@ val tensorArrayWrite
 
 val textLineReader
   :  ?name:string
+  -> ?skip_header_lines:int
   -> ?container:string
   -> ?shared_name:string
   -> unit
@@ -1569,11 +1683,14 @@ val transpose
 val truncatedNormal
   :  ?name:string
   -> type_ : ([< `float | `double ] as 'dtype) Node.Type.t
+  -> ?seed:int
+  -> ?seed2:int
   -> ([< `int32 | `int64 ] as 't) Node.t
   -> ([< `float | `double ] as 'dtype) Node.t
 
 val unpack
   :  ?name:string
+  -> num:int
   -> 't Node.t
   -> 't Node.t
 

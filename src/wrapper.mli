@@ -1,5 +1,8 @@
-(* TODO:
-    - More functional api.
+(* TODO: typesafe wrapper.
+   - In Session.run:
+     - Use placeholder rather than string for inputs.
+     - Use Node.t + GADT for maching between outputs and returned tensors.
+   - Typed tensors.
 *)
 
 type data_type =
@@ -81,10 +84,6 @@ module Session : sig
 
   val extend_graph : t -> Protobuf.t -> unit result
 
-  (* TODO: typesafe wrapper.
-     - Use placeholder here rather than string.
-     - Use Node.t + GADT for maching between outputs and returned tensors.
-  *)
   val run
     :  t
     -> inputs:(string * Tensor.t) list

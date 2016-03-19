@@ -29,9 +29,13 @@ let add
 
 let addN
     ?(name = "AddN")
+    ~n
     (inputs : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
   =
   let attributes = [ "T", Type (P inputs.output_type) ] in
+  let attributes =
+    ("N", Int n) :: attributes
+  in
   { name = Name.make_fresh ~name
   ; op_name = "AddN"
   ; output_type = inputs.output_type
@@ -72,10 +76,14 @@ let adjustContrastv2
 
 let all
     ?(name = "All")
+    ?keep_dims
     (input : [ `bool ] t)
     (reduction_indices : [ `int32 ] t)
   =
   let attributes = [] in
+  let attributes =
+    match keep_dims with | None -> attributes | Some keep_dims -> ("keep_dims", Bool keep_dims) :: attributes
+  in
   { name = Name.make_fresh ~name
   ; op_name = "All"
   ; output_type = Type.Bool
@@ -86,10 +94,14 @@ let all
 
 let any
     ?(name = "Any")
+    ?keep_dims
     (input : [ `bool ] t)
     (reduction_indices : [ `int32 ] t)
   =
   let attributes = [] in
+  let attributes =
+    match keep_dims with | None -> attributes | Some keep_dims -> ("keep_dims", Bool keep_dims) :: attributes
+  in
   { name = Name.make_fresh ~name
   ; op_name = "Any"
   ; output_type = Type.Bool
@@ -100,12 +112,16 @@ let any
 
 let applyAdagrad
     ?(name = "ApplyAdagrad")
+    ?use_locking
     (var : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (accum : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (lr : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (grad : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
   =
   let attributes = [ "T", Type (P var.output_type) ] in
+  let attributes =
+    match use_locking with | None -> attributes | Some use_locking -> ("use_locking", Bool use_locking) :: attributes
+  in
   { name = Name.make_fresh ~name
   ; op_name = "ApplyAdagrad"
   ; output_type = var.output_type
@@ -116,6 +132,7 @@ let applyAdagrad
 
 let applyAdam
     ?(name = "ApplyAdam")
+    ?use_locking
     (var : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (m : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (v : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
@@ -128,6 +145,9 @@ let applyAdam
     (grad : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
   =
   let attributes = [ "T", Type (P var.output_type) ] in
+  let attributes =
+    match use_locking with | None -> attributes | Some use_locking -> ("use_locking", Bool use_locking) :: attributes
+  in
   { name = Name.make_fresh ~name
   ; op_name = "ApplyAdam"
   ; output_type = var.output_type
@@ -138,6 +158,7 @@ let applyAdam
 
 let applyFtrl
     ?(name = "ApplyFtrl")
+    ?use_locking
     (var : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (accum : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (linear : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
@@ -148,6 +169,9 @@ let applyFtrl
     (lr_power : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
   =
   let attributes = [ "T", Type (P var.output_type) ] in
+  let attributes =
+    match use_locking with | None -> attributes | Some use_locking -> ("use_locking", Bool use_locking) :: attributes
+  in
   { name = Name.make_fresh ~name
   ; op_name = "ApplyFtrl"
   ; output_type = var.output_type
@@ -158,11 +182,15 @@ let applyFtrl
 
 let applyGradientDescent
     ?(name = "ApplyGradientDescent")
+    ?use_locking
     (var : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (alpha : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (delta : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
   =
   let attributes = [ "T", Type (P var.output_type) ] in
+  let attributes =
+    match use_locking with | None -> attributes | Some use_locking -> ("use_locking", Bool use_locking) :: attributes
+  in
   { name = Name.make_fresh ~name
   ; op_name = "ApplyGradientDescent"
   ; output_type = var.output_type
@@ -173,6 +201,7 @@ let applyGradientDescent
 
 let applyMomentum
     ?(name = "ApplyMomentum")
+    ?use_locking
     (var : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (accum : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (lr : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
@@ -180,6 +209,9 @@ let applyMomentum
     (momentum : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
   =
   let attributes = [ "T", Type (P var.output_type) ] in
+  let attributes =
+    match use_locking with | None -> attributes | Some use_locking -> ("use_locking", Bool use_locking) :: attributes
+  in
   { name = Name.make_fresh ~name
   ; op_name = "ApplyMomentum"
   ; output_type = var.output_type
@@ -190,6 +222,7 @@ let applyMomentum
 
 let applyRMSProp
     ?(name = "ApplyRMSProp")
+    ?use_locking
     (var : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (ms : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (mom : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
@@ -200,6 +233,9 @@ let applyRMSProp
     (grad : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
   =
   let attributes = [ "T", Type (P var.output_type) ] in
+  let attributes =
+    match use_locking with | None -> attributes | Some use_locking -> ("use_locking", Bool use_locking) :: attributes
+  in
   { name = Name.make_fresh ~name
   ; op_name = "ApplyRMSProp"
   ; output_type = var.output_type
@@ -238,10 +274,18 @@ let argMin
 
 let assign
     ?(name = "Assign")
+    ?validate_shape
+    ?use_locking
     (ref : 't t)
     (value : 't t)
   =
   let attributes = [ "T", Type (P ref.output_type) ] in
+  let attributes =
+    match validate_shape with | None -> attributes | Some validate_shape -> ("validate_shape", Bool validate_shape) :: attributes
+  in
+  let attributes =
+    match use_locking with | None -> attributes | Some use_locking -> ("use_locking", Bool use_locking) :: attributes
+  in
   { name = Name.make_fresh ~name
   ; op_name = "Assign"
   ; output_type = ref.output_type
@@ -252,10 +296,14 @@ let assign
 
 let assignAdd
     ?(name = "AssignAdd")
+    ?use_locking
     (ref : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (value : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
   =
   let attributes = [ "T", Type (P ref.output_type) ] in
+  let attributes =
+    match use_locking with | None -> attributes | Some use_locking -> ("use_locking", Bool use_locking) :: attributes
+  in
   { name = Name.make_fresh ~name
   ; op_name = "AssignAdd"
   ; output_type = ref.output_type
@@ -266,10 +314,14 @@ let assignAdd
 
 let assignSub
     ?(name = "AssignSub")
+    ?use_locking
     (ref : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (value : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
   =
   let attributes = [ "T", Type (P ref.output_type) ] in
+  let attributes =
+    match use_locking with | None -> attributes | Some use_locking -> ("use_locking", Bool use_locking) :: attributes
+  in
   { name = Name.make_fresh ~name
   ; op_name = "AssignSub"
   ; output_type = ref.output_type
@@ -336,10 +388,18 @@ let batchCholesky
 
 let batchMatMul
     ?(name = "BatchMatMul")
+    ?adj_x
+    ?adj_y
     (x : ([< `float | `double | `int32 | `complex64 ] as 't) t)
     (y : ([< `float | `double | `int32 | `complex64 ] as 't) t)
   =
   let attributes = [ "T", Type (P x.output_type) ] in
+  let attributes =
+    match adj_x with | None -> attributes | Some adj_x -> ("adj_x", Bool adj_x) :: attributes
+  in
+  let attributes =
+    match adj_y with | None -> attributes | Some adj_y -> ("adj_y", Bool adj_y) :: attributes
+  in
   { name = Name.make_fresh ~name
   ; op_name = "BatchMatMul"
   ; output_type = x.output_type
@@ -390,11 +450,15 @@ let batchMatrixSolve
 
 let batchMatrixSolveLs
     ?(name = "BatchMatrixSolveLs")
+    ?fast
     (matrix : ([< `float | `double ] as 't) t)
     (rhs : ([< `float | `double ] as 't) t)
     (l2_regularizer : [ `double ] t)
   =
   let attributes = [ "T", Type (P matrix.output_type) ] in
+  let attributes =
+    match fast with | None -> attributes | Some fast -> ("fast", Bool fast) :: attributes
+  in
   { name = Name.make_fresh ~name
   ; op_name = "BatchMatrixSolveLs"
   ; output_type = matrix.output_type
@@ -405,10 +469,14 @@ let batchMatrixSolveLs
 
 let batchMatrixTriangularSolve
     ?(name = "BatchMatrixTriangularSolve")
+    ?lower
     (matrix : ([< `float | `double ] as 't) t)
     (rhs : ([< `float | `double ] as 't) t)
   =
   let attributes = [ "T", Type (P matrix.output_type) ] in
+  let attributes =
+    match lower with | None -> attributes | Some lower -> ("lower", Bool lower) :: attributes
+  in
   { name = Name.make_fresh ~name
   ; op_name = "BatchMatrixTriangularSolve"
   ; output_type = matrix.output_type
@@ -419,6 +487,8 @@ let batchMatrixTriangularSolve
 
 let batchNormWithGlobalNormalization
     ?(name = "BatchNormWithGlobalNormalization")
+    ~variance_epsilon
+    ~scale_after_normalization
     (t : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (m : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (v : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
@@ -426,6 +496,12 @@ let batchNormWithGlobalNormalization
     (gamma : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
   =
   let attributes = [ "T", Type (P t.output_type) ] in
+  let attributes =
+    ("variance_epsilon", Float variance_epsilon) :: attributes
+  in
+  let attributes =
+    ("scale_after_normalization", Bool scale_after_normalization) :: attributes
+  in
   { name = Name.make_fresh ~name
   ; op_name = "BatchNormWithGlobalNormalization"
   ; output_type = t.output_type
@@ -596,10 +672,14 @@ let complexAbs
 
 let concat
     ?(name = "Concat")
+    ~n
     (concat_dim : [ `int32 ] t)
     (values : 't t)
   =
   let attributes = [ "T", Type (P values.output_type) ] in
+  let attributes =
+    ("N", Int n) :: attributes
+  in
   { name = Name.make_fresh ~name
   ; op_name = "Concat"
   ; output_type = values.output_type
@@ -610,10 +690,14 @@ let concat
 
 let concatOffset
     ?(name = "ConcatOffset")
+    ~n
     (concat_dim : [ `int32 ] t)
     (shape : [ `int32 ] t)
   =
   let attributes = [] in
+  let attributes =
+    ("N", Int n) :: attributes
+  in
   { name = Name.make_fresh ~name
   ; op_name = "ConcatOffset"
   ; output_type = Type.Int32
@@ -650,12 +734,16 @@ let controlTrigger
 
 let conv2D
     ?(name = "Conv2D")
+    ?use_cudnn_on_gpu
     ~padding
     ?data_format
     (input : ([< `float | `double ] as 't) t)
     (filter : ([< `float | `double ] as 't) t)
   =
   let attributes = [ "T", Type (P input.output_type) ] in
+  let attributes =
+    match use_cudnn_on_gpu with | None -> attributes | Some use_cudnn_on_gpu -> ("use_cudnn_on_gpu", Bool use_cudnn_on_gpu) :: attributes
+  in
   let attributes =
     ("padding", String padding) :: attributes
   in
@@ -672,6 +760,7 @@ let conv2D
 
 let conv2DBackpropFilter
     ?(name = "Conv2DBackpropFilter")
+    ?use_cudnn_on_gpu
     ~padding
     ?data_format
     (input : ([< `float | `double ] as 't) t)
@@ -679,6 +768,9 @@ let conv2DBackpropFilter
     (out_backprop : ([< `float | `double ] as 't) t)
   =
   let attributes = [ "T", Type (P input.output_type) ] in
+  let attributes =
+    match use_cudnn_on_gpu with | None -> attributes | Some use_cudnn_on_gpu -> ("use_cudnn_on_gpu", Bool use_cudnn_on_gpu) :: attributes
+  in
   let attributes =
     ("padding", String padding) :: attributes
   in
@@ -695,6 +787,7 @@ let conv2DBackpropFilter
 
 let conv2DBackpropInput
     ?(name = "Conv2DBackpropInput")
+    ?use_cudnn_on_gpu
     ~padding
     ?data_format
     (input_sizes : [ `int32 ] t)
@@ -702,6 +795,9 @@ let conv2DBackpropInput
     (out_backprop : ([< `float | `double ] as 't) t)
   =
   let attributes = [ "T", Type (P filter.output_type) ] in
+  let attributes =
+    match use_cudnn_on_gpu with | None -> attributes | Some use_cudnn_on_gpu -> ("use_cudnn_on_gpu", Bool use_cudnn_on_gpu) :: attributes
+  in
   let attributes =
     ("padding", String padding) :: attributes
   in
@@ -731,9 +827,13 @@ let cos
 
 let countUpTo
     ?(name = "CountUpTo")
+    ~limit
     (ref : ([< `int32 | `int64 ] as 't) t)
   =
   let attributes = [ "T", Type (P ref.output_type) ] in
+  let attributes =
+    ("limit", Int limit) :: attributes
+  in
   { name = Name.make_fresh ~name
   ; op_name = "CountUpTo"
   ; output_type = ref.output_type
@@ -772,9 +872,13 @@ let decodeJSONExample
 let decodePng
     ?(name = "DecodePng")
     ~type_
+    ?channels
     (contents : [ `string ] t)
   =
   let attributes = [ "dtype", Type (P type_) ] in
+  let attributes =
+    match channels with | None -> attributes | Some channels -> ("channels", Int channels) :: attributes
+  in
   { name = Name.make_fresh ~name
   ; op_name = "DecodePng"
   ; output_type = type_
@@ -786,9 +890,13 @@ let decodePng
 let decodeRaw
     ?(name = "DecodeRaw")
     ~type_
+    ?little_endian
     (bytes : [ `string ] t)
   =
   let attributes = [ "out_type", Type (P type_) ] in
+  let attributes =
+    match little_endian with | None -> attributes | Some little_endian -> ("little_endian", Bool little_endian) :: attributes
+  in
   { name = Name.make_fresh ~name
   ; op_name = "DecodeRaw"
   ; output_type = type_
@@ -799,9 +907,13 @@ let decodeRaw
 
 let depthToSpace
     ?(name = "DepthToSpace")
+    ~block_size
     (input : 't t)
   =
   let attributes = [ "T", Type (P input.output_type) ] in
+  let attributes =
+    ("block_size", Int block_size) :: attributes
+  in
   { name = Name.make_fresh ~name
   ; op_name = "DepthToSpace"
   ; output_type = input.output_type
@@ -952,10 +1064,14 @@ let drawBoundingBoxes
 
 let dynamicPartition
     ?(name = "DynamicPartition")
+    ~num_partitions
     (data : 't t)
     (partitions : [ `int32 ] t)
   =
   let attributes = [ "T", Type (P data.output_type) ] in
+  let attributes =
+    ("num_partitions", Int num_partitions) :: attributes
+  in
   { name = Name.make_fresh ~name
   ; op_name = "DynamicPartition"
   ; output_type = data.output_type
@@ -966,10 +1082,14 @@ let dynamicPartition
 
 let dynamicStitch
     ?(name = "DynamicStitch")
+    ~n
     (indices : [ `int32 ] t)
     (data : 't t)
   =
   let attributes = [ "T", Type (P data.output_type) ] in
+  let attributes =
+    ("N", Int n) :: attributes
+  in
   { name = Name.make_fresh ~name
   ; op_name = "DynamicStitch"
   ; output_type = data.output_type
@@ -980,6 +1100,7 @@ let dynamicStitch
 
 let editDistance
     ?(name = "EditDistance")
+    ?normalize
     (hypothesis_indices : [ `int64 ] t)
     (hypothesis_values : 't t)
     (hypothesis_shape : [ `int64 ] t)
@@ -988,6 +1109,9 @@ let editDistance
     (truth_shape : [ `int64 ] t)
   =
   let attributes = [] in
+  let attributes =
+    match normalize with | None -> attributes | Some normalize -> ("normalize", Bool normalize) :: attributes
+  in
   { name = Name.make_fresh ~name
   ; op_name = "EditDistance"
   ; output_type = Type.Float
@@ -1025,9 +1149,13 @@ let eluGrad
 
 let encodePng
     ?(name = "EncodePng")
+    ?compression
     (image : 't t)
   =
   let attributes = [] in
+  let attributes =
+    match compression with | None -> attributes | Some compression -> ("compression", Int compression) :: attributes
+  in
   { name = Name.make_fresh ~name
   ; op_name = "EncodePng"
   ; output_type = Type.String
@@ -1039,11 +1167,19 @@ let encodePng
 let enter
     ?(name = "Enter")
     ~frame_name
+    ?is_constant
+    ?parallel_iterations
     (data : 't t)
   =
   let attributes = [ "T", Type (P data.output_type) ] in
   let attributes =
     ("frame_name", String frame_name) :: attributes
+  in
+  let attributes =
+    match is_constant with | None -> attributes | Some is_constant -> ("is_constant", Bool is_constant) :: attributes
+  in
+  let attributes =
+    match parallel_iterations with | None -> attributes | Some parallel_iterations -> ("parallel_iterations", Int parallel_iterations) :: attributes
   in
   { name = Name.make_fresh ~name
   ; op_name = "Enter"
@@ -1135,11 +1271,23 @@ let expandDims
 
 let extractGlimpse
     ?(name = "ExtractGlimpse")
+    ?centered
+    ?normalized
+    ?uniform_noise
     (input : [ `float ] t)
     (size : [ `int32 ] t)
     (offsets : [ `float ] t)
   =
   let attributes = [] in
+  let attributes =
+    match centered with | None -> attributes | Some centered -> ("centered", Bool centered) :: attributes
+  in
+  let attributes =
+    match normalized with | None -> attributes | Some normalized -> ("normalized", Bool normalized) :: attributes
+  in
+  let attributes =
+    match uniform_noise with | None -> attributes | Some uniform_noise -> ("uniform_noise", Bool uniform_noise) :: attributes
+  in
   { name = Name.make_fresh ~name
   ; op_name = "ExtractGlimpse"
   ; output_type = Type.Float
@@ -1163,11 +1311,15 @@ let fFT2D
 
 let fIFOQueue
     ?(name = "FIFOQueue")
+    ?capacity
     ?container
     ?shared_name
     ()
   =
   let attributes = [] in
+  let attributes =
+    match capacity with | None -> attributes | Some capacity -> ("capacity", Int capacity) :: attributes
+  in
   let attributes =
     match container with | None -> attributes | Some container -> ("container", String container) :: attributes
   in
@@ -1211,11 +1363,23 @@ let fill
 
 let fixedLengthRecordReader
     ?(name = "FixedLengthRecordReader")
+    ?header_bytes
+    ~record_bytes
+    ?footer_bytes
     ?container
     ?shared_name
     ()
   =
   let attributes = [] in
+  let attributes =
+    match header_bytes with | None -> attributes | Some header_bytes -> ("header_bytes", Int header_bytes) :: attributes
+  in
+  let attributes =
+    ("record_bytes", Int record_bytes) :: attributes
+  in
+  let attributes =
+    match footer_bytes with | None -> attributes | Some footer_bytes -> ("footer_bytes", Int footer_bytes) :: attributes
+  in
   let attributes =
     match container with | None -> attributes | Some container -> ("container", String container) :: attributes
   in
@@ -1245,10 +1409,14 @@ let floor
 
 let gather
     ?(name = "Gather")
+    ?validate_indices
     (params : 'tparams t)
     (indices : ([< `int32 | `int64 ] as 'tindices) t)
   =
   let attributes = [ "Tparams", Type (P params.output_type) ] in
+  let attributes =
+    match validate_indices with | None -> attributes | Some validate_indices -> ("validate_indices", Bool validate_indices) :: attributes
+  in
   { name = Name.make_fresh ~name
   ; op_name = "Gather"
   ; output_type = params.output_type
@@ -1395,10 +1563,14 @@ let imag
 
 let imageSummary
     ?(name = "ImageSummary")
+    ?max_images
     (tag : [ `string ] t)
     (tensor : ([< `float ] as 't) t)
   =
   let attributes = [] in
+  let attributes =
+    match max_images with | None -> attributes | Some max_images -> ("max_images", Int max_images) :: attributes
+  in
   { name = Name.make_fresh ~name
   ; op_name = "ImageSummary"
   ; output_type = Type.String
@@ -1409,10 +1581,14 @@ let imageSummary
 
 let inTopK
     ?(name = "InTopK")
+    ~k
     (predictions : [ `float ] t)
     (targets : ([< `int32 | `int64 ] as 't) t)
   =
   let attributes = [] in
+  let attributes =
+    ("k", Int k) :: attributes
+  in
   { name = Name.make_fresh ~name
   ; op_name = "InTopK"
   ; output_type = Type.Bool
@@ -1516,9 +1692,25 @@ let l2Loss
 
 let lRN
     ?(name = "LRN")
+    ?depth_radius
+    ?bias
+    ?alpha
+    ?beta
     (input : [ `float ] t)
   =
   let attributes = [] in
+  let attributes =
+    match depth_radius with | None -> attributes | Some depth_radius -> ("depth_radius", Int depth_radius) :: attributes
+  in
+  let attributes =
+    match bias with | None -> attributes | Some bias -> ("bias", Float bias) :: attributes
+  in
+  let attributes =
+    match alpha with | None -> attributes | Some alpha -> ("alpha", Float alpha) :: attributes
+  in
+  let attributes =
+    match beta with | None -> attributes | Some beta -> ("beta", Float beta) :: attributes
+  in
   { name = Name.make_fresh ~name
   ; op_name = "LRN"
   ; output_type = Type.Float
@@ -1529,11 +1721,27 @@ let lRN
 
 let lRNGrad
     ?(name = "LRNGrad")
+    ?depth_radius
+    ?bias
+    ?alpha
+    ?beta
     (input_grads : [ `float ] t)
     (input_image : [ `float ] t)
     (output_image : [ `float ] t)
   =
   let attributes = [] in
+  let attributes =
+    match depth_radius with | None -> attributes | Some depth_radius -> ("depth_radius", Int depth_radius) :: attributes
+  in
+  let attributes =
+    match bias with | None -> attributes | Some bias -> ("bias", Float bias) :: attributes
+  in
+  let attributes =
+    match alpha with | None -> attributes | Some alpha -> ("alpha", Float alpha) :: attributes
+  in
+  let attributes =
+    match beta with | None -> attributes | Some beta -> ("beta", Float beta) :: attributes
+  in
   { name = Name.make_fresh ~name
   ; op_name = "LRNGrad"
   ; output_type = Type.Float
@@ -1695,10 +1903,18 @@ let loopCond
 
 let matMul
     ?(name = "MatMul")
+    ?transpose_a
+    ?transpose_b
     (a : ([< `float | `double | `int32 | `complex64 ] as 't) t)
     (b : ([< `float | `double | `int32 | `complex64 ] as 't) t)
   =
   let attributes = [ "T", Type (P a.output_type) ] in
+  let attributes =
+    match transpose_a with | None -> attributes | Some transpose_a -> ("transpose_a", Bool transpose_a) :: attributes
+  in
+  let attributes =
+    match transpose_b with | None -> attributes | Some transpose_b -> ("transpose_b", Bool transpose_b) :: attributes
+  in
   { name = Name.make_fresh ~name
   ; op_name = "MatMul"
   ; output_type = a.output_type
@@ -1762,11 +1978,15 @@ let matrixSolve
 
 let matrixSolveLs
     ?(name = "MatrixSolveLs")
+    ?fast
     (matrix : ([< `float | `double ] as 't) t)
     (rhs : ([< `float | `double ] as 't) t)
     (l2_regularizer : [ `double ] t)
   =
   let attributes = [ "T", Type (P matrix.output_type) ] in
+  let attributes =
+    match fast with | None -> attributes | Some fast -> ("fast", Bool fast) :: attributes
+  in
   { name = Name.make_fresh ~name
   ; op_name = "MatrixSolveLs"
   ; output_type = matrix.output_type
@@ -1777,10 +1997,14 @@ let matrixSolveLs
 
 let matrixTriangularSolve
     ?(name = "MatrixTriangularSolve")
+    ?lower
     (matrix : ([< `float | `double ] as 't) t)
     (rhs : ([< `float | `double ] as 't) t)
   =
   let attributes = [ "T", Type (P matrix.output_type) ] in
+  let attributes =
+    match lower with | None -> attributes | Some lower -> ("lower", Bool lower) :: attributes
+  in
   { name = Name.make_fresh ~name
   ; op_name = "MatrixTriangularSolve"
   ; output_type = matrix.output_type
@@ -1791,10 +2015,14 @@ let matrixTriangularSolve
 
 let max
     ?(name = "Max")
+    ?keep_dims
     (input : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (reduction_indices : [ `int32 ] t)
   =
   let attributes = [ "T", Type (P input.output_type) ] in
+  let attributes =
+    match keep_dims with | None -> attributes | Some keep_dims -> ("keep_dims", Bool keep_dims) :: attributes
+  in
   { name = Name.make_fresh ~name
   ; op_name = "Max"
   ; output_type = input.output_type
@@ -1882,10 +2110,14 @@ let maximum
 
 let mean
     ?(name = "Mean")
+    ?keep_dims
     (input : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (reduction_indices : [ `int32 ] t)
   =
   let attributes = [ "T", Type (P input.output_type) ] in
+  let attributes =
+    match keep_dims with | None -> attributes | Some keep_dims -> ("keep_dims", Bool keep_dims) :: attributes
+  in
   { name = Name.make_fresh ~name
   ; op_name = "Mean"
   ; output_type = input.output_type
@@ -1896,9 +2128,13 @@ let mean
 
 let mergeSummary
     ?(name = "MergeSummary")
+    ~n
     (inputs : [ `string ] t)
   =
   let attributes = [] in
+  let attributes =
+    ("N", Int n) :: attributes
+  in
   { name = Name.make_fresh ~name
   ; op_name = "MergeSummary"
   ; output_type = Type.String
@@ -1909,10 +2145,14 @@ let mergeSummary
 
 let min
     ?(name = "Min")
+    ?keep_dims
     (input : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (reduction_indices : [ `int32 ] t)
   =
   let attributes = [ "T", Type (P input.output_type) ] in
+  let attributes =
+    match keep_dims with | None -> attributes | Some keep_dims -> ("keep_dims", Bool keep_dims) :: attributes
+  in
   { name = Name.make_fresh ~name
   ; op_name = "Min"
   ; output_type = input.output_type
@@ -2014,6 +2254,7 @@ let neg
 
 let negTrain
     ?(name = "NegTrain")
+    ~num_negative_samples
     (w_in : [ `float ] t)
     (w_out : [ `float ] t)
     (examples : [ `int32 ] t)
@@ -2021,6 +2262,9 @@ let negTrain
     (lr : [ `float ] t)
   =
   let attributes = [] in
+  let attributes =
+    ("num_negative_samples", Int num_negative_samples) :: attributes
+  in
   { name = Name.make_fresh ~name
   ; op_name = "NegTrain"
   ; output_type = Type.Unit
@@ -2071,12 +2315,16 @@ let notEqual
 
 let oneHot
     ?(name = "OneHot")
+    ?axis
     (indices : [ `int64 ] t)
     (depth : [ `int32 ] t)
     (on_value : 't t)
     (off_value : 't t)
   =
   let attributes = [ "T", Type (P on_value.output_type) ] in
+  let attributes =
+    match axis with | None -> attributes | Some axis -> ("axis", Int axis) :: attributes
+  in
   { name = Name.make_fresh ~name
   ; op_name = "OneHot"
   ; output_type = on_value.output_type
@@ -2087,9 +2335,13 @@ let oneHot
 
 let pack
     ?(name = "Pack")
+    ~n
     (values : 't t)
   =
   let attributes = [ "T", Type (P values.output_type) ] in
+  let attributes =
+    ("N", Int n) :: attributes
+  in
   { name = Name.make_fresh ~name
   ; op_name = "Pack"
   ; output_type = values.output_type
@@ -2114,11 +2366,15 @@ let pad
 
 let paddingFIFOQueue
     ?(name = "PaddingFIFOQueue")
+    ?capacity
     ?container
     ?shared_name
     ()
   =
   let attributes = [] in
+  let attributes =
+    match capacity with | None -> attributes | Some capacity -> ("capacity", Int capacity) :: attributes
+  in
   let attributes =
     match container with | None -> attributes | Some container -> ("container", String container) :: attributes
   in
@@ -2167,10 +2423,14 @@ let pow
 
 let prod
     ?(name = "Prod")
+    ?keep_dims
     (input : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (reduction_indices : [ `int32 ] t)
   =
   let attributes = [ "T", Type (P input.output_type) ] in
+  let attributes =
+    match keep_dims with | None -> attributes | Some keep_dims -> ("keep_dims", Bool keep_dims) :: attributes
+  in
   { name = Name.make_fresh ~name
   ; op_name = "Prod"
   ; output_type = input.output_type
@@ -2181,9 +2441,13 @@ let prod
 
 let queueClose
     ?(name = "QueueClose")
+    ?cancel_pending_enqueues
     (handle : [ `string ] t)
   =
   let attributes = [] in
+  let attributes =
+    match cancel_pending_enqueues with | None -> attributes | Some cancel_pending_enqueues -> ("cancel_pending_enqueues", Bool cancel_pending_enqueues) :: attributes
+  in
   { name = Name.make_fresh ~name
   ; op_name = "QueueClose"
   ; output_type = Type.Unit
@@ -2220,10 +2484,18 @@ let rGBToHSV
 
 let randomCrop
     ?(name = "RandomCrop")
+    ?seed
+    ?seed2
     (image : ([< `int32 | `int64 | `float | `double ] as 't) t)
     (size : [ `int64 ] t)
   =
   let attributes = [ "T", Type (P image.output_type) ] in
+  let attributes =
+    match seed with | None -> attributes | Some seed -> ("seed", Int seed) :: attributes
+  in
+  let attributes =
+    match seed2 with | None -> attributes | Some seed2 -> ("seed2", Int seed2) :: attributes
+  in
   { name = Name.make_fresh ~name
   ; op_name = "RandomCrop"
   ; output_type = image.output_type
@@ -2234,9 +2506,17 @@ let randomCrop
 
 let randomShuffle
     ?(name = "RandomShuffle")
+    ?seed
+    ?seed2
     (value : 't t)
   =
   let attributes = [ "T", Type (P value.output_type) ] in
+  let attributes =
+    match seed with | None -> attributes | Some seed -> ("seed", Int seed) :: attributes
+  in
+  let attributes =
+    match seed2 with | None -> attributes | Some seed2 -> ("seed2", Int seed2) :: attributes
+  in
   { name = Name.make_fresh ~name
   ; op_name = "RandomShuffle"
   ; output_type = value.output_type
@@ -2247,11 +2527,27 @@ let randomShuffle
 
 let randomShuffleQueue
     ?(name = "RandomShuffleQueue")
+    ?capacity
+    ?min_after_dequeue
+    ?seed
+    ?seed2
     ?container
     ?shared_name
     ()
   =
   let attributes = [] in
+  let attributes =
+    match capacity with | None -> attributes | Some capacity -> ("capacity", Int capacity) :: attributes
+  in
+  let attributes =
+    match min_after_dequeue with | None -> attributes | Some min_after_dequeue -> ("min_after_dequeue", Int min_after_dequeue) :: attributes
+  in
+  let attributes =
+    match seed with | None -> attributes | Some seed -> ("seed", Int seed) :: attributes
+  in
+  let attributes =
+    match seed2 with | None -> attributes | Some seed2 -> ("seed2", Int seed2) :: attributes
+  in
   let attributes =
     match container with | None -> attributes | Some container -> ("container", String container) :: attributes
   in
@@ -2269,9 +2565,17 @@ let randomShuffleQueue
 let randomStandardNormal
     ?(name = "RandomStandardNormal")
     ~type_
+    ?seed
+    ?seed2
     (shape : ([< `int32 | `int64 ] as 't) t)
   =
   let attributes = [ "dtype", Type (P type_) ] in
+  let attributes =
+    match seed with | None -> attributes | Some seed -> ("seed", Int seed) :: attributes
+  in
+  let attributes =
+    match seed2 with | None -> attributes | Some seed2 -> ("seed2", Int seed2) :: attributes
+  in
   { name = Name.make_fresh ~name
   ; op_name = "RandomStandardNormal"
   ; output_type = type_
@@ -2283,9 +2587,17 @@ let randomStandardNormal
 let randomUniform
     ?(name = "RandomUniform")
     ~type_
+    ?seed
+    ?seed2
     (shape : ([< `int32 | `int64 ] as 't) t)
   =
   let attributes = [ "dtype", Type (P type_) ] in
+  let attributes =
+    match seed with | None -> attributes | Some seed -> ("seed", Int seed) :: attributes
+  in
+  let attributes =
+    match seed2 with | None -> attributes | Some seed2 -> ("seed2", Int seed2) :: attributes
+  in
   { name = Name.make_fresh ~name
   ; op_name = "RandomUniform"
   ; output_type = type_
@@ -2296,11 +2608,19 @@ let randomUniform
 
 let randomUniformInt
     ?(name = "RandomUniformInt")
+    ?seed
+    ?seed2
     (shape : ([< `int32 | `int64 ] as 't) t)
     (minval : ([< `int32 | `int64 ] as 'tout) t)
     (maxval : ([< `int32 | `int64 ] as 'tout) t)
   =
   let attributes = [ "Tout", Type (P minval.output_type) ] in
+  let attributes =
+    match seed with | None -> attributes | Some seed -> ("seed", Int seed) :: attributes
+  in
+  let attributes =
+    match seed2 with | None -> attributes | Some seed2 -> ("seed2", Int seed2) :: attributes
+  in
   { name = Name.make_fresh ~name
   ; op_name = "RandomUniformInt"
   ; output_type = minval.output_type
@@ -2432,11 +2752,19 @@ let real
 let refEnter
     ?(name = "RefEnter")
     ~frame_name
+    ?is_constant
+    ?parallel_iterations
     (data : 't t)
   =
   let attributes = [ "T", Type (P data.output_type) ] in
   let attributes =
     ("frame_name", String frame_name) :: attributes
+  in
+  let attributes =
+    match is_constant with | None -> attributes | Some is_constant -> ("is_constant", Bool is_constant) :: attributes
+  in
+  let attributes =
+    match parallel_iterations with | None -> attributes | Some parallel_iterations -> ("parallel_iterations", Int parallel_iterations) :: attributes
   in
   { name = Name.make_fresh ~name
   ; op_name = "RefEnter"
@@ -2487,10 +2815,14 @@ let refNextIteration
 
 let refSelect
     ?(name = "RefSelect")
+    ~n
     (index : [ `int32 ] t)
     (inputs : 't t)
   =
   let attributes = [ "T", Type (P inputs.output_type) ] in
+  let attributes =
+    ("N", Int n) :: attributes
+  in
   { name = Name.make_fresh ~name
   ; op_name = "RefSelect"
   ; output_type = inputs.output_type
@@ -2569,10 +2901,14 @@ let reshape
 
 let resizeArea
     ?(name = "ResizeArea")
+    ?align_corners
     (images : ([< `int32 | `int64 | `float | `double ] as 't) t)
     (size : [ `int32 ] t)
   =
   let attributes = [] in
+  let attributes =
+    match align_corners with | None -> attributes | Some align_corners -> ("align_corners", Bool align_corners) :: attributes
+  in
   { name = Name.make_fresh ~name
   ; op_name = "ResizeArea"
   ; output_type = Type.Float
@@ -2583,10 +2919,14 @@ let resizeArea
 
 let resizeBicubic
     ?(name = "ResizeBicubic")
+    ?align_corners
     (images : ([< `int32 | `int64 | `float | `double ] as 't) t)
     (size : [ `int32 ] t)
   =
   let attributes = [] in
+  let attributes =
+    match align_corners with | None -> attributes | Some align_corners -> ("align_corners", Bool align_corners) :: attributes
+  in
   { name = Name.make_fresh ~name
   ; op_name = "ResizeBicubic"
   ; output_type = Type.Float
@@ -2597,10 +2937,14 @@ let resizeBicubic
 
 let resizeBilinear
     ?(name = "ResizeBilinear")
+    ?align_corners
     (images : ([< `int32 | `int64 | `float | `double ] as 't) t)
     (size : [ `int32 ] t)
   =
   let attributes = [] in
+  let attributes =
+    match align_corners with | None -> attributes | Some align_corners -> ("align_corners", Bool align_corners) :: attributes
+  in
   { name = Name.make_fresh ~name
   ; op_name = "ResizeBilinear"
   ; output_type = Type.Float
@@ -2611,10 +2955,14 @@ let resizeBilinear
 
 let resizeBilinearGrad
     ?(name = "ResizeBilinearGrad")
+    ?align_corners
     (grads : [ `float ] t)
     (original_image : ([< `float | `double ] as 't) t)
   =
   let attributes = [ "T", Type (P original_image.output_type) ] in
+  let attributes =
+    match align_corners with | None -> attributes | Some align_corners -> ("align_corners", Bool align_corners) :: attributes
+  in
   { name = Name.make_fresh ~name
   ; op_name = "ResizeBilinearGrad"
   ; output_type = original_image.output_type
@@ -2625,10 +2973,14 @@ let resizeBilinearGrad
 
 let resizeNearestNeighbor
     ?(name = "ResizeNearestNeighbor")
+    ?align_corners
     (images : ([< `int32 | `int64 | `float | `double ] as 't) t)
     (size : [ `int32 ] t)
   =
   let attributes = [ "T", Type (P images.output_type) ] in
+  let attributes =
+    match align_corners with | None -> attributes | Some align_corners -> ("align_corners", Bool align_corners) :: attributes
+  in
   { name = Name.make_fresh ~name
   ; op_name = "ResizeNearestNeighbor"
   ; output_type = images.output_type
@@ -2639,10 +2991,14 @@ let resizeNearestNeighbor
 
 let resizeNearestNeighborGrad
     ?(name = "ResizeNearestNeighborGrad")
+    ?align_corners
     (grads : ([< `int32 | `float | `double ] as 't) t)
     (size : [ `int32 ] t)
   =
   let attributes = [ "T", Type (P grads.output_type) ] in
+  let attributes =
+    match align_corners with | None -> attributes | Some align_corners -> ("align_corners", Bool align_corners) :: attributes
+  in
   { name = Name.make_fresh ~name
   ; op_name = "ResizeNearestNeighborGrad"
   ; output_type = grads.output_type
@@ -2654,10 +3010,14 @@ let resizeNearestNeighborGrad
 let restore
     ?(name = "Restore")
     ~type_
+    ?preferred_shard
     (file_pattern : [ `string ] t)
     (tensor_name : [ `string ] t)
   =
   let attributes = [ "dt", Type (P type_) ] in
+  let attributes =
+    match preferred_shard with | None -> attributes | Some preferred_shard -> ("preferred_shard", Int preferred_shard) :: attributes
+  in
   { name = Name.make_fresh ~name
   ; op_name = "Restore"
   ; output_type = type_
@@ -2669,11 +3029,15 @@ let restore
 let restoreSlice
     ?(name = "RestoreSlice")
     ~type_
+    ?preferred_shard
     (file_pattern : [ `string ] t)
     (tensor_name : [ `string ] t)
     (shape_and_slice : [ `string ] t)
   =
   let attributes = [ "dt", Type (P type_) ] in
+  let attributes =
+    match preferred_shard with | None -> attributes | Some preferred_shard -> ("preferred_shard", Int preferred_shard) :: attributes
+  in
   { name = Name.make_fresh ~name
   ; op_name = "RestoreSlice"
   ; output_type = type_
@@ -2698,10 +3062,18 @@ let reverse
 
 let reverseSequence
     ?(name = "ReverseSequence")
+    ~seq_dim
+    ?batch_dim
     (input : 't t)
     (seq_lengths : [ `int64 ] t)
   =
   let attributes = [ "T", Type (P input.output_type) ] in
+  let attributes =
+    ("seq_dim", Int seq_dim) :: attributes
+  in
+  let attributes =
+    match batch_dim with | None -> attributes | Some batch_dim -> ("batch_dim", Int batch_dim) :: attributes
+  in
   { name = Name.make_fresh ~name
   ; op_name = "ReverseSequence"
   ; output_type = input.output_type
@@ -2739,11 +3111,15 @@ let scalarSummary
 
 let scatterAdd
     ?(name = "ScatterAdd")
+    ?use_locking
     (ref : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (indices : ([< `int32 | `int64 ] as 'tindices) t)
     (updates : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
   =
   let attributes = [ "T", Type (P ref.output_type) ] in
+  let attributes =
+    match use_locking with | None -> attributes | Some use_locking -> ("use_locking", Bool use_locking) :: attributes
+  in
   { name = Name.make_fresh ~name
   ; op_name = "ScatterAdd"
   ; output_type = ref.output_type
@@ -2754,11 +3130,15 @@ let scatterAdd
 
 let scatterSub
     ?(name = "ScatterSub")
+    ?use_locking
     (ref : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (indices : ([< `int32 | `int64 ] as 'tindices) t)
     (updates : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
   =
   let attributes = [ "T", Type (P ref.output_type) ] in
+  let attributes =
+    match use_locking with | None -> attributes | Some use_locking -> ("use_locking", Bool use_locking) :: attributes
+  in
   { name = Name.make_fresh ~name
   ; op_name = "ScatterSub"
   ; output_type = ref.output_type
@@ -2769,11 +3149,15 @@ let scatterSub
 
 let scatterUpdate
     ?(name = "ScatterUpdate")
+    ?use_locking
     (ref : 't t)
     (indices : ([< `int32 | `int64 ] as 'tindices) t)
     (updates : 't t)
   =
   let attributes = [ "T", Type (P ref.output_type) ] in
+  let attributes =
+    match use_locking with | None -> attributes | Some use_locking -> ("use_locking", Bool use_locking) :: attributes
+  in
   { name = Name.make_fresh ~name
   ; op_name = "ScatterUpdate"
   ; output_type = ref.output_type
@@ -2925,9 +3309,13 @@ let shape
 
 let shapeN
     ?(name = "ShapeN")
+    ~n
     (input : 't t)
   =
   let attributes = [] in
+  let attributes =
+    ("N", Int n) :: attributes
+  in
   { name = Name.make_fresh ~name
   ; op_name = "ShapeN"
   ; output_type = Type.Int32
@@ -3101,9 +3489,13 @@ let softsignGrad
 
 let spaceToDepth
     ?(name = "SpaceToDepth")
+    ~block_size
     (input : 't t)
   =
   let attributes = [ "T", Type (P input.output_type) ] in
+  let attributes =
+    ("block_size", Int block_size) :: attributes
+  in
   { name = Name.make_fresh ~name
   ; op_name = "SpaceToDepth"
   ; output_type = input.output_type
@@ -3114,6 +3506,7 @@ let spaceToDepth
 
 let sparseApplyAdagrad
     ?(name = "SparseApplyAdagrad")
+    ?use_locking
     (var : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (accum : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (lr : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
@@ -3121,6 +3514,9 @@ let sparseApplyAdagrad
     (indices : ([< `int32 | `int64 ] as 'tindices) t)
   =
   let attributes = [ "T", Type (P var.output_type) ] in
+  let attributes =
+    match use_locking with | None -> attributes | Some use_locking -> ("use_locking", Bool use_locking) :: attributes
+  in
   { name = Name.make_fresh ~name
   ; op_name = "SparseApplyAdagrad"
   ; output_type = var.output_type
@@ -3131,6 +3527,7 @@ let sparseApplyAdagrad
 
 let sparseApplyFtrl
     ?(name = "SparseApplyFtrl")
+    ?use_locking
     (var : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (accum : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (linear : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
@@ -3142,6 +3539,9 @@ let sparseApplyFtrl
     (lr_power : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
   =
   let attributes = [ "T", Type (P var.output_type) ] in
+  let attributes =
+    match use_locking with | None -> attributes | Some use_locking -> ("use_locking", Bool use_locking) :: attributes
+  in
   { name = Name.make_fresh ~name
   ; op_name = "SparseApplyFtrl"
   ; output_type = var.output_type
@@ -3152,6 +3552,7 @@ let sparseApplyFtrl
 
 let sparseApplyMomentum
     ?(name = "SparseApplyMomentum")
+    ?use_locking
     (var : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (accum : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (lr : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
@@ -3160,6 +3561,9 @@ let sparseApplyMomentum
     (momentum : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
   =
   let attributes = [ "T", Type (P var.output_type) ] in
+  let attributes =
+    match use_locking with | None -> attributes | Some use_locking -> ("use_locking", Bool use_locking) :: attributes
+  in
   { name = Name.make_fresh ~name
   ; op_name = "SparseApplyMomentum"
   ; output_type = var.output_type
@@ -3170,10 +3574,26 @@ let sparseApplyMomentum
 
 let sparseMatMul
     ?(name = "SparseMatMul")
+    ?transpose_a
+    ?transpose_b
+    ?a_is_sparse
+    ?b_is_sparse
     (a : [ `float ] t)
     (b : [ `float ] t)
   =
   let attributes = [] in
+  let attributes =
+    match transpose_a with | None -> attributes | Some transpose_a -> ("transpose_a", Bool transpose_a) :: attributes
+  in
+  let attributes =
+    match transpose_b with | None -> attributes | Some transpose_b -> ("transpose_b", Bool transpose_b) :: attributes
+  in
+  let attributes =
+    match a_is_sparse with | None -> attributes | Some a_is_sparse -> ("a_is_sparse", Bool a_is_sparse) :: attributes
+  in
+  let attributes =
+    match b_is_sparse with | None -> attributes | Some b_is_sparse -> ("b_is_sparse", Bool b_is_sparse) :: attributes
+  in
   { name = Name.make_fresh ~name
   ; op_name = "SparseMatMul"
   ; output_type = Type.Float
@@ -3261,12 +3681,20 @@ let sparseSegmentSum
 
 let sparseTensorDenseMatMul
     ?(name = "SparseTensorDenseMatMul")
+    ?adjoint_a
+    ?adjoint_b
     (a_indices : [ `int64 ] t)
     (a_values : 't t)
     (a_shape : [ `int64 ] t)
     (b : 't t)
   =
   let attributes = [ "T", Type (P a_values.output_type) ] in
+  let attributes =
+    match adjoint_a with | None -> attributes | Some adjoint_a -> ("adjoint_a", Bool adjoint_a) :: attributes
+  in
+  let attributes =
+    match adjoint_b with | None -> attributes | Some adjoint_b -> ("adjoint_b", Bool adjoint_b) :: attributes
+  in
   { name = Name.make_fresh ~name
   ; op_name = "SparseTensorDenseMatMul"
   ; output_type = a_values.output_type
@@ -3277,12 +3705,16 @@ let sparseTensorDenseMatMul
 
 let sparseToDense
     ?(name = "SparseToDense")
+    ?validate_indices
     (sparse_indices : ([< `int32 | `int64 ] as 'tindices) t)
     (output_shape : ([< `int32 | `int64 ] as 'tindices) t)
     (sparse_values : 't t)
     (default_value : 't t)
   =
   let attributes = [ "T", Type (P sparse_values.output_type) ] in
+  let attributes =
+    match validate_indices with | None -> attributes | Some validate_indices -> ("validate_indices", Bool validate_indices) :: attributes
+  in
   { name = Name.make_fresh ~name
   ; op_name = "SparseToDense"
   ; output_type = sparse_values.output_type
@@ -3293,10 +3725,14 @@ let sparseToDense
 
 let split
     ?(name = "Split")
+    ~num_split
     (split_dim : [ `int32 ] t)
     (value : 't t)
   =
   let attributes = [ "T", Type (P value.output_type) ] in
+  let attributes =
+    ("num_split", Int num_split) :: attributes
+  in
   { name = Name.make_fresh ~name
   ; op_name = "Split"
   ; output_type = value.output_type
@@ -3404,10 +3840,14 @@ let stackPop
 
 let stackPush
     ?(name = "StackPush")
+    ?swap_memory
     (handle : [ `string ] t)
     (elem : 't t)
   =
   let attributes = [ "T", Type (P elem.output_type) ] in
+  let attributes =
+    match swap_memory with | None -> attributes | Some swap_memory -> ("swap_memory", Bool swap_memory) :: attributes
+  in
   { name = Name.make_fresh ~name
   ; op_name = "StackPush"
   ; output_type = elem.output_type
@@ -3431,9 +3871,13 @@ let stopGradient
 
 let stringToHashBucket
     ?(name = "StringToHashBucket")
+    ~num_buckets
     (string_tensor : [ `string ] t)
   =
   let attributes = [] in
+  let attributes =
+    ("num_buckets", Int num_buckets) :: attributes
+  in
   { name = Name.make_fresh ~name
   ; op_name = "StringToHashBucket"
   ; output_type = Type.Int64
@@ -3472,10 +3916,14 @@ let sub
 
 let sum
     ?(name = "Sum")
+    ?keep_dims
     (input : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (reduction_indices : [ `int32 ] t)
   =
   let attributes = [ "T", Type (P input.output_type) ] in
+  let attributes =
+    match keep_dims with | None -> attributes | Some keep_dims -> ("keep_dims", Bool keep_dims) :: attributes
+  in
   { name = Name.make_fresh ~name
   ; op_name = "Sum"
   ; output_type = input.output_type
@@ -3542,10 +3990,14 @@ let temporaryVariable
 
 let tensorArray
     ?(name = "TensorArray")
+    ?dynamic_size
     ?tensor_array_name
     (size : [ `int32 ] t)
   =
   let attributes = [] in
+  let attributes =
+    match dynamic_size with | None -> attributes | Some dynamic_size -> ("dynamic_size", Bool dynamic_size) :: attributes
+  in
   let attributes =
     match tensor_array_name with | None -> attributes | Some tensor_array_name -> ("tensor_array_name", String tensor_array_name) :: attributes
   in
@@ -3682,11 +4134,15 @@ let tensorArrayWrite
 
 let textLineReader
     ?(name = "TextLineReader")
+    ?skip_header_lines
     ?container
     ?shared_name
     ()
   =
   let attributes = [] in
+  let attributes =
+    match skip_header_lines with | None -> attributes | Some skip_header_lines -> ("skip_header_lines", Int skip_header_lines) :: attributes
+  in
   let attributes =
     match container with | None -> attributes | Some container -> ("container", String container) :: attributes
   in
@@ -3746,9 +4202,17 @@ let transpose
 let truncatedNormal
     ?(name = "TruncatedNormal")
     ~type_
+    ?seed
+    ?seed2
     (shape : ([< `int32 | `int64 ] as 't) t)
   =
   let attributes = [ "dtype", Type (P type_) ] in
+  let attributes =
+    match seed with | None -> attributes | Some seed -> ("seed", Int seed) :: attributes
+  in
+  let attributes =
+    match seed2 with | None -> attributes | Some seed2 -> ("seed2", Int seed2) :: attributes
+  in
   { name = Name.make_fresh ~name
   ; op_name = "TruncatedNormal"
   ; output_type = type_
@@ -3759,9 +4223,13 @@ let truncatedNormal
 
 let unpack
     ?(name = "Unpack")
+    ~num
     (value : 't t)
   =
   let attributes = [ "T", Type (P value.output_type) ] in
+  let attributes =
+    ("num", Int num) :: attributes
+  in
   { name = Name.make_fresh ~name
   ; op_name = "Unpack"
   ; output_type = value.output_type

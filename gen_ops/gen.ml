@@ -43,6 +43,9 @@ module Attribute = struct
   type attr_type =
     | String
     | Shape
+    | Int
+    | Float
+    | Bool
 
   type t =
     { name : string
@@ -56,10 +59,24 @@ module Attribute = struct
   let caml_type = function
     | String -> "string"
     | Shape -> "Dim.t list"
+    | Int -> "int"
+    | Float -> "float"
+    | Bool -> "bool"
+
+  let of_dtype = function
+    | "string" -> Some String
+    | "shape" -> Some Shape
+    | "int" -> Some Int
+    | "float" -> Some Float
+    | "bool" -> Some Bool
+    | _str -> None
 
   let constr = function
     | String -> "String"
     | Shape -> "Shape"
+    | Int -> "Int"
+    | Float -> "Float"
+    | Bool -> "Bool"
 
   let mli t =
     sprintf "%s%s:%s"
@@ -147,12 +164,7 @@ module Op = struct
       | _ -> None)
 
   let get_attr (attr : Op_def_piqi.Op_def_attr_def.t) =
-    Option.bind attr.type_ (function
-      | "string" -> Some Attribute.String
-      | "shape" -> Some Attribute.Shape
-      (* TODO: add more... *)
-      | _ -> None
-    )
+    Option.bind attr.type_ Attribute.of_dtype
     |> Option.map ~f:(fun attr_type ->
       { Attribute.name = Option.value_exn attr.name
       ; attr_type
