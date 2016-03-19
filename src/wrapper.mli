@@ -1,6 +1,5 @@
 (* TODO:
     - More functional api.
-    - Handle memory properly.
 *)
 
 type data_type =

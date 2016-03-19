@@ -68,12 +68,12 @@ let int_of_data_type = function
 let tf_newtensor =
   foreign "TF_NewTensor"
     (int
-    @-> ptr int64_t
-    @-> int
-    @-> ptr void
-    @-> size_t
-    @-> funptr (ptr void @-> int @-> ptr void @-> returning void)
-    @-> ptr void
+    @-> ptr int64_t (* dims *)
+    @-> int         (* num dims *)
+    @-> ptr void    (* data *)
+    @-> size_t      (* len *)
+    @-> funptr (ptr void @-> int @-> ptr void @-> returning void) (* deallocator *)
+    @-> ptr void    (* deallocator arg *)
     @-> returning tf_tensor)
 
 let tf_deletetensor =
@@ -95,32 +95,80 @@ let tf_tensortype =
   foreign "TF_TensorType" (tf_tensor @-> returning int)
 
 module Tensor = struct
-  type t = tf_tensor
-  let deallocate _ _ _ = ()
+  (* TODO: when handled_by_ocaml is false, all the accessor functions should fail
+     as memory could have been deallocated by the C++ side. *)
+  let fresh_id =
+    let cnt = ref 0 in
+    fun () -> incr cnt; !cnt
+
+  type t =
+    { tensor : tf_tensor
+    ; mutable handled_by_ocaml : bool
+    ; id : int
+    ; data_ptr : unit ptr
+    }
+
+  (* Keep references to the allocated data until they have been deallocated. *)
+  let live_tensors = Hashtbl.create 1024
+
+  let deallocate _ _ id =
+    let id = raw_address_of_ptr id |> Nativeint.to_int in
+    Printf.printf "Deallocating tensor %d\n%!" id;
+    Hashtbl.remove live_tensors id
+
+  let add_finaliser t =
+    Gc.finalise
+      (fun t ->
+        if t.handled_by_ocaml
+        then tf_deletetensor t.tensor)
+      t;
+    t
 
   let create1d typ elts =
     let elt_size = sizeof typ in
     let size = elts * elt_size in
     let data = CArray.make char size in
-    tf_newtensor 1
-      (CArray.of_list int64_t [ Int64.of_int elts ] |> CArray.start)
-      1
-      (CArray.start data |> to_voidp)
-      (Unsigned.Size_t.of_int size)
-      deallocate
-      null
+    let data_ptr = CArray.start data |> to_voidp in
+    let id = fresh_id () in
+    let tensor =
+      tf_newtensor 1
+        (CArray.of_list int64_t [ Int64.of_int elts ] |> CArray.start)
+        1
+        data_ptr
+        (Unsigned.Size_t.of_int size)
+        deallocate
+        (Nativeint.of_int id |> ptr_of_raw_address)
+    in
+    let t =
+      { tensor
+      ; handled_by_ocaml = true
+      ; id
+      ; data_ptr
+      }
+    in
+    Hashtbl.add live_tensors id t;
+    add_finaliser t
 
-  let num_dims = tf_numdims
+  let of_c_tensor tensor =
+    let id = fresh_id () in
+    add_finaliser
+      { tensor
+      ; handled_by_ocaml = true
+      ; id
+      ; data_ptr = tf_tensordata tensor
+      }
 
-  let dim = tf_dim
+  let num_dims t = tf_numdims t.tensor
 
-  let byte_size t = tf_tensorbytesize t |> Unsigned.Size_t.to_int
+  let dim t = tf_dim t.tensor
+
+  let byte_size t = tf_tensorbytesize t.tensor |> Unsigned.Size_t.to_int
 
   let data t typ len =
-    CArray.from_ptr (tf_tensordata t |> Ctypes.from_voidp typ) len
+    CArray.from_ptr (tf_tensordata t.tensor |> Ctypes.from_voidp typ) len
 
   let data_type t =
-    tf_tensortype t
+    tf_tensortype t.tensor
     |> int_of_data_type
 end
 
@@ -281,7 +329,7 @@ module Session = struct
     let session = tf_newsession session_options status in
     Gc.finalise
       (fun session ->
-        let status = Status.create () in
+        tf_closesession session status;
         tf_deletesession session status)
       session;
     result_or_error status session
@@ -299,6 +347,14 @@ module Session = struct
   let run t ~inputs ~outputs ~targets =
     let status = Status.create () in
     let input_names, input_tensors = List.split inputs in
+    let input_tensors =
+      List.map
+        (fun (tensor : Tensor.t) ->
+          (* The memory will be handled by the C++ side. *)
+          tensor.handled_by_ocaml <- false;
+          tensor.tensor)
+        input_tensors
+    in
     let output_len = List.length outputs in
     let output_tensors = CArray.make tf_tensor output_len in
     tf_run
@@ -312,14 +368,16 @@ module Session = struct
       CArray.(of_list string targets |> start)
       (List.length targets)
       status;
-    result_or_error status (CArray.to_list output_tensors)
+    let output_tensors =
+      CArray.to_list output_tensors
+      |> List.map Tensor.of_c_tensor
+    in
+    result_or_error status output_tensors
 end
 
 let () =
   ignore
     ( data_type_to_int
-    , tf_deletetensor
     , tf_settarget
     , tf_setconfig
-    , tf_closesession
     , Status.set)
