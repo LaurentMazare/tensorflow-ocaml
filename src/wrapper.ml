@@ -105,7 +105,8 @@ module Tensor = struct
     { tensor : tf_tensor
     ; mutable handled_by_ocaml : bool
     ; id : int
-    ; data_ptr : unit ptr
+    (* Keep a reference to the data array to avoid it being GCed. *)
+    ; data : char CArray.t option
     }
 
   (* Keep references to the allocated data until they have been deallocated. *)
@@ -128,13 +129,12 @@ module Tensor = struct
     let elt_size = sizeof typ in
     let size = elts * elt_size in
     let data = CArray.make char size in
-    let data_ptr = CArray.start data |> to_voidp in
     let id = fresh_id () in
     let tensor =
       tf_newtensor 1
         (CArray.of_list int64_t [ Int64.of_int elts ] |> CArray.start)
         1
-        data_ptr
+        (CArray.start data |> to_voidp)
         (Unsigned.Size_t.of_int size)
         deallocate
         (Nativeint.of_int id |> ptr_of_raw_address)
@@ -143,7 +143,7 @@ module Tensor = struct
       { tensor
       ; handled_by_ocaml = true
       ; id
-      ; data_ptr
+      ; data = Some data
       }
     in
     Hashtbl.add live_tensors id t;
@@ -155,7 +155,7 @@ module Tensor = struct
       { tensor
       ; handled_by_ocaml = true
       ; id
-      ; data_ptr = tf_tensordata tensor
+      ; data = None
       }
 
   let num_dims t = tf_numdims t.tensor
