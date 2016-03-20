@@ -1,0 +1,7 @@
+- number_attr
+- type safe version of wrapper.ml
+- extend graph 
+- carray -> bigarray
+- Safer impls for ops:
+   * variable initialisation
+- Gradient Descent
