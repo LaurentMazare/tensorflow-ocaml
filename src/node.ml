@@ -77,13 +77,23 @@ module Dim = struct
   let create ?name size = { size; name }
 end
 
+module Attr_list = struct
+  type t =
+    | String of string list
+    | Int of int list
+    | Float of float list
+    | Bool of bool list
+    | Type of Type.p list
+    | Shape of Dim.t list list
+end
+
 type attr =
   | String of string
   | Int of int
   | Float of float
   | Bool of bool
   | Type of Type.p
-  | List of attr list
+  | List of Attr_list.t
   | Tensor_float of float Tensor.t
   | Tensor_int of int Tensor.t
   | Shape of Dim.t list

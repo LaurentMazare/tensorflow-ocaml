@@ -31,6 +31,18 @@ let create_attr_value
   ;  placeholder
   }
 
+let create_attr_value_list_value
+    ?(s = [])
+    ?(i = [])
+    ?(f = [])
+    ?(b = [])
+    ?(type_ = [])
+    ?(shape = [])
+    ?(tensor = [])
+    ()
+  =
+  { Attr_value_list_value.s; i; f; b; type_; shape; tensor }
+
 let default_tensor_proto = default_tensor_proto ()
 
 let tensor_attr ?(float_val = []) ?(double_val = []) ?(int_val = []) ?(int64_val = []) ~shape output_type =
@@ -53,47 +65,46 @@ let tensor_attr ?(float_val = []) ?(double_val = []) ?(int_val = []) ?(int64_val
   in
   create_attr_value ~tensor ()
 
+let shape_attr shape =
+  let unknown_rank =
+    match shape with
+    | [] -> Some true
+    | _ :: _ -> None
+  in
+  let dim =
+    List.map
+      (fun { Node.Dim.size; name } ->
+        { Tensor_shape_proto_dim.size = Some (Int64.of_int size)
+        ; name
+        })
+      shape
+  in
+  { Tensor_shape_proto.dim
+  ; unknown_rank
+  }
+
 let of_attribute (type a) name value (output_type : a Node.Type.t) =
   let value =
     match value with
-    | String s -> Some (create_attr_value ~s ())
-    | Int i -> Some (create_attr_value ~i:(Int64.of_int i) ())
-    | Float f -> Some (create_attr_value ~f ())
-    | Bool b -> Some (create_attr_value ~b ())
+    | String s -> create_attr_value ~s ()
+    | Int i -> create_attr_value ~i:(Int64.of_int i) ()
+    | Float f -> create_attr_value ~f ()
+    | Bool b -> create_attr_value ~b ()
     | Type type_ ->
-      Some (create_attr_value ~type_:(Type.to_dt_type type_) ())
+      create_attr_value ~type_:(Type.to_dt_type type_) ()
     | Shape shape ->
-      let unknown_rank =
-        match shape with
-        | [] -> Some true
-        | _ :: _ -> None
-      in
-      let dim =
-        List.map
-          (fun { Node.Dim.size; name } ->
-            { Tensor_shape_proto_dim.size = Some (Int64.of_int size)
-            ; name
-            })
-          shape
-      in
-      let shape =
-        { Tensor_shape_proto.dim
-        ; unknown_rank
-        }
-      in
-      Some (create_attr_value ~shape ())
+      create_attr_value ~shape:(shape_attr shape) ()
     | Tensor_float tensor ->
-      let tensor_attr =
+      begin
         match output_type with
         | Node.Type.Float ->
           tensor_attr ~float_val:tensor.values ~shape:tensor.shape output_type
         | Node.Type.Double ->
           tensor_attr ~double_val:tensor.values ~shape:tensor.shape output_type
         | _ -> tensor_attr ~shape:tensor.shape output_type
-      in
-      Some tensor_attr
+      end
     | Tensor_int tensor ->
-      let tensor_attr =
+      begin
         match output_type with
         | Node.Type.Int32 ->
           let int_val = List.map Int32.of_int tensor.values in
@@ -102,13 +113,21 @@ let of_attribute (type a) name value (output_type : a Node.Type.t) =
           let int64_val = List.map Int64.of_int tensor.values in
           tensor_attr ~int64_val ~shape:tensor.shape output_type
         | _ -> tensor_attr ~shape:tensor.shape output_type
+      end
+    | List attr_list ->
+      let list =
+        match attr_list with
+        | Float f -> create_attr_value_list_value ~f ()
+        | String s -> create_attr_value_list_value ~s ()
+        | Int i -> create_attr_value_list_value ~i:(List.map Int64.of_int i) ()
+        | Bool b -> create_attr_value_list_value ~b ()
+        | Type type_ -> create_attr_value_list_value ~type_:(List.map Type.to_dt_type type_) ()
+        | Shape shape -> create_attr_value_list_value ~shape:(List.map shape_attr shape) ()
       in
-      Some tensor_attr
-    (* TODO *)
-    | List _ -> None
+      create_attr_value ~list ()
   in
   { Node_def_attr_entry.key = Some name
-  ; value
+  ; value = Some value
   }
 
 let of_nodes ts =
