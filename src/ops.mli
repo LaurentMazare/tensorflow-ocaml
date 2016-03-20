@@ -148,6 +148,8 @@ val assignSub
 
 val avgPool
   :  ?name:string
+  -> ksize:int list
+  -> strides:int list
   -> padding:string
   -> ?data_format:string
   -> ([< `float | `double ] as 't) Node.t
@@ -155,6 +157,8 @@ val avgPool
 
 val avgPoolGrad
   :  ?name:string
+  -> ksize:int list
+  -> strides:int list
   -> padding:string
   -> ?data_format:string
   -> [ `int32 ] Node.t
@@ -305,6 +309,7 @@ val controlTrigger
 
 val conv2D
   :  ?name:string
+  -> strides:int list
   -> ?use_cudnn_on_gpu:bool
   -> padding:string
   -> ?data_format:string
@@ -314,6 +319,7 @@ val conv2D
 
 val conv2DBackpropFilter
   :  ?name:string
+  -> strides:int list
   -> ?use_cudnn_on_gpu:bool
   -> padding:string
   -> ?data_format:string
@@ -324,6 +330,7 @@ val conv2DBackpropFilter
 
 val conv2DBackpropInput
   :  ?name:string
+  -> strides:int list
   -> ?use_cudnn_on_gpu:bool
   -> padding:string
   -> ?data_format:string
@@ -376,6 +383,7 @@ val depthToSpace
 
 val depthwiseConv2dNative
   :  ?name:string
+  -> strides:int list
   -> padding:string
   -> ([< `float | `double ] as 't) Node.t
   -> ([< `float | `double ] as 't) Node.t
@@ -383,6 +391,7 @@ val depthwiseConv2dNative
 
 val depthwiseConv2dNativeBackpropFilter
   :  ?name:string
+  -> strides:int list
   -> padding:string
   -> ([< `float | `double ] as 't) Node.t
   -> [ `int32 ] Node.t
@@ -391,6 +400,7 @@ val depthwiseConv2dNativeBackpropFilter
 
 val depthwiseConv2dNativeBackpropInput
   :  ?name:string
+  -> strides:int list
   -> padding:string
   -> [ `int32 ] Node.t
   -> ([< `float | `double ] as 't) Node.t
@@ -529,6 +539,8 @@ val fFT2D
 
 val fIFOQueue
   :  ?name:string
+  -> component_types:Type.p list
+  -> ?shapes:Dim.t list list
   -> ?capacity:int
   -> ?container:string
   -> ?shared_name:string
@@ -807,6 +819,8 @@ val max
 
 val maxPool
   :  ?name:string
+  -> ksize:int list
+  -> strides:int list
   -> padding:string
   -> ?data_format:string
   -> [ `float ] Node.t
@@ -814,6 +828,8 @@ val maxPool
 
 val maxPoolGrad
   :  ?name:string
+  -> ksize:int list
+  -> strides:int list
   -> padding:string
   -> ?data_format:string
   -> [ `float ] Node.t
@@ -823,6 +839,8 @@ val maxPoolGrad
 
 val maxPoolGradWithArgmax
   :  ?name:string
+  -> ksize:int list
+  -> strides:int list
   -> padding:string
   -> [ `float ] Node.t
   -> [ `float ] Node.t
@@ -894,6 +912,7 @@ val neg
 
 val negTrain
   :  ?name:string
+  -> vocab_count:int list
   -> num_negative_samples:int
   -> [ `float ] Node.t
   -> [ `float ] Node.t
@@ -941,6 +960,8 @@ val pad
 
 val paddingFIFOQueue
   :  ?name:string
+  -> component_types:Type.p list
+  -> ?shapes:Dim.t list list
   -> ?capacity:int
   -> ?container:string
   -> ?shared_name:string
@@ -1000,6 +1021,8 @@ val randomShuffle
 
 val randomShuffleQueue
   :  ?name:string
+  -> component_types:Type.p list
+  -> ?shapes:Dim.t list list
   -> ?capacity:int
   -> ?min_after_dequeue:int
   -> ?seed:int
@@ -1514,6 +1537,7 @@ val squaredDifference
 
 val squeeze
   :  ?name:string
+  -> ?squeeze_dims:int list
   -> 't Node.t
   -> 't Node.t
 

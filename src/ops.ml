@@ -332,11 +332,19 @@ let assignSub
 
 let avgPool
     ?(name = "AvgPool")
+    ~ksize
+    ~strides
     ~padding
     ?data_format
     (value : ([< `float | `double ] as 't) t)
   =
   let attributes = [ "T", Type (P value.output_type) ] in
+  let attributes =
+    ("ksize", List (Int ksize)) :: attributes
+  in
+  let attributes =
+    ("strides", List (Int strides)) :: attributes
+  in
   let attributes =
     ("padding", String padding) :: attributes
   in
@@ -353,12 +361,20 @@ let avgPool
 
 let avgPoolGrad
     ?(name = "AvgPoolGrad")
+    ~ksize
+    ~strides
     ~padding
     ?data_format
     (orig_input_shape : [ `int32 ] t)
     (grad : ([< `float | `double ] as 't) t)
   =
   let attributes = [ "T", Type (P grad.output_type) ] in
+  let attributes =
+    ("ksize", List (Int ksize)) :: attributes
+  in
+  let attributes =
+    ("strides", List (Int strides)) :: attributes
+  in
   let attributes =
     ("padding", String padding) :: attributes
   in
@@ -734,6 +750,7 @@ let controlTrigger
 
 let conv2D
     ?(name = "Conv2D")
+    ~strides
     ?use_cudnn_on_gpu
     ~padding
     ?data_format
@@ -741,6 +758,9 @@ let conv2D
     (filter : ([< `float | `double ] as 't) t)
   =
   let attributes = [ "T", Type (P input.output_type) ] in
+  let attributes =
+    ("strides", List (Int strides)) :: attributes
+  in
   let attributes =
     match use_cudnn_on_gpu with | None -> attributes | Some use_cudnn_on_gpu -> ("use_cudnn_on_gpu", Bool use_cudnn_on_gpu) :: attributes
   in
@@ -760,6 +780,7 @@ let conv2D
 
 let conv2DBackpropFilter
     ?(name = "Conv2DBackpropFilter")
+    ~strides
     ?use_cudnn_on_gpu
     ~padding
     ?data_format
@@ -768,6 +789,9 @@ let conv2DBackpropFilter
     (out_backprop : ([< `float | `double ] as 't) t)
   =
   let attributes = [ "T", Type (P input.output_type) ] in
+  let attributes =
+    ("strides", List (Int strides)) :: attributes
+  in
   let attributes =
     match use_cudnn_on_gpu with | None -> attributes | Some use_cudnn_on_gpu -> ("use_cudnn_on_gpu", Bool use_cudnn_on_gpu) :: attributes
   in
@@ -787,6 +811,7 @@ let conv2DBackpropFilter
 
 let conv2DBackpropInput
     ?(name = "Conv2DBackpropInput")
+    ~strides
     ?use_cudnn_on_gpu
     ~padding
     ?data_format
@@ -795,6 +820,9 @@ let conv2DBackpropInput
     (out_backprop : ([< `float | `double ] as 't) t)
   =
   let attributes = [ "T", Type (P filter.output_type) ] in
+  let attributes =
+    ("strides", List (Int strides)) :: attributes
+  in
   let attributes =
     match use_cudnn_on_gpu with | None -> attributes | Some use_cudnn_on_gpu -> ("use_cudnn_on_gpu", Bool use_cudnn_on_gpu) :: attributes
   in
@@ -924,11 +952,15 @@ let depthToSpace
 
 let depthwiseConv2dNative
     ?(name = "DepthwiseConv2dNative")
+    ~strides
     ~padding
     (input : ([< `float | `double ] as 't) t)
     (filter : ([< `float | `double ] as 't) t)
   =
   let attributes = [ "T", Type (P input.output_type) ] in
+  let attributes =
+    ("strides", List (Int strides)) :: attributes
+  in
   let attributes =
     ("padding", String padding) :: attributes
   in
@@ -942,12 +974,16 @@ let depthwiseConv2dNative
 
 let depthwiseConv2dNativeBackpropFilter
     ?(name = "DepthwiseConv2dNativeBackpropFilter")
+    ~strides
     ~padding
     (input : ([< `float | `double ] as 't) t)
     (filter_sizes : [ `int32 ] t)
     (out_backprop : ([< `float | `double ] as 't) t)
   =
   let attributes = [ "T", Type (P input.output_type) ] in
+  let attributes =
+    ("strides", List (Int strides)) :: attributes
+  in
   let attributes =
     ("padding", String padding) :: attributes
   in
@@ -961,12 +997,16 @@ let depthwiseConv2dNativeBackpropFilter
 
 let depthwiseConv2dNativeBackpropInput
     ?(name = "DepthwiseConv2dNativeBackpropInput")
+    ~strides
     ~padding
     (input_sizes : [ `int32 ] t)
     (filter : ([< `float | `double ] as 't) t)
     (out_backprop : ([< `float | `double ] as 't) t)
   =
   let attributes = [ "T", Type (P filter.output_type) ] in
+  let attributes =
+    ("strides", List (Int strides)) :: attributes
+  in
   let attributes =
     ("padding", String padding) :: attributes
   in
@@ -1311,12 +1351,20 @@ let fFT2D
 
 let fIFOQueue
     ?(name = "FIFOQueue")
+    ~component_types
+    ?shapes
     ?capacity
     ?container
     ?shared_name
     ()
   =
   let attributes = [] in
+  let attributes =
+    ("component_types", List (Type component_types)) :: attributes
+  in
+  let attributes =
+    match shapes with | None -> attributes | Some shapes -> ("shapes", List (Shape shapes)) :: attributes
+  in
   let attributes =
     match capacity with | None -> attributes | Some capacity -> ("capacity", Int capacity) :: attributes
   in
@@ -2033,11 +2081,19 @@ let max
 
 let maxPool
     ?(name = "MaxPool")
+    ~ksize
+    ~strides
     ~padding
     ?data_format
     (input : [ `float ] t)
   =
   let attributes = [] in
+  let attributes =
+    ("ksize", List (Int ksize)) :: attributes
+  in
+  let attributes =
+    ("strides", List (Int strides)) :: attributes
+  in
   let attributes =
     ("padding", String padding) :: attributes
   in
@@ -2054,6 +2110,8 @@ let maxPool
 
 let maxPoolGrad
     ?(name = "MaxPoolGrad")
+    ~ksize
+    ~strides
     ~padding
     ?data_format
     (orig_input : [ `float ] t)
@@ -2061,6 +2119,12 @@ let maxPoolGrad
     (grad : [ `float ] t)
   =
   let attributes = [] in
+  let attributes =
+    ("ksize", List (Int ksize)) :: attributes
+  in
+  let attributes =
+    ("strides", List (Int strides)) :: attributes
+  in
   let attributes =
     ("padding", String padding) :: attributes
   in
@@ -2077,12 +2141,20 @@ let maxPoolGrad
 
 let maxPoolGradWithArgmax
     ?(name = "MaxPoolGradWithArgmax")
+    ~ksize
+    ~strides
     ~padding
     (input : [ `float ] t)
     (grad : [ `float ] t)
     (argmax : ([< `int32 | `int64 ] as 'targmax) t)
   =
   let attributes = [] in
+  let attributes =
+    ("ksize", List (Int ksize)) :: attributes
+  in
+  let attributes =
+    ("strides", List (Int strides)) :: attributes
+  in
   let attributes =
     ("padding", String padding) :: attributes
   in
@@ -2254,6 +2326,7 @@ let neg
 
 let negTrain
     ?(name = "NegTrain")
+    ~vocab_count
     ~num_negative_samples
     (w_in : [ `float ] t)
     (w_out : [ `float ] t)
@@ -2262,6 +2335,9 @@ let negTrain
     (lr : [ `float ] t)
   =
   let attributes = [] in
+  let attributes =
+    ("vocab_count", List (Int vocab_count)) :: attributes
+  in
   let attributes =
     ("num_negative_samples", Int num_negative_samples) :: attributes
   in
@@ -2366,12 +2442,20 @@ let pad
 
 let paddingFIFOQueue
     ?(name = "PaddingFIFOQueue")
+    ~component_types
+    ?shapes
     ?capacity
     ?container
     ?shared_name
     ()
   =
   let attributes = [] in
+  let attributes =
+    ("component_types", List (Type component_types)) :: attributes
+  in
+  let attributes =
+    match shapes with | None -> attributes | Some shapes -> ("shapes", List (Shape shapes)) :: attributes
+  in
   let attributes =
     match capacity with | None -> attributes | Some capacity -> ("capacity", Int capacity) :: attributes
   in
@@ -2527,6 +2611,8 @@ let randomShuffle
 
 let randomShuffleQueue
     ?(name = "RandomShuffleQueue")
+    ~component_types
+    ?shapes
     ?capacity
     ?min_after_dequeue
     ?seed
@@ -2536,6 +2622,12 @@ let randomShuffleQueue
     ()
   =
   let attributes = [] in
+  let attributes =
+    ("component_types", List (Type component_types)) :: attributes
+  in
+  let attributes =
+    match shapes with | None -> attributes | Some shapes -> ("shapes", List (Shape shapes)) :: attributes
+  in
   let attributes =
     match capacity with | None -> attributes | Some capacity -> ("capacity", Int capacity) :: attributes
   in
@@ -3783,9 +3875,13 @@ let squaredDifference
 
 let squeeze
     ?(name = "Squeeze")
+    ?squeeze_dims
     (input : 't t)
   =
   let attributes = [ "T", Type (P input.output_type) ] in
+  let attributes =
+    match squeeze_dims with | None -> attributes | Some squeeze_dims -> ("squeeze_dims", List (Int squeeze_dims)) :: attributes
+  in
   { name = Name.make_fresh ~name
   ; op_name = "Squeeze"
   ; output_type = input.output_type

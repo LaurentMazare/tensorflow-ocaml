@@ -46,6 +46,7 @@ module Attribute = struct
     | Int
     | Float
     | Bool
+    | List of [ `float | `int | `shape | `type_ ]
 
   type t =
     { name : string
@@ -62,6 +63,10 @@ module Attribute = struct
     | Int -> "int"
     | Float -> "float"
     | Bool -> "bool"
+    | List `float -> "float list"
+    | List `int -> "int list"
+    | List `shape -> "Dim.t list list"
+    | List `type_ -> "Type.p list"
 
   let of_dtype = function
     | "string" -> Some String
@@ -69,14 +74,22 @@ module Attribute = struct
     | "int" -> Some Int
     | "float" -> Some Float
     | "bool" -> Some Bool
+    | "list(float)" -> Some (List `float)
+    | "list(int)" -> Some (List `int)
+    | "list(shape)" -> Some (List `shape)
+    | "list(type)" -> Some (List `type_)
     | _str -> None
 
-  let constr = function
-    | String -> "String"
-    | Shape -> "Shape"
-    | Int -> "Int"
-    | Float -> "Float"
-    | Bool -> "Bool"
+  let constr caml_name = function
+    | String -> "String " ^ caml_name
+    | Shape -> "Shape " ^ caml_name
+    | Int -> "Int " ^ caml_name
+    | Float -> "Float " ^ caml_name
+    | Bool -> "Bool " ^ caml_name
+    | List `float -> "List (Float " ^ caml_name ^ ")"
+    | List `int -> "List (Int " ^ caml_name ^ ")"
+    | List `shape -> "List (Shape " ^ caml_name ^ ")"
+    | List `type_ -> "List (Type " ^ caml_name ^ ")"
 
   let mli t =
     sprintf "%s%s:%s"
@@ -92,10 +105,9 @@ module Attribute = struct
   let ml_apply t attribute_var =
     let caml_name = caml_name t in
     let updated_attributes =
-      sprintf "(\"%s\", %s %s) :: %s"
+      sprintf "(\"%s\", %s) :: %s"
         t.name
-        (constr t.attr_type)
-        caml_name
+        (constr caml_name t.attr_type)
         attribute_var
     in
     if t.has_default_value
