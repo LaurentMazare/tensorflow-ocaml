@@ -25,7 +25,7 @@ You may also have to install the python-dev package.
 The TensorFlow graph operators are defined in `src/ops.ml`. This code has been automatically generated from `gen_ops/ops.pbtxt` which comes from the TensorFlow distribution.
 Only the basic operators are likely to work for now.
 
-Optimizer functions like `GradientDescentOptimizer` are not available for now. These functions generate a graph with the symbolic gradients for this optimized function, this is done in the Python side of TensorFlow so it's likely we will need to implement the same thing in OCaml.
+Optimizer functions like `GradientDescentOptimizer` are not available for now. Such functions generate a graph containing the symbolic gradients for the minimized function, this is done in the Python side of TensorFlow so it's likely we will need the same thing will have to be implemented in OCaml.
 
 ## Dependencies
 
