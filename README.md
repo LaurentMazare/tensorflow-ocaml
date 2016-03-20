@@ -14,6 +14,7 @@ You may also have to install the python-dev package.
 `cp ~/.local/lib/python2.7/site-packages/tensorflow/python/_pywrap_tensorflow.so lib/libtensorflow.so`
 * Try executing the examples from the root of the cloned repo.
 `make run`
+* Enjoy!
 
 ## Examples
 
