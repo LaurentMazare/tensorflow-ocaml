@@ -80,9 +80,15 @@ module Session : sig
     | Ok of 'a
     | Error of Status.t
 
-  val create : Session_options.t -> t result
+  val create
+    :  ?session_options:Session_options.t
+    -> unit
+    -> t result
 
-  val extend_graph : t -> Protobuf.t -> unit result
+  val extend_graph
+    :  t
+    -> Protobuf.t
+    -> unit result
 
   val run
     :  t

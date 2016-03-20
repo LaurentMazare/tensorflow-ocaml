@@ -14,27 +14,20 @@ let () =
   CArray.set data 0 1.;
   CArray.set data 1 2.;
   CArray.set data 2 6.;
-  let placeholder = Ops.placeholder ~name:"x" ~type_:Float () in
-  let node =
-    Ops.sub
-      (Ops_m.const_float ~type_:Float [ 2.; 1.; 4. ])
-      placeholder
-    |> Ops.abs
-  in
   let session =
     Session.create ()
     |> ok_exn ~context:"session creation"
   in
   Session.extend_graph
     session
-    (Protobuf.of_node node)
+    (Protobuf.read_file "examples/load.pb")
     |> ok_exn ~context:"extending graph";
   let output =
     Session.run
       session
-      ~inputs:[ placeholder.name |> Node.Name.to_string, input_tensor ]
-      ~outputs:[ node.name |> Node.Name.to_string ]
-      ~targets:[ node.name |> Node.Name.to_string ]
+      ~inputs:[ "x", input_tensor ]
+      ~outputs:[ "add" ]
+      ~targets:[ "add" ]
     |> ok_exn ~context:"session run"
   in
   match output with
@@ -45,3 +38,4 @@ let () =
       Printf.printf "%d %f\n%!" d (CArray.get data d)
     done
   | [] | _ :: _ :: _ -> assert false
+

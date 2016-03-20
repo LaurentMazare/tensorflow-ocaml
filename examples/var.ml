@@ -25,9 +25,8 @@ let () =
     Ops.sub assign placeholder
     |> Ops.abs
   in
-  let session_options = Session_options.create () in
   let session =
-    Session.create session_options
+    Session.create ()
     |> ok_exn ~context:"session creation"
   in
   Session.extend_graph

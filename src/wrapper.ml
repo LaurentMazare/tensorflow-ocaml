@@ -336,7 +336,12 @@ module Session = struct
     | TF_OK -> Ok v
     | _ -> Error status
 
-  let create session_options =
+  let create ?session_options () =
+    let session_options =
+      match session_options with
+      | None -> Session_options.create ()
+      | Some session_options -> session_options
+    in
     let status = Status.create () in
     let session = tf_newsession session_options status in
     Gc.finalise
