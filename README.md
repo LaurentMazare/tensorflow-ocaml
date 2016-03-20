@@ -5,14 +5,18 @@ These bindings are in a very early stage of their development and are not ready 
 ## Installation
 
 * Install the dependencies.
+
 `opam install ocamlbuild ctypes ctypes-foreign`
 You may also have to install the python-dev package.
 * Clone the repo.
+
 `git clone https://github.com/LaurentMazare/tensorflow-ocaml.git`
 * Install [TensorFlow](http://tensorflow.org).
 * Copy the TensorFlow shared library to `lib/libtensorflow.so` in the cloned repo. The following command may work.
+
 `cp ~/.local/lib/python2.7/site-packages/tensorflow/python/_pywrap_tensorflow.so lib/libtensorflow.so`
 * Try executing the examples from the root of the cloned repo.
+
 `make run`
 
 ## Examples
@@ -22,7 +26,7 @@ You may also have to install the python-dev package.
 
 ## Generating the TensorFlow Graph from OCaml
 
-The TensorFlow graph operators are defined in [src/ops.ml]. This code has been automatically generated from `gen_ops/ops.pbtxt` which comes from the TensorFlow distribution.
+The TensorFlow graph operators are defined in `src/ops.ml`. This code has been automatically generated from `gen_ops/ops.pbtxt` which comes from the TensorFlow distribution.
 Only the basic operators are likely to work for now.
 
 Optimizer functions like `GradientDescentOptimizer` are not available for now. These functions generate a graph with the symbolic gradients for this optimized function, this is done in the Python side of TensorFlow so it's likely we will need to implement the same thing in OCaml.
