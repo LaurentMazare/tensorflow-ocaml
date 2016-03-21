@@ -31,7 +31,7 @@ let () =
   in
   Session.extend_graph
     session
-    (Protobuf.of_nodes [ P node ])
+    (Node_protobuf.of_nodes [ P node ])
     |> ok_exn ~context:"extending graph";
   let output =
     Session.run
