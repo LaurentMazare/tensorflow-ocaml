@@ -1,6 +1,6 @@
 true: package(ctypes), package(ctypes.foreign)
-not <piqi/*>: warn(A-4-29-40-41-42-44-45-48)
-not <piqi/*>: warn_error(A-4-29-40-41-42-44-45-48)
-<gen_ops/*>: package(core), thread
+not <src/piqi/*>: warn(A-4-29-40-41-42-44-45-48)
+not <src/piqi/*>: warn_error(A-4-29-40-41-42-44-45-48)
+<src/gen_ops/*>: package(core), thread
 <lib>: -traverse
-<piqi> or <src>: include
+<src/piqi> or <src/wrapper> or <src/graph>: include

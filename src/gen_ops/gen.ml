@@ -1,8 +1,8 @@
 open Core.Std
 exception Not_supported of string
 
-let ops_file = "gen_ops/ops.pb"
-let output_file = "src/ops"
+let ops_file = "src/gen_ops/ops.pb"
+let output_file = "src/graph/ops"
 let do_not_generate_these_ops =
   String.Set.of_list
     [ "Const"
