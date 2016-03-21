@@ -10,7 +10,7 @@ You may also have to install the python-dev package.
 * Clone the repo.
 `git clone https://github.com/LaurentMazare/tensorflow-ocaml.git`
 * Install [TensorFlow](http://tensorflow.org).
-* Copy the TensorFlow shared library to `lib/libtensorflow.so` in the cloned repo. The following command may work.
+* Copy the TensorFlow shared library to `lib/libtensorflow.so` in the cloned repo. You may have to tweak the following command depending on where TensorFlow was installed.
 `cp ~/.local/lib/python2.7/site-packages/tensorflow/python/_pywrap_tensorflow.so lib/libtensorflow.so`
 * Try executing the examples from the root of the cloned repo.
 `make run`

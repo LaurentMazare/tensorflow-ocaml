@@ -236,6 +236,9 @@ let needs_variable_for_output_type op =
   | Polymorphic (alpha, _) ->
     same_input_and_output_type op ~alpha |> Option.is_none
 
+let automatically_generated_file =
+  "(* THIS FILE HAS BEEN AUTOMATICALLY GENERATED, DO NOT EDIT BY HAND! *)"
+
 let gen_mli ops =
   let out_channel = Out_channel.create (sprintf "%s.mli" output_file) in
   let p s =
@@ -258,7 +261,9 @@ let gen_mli ops =
     p "  -> %s Node.t" (Type.to_string op.output_type);
     p "";
   in
+  p "%s" automatically_generated_file;
   p "open Node";
+  p "";
   List.iter ops ~f:handle_one_op;
   Out_channel.close out_channel
 
@@ -310,6 +315,7 @@ let gen_ml ops =
     p "  }";
     p "";
   in
+  p "%s" automatically_generated_file;
   p "open Node";
   p "";
   List.iter ops ~f:handle_one_op;
