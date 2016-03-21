@@ -1,16 +1,17 @@
+open Core.Std
+
 module Name : sig
-  type t
+  include Identifiable
   val make_fresh : name:string -> t
   val to_string : t -> string
 end = struct
-  type t = string
-
+  include String
   let cnt = ref 0
   let make_fresh ~name =
     incr cnt;
     Printf.sprintf "%s-%d" name !cnt
 
-  let to_string t = t
+  let to_string = Fn.id
 end
 
 module Type = struct
