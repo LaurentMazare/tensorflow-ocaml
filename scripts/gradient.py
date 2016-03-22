@@ -5,6 +5,7 @@ graph = tf.Graph()
 with graph.as_default():
   tt = tf.constant([4.2])
   def XSquarePlusOne(x):
+    ph = tf.placeholder("float", shape=[1])
     return x * x + 1.0
 
   def XSquarePlusOneGrad(x, dy):

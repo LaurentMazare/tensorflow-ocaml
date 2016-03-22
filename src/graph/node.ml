@@ -106,3 +106,17 @@ type 'a t =
   ; output_name : string option (* Only used for multiple outputs. *)
   }
 and p = P : _ t -> p
+
+let packed_name (P t) = t.name
+let packed_inputs (P t) = t.inputs
+let packed_op_name (P t) = t.op_name
+let packed_is_real (P t) =
+  match t.output_type with
+  | Type.Unit -> false
+  | Type.Int32 -> false
+  | Type.Int64 -> false
+  | Type.Bool -> false
+  | Type.String -> false
+  | Type.Complex64 -> false
+  | Type.Float -> true
+  | Type.Double -> true
