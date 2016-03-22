@@ -31,7 +31,7 @@ Enjoy!
 
 ## Generating the TensorFlow Graph from OCaml
 
-The TensorFlow graph operators are defined in `src/ops.ml`. This code has been automatically generated from `gen_ops/ops.pbtxt` which comes from the TensorFlow distribution.
+The TensorFlow graph operators are defined in `src/graph/ops.ml`. This file has been automatically generated from `src/gen_ops/ops.pbtxt` which comes from the TensorFlow distribution.
 Only the basic operators are likely to work for now.
 
 ## Dependencies
