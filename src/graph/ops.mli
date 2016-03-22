@@ -1,4 +1,6 @@
+(* THIS FILE HAS BEEN AUTOMATICALLY GENERATED, DO NOT EDIT BY HAND! *)
 open Node
+
 val abs
   :  ?name:string
   -> ([< `float | `double | `int32 | `int64 ] as 't) Node.t

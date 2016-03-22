@@ -1,3 +1,4 @@
+open Core.Std
 open Node
 
 let get_shape ?shape values =

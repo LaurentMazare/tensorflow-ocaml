@@ -4,17 +4,25 @@ These bindings are in a very early stage of their development and are not ready 
 
 ## Installation
 
-* Install the dependencies.
-`opam install ocamlbuild ctypes ctypes-foreign`
+#### Install the dependencies
+```bash
+opam install ocamlbuild ctypes ctypes-foreign core
+```
 You may also have to install the python-dev package.
-* Clone the repo.
-`git clone https://github.com/LaurentMazare/tensorflow-ocaml.git`
-* Install [TensorFlow](http://tensorflow.org).
-* Copy the TensorFlow shared library to `lib/libtensorflow.so` in the cloned repo. The following command may work.
-`cp ~/.local/lib/python2.7/site-packages/tensorflow/python/_pywrap_tensorflow.so lib/libtensorflow.so`
-* Try executing the examples from the root of the cloned repo.
-`make run`
-* Enjoy!
+#### Clone the repo
+```bash
+git clone https://github.com/LaurentMazare/tensorflow-ocaml.git
+```
+#### Install [TensorFlow](http://tensorflow.org).
+Copy the TensorFlow shared library to `lib/libtensorflow.so` in the cloned repo. You may have to tweak the following command depending on where TensorFlow was installed.
+```bash
+cp ~/.local/lib/python2.7/site-packages/tensorflow/python/_pywrap_tensorflow.so lib/libtensorflow.so
+```
+#### Try executing the examples from the root of the cloned repo
+```bash
+make run
+```
+Enjoy!
 
 ## Examples
 
@@ -23,11 +31,11 @@ You may also have to install the python-dev package.
 
 ## Generating the TensorFlow Graph from OCaml
 
-The TensorFlow graph operators are defined in `src/ops.ml`. This code has been automatically generated from `gen_ops/ops.pbtxt` which comes from the TensorFlow distribution.
+The TensorFlow graph operators are defined in `src/graph/ops.ml`. This file has been automatically generated from `src/gen_ops/ops.pbtxt` which comes from the TensorFlow distribution.
 Only the basic operators are likely to work for now.
 
 ## Dependencies
 
 * [ocaml-ctypes](https://github.com/ocamllabs/ocaml-ctypes) is used for the C bindings.
-* [Core](https://github.com/janestreet/core) is only necessary for the operator code generation.
+* [Core](https://github.com/janestreet/core) is only necessary when generating the graph from OCaml, the wrapper itself does not need it.
 * The code in the piqi directory comes from the [Piqi project](http://piqi.org). There is no need to install piqi though.

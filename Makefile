@@ -8,9 +8,9 @@ var.native: .FORCE
 	ocamlbuild examples/var.native
 
 gen.native: .FORCE
-	ocamlbuild gen_ops/gen.native
+	ocamlbuild src/gen_ops/gen.native
 
-src/ops.ml: gen.native
+src/graph/ops.ml: gen.native
 	LD_LIBRARY_PATH=./lib:$(LD_LIBRARY_PATH) ./gen.native
 
 run: simple.native var.native load.native
