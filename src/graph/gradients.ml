@@ -111,3 +111,25 @@ let gradient node ~with_respect_to =
   in
   add_contribution (P node) ~gradient:(Node.P scalar_one);
   output_gradients
+
+let gradient node ~with_respect_to_float ~with_respect_to_double =
+  let pack = List.map ~f:(fun node -> Node.P node) in
+  let table =
+    gradient node
+      ~with_respect_to:(pack with_respect_to_float @ pack with_respect_to_double)
+  in
+  let cast : type a . Node.p -> type_: a Node.Type.t -> a Node.t =
+    fun (Node.P node) ~type_ ->
+      match node.output_type, type_ with
+      | Node.Type.Double, Node.Type.Double -> node
+      | Node.Type.Float, Node.Type.Float -> node
+      | _ -> assert false
+  in
+  let lookup ~type_ =
+    List.map ~f:(fun node ->
+      (* CR lmazare: default to 0 ? *)
+      Hashtbl.find_exn table node.Node.name |> cast ~type_)
+  in
+  lookup with_respect_to_float ~type_:Node.Type.Float,
+  lookup with_respect_to_double ~type_:Node.Type.Double
+
