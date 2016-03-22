@@ -15,7 +15,7 @@ let const_float
   =
   let shape = get_shape ?shape values in
   { name = Name.make_fresh ~name
-  ; op_name = "Const"
+  ; op_name = Op_name.of_string "Const"
   ; output_type = type_
   ; inputs = []
   ; attributes = [
@@ -33,7 +33,7 @@ let const_int
   =
   let shape = get_shape ?shape values in
   { name = Name.make_fresh ~name
-  ; op_name = "Const"
+  ; op_name = Op_name.of_string "Const"
   ; output_type = type_
   ; inputs = []
   ; attributes = [

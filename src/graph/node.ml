@@ -1,5 +1,7 @@
 open Core.Std
 
+module Op_name : Identifiable = String_id
+
 module Name : sig
   include Identifiable
   val make_fresh : name:string -> t
@@ -99,7 +101,7 @@ type attr =
 
 type 'a t =
   { name : Name.t
-  ; op_name : string
+  ; op_name : Op_name.t
   ; output_type : 'a Type.t
   ; inputs : p list
   ; attributes : (string * attr) list

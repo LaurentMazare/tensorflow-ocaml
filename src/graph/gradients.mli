@@ -7,7 +7,7 @@ type t =
   }
 
 val register_gradient
-  :  string
+  :  Node.Op_name.t
   -> t
   -> unit
 

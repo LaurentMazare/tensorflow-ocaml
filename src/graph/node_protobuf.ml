@@ -134,7 +134,7 @@ let of_nodes ts =
       in
       let node =
         { Node_def.name = Some (Node.Name.to_string t.name)
-        ; op = Some t.op_name
+        ; op = Some (Node.Op_name.to_string t.op_name)
         ; input = List.map t.inputs ~f:(fun (P input) -> Node.Name.to_string input.name)
         ; device = None
         ; attr

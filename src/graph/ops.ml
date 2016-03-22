@@ -7,7 +7,7 @@ let abs
   =
   let attributes = [ "T", Type (P x.output_type) ] in
   { name = Name.make_fresh ~name
-  ; op_name = "Abs"
+  ; op_name = Op_name.of_string "Abs"
   ; output_type = x.output_type
   ; inputs = [ P x ]
   ; attributes
@@ -21,7 +21,7 @@ let add
   =
   let attributes = [ "T", Type (P x.output_type) ] in
   { name = Name.make_fresh ~name
-  ; op_name = "Add"
+  ; op_name = Op_name.of_string "Add"
   ; output_type = x.output_type
   ; inputs = [ P x; P y ]
   ; attributes
@@ -38,7 +38,7 @@ let addN
     ("N", Int n) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "AddN"
+  ; op_name = Op_name.of_string "AddN"
   ; output_type = inputs.output_type
   ; inputs = [ P inputs ]
   ; attributes
@@ -54,7 +54,7 @@ let adjustContrast
   =
   let attributes = [] in
   { name = Name.make_fresh ~name
-  ; op_name = "AdjustContrast"
+  ; op_name = Op_name.of_string "AdjustContrast"
   ; output_type = Type.Float
   ; inputs = [ P images; P contrast_factor; P min_value; P max_value ]
   ; attributes
@@ -68,7 +68,7 @@ let adjustContrastv2
   =
   let attributes = [] in
   { name = Name.make_fresh ~name
-  ; op_name = "AdjustContrastv2"
+  ; op_name = Op_name.of_string "AdjustContrastv2"
   ; output_type = Type.Float
   ; inputs = [ P images; P contrast_factor ]
   ; attributes
@@ -86,7 +86,7 @@ let all
     match keep_dims with | None -> attributes | Some keep_dims -> ("keep_dims", Bool keep_dims) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "All"
+  ; op_name = Op_name.of_string "All"
   ; output_type = Type.Bool
   ; inputs = [ P input; P reduction_indices ]
   ; attributes
@@ -104,7 +104,7 @@ let any
     match keep_dims with | None -> attributes | Some keep_dims -> ("keep_dims", Bool keep_dims) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "Any"
+  ; op_name = Op_name.of_string "Any"
   ; output_type = Type.Bool
   ; inputs = [ P input; P reduction_indices ]
   ; attributes
@@ -124,7 +124,7 @@ let applyAdagrad
     match use_locking with | None -> attributes | Some use_locking -> ("use_locking", Bool use_locking) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "ApplyAdagrad"
+  ; op_name = Op_name.of_string "ApplyAdagrad"
   ; output_type = var.output_type
   ; inputs = [ P var; P accum; P lr; P grad ]
   ; attributes
@@ -150,7 +150,7 @@ let applyAdam
     match use_locking with | None -> attributes | Some use_locking -> ("use_locking", Bool use_locking) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "ApplyAdam"
+  ; op_name = Op_name.of_string "ApplyAdam"
   ; output_type = var.output_type
   ; inputs = [ P var; P m; P v; P beta1_power; P beta2_power; P lr; P beta1; P beta2; P epsilon; P grad ]
   ; attributes
@@ -174,7 +174,7 @@ let applyFtrl
     match use_locking with | None -> attributes | Some use_locking -> ("use_locking", Bool use_locking) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "ApplyFtrl"
+  ; op_name = Op_name.of_string "ApplyFtrl"
   ; output_type = var.output_type
   ; inputs = [ P var; P accum; P linear; P grad; P lr; P l1; P l2; P lr_power ]
   ; attributes
@@ -193,7 +193,7 @@ let applyGradientDescent
     match use_locking with | None -> attributes | Some use_locking -> ("use_locking", Bool use_locking) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "ApplyGradientDescent"
+  ; op_name = Op_name.of_string "ApplyGradientDescent"
   ; output_type = var.output_type
   ; inputs = [ P var; P alpha; P delta ]
   ; attributes
@@ -214,7 +214,7 @@ let applyMomentum
     match use_locking with | None -> attributes | Some use_locking -> ("use_locking", Bool use_locking) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "ApplyMomentum"
+  ; op_name = Op_name.of_string "ApplyMomentum"
   ; output_type = var.output_type
   ; inputs = [ P var; P accum; P lr; P grad; P momentum ]
   ; attributes
@@ -238,7 +238,7 @@ let applyRMSProp
     match use_locking with | None -> attributes | Some use_locking -> ("use_locking", Bool use_locking) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "ApplyRMSProp"
+  ; op_name = Op_name.of_string "ApplyRMSProp"
   ; output_type = var.output_type
   ; inputs = [ P var; P ms; P mom; P lr; P rho; P momentum; P epsilon; P grad ]
   ; attributes
@@ -252,7 +252,7 @@ let argMax
   =
   let attributes = [] in
   { name = Name.make_fresh ~name
-  ; op_name = "ArgMax"
+  ; op_name = Op_name.of_string "ArgMax"
   ; output_type = Type.Int64
   ; inputs = [ P input; P dimension ]
   ; attributes
@@ -266,7 +266,7 @@ let argMin
   =
   let attributes = [] in
   { name = Name.make_fresh ~name
-  ; op_name = "ArgMin"
+  ; op_name = Op_name.of_string "ArgMin"
   ; output_type = Type.Int64
   ; inputs = [ P input; P dimension ]
   ; attributes
@@ -288,7 +288,7 @@ let assign
     match use_locking with | None -> attributes | Some use_locking -> ("use_locking", Bool use_locking) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "Assign"
+  ; op_name = Op_name.of_string "Assign"
   ; output_type = ref.output_type
   ; inputs = [ P ref; P value ]
   ; attributes
@@ -306,7 +306,7 @@ let assignAdd
     match use_locking with | None -> attributes | Some use_locking -> ("use_locking", Bool use_locking) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "AssignAdd"
+  ; op_name = Op_name.of_string "AssignAdd"
   ; output_type = ref.output_type
   ; inputs = [ P ref; P value ]
   ; attributes
@@ -324,7 +324,7 @@ let assignSub
     match use_locking with | None -> attributes | Some use_locking -> ("use_locking", Bool use_locking) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "AssignSub"
+  ; op_name = Op_name.of_string "AssignSub"
   ; output_type = ref.output_type
   ; inputs = [ P ref; P value ]
   ; attributes
@@ -353,7 +353,7 @@ let avgPool
     match data_format with | None -> attributes | Some data_format -> ("data_format", String data_format) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "AvgPool"
+  ; op_name = Op_name.of_string "AvgPool"
   ; output_type = value.output_type
   ; inputs = [ P value ]
   ; attributes
@@ -383,7 +383,7 @@ let avgPoolGrad
     match data_format with | None -> attributes | Some data_format -> ("data_format", String data_format) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "AvgPoolGrad"
+  ; op_name = Op_name.of_string "AvgPoolGrad"
   ; output_type = grad.output_type
   ; inputs = [ P orig_input_shape; P grad ]
   ; attributes
@@ -396,7 +396,7 @@ let batchCholesky
   =
   let attributes = [ "T", Type (P input.output_type) ] in
   { name = Name.make_fresh ~name
-  ; op_name = "BatchCholesky"
+  ; op_name = Op_name.of_string "BatchCholesky"
   ; output_type = input.output_type
   ; inputs = [ P input ]
   ; attributes
@@ -418,7 +418,7 @@ let batchMatMul
     match adj_y with | None -> attributes | Some adj_y -> ("adj_y", Bool adj_y) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "BatchMatMul"
+  ; op_name = Op_name.of_string "BatchMatMul"
   ; output_type = x.output_type
   ; inputs = [ P x; P y ]
   ; attributes
@@ -431,7 +431,7 @@ let batchMatrixDeterminant
   =
   let attributes = [ "T", Type (P input.output_type) ] in
   { name = Name.make_fresh ~name
-  ; op_name = "BatchMatrixDeterminant"
+  ; op_name = Op_name.of_string "BatchMatrixDeterminant"
   ; output_type = input.output_type
   ; inputs = [ P input ]
   ; attributes
@@ -444,7 +444,7 @@ let batchMatrixInverse
   =
   let attributes = [ "T", Type (P input.output_type) ] in
   { name = Name.make_fresh ~name
-  ; op_name = "BatchMatrixInverse"
+  ; op_name = Op_name.of_string "BatchMatrixInverse"
   ; output_type = input.output_type
   ; inputs = [ P input ]
   ; attributes
@@ -458,7 +458,7 @@ let batchMatrixSolve
   =
   let attributes = [ "T", Type (P matrix.output_type) ] in
   { name = Name.make_fresh ~name
-  ; op_name = "BatchMatrixSolve"
+  ; op_name = Op_name.of_string "BatchMatrixSolve"
   ; output_type = matrix.output_type
   ; inputs = [ P matrix; P rhs ]
   ; attributes
@@ -477,7 +477,7 @@ let batchMatrixSolveLs
     match fast with | None -> attributes | Some fast -> ("fast", Bool fast) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "BatchMatrixSolveLs"
+  ; op_name = Op_name.of_string "BatchMatrixSolveLs"
   ; output_type = matrix.output_type
   ; inputs = [ P matrix; P rhs; P l2_regularizer ]
   ; attributes
@@ -495,7 +495,7 @@ let batchMatrixTriangularSolve
     match lower with | None -> attributes | Some lower -> ("lower", Bool lower) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "BatchMatrixTriangularSolve"
+  ; op_name = Op_name.of_string "BatchMatrixTriangularSolve"
   ; output_type = matrix.output_type
   ; inputs = [ P matrix; P rhs ]
   ; attributes
@@ -520,7 +520,7 @@ let batchNormWithGlobalNormalization
     ("scale_after_normalization", Bool scale_after_normalization) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "BatchNormWithGlobalNormalization"
+  ; op_name = Op_name.of_string "BatchNormWithGlobalNormalization"
   ; output_type = t.output_type
   ; inputs = [ P t; P m; P v; P beta; P gamma ]
   ; attributes
@@ -533,7 +533,7 @@ let batchSelfAdjointEig
   =
   let attributes = [ "T", Type (P input.output_type) ] in
   { name = Name.make_fresh ~name
-  ; op_name = "BatchSelfAdjointEig"
+  ; op_name = Op_name.of_string "BatchSelfAdjointEig"
   ; output_type = input.output_type
   ; inputs = [ P input ]
   ; attributes
@@ -551,7 +551,7 @@ let biasAdd
     match data_format with | None -> attributes | Some data_format -> ("data_format", String data_format) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "BiasAdd"
+  ; op_name = Op_name.of_string "BiasAdd"
   ; output_type = value.output_type
   ; inputs = [ P value; P bias ]
   ; attributes
@@ -568,7 +568,7 @@ let biasAddGrad
     match data_format with | None -> attributes | Some data_format -> ("data_format", String data_format) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "BiasAddGrad"
+  ; op_name = Op_name.of_string "BiasAddGrad"
   ; output_type = out_backprop.output_type
   ; inputs = [ P out_backprop ]
   ; attributes
@@ -582,7 +582,7 @@ let biasAddV1
   =
   let attributes = [ "T", Type (P value.output_type) ] in
   { name = Name.make_fresh ~name
-  ; op_name = "BiasAddV1"
+  ; op_name = Op_name.of_string "BiasAddV1"
   ; output_type = value.output_type
   ; inputs = [ P value; P bias ]
   ; attributes
@@ -596,7 +596,7 @@ let bitcast
   =
   let attributes = [ "type", Type (P type_) ] in
   { name = Name.make_fresh ~name
-  ; op_name = "Bitcast"
+  ; op_name = Op_name.of_string "Bitcast"
   ; output_type = type_
   ; inputs = [ P input ]
   ; attributes
@@ -610,7 +610,7 @@ let cast
   =
   let attributes = [ "DstT", Type (P type_) ] in
   { name = Name.make_fresh ~name
-  ; op_name = "Cast"
+  ; op_name = Op_name.of_string "Cast"
   ; output_type = type_
   ; inputs = [ P x ]
   ; attributes
@@ -623,7 +623,7 @@ let ceil
   =
   let attributes = [ "T", Type (P x.output_type) ] in
   { name = Name.make_fresh ~name
-  ; op_name = "Ceil"
+  ; op_name = Op_name.of_string "Ceil"
   ; output_type = x.output_type
   ; inputs = [ P x ]
   ; attributes
@@ -640,7 +640,7 @@ let checkNumerics
     ("message", String message) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "CheckNumerics"
+  ; op_name = Op_name.of_string "CheckNumerics"
   ; output_type = tensor.output_type
   ; inputs = [ P tensor ]
   ; attributes
@@ -653,7 +653,7 @@ let cholesky
   =
   let attributes = [ "T", Type (P input.output_type) ] in
   { name = Name.make_fresh ~name
-  ; op_name = "Cholesky"
+  ; op_name = Op_name.of_string "Cholesky"
   ; output_type = input.output_type
   ; inputs = [ P input ]
   ; attributes
@@ -667,7 +667,7 @@ let complex
   =
   let attributes = [] in
   { name = Name.make_fresh ~name
-  ; op_name = "Complex"
+  ; op_name = Op_name.of_string "Complex"
   ; output_type = Type.Complex64
   ; inputs = [ P real; P imag ]
   ; attributes
@@ -680,7 +680,7 @@ let complexAbs
   =
   let attributes = [] in
   { name = Name.make_fresh ~name
-  ; op_name = "ComplexAbs"
+  ; op_name = Op_name.of_string "ComplexAbs"
   ; output_type = Type.Float
   ; inputs = [ P x ]
   ; attributes
@@ -698,7 +698,7 @@ let concat
     ("N", Int n) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "Concat"
+  ; op_name = Op_name.of_string "Concat"
   ; output_type = values.output_type
   ; inputs = [ P concat_dim; P values ]
   ; attributes
@@ -716,7 +716,7 @@ let concatOffset
     ("N", Int n) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "ConcatOffset"
+  ; op_name = Op_name.of_string "ConcatOffset"
   ; output_type = Type.Int32
   ; inputs = [ P concat_dim; P shape ]
   ; attributes
@@ -729,7 +729,7 @@ let conj
   =
   let attributes = [] in
   { name = Name.make_fresh ~name
-  ; op_name = "Conj"
+  ; op_name = Op_name.of_string "Conj"
   ; output_type = Type.Complex64
   ; inputs = [ P in__ ]
   ; attributes
@@ -742,7 +742,7 @@ let controlTrigger
   =
   let attributes = [] in
   { name = Name.make_fresh ~name
-  ; op_name = "ControlTrigger"
+  ; op_name = Op_name.of_string "ControlTrigger"
   ; output_type = Type.Unit
   ; inputs = [  ]
   ; attributes
@@ -772,7 +772,7 @@ let conv2D
     match data_format with | None -> attributes | Some data_format -> ("data_format", String data_format) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "Conv2D"
+  ; op_name = Op_name.of_string "Conv2D"
   ; output_type = input.output_type
   ; inputs = [ P input; P filter ]
   ; attributes
@@ -803,7 +803,7 @@ let conv2DBackpropFilter
     match data_format with | None -> attributes | Some data_format -> ("data_format", String data_format) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "Conv2DBackpropFilter"
+  ; op_name = Op_name.of_string "Conv2DBackpropFilter"
   ; output_type = input.output_type
   ; inputs = [ P input; P filter_sizes; P out_backprop ]
   ; attributes
@@ -834,7 +834,7 @@ let conv2DBackpropInput
     match data_format with | None -> attributes | Some data_format -> ("data_format", String data_format) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "Conv2DBackpropInput"
+  ; op_name = Op_name.of_string "Conv2DBackpropInput"
   ; output_type = filter.output_type
   ; inputs = [ P input_sizes; P filter; P out_backprop ]
   ; attributes
@@ -847,7 +847,7 @@ let cos
   =
   let attributes = [ "T", Type (P x.output_type) ] in
   { name = Name.make_fresh ~name
-  ; op_name = "Cos"
+  ; op_name = Op_name.of_string "Cos"
   ; output_type = x.output_type
   ; inputs = [ P x ]
   ; attributes
@@ -864,7 +864,7 @@ let countUpTo
     ("limit", Int limit) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "CountUpTo"
+  ; op_name = Op_name.of_string "CountUpTo"
   ; output_type = ref.output_type
   ; inputs = [ P ref ]
   ; attributes
@@ -878,7 +878,7 @@ let cross
   =
   let attributes = [ "T", Type (P a.output_type) ] in
   { name = Name.make_fresh ~name
-  ; op_name = "Cross"
+  ; op_name = Op_name.of_string "Cross"
   ; output_type = a.output_type
   ; inputs = [ P a; P b ]
   ; attributes
@@ -891,7 +891,7 @@ let decodeJSONExample
   =
   let attributes = [] in
   { name = Name.make_fresh ~name
-  ; op_name = "DecodeJSONExample"
+  ; op_name = Op_name.of_string "DecodeJSONExample"
   ; output_type = Type.String
   ; inputs = [ P json_examples ]
   ; attributes
@@ -909,7 +909,7 @@ let decodePng
     match channels with | None -> attributes | Some channels -> ("channels", Int channels) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "DecodePng"
+  ; op_name = Op_name.of_string "DecodePng"
   ; output_type = type_
   ; inputs = [ P contents ]
   ; attributes
@@ -927,7 +927,7 @@ let decodeRaw
     match little_endian with | None -> attributes | Some little_endian -> ("little_endian", Bool little_endian) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "DecodeRaw"
+  ; op_name = Op_name.of_string "DecodeRaw"
   ; output_type = type_
   ; inputs = [ P bytes ]
   ; attributes
@@ -944,7 +944,7 @@ let depthToSpace
     ("block_size", Int block_size) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "DepthToSpace"
+  ; op_name = Op_name.of_string "DepthToSpace"
   ; output_type = input.output_type
   ; inputs = [ P input ]
   ; attributes
@@ -966,7 +966,7 @@ let depthwiseConv2dNative
     ("padding", String padding) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "DepthwiseConv2dNative"
+  ; op_name = Op_name.of_string "DepthwiseConv2dNative"
   ; output_type = input.output_type
   ; inputs = [ P input; P filter ]
   ; attributes
@@ -989,7 +989,7 @@ let depthwiseConv2dNativeBackpropFilter
     ("padding", String padding) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "DepthwiseConv2dNativeBackpropFilter"
+  ; op_name = Op_name.of_string "DepthwiseConv2dNativeBackpropFilter"
   ; output_type = input.output_type
   ; inputs = [ P input; P filter_sizes; P out_backprop ]
   ; attributes
@@ -1012,7 +1012,7 @@ let depthwiseConv2dNativeBackpropInput
     ("padding", String padding) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "DepthwiseConv2dNativeBackpropInput"
+  ; op_name = Op_name.of_string "DepthwiseConv2dNativeBackpropInput"
   ; output_type = filter.output_type
   ; inputs = [ P input_sizes; P filter; P out_backprop ]
   ; attributes
@@ -1029,7 +1029,7 @@ let destroyTemporaryVariable
     ("var_name", String var_name) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "DestroyTemporaryVariable"
+  ; op_name = Op_name.of_string "DestroyTemporaryVariable"
   ; output_type = ref.output_type
   ; inputs = [ P ref ]
   ; attributes
@@ -1042,7 +1042,7 @@ let diag
   =
   let attributes = [ "T", Type (P diagonal.output_type) ] in
   { name = Name.make_fresh ~name
-  ; op_name = "Diag"
+  ; op_name = Op_name.of_string "Diag"
   ; output_type = diagonal.output_type
   ; inputs = [ P diagonal ]
   ; attributes
@@ -1055,7 +1055,7 @@ let diagPart
   =
   let attributes = [ "T", Type (P input.output_type) ] in
   { name = Name.make_fresh ~name
-  ; op_name = "DiagPart"
+  ; op_name = Op_name.of_string "DiagPart"
   ; output_type = input.output_type
   ; inputs = [ P input ]
   ; attributes
@@ -1068,7 +1068,7 @@ let digamma
   =
   let attributes = [ "T", Type (P x.output_type) ] in
   { name = Name.make_fresh ~name
-  ; op_name = "Digamma"
+  ; op_name = Op_name.of_string "Digamma"
   ; output_type = x.output_type
   ; inputs = [ P x ]
   ; attributes
@@ -1082,7 +1082,7 @@ let div
   =
   let attributes = [ "T", Type (P x.output_type) ] in
   { name = Name.make_fresh ~name
-  ; op_name = "Div"
+  ; op_name = Op_name.of_string "Div"
   ; output_type = x.output_type
   ; inputs = [ P x; P y ]
   ; attributes
@@ -1096,7 +1096,7 @@ let drawBoundingBoxes
   =
   let attributes = [] in
   { name = Name.make_fresh ~name
-  ; op_name = "DrawBoundingBoxes"
+  ; op_name = Op_name.of_string "DrawBoundingBoxes"
   ; output_type = Type.Float
   ; inputs = [ P images; P boxes ]
   ; attributes
@@ -1114,7 +1114,7 @@ let dynamicPartition
     ("num_partitions", Int num_partitions) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "DynamicPartition"
+  ; op_name = Op_name.of_string "DynamicPartition"
   ; output_type = data.output_type
   ; inputs = [ P data; P partitions ]
   ; attributes
@@ -1132,7 +1132,7 @@ let dynamicStitch
     ("N", Int n) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "DynamicStitch"
+  ; op_name = Op_name.of_string "DynamicStitch"
   ; output_type = data.output_type
   ; inputs = [ P indices; P data ]
   ; attributes
@@ -1154,7 +1154,7 @@ let editDistance
     match normalize with | None -> attributes | Some normalize -> ("normalize", Bool normalize) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "EditDistance"
+  ; op_name = Op_name.of_string "EditDistance"
   ; output_type = Type.Float
   ; inputs = [ P hypothesis_indices; P hypothesis_values; P hypothesis_shape; P truth_indices; P truth_values; P truth_shape ]
   ; attributes
@@ -1167,7 +1167,7 @@ let elu
   =
   let attributes = [ "T", Type (P features.output_type) ] in
   { name = Name.make_fresh ~name
-  ; op_name = "Elu"
+  ; op_name = Op_name.of_string "Elu"
   ; output_type = features.output_type
   ; inputs = [ P features ]
   ; attributes
@@ -1181,7 +1181,7 @@ let eluGrad
   =
   let attributes = [ "T", Type (P gradients.output_type) ] in
   { name = Name.make_fresh ~name
-  ; op_name = "EluGrad"
+  ; op_name = Op_name.of_string "EluGrad"
   ; output_type = gradients.output_type
   ; inputs = [ P gradients; P outputs ]
   ; attributes
@@ -1198,7 +1198,7 @@ let encodePng
     match compression with | None -> attributes | Some compression -> ("compression", Int compression) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "EncodePng"
+  ; op_name = Op_name.of_string "EncodePng"
   ; output_type = Type.String
   ; inputs = [ P image ]
   ; attributes
@@ -1223,7 +1223,7 @@ let enter
     match parallel_iterations with | None -> attributes | Some parallel_iterations -> ("parallel_iterations", Int parallel_iterations) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "Enter"
+  ; op_name = Op_name.of_string "Enter"
   ; output_type = data.output_type
   ; inputs = [ P data ]
   ; attributes
@@ -1237,7 +1237,7 @@ let equal
   =
   let attributes = [] in
   { name = Name.make_fresh ~name
-  ; op_name = "Equal"
+  ; op_name = Op_name.of_string "Equal"
   ; output_type = Type.Bool
   ; inputs = [ P x; P y ]
   ; attributes
@@ -1250,7 +1250,7 @@ let erf
   =
   let attributes = [ "T", Type (P x.output_type) ] in
   { name = Name.make_fresh ~name
-  ; op_name = "Erf"
+  ; op_name = Op_name.of_string "Erf"
   ; output_type = x.output_type
   ; inputs = [ P x ]
   ; attributes
@@ -1263,7 +1263,7 @@ let erfc
   =
   let attributes = [ "T", Type (P x.output_type) ] in
   { name = Name.make_fresh ~name
-  ; op_name = "Erfc"
+  ; op_name = Op_name.of_string "Erfc"
   ; output_type = x.output_type
   ; inputs = [ P x ]
   ; attributes
@@ -1276,7 +1276,7 @@ let exit
   =
   let attributes = [ "T", Type (P data.output_type) ] in
   { name = Name.make_fresh ~name
-  ; op_name = "Exit"
+  ; op_name = Op_name.of_string "Exit"
   ; output_type = data.output_type
   ; inputs = [ P data ]
   ; attributes
@@ -1289,7 +1289,7 @@ let exp
   =
   let attributes = [ "T", Type (P x.output_type) ] in
   { name = Name.make_fresh ~name
-  ; op_name = "Exp"
+  ; op_name = Op_name.of_string "Exp"
   ; output_type = x.output_type
   ; inputs = [ P x ]
   ; attributes
@@ -1303,7 +1303,7 @@ let expandDims
   =
   let attributes = [ "T", Type (P input.output_type) ] in
   { name = Name.make_fresh ~name
-  ; op_name = "ExpandDims"
+  ; op_name = Op_name.of_string "ExpandDims"
   ; output_type = input.output_type
   ; inputs = [ P input; P dim ]
   ; attributes
@@ -1330,7 +1330,7 @@ let extractGlimpse
     match uniform_noise with | None -> attributes | Some uniform_noise -> ("uniform_noise", Bool uniform_noise) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "ExtractGlimpse"
+  ; op_name = Op_name.of_string "ExtractGlimpse"
   ; output_type = Type.Float
   ; inputs = [ P input; P size; P offsets ]
   ; attributes
@@ -1343,7 +1343,7 @@ let fFT2D
   =
   let attributes = [] in
   { name = Name.make_fresh ~name
-  ; op_name = "FFT2D"
+  ; op_name = Op_name.of_string "FFT2D"
   ; output_type = Type.Complex64
   ; inputs = [ P in__ ]
   ; attributes
@@ -1376,7 +1376,7 @@ let fIFOQueue
     match shared_name with | None -> attributes | Some shared_name -> ("shared_name", String shared_name) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "FIFOQueue"
+  ; op_name = Op_name.of_string "FIFOQueue"
   ; output_type = Type.String
   ; inputs = [  ]
   ; attributes
@@ -1389,7 +1389,7 @@ let fact
   =
   let attributes = [] in
   { name = Name.make_fresh ~name
-  ; op_name = "Fact"
+  ; op_name = Op_name.of_string "Fact"
   ; output_type = Type.String
   ; inputs = [  ]
   ; attributes
@@ -1403,7 +1403,7 @@ let fill
   =
   let attributes = [ "T", Type (P value.output_type) ] in
   { name = Name.make_fresh ~name
-  ; op_name = "Fill"
+  ; op_name = Op_name.of_string "Fill"
   ; output_type = value.output_type
   ; inputs = [ P dims; P value ]
   ; attributes
@@ -1436,7 +1436,7 @@ let fixedLengthRecordReader
     match shared_name with | None -> attributes | Some shared_name -> ("shared_name", String shared_name) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "FixedLengthRecordReader"
+  ; op_name = Op_name.of_string "FixedLengthRecordReader"
   ; output_type = Type.String
   ; inputs = [  ]
   ; attributes
@@ -1449,7 +1449,7 @@ let floor
   =
   let attributes = [ "T", Type (P x.output_type) ] in
   { name = Name.make_fresh ~name
-  ; op_name = "Floor"
+  ; op_name = Op_name.of_string "Floor"
   ; output_type = x.output_type
   ; inputs = [ P x ]
   ; attributes
@@ -1467,7 +1467,7 @@ let gather
     match validate_indices with | None -> attributes | Some validate_indices -> ("validate_indices", Bool validate_indices) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "Gather"
+  ; op_name = Op_name.of_string "Gather"
   ; output_type = params.output_type
   ; inputs = [ P params; P indices ]
   ; attributes
@@ -1481,7 +1481,7 @@ let greater
   =
   let attributes = [] in
   { name = Name.make_fresh ~name
-  ; op_name = "Greater"
+  ; op_name = Op_name.of_string "Greater"
   ; output_type = Type.Bool
   ; inputs = [ P x; P y ]
   ; attributes
@@ -1495,7 +1495,7 @@ let greaterEqual
   =
   let attributes = [] in
   { name = Name.make_fresh ~name
-  ; op_name = "GreaterEqual"
+  ; op_name = Op_name.of_string "GreaterEqual"
   ; output_type = Type.Bool
   ; inputs = [ P x; P y ]
   ; attributes
@@ -1508,7 +1508,7 @@ let hSVToRGB
   =
   let attributes = [] in
   { name = Name.make_fresh ~name
-  ; op_name = "HSVToRGB"
+  ; op_name = Op_name.of_string "HSVToRGB"
   ; output_type = Type.Float
   ; inputs = [ P images ]
   ; attributes
@@ -1529,7 +1529,7 @@ let hashTable
     match shared_name with | None -> attributes | Some shared_name -> ("shared_name", String shared_name) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "HashTable"
+  ; op_name = Op_name.of_string "HashTable"
   ; output_type = Type.String
   ; inputs = [  ]
   ; attributes
@@ -1543,7 +1543,7 @@ let histogramSummary
   =
   let attributes = [] in
   { name = Name.make_fresh ~name
-  ; op_name = "HistogramSummary"
+  ; op_name = Op_name.of_string "HistogramSummary"
   ; output_type = Type.String
   ; inputs = [ P tag; P values ]
   ; attributes
@@ -1556,7 +1556,7 @@ let iFFT2D
   =
   let attributes = [] in
   { name = Name.make_fresh ~name
-  ; op_name = "IFFT2D"
+  ; op_name = Op_name.of_string "IFFT2D"
   ; output_type = Type.Complex64
   ; inputs = [ P in__ ]
   ; attributes
@@ -1569,7 +1569,7 @@ let identity
   =
   let attributes = [ "T", Type (P input.output_type) ] in
   { name = Name.make_fresh ~name
-  ; op_name = "Identity"
+  ; op_name = Op_name.of_string "Identity"
   ; output_type = input.output_type
   ; inputs = [ P input ]
   ; attributes
@@ -1590,7 +1590,7 @@ let identityReader
     match shared_name with | None -> attributes | Some shared_name -> ("shared_name", String shared_name) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "IdentityReader"
+  ; op_name = Op_name.of_string "IdentityReader"
   ; output_type = Type.String
   ; inputs = [  ]
   ; attributes
@@ -1603,7 +1603,7 @@ let imag
   =
   let attributes = [] in
   { name = Name.make_fresh ~name
-  ; op_name = "Imag"
+  ; op_name = Op_name.of_string "Imag"
   ; output_type = Type.Float
   ; inputs = [ P in__ ]
   ; attributes
@@ -1621,7 +1621,7 @@ let imageSummary
     match max_images with | None -> attributes | Some max_images -> ("max_images", Int max_images) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "ImageSummary"
+  ; op_name = Op_name.of_string "ImageSummary"
   ; output_type = Type.String
   ; inputs = [ P tag; P tensor ]
   ; attributes
@@ -1639,7 +1639,7 @@ let inTopK
     ("k", Int k) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "InTopK"
+  ; op_name = Op_name.of_string "InTopK"
   ; output_type = Type.Bool
   ; inputs = [ P predictions; P targets ]
   ; attributes
@@ -1654,7 +1654,7 @@ let initializeTable
   =
   let attributes = [] in
   { name = Name.make_fresh ~name
-  ; op_name = "InitializeTable"
+  ; op_name = Op_name.of_string "InitializeTable"
   ; output_type = Type.Unit
   ; inputs = [ P table_handle; P keys; P values ]
   ; attributes
@@ -1667,7 +1667,7 @@ let inv
   =
   let attributes = [ "T", Type (P x.output_type) ] in
   { name = Name.make_fresh ~name
-  ; op_name = "Inv"
+  ; op_name = Op_name.of_string "Inv"
   ; output_type = x.output_type
   ; inputs = [ P x ]
   ; attributes
@@ -1680,7 +1680,7 @@ let invertPermutation
   =
   let attributes = [] in
   { name = Name.make_fresh ~name
-  ; op_name = "InvertPermutation"
+  ; op_name = Op_name.of_string "InvertPermutation"
   ; output_type = Type.Int32
   ; inputs = [ P x ]
   ; attributes
@@ -1693,7 +1693,7 @@ let isFinite
   =
   let attributes = [] in
   { name = Name.make_fresh ~name
-  ; op_name = "IsFinite"
+  ; op_name = Op_name.of_string "IsFinite"
   ; output_type = Type.Bool
   ; inputs = [ P x ]
   ; attributes
@@ -1706,7 +1706,7 @@ let isInf
   =
   let attributes = [] in
   { name = Name.make_fresh ~name
-  ; op_name = "IsInf"
+  ; op_name = Op_name.of_string "IsInf"
   ; output_type = Type.Bool
   ; inputs = [ P x ]
   ; attributes
@@ -1719,7 +1719,7 @@ let isNan
   =
   let attributes = [] in
   { name = Name.make_fresh ~name
-  ; op_name = "IsNan"
+  ; op_name = Op_name.of_string "IsNan"
   ; output_type = Type.Bool
   ; inputs = [ P x ]
   ; attributes
@@ -1732,7 +1732,7 @@ let l2Loss
   =
   let attributes = [ "T", Type (P t.output_type) ] in
   { name = Name.make_fresh ~name
-  ; op_name = "L2Loss"
+  ; op_name = Op_name.of_string "L2Loss"
   ; output_type = t.output_type
   ; inputs = [ P t ]
   ; attributes
@@ -1761,7 +1761,7 @@ let lRN
     match beta with | None -> attributes | Some beta -> ("beta", Float beta) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "LRN"
+  ; op_name = Op_name.of_string "LRN"
   ; output_type = Type.Float
   ; inputs = [ P input ]
   ; attributes
@@ -1792,7 +1792,7 @@ let lRNGrad
     match beta with | None -> attributes | Some beta -> ("beta", Float beta) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "LRNGrad"
+  ; op_name = Op_name.of_string "LRNGrad"
   ; output_type = Type.Float
   ; inputs = [ P input_grads; P input_image; P output_image ]
   ; attributes
@@ -1806,7 +1806,7 @@ let less
   =
   let attributes = [] in
   { name = Name.make_fresh ~name
-  ; op_name = "Less"
+  ; op_name = Op_name.of_string "Less"
   ; output_type = Type.Bool
   ; inputs = [ P x; P y ]
   ; attributes
@@ -1820,7 +1820,7 @@ let lessEqual
   =
   let attributes = [] in
   { name = Name.make_fresh ~name
-  ; op_name = "LessEqual"
+  ; op_name = Op_name.of_string "LessEqual"
   ; output_type = Type.Bool
   ; inputs = [ P x; P y ]
   ; attributes
@@ -1833,7 +1833,7 @@ let lgamma
   =
   let attributes = [ "T", Type (P x.output_type) ] in
   { name = Name.make_fresh ~name
-  ; op_name = "Lgamma"
+  ; op_name = Op_name.of_string "Lgamma"
   ; output_type = x.output_type
   ; inputs = [ P x ]
   ; attributes
@@ -1848,7 +1848,7 @@ let linSpace
   =
   let attributes = [ "T", Type (P start.output_type) ] in
   { name = Name.make_fresh ~name
-  ; op_name = "LinSpace"
+  ; op_name = Op_name.of_string "LinSpace"
   ; output_type = start.output_type
   ; inputs = [ P start; P stop; P num ]
   ; attributes
@@ -1861,7 +1861,7 @@ let log
   =
   let attributes = [ "T", Type (P x.output_type) ] in
   { name = Name.make_fresh ~name
-  ; op_name = "Log"
+  ; op_name = Op_name.of_string "Log"
   ; output_type = x.output_type
   ; inputs = [ P x ]
   ; attributes
@@ -1875,7 +1875,7 @@ let logicalAnd
   =
   let attributes = [] in
   { name = Name.make_fresh ~name
-  ; op_name = "LogicalAnd"
+  ; op_name = Op_name.of_string "LogicalAnd"
   ; output_type = Type.Bool
   ; inputs = [ P x; P y ]
   ; attributes
@@ -1888,7 +1888,7 @@ let logicalNot
   =
   let attributes = [] in
   { name = Name.make_fresh ~name
-  ; op_name = "LogicalNot"
+  ; op_name = Op_name.of_string "LogicalNot"
   ; output_type = Type.Bool
   ; inputs = [ P x ]
   ; attributes
@@ -1902,7 +1902,7 @@ let logicalOr
   =
   let attributes = [] in
   { name = Name.make_fresh ~name
-  ; op_name = "LogicalOr"
+  ; op_name = Op_name.of_string "LogicalOr"
   ; output_type = Type.Bool
   ; inputs = [ P x; P y ]
   ; attributes
@@ -1917,7 +1917,7 @@ let lookupTableFind
   =
   let attributes = [ "Tout", Type (P default_value.output_type) ] in
   { name = Name.make_fresh ~name
-  ; op_name = "LookupTableFind"
+  ; op_name = Op_name.of_string "LookupTableFind"
   ; output_type = default_value.output_type
   ; inputs = [ P table_handle; P keys; P default_value ]
   ; attributes
@@ -1930,7 +1930,7 @@ let lookupTableSize
   =
   let attributes = [] in
   { name = Name.make_fresh ~name
-  ; op_name = "LookupTableSize"
+  ; op_name = Op_name.of_string "LookupTableSize"
   ; output_type = Type.Int64
   ; inputs = [ P table_handle ]
   ; attributes
@@ -1943,7 +1943,7 @@ let loopCond
   =
   let attributes = [] in
   { name = Name.make_fresh ~name
-  ; op_name = "LoopCond"
+  ; op_name = Op_name.of_string "LoopCond"
   ; output_type = Type.Bool
   ; inputs = [ P input ]
   ; attributes
@@ -1965,7 +1965,7 @@ let matMul
     match transpose_b with | None -> attributes | Some transpose_b -> ("transpose_b", Bool transpose_b) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "MatMul"
+  ; op_name = Op_name.of_string "MatMul"
   ; output_type = a.output_type
   ; inputs = [ P a; P b ]
   ; attributes
@@ -1978,7 +1978,7 @@ let matchingFiles
   =
   let attributes = [] in
   { name = Name.make_fresh ~name
-  ; op_name = "MatchingFiles"
+  ; op_name = Op_name.of_string "MatchingFiles"
   ; output_type = Type.String
   ; inputs = [ P pattern ]
   ; attributes
@@ -1991,7 +1991,7 @@ let matrixDeterminant
   =
   let attributes = [ "T", Type (P input.output_type) ] in
   { name = Name.make_fresh ~name
-  ; op_name = "MatrixDeterminant"
+  ; op_name = Op_name.of_string "MatrixDeterminant"
   ; output_type = input.output_type
   ; inputs = [ P input ]
   ; attributes
@@ -2004,7 +2004,7 @@ let matrixInverse
   =
   let attributes = [ "T", Type (P input.output_type) ] in
   { name = Name.make_fresh ~name
-  ; op_name = "MatrixInverse"
+  ; op_name = Op_name.of_string "MatrixInverse"
   ; output_type = input.output_type
   ; inputs = [ P input ]
   ; attributes
@@ -2018,7 +2018,7 @@ let matrixSolve
   =
   let attributes = [ "T", Type (P matrix.output_type) ] in
   { name = Name.make_fresh ~name
-  ; op_name = "MatrixSolve"
+  ; op_name = Op_name.of_string "MatrixSolve"
   ; output_type = matrix.output_type
   ; inputs = [ P matrix; P rhs ]
   ; attributes
@@ -2037,7 +2037,7 @@ let matrixSolveLs
     match fast with | None -> attributes | Some fast -> ("fast", Bool fast) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "MatrixSolveLs"
+  ; op_name = Op_name.of_string "MatrixSolveLs"
   ; output_type = matrix.output_type
   ; inputs = [ P matrix; P rhs; P l2_regularizer ]
   ; attributes
@@ -2055,7 +2055,7 @@ let matrixTriangularSolve
     match lower with | None -> attributes | Some lower -> ("lower", Bool lower) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "MatrixTriangularSolve"
+  ; op_name = Op_name.of_string "MatrixTriangularSolve"
   ; output_type = matrix.output_type
   ; inputs = [ P matrix; P rhs ]
   ; attributes
@@ -2073,7 +2073,7 @@ let max
     match keep_dims with | None -> attributes | Some keep_dims -> ("keep_dims", Bool keep_dims) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "Max"
+  ; op_name = Op_name.of_string "Max"
   ; output_type = input.output_type
   ; inputs = [ P input; P reduction_indices ]
   ; attributes
@@ -2102,7 +2102,7 @@ let maxPool
     match data_format with | None -> attributes | Some data_format -> ("data_format", String data_format) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "MaxPool"
+  ; op_name = Op_name.of_string "MaxPool"
   ; output_type = Type.Float
   ; inputs = [ P input ]
   ; attributes
@@ -2133,7 +2133,7 @@ let maxPoolGrad
     match data_format with | None -> attributes | Some data_format -> ("data_format", String data_format) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "MaxPoolGrad"
+  ; op_name = Op_name.of_string "MaxPoolGrad"
   ; output_type = Type.Float
   ; inputs = [ P orig_input; P orig_output; P grad ]
   ; attributes
@@ -2160,7 +2160,7 @@ let maxPoolGradWithArgmax
     ("padding", String padding) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "MaxPoolGradWithArgmax"
+  ; op_name = Op_name.of_string "MaxPoolGradWithArgmax"
   ; output_type = Type.Float
   ; inputs = [ P input; P grad; P argmax ]
   ; attributes
@@ -2174,7 +2174,7 @@ let maximum
   =
   let attributes = [ "T", Type (P x.output_type) ] in
   { name = Name.make_fresh ~name
-  ; op_name = "Maximum"
+  ; op_name = Op_name.of_string "Maximum"
   ; output_type = x.output_type
   ; inputs = [ P x; P y ]
   ; attributes
@@ -2192,7 +2192,7 @@ let mean
     match keep_dims with | None -> attributes | Some keep_dims -> ("keep_dims", Bool keep_dims) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "Mean"
+  ; op_name = Op_name.of_string "Mean"
   ; output_type = input.output_type
   ; inputs = [ P input; P reduction_indices ]
   ; attributes
@@ -2209,7 +2209,7 @@ let mergeSummary
     ("N", Int n) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "MergeSummary"
+  ; op_name = Op_name.of_string "MergeSummary"
   ; output_type = Type.String
   ; inputs = [ P inputs ]
   ; attributes
@@ -2227,7 +2227,7 @@ let min
     match keep_dims with | None -> attributes | Some keep_dims -> ("keep_dims", Bool keep_dims) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "Min"
+  ; op_name = Op_name.of_string "Min"
   ; output_type = input.output_type
   ; inputs = [ P input; P reduction_indices ]
   ; attributes
@@ -2241,7 +2241,7 @@ let minimum
   =
   let attributes = [ "T", Type (P x.output_type) ] in
   { name = Name.make_fresh ~name
-  ; op_name = "Minimum"
+  ; op_name = Op_name.of_string "Minimum"
   ; output_type = x.output_type
   ; inputs = [ P x; P y ]
   ; attributes
@@ -2259,7 +2259,7 @@ let mirrorPad
     ("mode", String mode) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "MirrorPad"
+  ; op_name = Op_name.of_string "MirrorPad"
   ; output_type = input.output_type
   ; inputs = [ P input; P paddings ]
   ; attributes
@@ -2277,7 +2277,7 @@ let mirrorPadGrad
     ("mode", String mode) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "MirrorPadGrad"
+  ; op_name = Op_name.of_string "MirrorPadGrad"
   ; output_type = input.output_type
   ; inputs = [ P input; P paddings ]
   ; attributes
@@ -2291,7 +2291,7 @@ let mod_
   =
   let attributes = [ "T", Type (P x.output_type) ] in
   { name = Name.make_fresh ~name
-  ; op_name = "Mod"
+  ; op_name = Op_name.of_string "Mod"
   ; output_type = x.output_type
   ; inputs = [ P x; P y ]
   ; attributes
@@ -2305,7 +2305,7 @@ let mul
   =
   let attributes = [ "T", Type (P x.output_type) ] in
   { name = Name.make_fresh ~name
-  ; op_name = "Mul"
+  ; op_name = Op_name.of_string "Mul"
   ; output_type = x.output_type
   ; inputs = [ P x; P y ]
   ; attributes
@@ -2318,7 +2318,7 @@ let neg
   =
   let attributes = [ "T", Type (P x.output_type) ] in
   { name = Name.make_fresh ~name
-  ; op_name = "Neg"
+  ; op_name = Op_name.of_string "Neg"
   ; output_type = x.output_type
   ; inputs = [ P x ]
   ; attributes
@@ -2343,7 +2343,7 @@ let negTrain
     ("num_negative_samples", Int num_negative_samples) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "NegTrain"
+  ; op_name = Op_name.of_string "NegTrain"
   ; output_type = Type.Unit
   ; inputs = [ P w_in; P w_out; P examples; P labels; P lr ]
   ; attributes
@@ -2356,7 +2356,7 @@ let nextIteration
   =
   let attributes = [ "T", Type (P data.output_type) ] in
   { name = Name.make_fresh ~name
-  ; op_name = "NextIteration"
+  ; op_name = Op_name.of_string "NextIteration"
   ; output_type = data.output_type
   ; inputs = [ P data ]
   ; attributes
@@ -2369,7 +2369,7 @@ let noOp
   =
   let attributes = [] in
   { name = Name.make_fresh ~name
-  ; op_name = "NoOp"
+  ; op_name = Op_name.of_string "NoOp"
   ; output_type = Type.Unit
   ; inputs = [  ]
   ; attributes
@@ -2383,7 +2383,7 @@ let notEqual
   =
   let attributes = [] in
   { name = Name.make_fresh ~name
-  ; op_name = "NotEqual"
+  ; op_name = Op_name.of_string "NotEqual"
   ; output_type = Type.Bool
   ; inputs = [ P x; P y ]
   ; attributes
@@ -2403,7 +2403,7 @@ let oneHot
     match axis with | None -> attributes | Some axis -> ("axis", Int axis) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "OneHot"
+  ; op_name = Op_name.of_string "OneHot"
   ; output_type = on_value.output_type
   ; inputs = [ P indices; P depth; P on_value; P off_value ]
   ; attributes
@@ -2420,7 +2420,7 @@ let pack
     ("N", Int n) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "Pack"
+  ; op_name = Op_name.of_string "Pack"
   ; output_type = values.output_type
   ; inputs = [ P values ]
   ; attributes
@@ -2434,7 +2434,7 @@ let pad
   =
   let attributes = [ "T", Type (P input.output_type) ] in
   { name = Name.make_fresh ~name
-  ; op_name = "Pad"
+  ; op_name = Op_name.of_string "Pad"
   ; output_type = input.output_type
   ; inputs = [ P input; P paddings ]
   ; attributes
@@ -2467,7 +2467,7 @@ let paddingFIFOQueue
     match shared_name with | None -> attributes | Some shared_name -> ("shared_name", String shared_name) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "PaddingFIFOQueue"
+  ; op_name = Op_name.of_string "PaddingFIFOQueue"
   ; output_type = Type.String
   ; inputs = [  ]
   ; attributes
@@ -2485,7 +2485,7 @@ let placeholder
     match shape with | None -> attributes | Some shape -> ("shape", Shape shape) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "Placeholder"
+  ; op_name = Op_name.of_string "Placeholder"
   ; output_type = type_
   ; inputs = [  ]
   ; attributes
@@ -2499,7 +2499,7 @@ let pow
   =
   let attributes = [ "T", Type (P x.output_type) ] in
   { name = Name.make_fresh ~name
-  ; op_name = "Pow"
+  ; op_name = Op_name.of_string "Pow"
   ; output_type = x.output_type
   ; inputs = [ P x; P y ]
   ; attributes
@@ -2517,7 +2517,7 @@ let prod
     match keep_dims with | None -> attributes | Some keep_dims -> ("keep_dims", Bool keep_dims) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "Prod"
+  ; op_name = Op_name.of_string "Prod"
   ; output_type = input.output_type
   ; inputs = [ P input; P reduction_indices ]
   ; attributes
@@ -2534,7 +2534,7 @@ let queueClose
     match cancel_pending_enqueues with | None -> attributes | Some cancel_pending_enqueues -> ("cancel_pending_enqueues", Bool cancel_pending_enqueues) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "QueueClose"
+  ; op_name = Op_name.of_string "QueueClose"
   ; output_type = Type.Unit
   ; inputs = [ P handle ]
   ; attributes
@@ -2547,7 +2547,7 @@ let queueSize
   =
   let attributes = [] in
   { name = Name.make_fresh ~name
-  ; op_name = "QueueSize"
+  ; op_name = Op_name.of_string "QueueSize"
   ; output_type = Type.Int32
   ; inputs = [ P handle ]
   ; attributes
@@ -2560,7 +2560,7 @@ let rGBToHSV
   =
   let attributes = [] in
   { name = Name.make_fresh ~name
-  ; op_name = "RGBToHSV"
+  ; op_name = Op_name.of_string "RGBToHSV"
   ; output_type = Type.Float
   ; inputs = [ P images ]
   ; attributes
@@ -2582,7 +2582,7 @@ let randomCrop
     match seed2 with | None -> attributes | Some seed2 -> ("seed2", Int seed2) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "RandomCrop"
+  ; op_name = Op_name.of_string "RandomCrop"
   ; output_type = image.output_type
   ; inputs = [ P image; P size ]
   ; attributes
@@ -2603,7 +2603,7 @@ let randomShuffle
     match seed2 with | None -> attributes | Some seed2 -> ("seed2", Int seed2) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "RandomShuffle"
+  ; op_name = Op_name.of_string "RandomShuffle"
   ; output_type = value.output_type
   ; inputs = [ P value ]
   ; attributes
@@ -2648,7 +2648,7 @@ let randomShuffleQueue
     match shared_name with | None -> attributes | Some shared_name -> ("shared_name", String shared_name) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "RandomShuffleQueue"
+  ; op_name = Op_name.of_string "RandomShuffleQueue"
   ; output_type = Type.String
   ; inputs = [  ]
   ; attributes
@@ -2670,7 +2670,7 @@ let randomStandardNormal
     match seed2 with | None -> attributes | Some seed2 -> ("seed2", Int seed2) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "RandomStandardNormal"
+  ; op_name = Op_name.of_string "RandomStandardNormal"
   ; output_type = type_
   ; inputs = [ P shape ]
   ; attributes
@@ -2692,7 +2692,7 @@ let randomUniform
     match seed2 with | None -> attributes | Some seed2 -> ("seed2", Int seed2) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "RandomUniform"
+  ; op_name = Op_name.of_string "RandomUniform"
   ; output_type = type_
   ; inputs = [ P shape ]
   ; attributes
@@ -2715,7 +2715,7 @@ let randomUniformInt
     match seed2 with | None -> attributes | Some seed2 -> ("seed2", Int seed2) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "RandomUniformInt"
+  ; op_name = Op_name.of_string "RandomUniformInt"
   ; output_type = minval.output_type
   ; inputs = [ P shape; P minval; P maxval ]
   ; attributes
@@ -2730,7 +2730,7 @@ let range
   =
   let attributes = [] in
   { name = Name.make_fresh ~name
-  ; op_name = "Range"
+  ; op_name = Op_name.of_string "Range"
   ; output_type = Type.Int32
   ; inputs = [ P start; P limit; P delta ]
   ; attributes
@@ -2743,7 +2743,7 @@ let rank
   =
   let attributes = [] in
   { name = Name.make_fresh ~name
-  ; op_name = "Rank"
+  ; op_name = Op_name.of_string "Rank"
   ; output_type = Type.Int32
   ; inputs = [ P input ]
   ; attributes
@@ -2756,7 +2756,7 @@ let readFile
   =
   let attributes = [] in
   { name = Name.make_fresh ~name
-  ; op_name = "ReadFile"
+  ; op_name = Op_name.of_string "ReadFile"
   ; output_type = Type.String
   ; inputs = [ P filename ]
   ; attributes
@@ -2769,7 +2769,7 @@ let readerNumRecordsProduced
   =
   let attributes = [] in
   { name = Name.make_fresh ~name
-  ; op_name = "ReaderNumRecordsProduced"
+  ; op_name = Op_name.of_string "ReaderNumRecordsProduced"
   ; output_type = Type.Int64
   ; inputs = [ P reader_handle ]
   ; attributes
@@ -2782,7 +2782,7 @@ let readerNumWorkUnitsCompleted
   =
   let attributes = [] in
   { name = Name.make_fresh ~name
-  ; op_name = "ReaderNumWorkUnitsCompleted"
+  ; op_name = Op_name.of_string "ReaderNumWorkUnitsCompleted"
   ; output_type = Type.Int64
   ; inputs = [ P reader_handle ]
   ; attributes
@@ -2795,7 +2795,7 @@ let readerReset
   =
   let attributes = [] in
   { name = Name.make_fresh ~name
-  ; op_name = "ReaderReset"
+  ; op_name = Op_name.of_string "ReaderReset"
   ; output_type = Type.Unit
   ; inputs = [ P reader_handle ]
   ; attributes
@@ -2809,7 +2809,7 @@ let readerRestoreState
   =
   let attributes = [] in
   { name = Name.make_fresh ~name
-  ; op_name = "ReaderRestoreState"
+  ; op_name = Op_name.of_string "ReaderRestoreState"
   ; output_type = Type.Unit
   ; inputs = [ P reader_handle; P state ]
   ; attributes
@@ -2822,7 +2822,7 @@ let readerSerializeState
   =
   let attributes = [] in
   { name = Name.make_fresh ~name
-  ; op_name = "ReaderSerializeState"
+  ; op_name = Op_name.of_string "ReaderSerializeState"
   ; output_type = Type.String
   ; inputs = [ P reader_handle ]
   ; attributes
@@ -2835,7 +2835,7 @@ let real
   =
   let attributes = [] in
   { name = Name.make_fresh ~name
-  ; op_name = "Real"
+  ; op_name = Op_name.of_string "Real"
   ; output_type = Type.Float
   ; inputs = [ P in__ ]
   ; attributes
@@ -2860,7 +2860,7 @@ let refEnter
     match parallel_iterations with | None -> attributes | Some parallel_iterations -> ("parallel_iterations", Int parallel_iterations) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "RefEnter"
+  ; op_name = Op_name.of_string "RefEnter"
   ; output_type = data.output_type
   ; inputs = [ P data ]
   ; attributes
@@ -2873,7 +2873,7 @@ let refExit
   =
   let attributes = [ "T", Type (P data.output_type) ] in
   { name = Name.make_fresh ~name
-  ; op_name = "RefExit"
+  ; op_name = Op_name.of_string "RefExit"
   ; output_type = data.output_type
   ; inputs = [ P data ]
   ; attributes
@@ -2886,7 +2886,7 @@ let refIdentity
   =
   let attributes = [ "T", Type (P input.output_type) ] in
   { name = Name.make_fresh ~name
-  ; op_name = "RefIdentity"
+  ; op_name = Op_name.of_string "RefIdentity"
   ; output_type = input.output_type
   ; inputs = [ P input ]
   ; attributes
@@ -2899,7 +2899,7 @@ let refNextIteration
   =
   let attributes = [ "T", Type (P data.output_type) ] in
   { name = Name.make_fresh ~name
-  ; op_name = "RefNextIteration"
+  ; op_name = Op_name.of_string "RefNextIteration"
   ; output_type = data.output_type
   ; inputs = [ P data ]
   ; attributes
@@ -2917,7 +2917,7 @@ let refSelect
     ("N", Int n) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "RefSelect"
+  ; op_name = Op_name.of_string "RefSelect"
   ; output_type = inputs.output_type
   ; inputs = [ P index; P inputs ]
   ; attributes
@@ -2930,7 +2930,7 @@ let relu
   =
   let attributes = [ "T", Type (P features.output_type) ] in
   { name = Name.make_fresh ~name
-  ; op_name = "Relu"
+  ; op_name = Op_name.of_string "Relu"
   ; output_type = features.output_type
   ; inputs = [ P features ]
   ; attributes
@@ -2943,7 +2943,7 @@ let relu6
   =
   let attributes = [ "T", Type (P features.output_type) ] in
   { name = Name.make_fresh ~name
-  ; op_name = "Relu6"
+  ; op_name = Op_name.of_string "Relu6"
   ; output_type = features.output_type
   ; inputs = [ P features ]
   ; attributes
@@ -2957,7 +2957,7 @@ let relu6Grad
   =
   let attributes = [ "T", Type (P gradients.output_type) ] in
   { name = Name.make_fresh ~name
-  ; op_name = "Relu6Grad"
+  ; op_name = Op_name.of_string "Relu6Grad"
   ; output_type = gradients.output_type
   ; inputs = [ P gradients; P features ]
   ; attributes
@@ -2971,7 +2971,7 @@ let reluGrad
   =
   let attributes = [ "T", Type (P gradients.output_type) ] in
   { name = Name.make_fresh ~name
-  ; op_name = "ReluGrad"
+  ; op_name = Op_name.of_string "ReluGrad"
   ; output_type = gradients.output_type
   ; inputs = [ P gradients; P features ]
   ; attributes
@@ -2985,7 +2985,7 @@ let reshape
   =
   let attributes = [ "T", Type (P tensor.output_type) ] in
   { name = Name.make_fresh ~name
-  ; op_name = "Reshape"
+  ; op_name = Op_name.of_string "Reshape"
   ; output_type = tensor.output_type
   ; inputs = [ P tensor; P shape ]
   ; attributes
@@ -3003,7 +3003,7 @@ let resizeArea
     match align_corners with | None -> attributes | Some align_corners -> ("align_corners", Bool align_corners) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "ResizeArea"
+  ; op_name = Op_name.of_string "ResizeArea"
   ; output_type = Type.Float
   ; inputs = [ P images; P size ]
   ; attributes
@@ -3021,7 +3021,7 @@ let resizeBicubic
     match align_corners with | None -> attributes | Some align_corners -> ("align_corners", Bool align_corners) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "ResizeBicubic"
+  ; op_name = Op_name.of_string "ResizeBicubic"
   ; output_type = Type.Float
   ; inputs = [ P images; P size ]
   ; attributes
@@ -3039,7 +3039,7 @@ let resizeBilinear
     match align_corners with | None -> attributes | Some align_corners -> ("align_corners", Bool align_corners) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "ResizeBilinear"
+  ; op_name = Op_name.of_string "ResizeBilinear"
   ; output_type = Type.Float
   ; inputs = [ P images; P size ]
   ; attributes
@@ -3057,7 +3057,7 @@ let resizeBilinearGrad
     match align_corners with | None -> attributes | Some align_corners -> ("align_corners", Bool align_corners) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "ResizeBilinearGrad"
+  ; op_name = Op_name.of_string "ResizeBilinearGrad"
   ; output_type = original_image.output_type
   ; inputs = [ P grads; P original_image ]
   ; attributes
@@ -3075,7 +3075,7 @@ let resizeNearestNeighbor
     match align_corners with | None -> attributes | Some align_corners -> ("align_corners", Bool align_corners) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "ResizeNearestNeighbor"
+  ; op_name = Op_name.of_string "ResizeNearestNeighbor"
   ; output_type = images.output_type
   ; inputs = [ P images; P size ]
   ; attributes
@@ -3093,7 +3093,7 @@ let resizeNearestNeighborGrad
     match align_corners with | None -> attributes | Some align_corners -> ("align_corners", Bool align_corners) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "ResizeNearestNeighborGrad"
+  ; op_name = Op_name.of_string "ResizeNearestNeighborGrad"
   ; output_type = grads.output_type
   ; inputs = [ P grads; P size ]
   ; attributes
@@ -3112,7 +3112,7 @@ let restore
     match preferred_shard with | None -> attributes | Some preferred_shard -> ("preferred_shard", Int preferred_shard) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "Restore"
+  ; op_name = Op_name.of_string "Restore"
   ; output_type = type_
   ; inputs = [ P file_pattern; P tensor_name ]
   ; attributes
@@ -3132,7 +3132,7 @@ let restoreSlice
     match preferred_shard with | None -> attributes | Some preferred_shard -> ("preferred_shard", Int preferred_shard) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "RestoreSlice"
+  ; op_name = Op_name.of_string "RestoreSlice"
   ; output_type = type_
   ; inputs = [ P file_pattern; P tensor_name; P shape_and_slice ]
   ; attributes
@@ -3146,7 +3146,7 @@ let reverse
   =
   let attributes = [ "T", Type (P tensor.output_type) ] in
   { name = Name.make_fresh ~name
-  ; op_name = "Reverse"
+  ; op_name = Op_name.of_string "Reverse"
   ; output_type = tensor.output_type
   ; inputs = [ P tensor; P dims ]
   ; attributes
@@ -3168,7 +3168,7 @@ let reverseSequence
     match batch_dim with | None -> attributes | Some batch_dim -> ("batch_dim", Int batch_dim) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "ReverseSequence"
+  ; op_name = Op_name.of_string "ReverseSequence"
   ; output_type = input.output_type
   ; inputs = [ P input; P seq_lengths ]
   ; attributes
@@ -3181,7 +3181,7 @@ let rsqrt
   =
   let attributes = [ "T", Type (P x.output_type) ] in
   { name = Name.make_fresh ~name
-  ; op_name = "Rsqrt"
+  ; op_name = Op_name.of_string "Rsqrt"
   ; output_type = x.output_type
   ; inputs = [ P x ]
   ; attributes
@@ -3195,7 +3195,7 @@ let scalarSummary
   =
   let attributes = [] in
   { name = Name.make_fresh ~name
-  ; op_name = "ScalarSummary"
+  ; op_name = Op_name.of_string "ScalarSummary"
   ; output_type = Type.String
   ; inputs = [ P tags; P values ]
   ; attributes
@@ -3214,7 +3214,7 @@ let scatterAdd
     match use_locking with | None -> attributes | Some use_locking -> ("use_locking", Bool use_locking) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "ScatterAdd"
+  ; op_name = Op_name.of_string "ScatterAdd"
   ; output_type = ref.output_type
   ; inputs = [ P ref; P indices; P updates ]
   ; attributes
@@ -3233,7 +3233,7 @@ let scatterSub
     match use_locking with | None -> attributes | Some use_locking -> ("use_locking", Bool use_locking) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "ScatterSub"
+  ; op_name = Op_name.of_string "ScatterSub"
   ; output_type = ref.output_type
   ; inputs = [ P ref; P indices; P updates ]
   ; attributes
@@ -3252,7 +3252,7 @@ let scatterUpdate
     match use_locking with | None -> attributes | Some use_locking -> ("use_locking", Bool use_locking) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "ScatterUpdate"
+  ; op_name = Op_name.of_string "ScatterUpdate"
   ; output_type = ref.output_type
   ; inputs = [ P ref; P indices; P updates ]
   ; attributes
@@ -3266,7 +3266,7 @@ let segmentMax
   =
   let attributes = [ "T", Type (P data.output_type) ] in
   { name = Name.make_fresh ~name
-  ; op_name = "SegmentMax"
+  ; op_name = Op_name.of_string "SegmentMax"
   ; output_type = data.output_type
   ; inputs = [ P data; P segment_ids ]
   ; attributes
@@ -3280,7 +3280,7 @@ let segmentMean
   =
   let attributes = [ "T", Type (P data.output_type) ] in
   { name = Name.make_fresh ~name
-  ; op_name = "SegmentMean"
+  ; op_name = Op_name.of_string "SegmentMean"
   ; output_type = data.output_type
   ; inputs = [ P data; P segment_ids ]
   ; attributes
@@ -3294,7 +3294,7 @@ let segmentMin
   =
   let attributes = [ "T", Type (P data.output_type) ] in
   { name = Name.make_fresh ~name
-  ; op_name = "SegmentMin"
+  ; op_name = Op_name.of_string "SegmentMin"
   ; output_type = data.output_type
   ; inputs = [ P data; P segment_ids ]
   ; attributes
@@ -3308,7 +3308,7 @@ let segmentProd
   =
   let attributes = [ "T", Type (P data.output_type) ] in
   { name = Name.make_fresh ~name
-  ; op_name = "SegmentProd"
+  ; op_name = Op_name.of_string "SegmentProd"
   ; output_type = data.output_type
   ; inputs = [ P data; P segment_ids ]
   ; attributes
@@ -3322,7 +3322,7 @@ let segmentSum
   =
   let attributes = [ "T", Type (P data.output_type) ] in
   { name = Name.make_fresh ~name
-  ; op_name = "SegmentSum"
+  ; op_name = Op_name.of_string "SegmentSum"
   ; output_type = data.output_type
   ; inputs = [ P data; P segment_ids ]
   ; attributes
@@ -3337,7 +3337,7 @@ let select
   =
   let attributes = [ "T", Type (P t.output_type) ] in
   { name = Name.make_fresh ~name
-  ; op_name = "Select"
+  ; op_name = Op_name.of_string "Select"
   ; output_type = t.output_type
   ; inputs = [ P condition; P t; P e ]
   ; attributes
@@ -3350,7 +3350,7 @@ let selfAdjointEig
   =
   let attributes = [ "T", Type (P input.output_type) ] in
   { name = Name.make_fresh ~name
-  ; op_name = "SelfAdjointEig"
+  ; op_name = Op_name.of_string "SelfAdjointEig"
   ; output_type = input.output_type
   ; inputs = [ P input ]
   ; attributes
@@ -3365,7 +3365,7 @@ let serializeManySparse
   =
   let attributes = [] in
   { name = Name.make_fresh ~name
-  ; op_name = "SerializeManySparse"
+  ; op_name = Op_name.of_string "SerializeManySparse"
   ; output_type = Type.String
   ; inputs = [ P sparse_indices; P sparse_values; P sparse_shape ]
   ; attributes
@@ -3380,7 +3380,7 @@ let serializeSparse
   =
   let attributes = [] in
   { name = Name.make_fresh ~name
-  ; op_name = "SerializeSparse"
+  ; op_name = Op_name.of_string "SerializeSparse"
   ; output_type = Type.String
   ; inputs = [ P sparse_indices; P sparse_values; P sparse_shape ]
   ; attributes
@@ -3393,7 +3393,7 @@ let shape
   =
   let attributes = [] in
   { name = Name.make_fresh ~name
-  ; op_name = "Shape"
+  ; op_name = Op_name.of_string "Shape"
   ; output_type = Type.Int32
   ; inputs = [ P input ]
   ; attributes
@@ -3410,7 +3410,7 @@ let shapeN
     ("N", Int n) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "ShapeN"
+  ; op_name = Op_name.of_string "ShapeN"
   ; output_type = Type.Int32
   ; inputs = [ P input ]
   ; attributes
@@ -3425,7 +3425,7 @@ let shardedFilename
   =
   let attributes = [] in
   { name = Name.make_fresh ~name
-  ; op_name = "ShardedFilename"
+  ; op_name = Op_name.of_string "ShardedFilename"
   ; output_type = Type.String
   ; inputs = [ P basename; P shard; P num_shards ]
   ; attributes
@@ -3439,7 +3439,7 @@ let shardedFilespec
   =
   let attributes = [] in
   { name = Name.make_fresh ~name
-  ; op_name = "ShardedFilespec"
+  ; op_name = Op_name.of_string "ShardedFilespec"
   ; output_type = Type.String
   ; inputs = [ P basename; P num_shards ]
   ; attributes
@@ -3452,7 +3452,7 @@ let sigmoid
   =
   let attributes = [ "T", Type (P x.output_type) ] in
   { name = Name.make_fresh ~name
-  ; op_name = "Sigmoid"
+  ; op_name = Op_name.of_string "Sigmoid"
   ; output_type = x.output_type
   ; inputs = [ P x ]
   ; attributes
@@ -3465,7 +3465,7 @@ let sign
   =
   let attributes = [ "T", Type (P x.output_type) ] in
   { name = Name.make_fresh ~name
-  ; op_name = "Sign"
+  ; op_name = Op_name.of_string "Sign"
   ; output_type = x.output_type
   ; inputs = [ P x ]
   ; attributes
@@ -3478,7 +3478,7 @@ let sin
   =
   let attributes = [ "T", Type (P x.output_type) ] in
   { name = Name.make_fresh ~name
-  ; op_name = "Sin"
+  ; op_name = Op_name.of_string "Sin"
   ; output_type = x.output_type
   ; inputs = [ P x ]
   ; attributes
@@ -3491,7 +3491,7 @@ let size
   =
   let attributes = [] in
   { name = Name.make_fresh ~name
-  ; op_name = "Size"
+  ; op_name = Op_name.of_string "Size"
   ; output_type = Type.Int32
   ; inputs = [ P input ]
   ; attributes
@@ -3506,7 +3506,7 @@ let slice
   =
   let attributes = [ "T", Type (P input.output_type) ] in
   { name = Name.make_fresh ~name
-  ; op_name = "Slice"
+  ; op_name = Op_name.of_string "Slice"
   ; output_type = input.output_type
   ; inputs = [ P input; P begin__; P size ]
   ; attributes
@@ -3519,7 +3519,7 @@ let softmax
   =
   let attributes = [ "T", Type (P logits.output_type) ] in
   { name = Name.make_fresh ~name
-  ; op_name = "Softmax"
+  ; op_name = Op_name.of_string "Softmax"
   ; output_type = logits.output_type
   ; inputs = [ P logits ]
   ; attributes
@@ -3532,7 +3532,7 @@ let softplus
   =
   let attributes = [ "T", Type (P features.output_type) ] in
   { name = Name.make_fresh ~name
-  ; op_name = "Softplus"
+  ; op_name = Op_name.of_string "Softplus"
   ; output_type = features.output_type
   ; inputs = [ P features ]
   ; attributes
@@ -3546,7 +3546,7 @@ let softplusGrad
   =
   let attributes = [ "T", Type (P gradients.output_type) ] in
   { name = Name.make_fresh ~name
-  ; op_name = "SoftplusGrad"
+  ; op_name = Op_name.of_string "SoftplusGrad"
   ; output_type = gradients.output_type
   ; inputs = [ P gradients; P features ]
   ; attributes
@@ -3559,7 +3559,7 @@ let softsign
   =
   let attributes = [ "T", Type (P features.output_type) ] in
   { name = Name.make_fresh ~name
-  ; op_name = "Softsign"
+  ; op_name = Op_name.of_string "Softsign"
   ; output_type = features.output_type
   ; inputs = [ P features ]
   ; attributes
@@ -3573,7 +3573,7 @@ let softsignGrad
   =
   let attributes = [ "T", Type (P gradients.output_type) ] in
   { name = Name.make_fresh ~name
-  ; op_name = "SoftsignGrad"
+  ; op_name = Op_name.of_string "SoftsignGrad"
   ; output_type = gradients.output_type
   ; inputs = [ P gradients; P features ]
   ; attributes
@@ -3590,7 +3590,7 @@ let spaceToDepth
     ("block_size", Int block_size) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "SpaceToDepth"
+  ; op_name = Op_name.of_string "SpaceToDepth"
   ; output_type = input.output_type
   ; inputs = [ P input ]
   ; attributes
@@ -3611,7 +3611,7 @@ let sparseApplyAdagrad
     match use_locking with | None -> attributes | Some use_locking -> ("use_locking", Bool use_locking) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "SparseApplyAdagrad"
+  ; op_name = Op_name.of_string "SparseApplyAdagrad"
   ; output_type = var.output_type
   ; inputs = [ P var; P accum; P lr; P grad; P indices ]
   ; attributes
@@ -3636,7 +3636,7 @@ let sparseApplyFtrl
     match use_locking with | None -> attributes | Some use_locking -> ("use_locking", Bool use_locking) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "SparseApplyFtrl"
+  ; op_name = Op_name.of_string "SparseApplyFtrl"
   ; output_type = var.output_type
   ; inputs = [ P var; P accum; P linear; P grad; P indices; P lr; P l1; P l2; P lr_power ]
   ; attributes
@@ -3658,7 +3658,7 @@ let sparseApplyMomentum
     match use_locking with | None -> attributes | Some use_locking -> ("use_locking", Bool use_locking) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "SparseApplyMomentum"
+  ; op_name = Op_name.of_string "SparseApplyMomentum"
   ; output_type = var.output_type
   ; inputs = [ P var; P accum; P lr; P grad; P indices; P momentum ]
   ; attributes
@@ -3688,7 +3688,7 @@ let sparseMatMul
     match b_is_sparse with | None -> attributes | Some b_is_sparse -> ("b_is_sparse", Bool b_is_sparse) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "SparseMatMul"
+  ; op_name = Op_name.of_string "SparseMatMul"
   ; output_type = Type.Float
   ; inputs = [ P a; P b ]
   ; attributes
@@ -3703,7 +3703,7 @@ let sparseSegmentMean
   =
   let attributes = [ "T", Type (P data.output_type) ] in
   { name = Name.make_fresh ~name
-  ; op_name = "SparseSegmentMean"
+  ; op_name = Op_name.of_string "SparseSegmentMean"
   ; output_type = data.output_type
   ; inputs = [ P data; P indices; P segment_ids ]
   ; attributes
@@ -3719,7 +3719,7 @@ let sparseSegmentMeanGrad
   =
   let attributes = [ "T", Type (P grad.output_type) ] in
   { name = Name.make_fresh ~name
-  ; op_name = "SparseSegmentMeanGrad"
+  ; op_name = Op_name.of_string "SparseSegmentMeanGrad"
   ; output_type = grad.output_type
   ; inputs = [ P grad; P indices; P segment_ids; P output_dim0 ]
   ; attributes
@@ -3734,7 +3734,7 @@ let sparseSegmentSqrtN
   =
   let attributes = [ "T", Type (P data.output_type) ] in
   { name = Name.make_fresh ~name
-  ; op_name = "SparseSegmentSqrtN"
+  ; op_name = Op_name.of_string "SparseSegmentSqrtN"
   ; output_type = data.output_type
   ; inputs = [ P data; P indices; P segment_ids ]
   ; attributes
@@ -3750,7 +3750,7 @@ let sparseSegmentSqrtNGrad
   =
   let attributes = [ "T", Type (P grad.output_type) ] in
   { name = Name.make_fresh ~name
-  ; op_name = "SparseSegmentSqrtNGrad"
+  ; op_name = Op_name.of_string "SparseSegmentSqrtNGrad"
   ; output_type = grad.output_type
   ; inputs = [ P grad; P indices; P segment_ids; P output_dim0 ]
   ; attributes
@@ -3765,7 +3765,7 @@ let sparseSegmentSum
   =
   let attributes = [ "T", Type (P data.output_type) ] in
   { name = Name.make_fresh ~name
-  ; op_name = "SparseSegmentSum"
+  ; op_name = Op_name.of_string "SparseSegmentSum"
   ; output_type = data.output_type
   ; inputs = [ P data; P indices; P segment_ids ]
   ; attributes
@@ -3789,7 +3789,7 @@ let sparseTensorDenseMatMul
     match adjoint_b with | None -> attributes | Some adjoint_b -> ("adjoint_b", Bool adjoint_b) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "SparseTensorDenseMatMul"
+  ; op_name = Op_name.of_string "SparseTensorDenseMatMul"
   ; output_type = a_values.output_type
   ; inputs = [ P a_indices; P a_values; P a_shape; P b ]
   ; attributes
@@ -3809,7 +3809,7 @@ let sparseToDense
     match validate_indices with | None -> attributes | Some validate_indices -> ("validate_indices", Bool validate_indices) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "SparseToDense"
+  ; op_name = Op_name.of_string "SparseToDense"
   ; output_type = sparse_values.output_type
   ; inputs = [ P sparse_indices; P output_shape; P sparse_values; P default_value ]
   ; attributes
@@ -3827,7 +3827,7 @@ let split
     ("num_split", Int num_split) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "Split"
+  ; op_name = Op_name.of_string "Split"
   ; output_type = value.output_type
   ; inputs = [ P split_dim; P value ]
   ; attributes
@@ -3840,7 +3840,7 @@ let sqrt
   =
   let attributes = [ "T", Type (P x.output_type) ] in
   { name = Name.make_fresh ~name
-  ; op_name = "Sqrt"
+  ; op_name = Op_name.of_string "Sqrt"
   ; output_type = x.output_type
   ; inputs = [ P x ]
   ; attributes
@@ -3853,7 +3853,7 @@ let square
   =
   let attributes = [ "T", Type (P x.output_type) ] in
   { name = Name.make_fresh ~name
-  ; op_name = "Square"
+  ; op_name = Op_name.of_string "Square"
   ; output_type = x.output_type
   ; inputs = [ P x ]
   ; attributes
@@ -3867,7 +3867,7 @@ let squaredDifference
   =
   let attributes = [ "T", Type (P x.output_type) ] in
   { name = Name.make_fresh ~name
-  ; op_name = "SquaredDifference"
+  ; op_name = Op_name.of_string "SquaredDifference"
   ; output_type = x.output_type
   ; inputs = [ P x; P y ]
   ; attributes
@@ -3884,7 +3884,7 @@ let squeeze
     match squeeze_dims with | None -> attributes | Some squeeze_dims -> ("squeeze_dims", List (Int squeeze_dims)) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "Squeeze"
+  ; op_name = Op_name.of_string "Squeeze"
   ; output_type = input.output_type
   ; inputs = [ P input ]
   ; attributes
@@ -3901,7 +3901,7 @@ let stack
     match stack_name with | None -> attributes | Some stack_name -> ("stack_name", String stack_name) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "Stack"
+  ; op_name = Op_name.of_string "Stack"
   ; output_type = Type.String
   ; inputs = [  ]
   ; attributes
@@ -3914,7 +3914,7 @@ let stackClose
   =
   let attributes = [] in
   { name = Name.make_fresh ~name
-  ; op_name = "StackClose"
+  ; op_name = Op_name.of_string "StackClose"
   ; output_type = Type.Unit
   ; inputs = [ P handle ]
   ; attributes
@@ -3928,7 +3928,7 @@ let stackPop
   =
   let attributes = [ "elem_type", Type (P type_) ] in
   { name = Name.make_fresh ~name
-  ; op_name = "StackPop"
+  ; op_name = Op_name.of_string "StackPop"
   ; output_type = type_
   ; inputs = [ P handle ]
   ; attributes
@@ -3946,7 +3946,7 @@ let stackPush
     match swap_memory with | None -> attributes | Some swap_memory -> ("swap_memory", Bool swap_memory) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "StackPush"
+  ; op_name = Op_name.of_string "StackPush"
   ; output_type = elem.output_type
   ; inputs = [ P handle; P elem ]
   ; attributes
@@ -3959,7 +3959,7 @@ let stopGradient
   =
   let attributes = [ "T", Type (P input.output_type) ] in
   { name = Name.make_fresh ~name
-  ; op_name = "StopGradient"
+  ; op_name = Op_name.of_string "StopGradient"
   ; output_type = input.output_type
   ; inputs = [ P input ]
   ; attributes
@@ -3976,7 +3976,7 @@ let stringToHashBucket
     ("num_buckets", Int num_buckets) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "StringToHashBucket"
+  ; op_name = Op_name.of_string "StringToHashBucket"
   ; output_type = Type.Int64
   ; inputs = [ P string_tensor ]
   ; attributes
@@ -3990,7 +3990,7 @@ let stringToNumber
   =
   let attributes = [ "out_type", Type (P type_) ] in
   { name = Name.make_fresh ~name
-  ; op_name = "StringToNumber"
+  ; op_name = Op_name.of_string "StringToNumber"
   ; output_type = type_
   ; inputs = [ P string_tensor ]
   ; attributes
@@ -4004,7 +4004,7 @@ let sub
   =
   let attributes = [ "T", Type (P x.output_type) ] in
   { name = Name.make_fresh ~name
-  ; op_name = "Sub"
+  ; op_name = Op_name.of_string "Sub"
   ; output_type = x.output_type
   ; inputs = [ P x; P y ]
   ; attributes
@@ -4022,7 +4022,7 @@ let sum
     match keep_dims with | None -> attributes | Some keep_dims -> ("keep_dims", Bool keep_dims) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "Sum"
+  ; op_name = Op_name.of_string "Sum"
   ; output_type = input.output_type
   ; inputs = [ P input; P reduction_indices ]
   ; attributes
@@ -4043,7 +4043,7 @@ let tFRecordReader
     match shared_name with | None -> attributes | Some shared_name -> ("shared_name", String shared_name) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "TFRecordReader"
+  ; op_name = Op_name.of_string "TFRecordReader"
   ; output_type = Type.String
   ; inputs = [  ]
   ; attributes
@@ -4056,7 +4056,7 @@ let tanh
   =
   let attributes = [ "T", Type (P x.output_type) ] in
   { name = Name.make_fresh ~name
-  ; op_name = "Tanh"
+  ; op_name = Op_name.of_string "Tanh"
   ; output_type = x.output_type
   ; inputs = [ P x ]
   ; attributes
@@ -4078,7 +4078,7 @@ let temporaryVariable
     match var_name with | None -> attributes | Some var_name -> ("var_name", String var_name) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "TemporaryVariable"
+  ; op_name = Op_name.of_string "TemporaryVariable"
   ; output_type = type_
   ; inputs = [  ]
   ; attributes
@@ -4099,7 +4099,7 @@ let tensorArray
     match tensor_array_name with | None -> attributes | Some tensor_array_name -> ("tensor_array_name", String tensor_array_name) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "TensorArray"
+  ; op_name = Op_name.of_string "TensorArray"
   ; output_type = Type.String
   ; inputs = [ P size ]
   ; attributes
@@ -4112,7 +4112,7 @@ let tensorArrayClose
   =
   let attributes = [] in
   { name = Name.make_fresh ~name
-  ; op_name = "TensorArrayClose"
+  ; op_name = Op_name.of_string "TensorArrayClose"
   ; output_type = Type.Unit
   ; inputs = [ P handle ]
   ; attributes
@@ -4130,7 +4130,7 @@ let tensorArrayGrad
     ("source", String source) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "TensorArrayGrad"
+  ; op_name = Op_name.of_string "TensorArrayGrad"
   ; output_type = Type.String
   ; inputs = [ P handle; P flow_in ]
   ; attributes
@@ -4145,7 +4145,7 @@ let tensorArrayPack
   =
   let attributes = [ "dtype", Type (P type_) ] in
   { name = Name.make_fresh ~name
-  ; op_name = "TensorArrayPack"
+  ; op_name = Op_name.of_string "TensorArrayPack"
   ; output_type = type_
   ; inputs = [ P handle; P flow_in ]
   ; attributes
@@ -4161,7 +4161,7 @@ let tensorArrayRead
   =
   let attributes = [ "dtype", Type (P type_) ] in
   { name = Name.make_fresh ~name
-  ; op_name = "TensorArrayRead"
+  ; op_name = Op_name.of_string "TensorArrayRead"
   ; output_type = type_
   ; inputs = [ P handle; P index; P flow_in ]
   ; attributes
@@ -4175,7 +4175,7 @@ let tensorArraySize
   =
   let attributes = [] in
   { name = Name.make_fresh ~name
-  ; op_name = "TensorArraySize"
+  ; op_name = Op_name.of_string "TensorArraySize"
   ; output_type = Type.Int32
   ; inputs = [ P handle; P flow_in ]
   ; attributes
@@ -4191,7 +4191,7 @@ let tensorArraySplit
   =
   let attributes = [] in
   { name = Name.make_fresh ~name
-  ; op_name = "TensorArraySplit"
+  ; op_name = Op_name.of_string "TensorArraySplit"
   ; output_type = Type.Float
   ; inputs = [ P handle; P value; P lengths; P flow_in ]
   ; attributes
@@ -4206,7 +4206,7 @@ let tensorArrayUnpack
   =
   let attributes = [] in
   { name = Name.make_fresh ~name
-  ; op_name = "TensorArrayUnpack"
+  ; op_name = Op_name.of_string "TensorArrayUnpack"
   ; output_type = Type.Float
   ; inputs = [ P handle; P value; P flow_in ]
   ; attributes
@@ -4222,7 +4222,7 @@ let tensorArrayWrite
   =
   let attributes = [] in
   { name = Name.make_fresh ~name
-  ; op_name = "TensorArrayWrite"
+  ; op_name = Op_name.of_string "TensorArrayWrite"
   ; output_type = Type.Float
   ; inputs = [ P handle; P index; P value; P flow_in ]
   ; attributes
@@ -4247,7 +4247,7 @@ let textLineReader
     match shared_name with | None -> attributes | Some shared_name -> ("shared_name", String shared_name) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "TextLineReader"
+  ; op_name = Op_name.of_string "TextLineReader"
   ; output_type = Type.String
   ; inputs = [  ]
   ; attributes
@@ -4261,7 +4261,7 @@ let tile
   =
   let attributes = [ "T", Type (P input.output_type) ] in
   { name = Name.make_fresh ~name
-  ; op_name = "Tile"
+  ; op_name = Op_name.of_string "Tile"
   ; output_type = input.output_type
   ; inputs = [ P input; P multiples ]
   ; attributes
@@ -4275,7 +4275,7 @@ let tileGrad
   =
   let attributes = [ "T", Type (P input.output_type) ] in
   { name = Name.make_fresh ~name
-  ; op_name = "TileGrad"
+  ; op_name = Op_name.of_string "TileGrad"
   ; output_type = input.output_type
   ; inputs = [ P input; P multiples ]
   ; attributes
@@ -4289,7 +4289,7 @@ let transpose
   =
   let attributes = [ "T", Type (P x.output_type) ] in
   { name = Name.make_fresh ~name
-  ; op_name = "Transpose"
+  ; op_name = Op_name.of_string "Transpose"
   ; output_type = x.output_type
   ; inputs = [ P x; P perm ]
   ; attributes
@@ -4311,7 +4311,7 @@ let truncatedNormal
     match seed2 with | None -> attributes | Some seed2 -> ("seed2", Int seed2) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "TruncatedNormal"
+  ; op_name = Op_name.of_string "TruncatedNormal"
   ; output_type = type_
   ; inputs = [ P shape ]
   ; attributes
@@ -4328,7 +4328,7 @@ let unpack
     ("num", Int num) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "Unpack"
+  ; op_name = Op_name.of_string "Unpack"
   ; output_type = value.output_type
   ; inputs = [ P value ]
   ; attributes
@@ -4343,7 +4343,7 @@ let unsortedSegmentSum
   =
   let attributes = [ "T", Type (P data.output_type) ] in
   { name = Name.make_fresh ~name
-  ; op_name = "UnsortedSegmentSum"
+  ; op_name = Op_name.of_string "UnsortedSegmentSum"
   ; output_type = data.output_type
   ; inputs = [ P data; P segment_ids; P num_segments ]
   ; attributes
@@ -4369,7 +4369,7 @@ let variable
     match shared_name with | None -> attributes | Some shared_name -> ("shared_name", String shared_name) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "Variable"
+  ; op_name = Op_name.of_string "Variable"
   ; output_type = type_
   ; inputs = [  ]
   ; attributes
@@ -4382,7 +4382,7 @@ let where
   =
   let attributes = [] in
   { name = Name.make_fresh ~name
-  ; op_name = "Where"
+  ; op_name = Op_name.of_string "Where"
   ; output_type = Type.Int64
   ; inputs = [ P input ]
   ; attributes
@@ -4403,7 +4403,7 @@ let wholeFileReader
     match shared_name with | None -> attributes | Some shared_name -> ("shared_name", String shared_name) :: attributes
   in
   { name = Name.make_fresh ~name
-  ; op_name = "WholeFileReader"
+  ; op_name = Op_name.of_string "WholeFileReader"
   ; output_type = Type.String
   ; inputs = [  ]
   ; attributes
@@ -4416,7 +4416,7 @@ let zerosLike
   =
   let attributes = [ "T", Type (P x.output_type) ] in
   { name = Name.make_fresh ~name
-  ; op_name = "ZerosLike"
+  ; op_name = Op_name.of_string "ZerosLike"
   ; output_type = x.output_type
   ; inputs = [ P x ]
   ; attributes

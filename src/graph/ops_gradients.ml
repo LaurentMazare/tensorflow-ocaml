@@ -12,6 +12,6 @@ let sub_gradient ~self:_ ~gradient =
   all [ gradient; minus_gradient ]
 
 let register_all () =
-  Gradients.register_gradient "Add" { f = add_gradient };
-  Gradients.register_gradient "Sub" { f = sub_gradient }
+  Gradients.register_gradient (Node.Op_name.of_string "Add") { f = add_gradient };
+  Gradients.register_gradient (Node.Op_name.of_string "Sub") { f = sub_gradient }
 

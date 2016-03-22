@@ -1,8 +1,8 @@
 open Core.Std
 
-exception No_derivative_for_op of string
+exception No_derivative_for_op of Node.Op_name.t
 
-let registered_gradients = String.Table.create ()
+let registered_gradients = Node.Op_name.Table.create ()
 
 type t =
   { f : 'a .
@@ -17,7 +17,7 @@ let register_gradient op t =
     | Node.Type.Double, Node.Type.Double -> t.f ~self ~gradient
     | Node.Type.Float, Node.Type.Float -> t.f ~self ~gradient
     | _, _ ->
-      failwithf "Inconsistent types %s" op ()
+      failwithf "Inconsistent types %s" (Node.Op_name.to_string op) ()
   in
   Hashtbl.set registered_gradients ~key:op ~data:f
 
@@ -59,7 +59,7 @@ let aggregate_contributions = function
     in
     Node.P
       { name = Node.Name.make_fresh ~name:"gradient/addN"
-      ; op_name = "addN"
+      ; op_name = Node.Op_name.of_string "addN"
       ; output_type
       ; inputs
       ; attributes

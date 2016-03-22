@@ -302,7 +302,7 @@ let gen_ml ops =
       p "  in";
     );
     p "  { name = Name.make_fresh ~name";
-    p "  ; op_name = \"%s\"" op.name;
+    p "  ; op_name = Op_name.of_string \"%s\"" op.name;
     p "  ; output_type = %s" output_type_string;
     let inputs =
       List.mapi op.inputs ~f:(fun idx input ->
