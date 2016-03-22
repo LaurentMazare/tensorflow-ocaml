@@ -4,13 +4,13 @@ exception No_derivative_for_op of string
 
 let registered_gradients = String.Table.create ()
 
-let add op (f : self:Node.p -> gradient:Node.p -> Node.p) =
+let register_gradient op (f : self:Node.p -> gradient:Node.p -> Node.p) =
   Hashtbl.set registered_gradients ~key:op ~data:f
 
 (* Return a table mapping 'useful node' names to the number of times they
    appear as input of other useful nodes.
 *)
-let uses_per_node node args =
+let uses_per_node node with_respect_to =
   let uses_per_node = Node.Name.Table.create () in
   let rec is_useful node =
     let node_name = Node.packed_name node in
@@ -21,7 +21,7 @@ let uses_per_node node args =
       Node.packed_is_real node
       &&
         (  Option.is_some current_uses
-        || Set.mem args node_name
+        || Set.mem with_respect_to node_name
         || List.exists (Node.packed_inputs node) ~f:is_useful)
     in
     if is_useful
@@ -53,11 +53,13 @@ let aggregate_contributions = function
       }
 
 (* Compute the gradients of [node] with respect to [arg] using backpropagation. *)
-let gradient node args =
-  let args = List.map args ~f:Node.packed_name |> Node.Name.Set.of_list in
-  let uses_per_node = uses_per_node (P node) args in
+let gradient node ~with_respect_to =
+  let with_respect_to =
+    List.map with_respect_to ~f:Node.packed_name |> Node.Name.Set.of_list
+  in
+  let uses_per_node = uses_per_node (P node) with_respect_to in
   let contributions = Node.Name.Table.create () in
-  let args_gradients = Node.Name.Table.create () in
+  let output_gradients = Node.Name.Table.create () in
   let rec add_contribution node ~gradient =
     let node_name = Node.packed_name node in
     match Hashtbl.find uses_per_node node_name with
@@ -72,8 +74,8 @@ let gradient node args =
         let gradient =
           Hashtbl.find_exn contributions node_name |> aggregate_contributions
         in
-        if Set.mem args node_name
-        then Hashtbl.add_exn args_gradients ~key:node_name ~data:gradient
+        if Set.mem with_respect_to node_name
+        then Hashtbl.add_exn output_gradients ~key:node_name ~data:gradient
         else
           let op_name = Node.packed_op_name node in
           match Hashtbl.find registered_gradients op_name with
@@ -90,4 +92,4 @@ let gradient node args =
       [ 1. ]
   in
   add_contribution (P node) ~gradient:(Node.P scalar_one);
-  args_gradients
+  output_gradients
