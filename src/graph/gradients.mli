@@ -1,6 +1,6 @@
 val register_gradient
   :  string
-  -> (self:Node.p -> gradient:Node.p -> Node.p)
+  -> (self:Node.p -> gradient:Node.p -> Node.p option list)
   -> unit
 
 val gradient

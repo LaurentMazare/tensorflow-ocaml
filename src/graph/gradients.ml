@@ -4,7 +4,7 @@ exception No_derivative_for_op of string
 
 let registered_gradients = String.Table.create ()
 
-let register_gradient op (f : self:Node.p -> gradient:Node.p -> Node.p) =
+let register_gradient op (f : self:Node.p -> gradient:Node.p -> Node.p option list) =
   Hashtbl.set registered_gradients ~key:op ~data:f
 
 (* Return a table mapping 'useful node' names to the number of times they
@@ -81,8 +81,12 @@ let gradient node ~with_respect_to =
           match Hashtbl.find registered_gradients op_name with
           | None -> raise (No_derivative_for_op op_name)
           | Some fn ->
-            let gradient = fn ~self:node ~gradient in
-            List.iter (Node.packed_inputs node) ~f:(add_contribution ~gradient)
+            List.iter2_exn
+              (fn ~self:node ~gradient)
+              (Node.packed_inputs node)
+              ~f:(fun gradient input ->
+                Option.iter gradient ~f:(fun gradient ->
+                  add_contribution input ~gradient))
       end
   in 
   let scalar_one =
