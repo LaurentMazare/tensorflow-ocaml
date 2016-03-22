@@ -4,7 +4,21 @@ exception No_derivative_for_op of string
 
 let registered_gradients = String.Table.create ()
 
-let register_gradient op (f : self:Node.p -> gradient:Node.p -> Node.p option list) =
+type t =
+  { f : 'a .
+          (  self:([< `float | `double] as 'a) Node.t
+          -> gradient:'a Node.t
+          -> Node.p option list)
+  }
+
+let register_gradient op t =
+  let f ~self:(Node.P self) ~gradient:(Node.P gradient) =
+    match self.output_type, gradient.output_type with
+    | Node.Type.Double, Node.Type.Double -> t.f ~self ~gradient
+    | Node.Type.Float, Node.Type.Float -> t.f ~self ~gradient
+    | _, _ ->
+      failwithf "Inconsistent types %s" op ()
+  in
   Hashtbl.set registered_gradients ~key:op ~data:f
 
 (* Return a table mapping 'useful node' names to the number of times they

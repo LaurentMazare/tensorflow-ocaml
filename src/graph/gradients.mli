@@ -1,6 +1,14 @@
+
+type t =
+  { f : 'a .
+          (  self:([< `float | `double] as 'a) Node.t
+          -> gradient:'a Node.t
+          -> Node.p option list)
+  }
+
 val register_gradient
   :  string
-  -> (self:Node.p -> gradient:Node.p -> Node.p option list)
+  -> t
   -> unit
 
 val gradient
