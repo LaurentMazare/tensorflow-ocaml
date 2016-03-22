@@ -23,6 +23,8 @@ let register_gradient op t =
 
 (* Return a table mapping 'useful node' names to the number of times they
    appear as input of other useful nodes.
+   Nodes are useful in they are on a path between [node] and [with_respect_to]
+   that contains only float/double nodes.
 *)
 let uses_per_node node with_respect_to =
   let uses_per_node = Node.Name.Table.create () in
@@ -66,7 +68,8 @@ let aggregate_contributions = function
       ; output_name = None
       }
 
-(* Compute the gradients of [node] with respect to [arg] using backpropagation. *)
+(* Compute the gradients of [node] with respect to [arg] using backpropagation.
+   This only works when [node] is a scalar. *)
 let gradient node ~with_respect_to =
   let with_respect_to =
     List.map with_respect_to ~f:Node.packed_name |> Node.Name.Set.of_list
