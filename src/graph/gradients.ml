@@ -130,8 +130,11 @@ let gradient node ~with_respect_to_float ~with_respect_to_double =
   in
   let lookup ~type_ =
     List.map ~f:(fun node ->
-      (* CR lmazare: default to 0 ? *)
-      Hashtbl.find_exn table node.Node.name |> cast ~type_)
+      match Hashtbl.find table node.Node.name with
+      | Some gradient -> cast gradient ~type_
+      | None -> (* The node hasn't been reached from the root. *)
+        Ops.zerosLike node
+    )
   in
   lookup with_respect_to_float ~type_:Node.Type.Float,
   lookup with_respect_to_double ~type_:Node.Type.Double
