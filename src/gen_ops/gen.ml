@@ -127,6 +127,8 @@ module Op = struct
     ; output_type : Type.t
     ; output_type_name : string option
     ; attributes : Attribute.t list
+    ; summary : string option
+    ; description : string option
     }
 
   let read_type types (arg : Op_def_piqi.op_def_arg_def) =
@@ -205,6 +207,8 @@ module Op = struct
         ; output_type
         ; output_type_name
         ; attributes = List.filter_map op.attr ~f:get_attr
+        ; summary = op.summary
+        ; description = op.description
         }
     with
     | Not_supported str ->
@@ -248,6 +252,8 @@ let gen_mli ops =
   in
   let handle_one_op (op : Op.t) =
     let needs_variable_for_output_type = needs_variable_for_output_type op in
+    Option.iter op.summary ~f:(fun summary -> p "(* %s *)" summary);
+    Option.iter op.description ~f:(fun description -> p "(* %s *)" description);
     p "val %s" (Op.caml_name op);
     p "  :  ?name:string";
     if needs_variable_for_output_type
