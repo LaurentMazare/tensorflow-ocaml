@@ -19,7 +19,9 @@ let () =
   let placeholder = Ops.placeholder ~name:"x" ~type_:Float () in
   let node =
     Ops.sub
-      (Ops_m.const_float ~type_:Float [ 2.; 1.; 4. ])
+      (Ops.sub
+        (Ops_m.const_float ~type_:Float [ 2.; 1.; 4. ])
+        placeholder)
       placeholder
   in
   let gradient =

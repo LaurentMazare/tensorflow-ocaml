@@ -36,9 +36,8 @@ let uses_per_node node with_respect_to =
     let is_useful =
       Node.packed_is_real node
       &&
-        (  Option.is_some current_uses
-        || Set.mem with_respect_to node_name
-        || List.exists (Node.packed_inputs node) ~f:is_useful)
+        (  Set.mem with_respect_to node_name
+        || List.map (Node.packed_inputs node) ~f:is_useful |> List.exists ~f:Fn.id)
     in
     if is_useful
     then
@@ -61,7 +60,7 @@ let aggregate_contributions = function
     in
     Node.P
       { name = Node.Name.make_fresh ~name:"gradient/addN"
-      ; op_name = Node.Op_name.of_string "addN"
+      ; op_name = Node.Op_name.of_string "AddN"
       ; output_type
       ; inputs
       ; attributes
