@@ -106,10 +106,9 @@ let gradient node ~with_respect_to =
       end
   in 
   let scalar_one =
-    Ops_m.const_float
+    Ops_m.scalar
       ~type_:node.output_type
-      ~shape:[ 1 ]
-      [ 1. ]
+      1.
   in
   add_contribution (P node) ~gradient:(Node.P scalar_one);
   output_gradients

@@ -42,3 +42,9 @@ let const_int
     ]
   ; output_name = None
   }
+
+let scalar ~type_ f =
+  const_float
+    ~type_
+    ~shape:[ 1 ]
+    [ f ]

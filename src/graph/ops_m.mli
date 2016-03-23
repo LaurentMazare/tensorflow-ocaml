@@ -11,3 +11,8 @@ val const_int
   -> type_:([< `int32 | `int64 ] as 'dtype) Node.Type.t
   -> int list
   -> 'dtype Node.t
+
+val scalar
+  :  type_:([< `float | `double ] as 'dtype) Node.Type.t
+  -> float
+  -> 'dtype Node.t
