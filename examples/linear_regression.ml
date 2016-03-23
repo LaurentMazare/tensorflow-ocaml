@@ -19,19 +19,11 @@ let () =
   done;
   let x = Ops.placeholder ~name:"x" ~type_:Float () in
   let y = Ops.placeholder ~name:"y" ~type_:Float () in
-  let w =
-    Ops.variable ()
-      ~type_:Float
-      ~shape:[ { size = m; name = None }; { size = n; name = None } ]
-  in
-  let b =
-    Ops.variable ()
-      ~type_:Float
-      ~shape:[ { size = n; name = None } ]
-  in
+  let w = Ops_m.varf [ m; n ] in
+  let b = Ops_m.varf [ n ] in
   let w_assign = Ops.assign w (H.const_float [ m; n ] 0.) in
   let b_assign = Ops.assign b (H.const_float [ n ] 0.) in
-  let diff = Ops.matMul x w |> Ops.add b |> Ops.sub y in
+  let diff = Ops_m.(x *^ w + b - y) in
   let err = Ops.matMul diff diff ~transpose_b:true in
   let gradient_w, gradient_b =
     Gradients.gradient err
@@ -41,7 +33,7 @@ let () =
     | [ gradient_w; gradient_b ], [] -> gradient_w, gradient_b
     | _ -> assert false
   in
-  let alpha = Ops_m.scalar ~type_:Float 0.4 in
+  let alpha = Ops_m.f 0.4 in
   let gd_w = Ops.applyGradientDescent w alpha gradient_w in
   let gd_b = Ops.applyGradientDescent b alpha gradient_b in
   let session =

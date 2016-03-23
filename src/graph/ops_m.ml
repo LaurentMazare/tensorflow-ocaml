@@ -61,3 +61,13 @@ let d x = const_float ~type_:Double ~shape:[] [ x ]
 
 let fl x = const_float ~type_:Float ~shape:[ List.length x ] x
 let dl x = const_float ~type_:Double ~shape:[ List.length x ] x
+
+let varf shape =
+  Ops.variable ()
+    ~type_:Float
+    ~shape:(List.map shape ~f:(fun size -> { Node.Dim.size; name = None }))
+
+let vard shape =
+  Ops.variable ()
+    ~type_:Double
+    ~shape:(List.map shape ~f:(fun size -> { Node.Dim.size; name = None }))
