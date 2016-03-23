@@ -30,6 +30,8 @@ module Tensor : sig
 
   val create1d : 'a Ctypes.typ -> int -> t
 
+  val create2d : 'a Ctypes.typ -> int -> int -> t
+
   val num_dims : t -> int
 
   val dim : t -> int -> int

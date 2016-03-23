@@ -149,6 +149,30 @@ module Tensor = struct
     Hashtbl.add live_tensors id t;
     add_finaliser t
 
+  let create2d typ xelts yelts =
+    let elt_size = sizeof typ in
+    let size = xelts * yelts * elt_size in
+    let data = CArray.make char size in
+    let id = fresh_id () in
+    let tensor =
+      tf_newtensor 1 (* 1 = float *)
+        (CArray.of_list int64_t [ Int64.of_int xelts; Int64.of_int yelts ] |> CArray.start)
+        2
+        (CArray.start data |> to_voidp)
+        (Unsigned.Size_t.of_int size)
+        deallocate
+        (Nativeint.of_int id |> ptr_of_raw_address)
+    in
+    let t =
+      { tensor
+      ; handled_by_ocaml = true
+      ; id
+      ; data = Some data
+      }
+    in
+    Hashtbl.add live_tensors id t;
+    add_finaliser t
+
   let of_c_tensor tensor =
     let id = fresh_id () in
     add_finaliser
