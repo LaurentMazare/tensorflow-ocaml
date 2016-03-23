@@ -1,7 +1,9 @@
-- number_attr
-- type safe version of wrapper.ml
-- extend graph 
-- carray -> bigarray
+- Handle number_attr in the code generator
+- Fix the code generator for shape
+- Proper wrapper around wrapper.ml
+  - Type safe
+  - Multiple calls to extend graph
+  - Use bigarray rather than carray
 - Safer impls for ops:
    * variable initialisation
 - Gradient Descent
