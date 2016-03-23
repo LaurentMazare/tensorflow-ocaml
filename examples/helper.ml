@@ -19,11 +19,25 @@ let const_float shape f =
 
 let print_one_tensor (name, tensor) =
   Printf.printf "%s:\n%!" name;
-  let dim = Tensor.dim tensor 0 in
-  let data = Tensor.data tensor Ctypes.float dim in
-  for d = 0 to dim - 1 do
-    Printf.printf "%d %f\n%!" d (CArray.get data d)
-  done
+  match Tensor.num_dims tensor with
+  | 1 ->
+    let dim = Tensor.dim tensor 0 in
+    let data = Tensor.data tensor Ctypes.float dim in
+    for d = 0 to dim - 1 do
+      Printf.printf "%d %f\n%!" d (CArray.get data d)
+    done
+  | 2 ->
+    let d0 = Tensor.dim tensor 0 in
+    let d1 = Tensor.dim tensor 1 in
+    let data = Tensor.data tensor Ctypes.float (d0 * d1) in
+    for x = 0 to d0 - 1 do
+      Printf.printf "%d " x;
+      for y = 0 to d1 - 1 do
+        Printf.printf "%f " (CArray.get data (x+d0*y))
+      done;
+      Printf.printf "\n%!";
+    done
+  | n -> Printf.printf "%d dims\n%!" n
 
 let print_tensors tensors ~names =
   List.zip_exn names tensors
