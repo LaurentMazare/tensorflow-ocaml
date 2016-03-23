@@ -7,27 +7,22 @@ let () =
   Ops_gradients.register_all ();
   let n = 3 in (* size of y *)
   let m = 2 in (* size of x *)
-  let x_tensor = Tensor.create2d TF_FLOAT 1 m in
-  let x_data = Tensor.data x_tensor Ctypes.float m in
-  for i = 0 to m - 1 do
-    CArray.set x_data i (float (i+1));
-  done;
-  let y_tensor = Tensor.create2d TF_FLOAT 1 n in
-  let y_data = Tensor.data y_tensor Ctypes.float n in
-  for i = 0 to n - 1 do
-    CArray.set y_data i (float (4*(i+1)));
-  done;
-  let x = Ops.placeholder ~name:"x" ~type_:Float () in
-  let y = Ops.placeholder ~name:"y" ~type_:Float () in
-  let w = Ops_m.varf [ m; n ] in
-  let b = Ops_m.varf [ n ] in
+  let x = Ops_m.const_float ~type_:Float ~shape:[1; m] [ 1.; 2. ] in
+  let y = Ops_m.const_float ~type_:Float ~shape:[1; n] [ 5.; 8.; 12. ] in
+  let w =
+    Ops.variable ()
+      ~type_:Float
+      ~shape:[ { size = m; name = None }; { size = n; name = None } ]
+  in
+  let b =
+    Ops.variable ()
+      ~type_:Float
+      ~shape:[ { size = n; name = None } ]
+  in
   let w_assign = Ops.assign w (H.const_float [ m; n ] 0.) in
   let b_assign = Ops.assign b (H.const_float [ n ] 0.) in
-  let err =
-    let open Ops_m in
-    let diff = x *^ w + b - y in
-    diff *. diff
-  in
+  let diff = Ops.matMul x w |> Ops.add b |> Ops.sub y in
+  let err = Ops.matMul diff diff ~transpose_b:true in
   let gradient_w, gradient_b =
     Gradients.gradient err
       ~with_respect_to_float:[ w; b ]
@@ -36,7 +31,9 @@ let () =
     | [ gradient_w; gradient_b ], [] -> gradient_w, gradient_b
     | _ -> assert false
   in
-  let alpha = Ops_m.f 0.4 in
+  let alpha = Ops_m.f 0.0004 in
+  let gradient_w = Ops.reshape gradient_w (Ops.shape w) in
+  let gradient_b = Ops.reshape gradient_b (Ops.shape b) in
   let gd_w = Ops.applyGradientDescent w alpha gradient_w in
   let gd_b = Ops.applyGradientDescent b alpha gradient_b in
   let session =
@@ -60,18 +57,22 @@ let () =
   let print_err () =
     let output =
       H.run session
-        ~inputs:[ x, x_tensor; y, y_tensor ]
-        ~outputs:[ err; gradient_w; gradient_b ]
-        ~targets:[ err; gradient_w; gradient_b ]
+        ~inputs:[]
+        ~outputs:[ err ]
+        ~targets:[ err ]
     in
-    H.print_tensors output ~names:[ "err"; "grad-w"; "grad-b" ]
+    H.print_tensors output ~names:[ "err" ]
   in
   print_err ();
-  let _output =
-    H.run session
-      ~inputs:[ x, x_tensor; y, y_tensor ]
-      ~outputs:[ gd_w; gd_b ]
-      ~targets:[ gd_w; gd_b ]
-  in
+  for i = 0 to 1000 do
+    let output =
+      H.run session
+        ~inputs:[]
+        ~outputs:[ gd_w; gd_b ]
+        ~targets:[ gd_w; gd_b ]
+    in
+    ignore output;
+    if i % 10 = 0 then print_err ()
+  done;
   print_err ()
 
