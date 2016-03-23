@@ -48,3 +48,16 @@ let scalar ~type_ f =
     ~type_
     ~shape:[ 1 ]
     [ f ]
+
+type 't b =  ?name:string -> 't Node.t -> 't Node.t -> 't Node.t
+
+let (+) = Ops.add
+let (-) = Ops.sub
+let ( * ) = Ops.mul
+let ( *^ ) = Ops.matMul ~transpose_a:false ~transpose_b:false
+let (/) = Ops.div
+let f x = const_float ~type_:Float ~shape:[] [ x ]
+let d x = const_float ~type_:Double ~shape:[] [ x ]
+
+let fl x = const_float ~type_:Float ~shape:[ List.length x ] x
+let dl x = const_float ~type_:Double ~shape:[ List.length x ] x

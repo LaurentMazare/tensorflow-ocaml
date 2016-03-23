@@ -16,3 +16,15 @@ val scalar
   :  type_:([< `float | `double ] as 'dtype) Node.Type.t
   -> float
   -> 'dtype Node.t
+
+type 't b =  ?name:string -> 't Node.t -> 't Node.t -> 't Node.t
+
+val (+) : [< `float | `double | `int32 | `int64 | `complex64 | `string ] b
+val (-) : [< `float | `double | `int32 | `int64 | `complex64 ] b
+val (/) : [< `float | `double | `int32 | `int64 | `complex64 ] b
+val ( * ) : [< `float | `double | `int32 | `int64 | `complex64 ] b
+val ( *^) : [< `float | `double | `int32 | `complex64 ] b
+val f : float -> [ `float ] Node.t
+val d : float -> [ `double ] Node.t
+val fl : float list -> [ `float ] Node.t
+val dl : float list -> [ `double ] Node.t
