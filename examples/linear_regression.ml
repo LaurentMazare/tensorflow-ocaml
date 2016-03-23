@@ -72,7 +72,7 @@ let () =
         ~targets:[ gd_w; gd_b ]
     in
     ignore output;
-    if i % 10 = 0 then print_err ()
+    if i % 100 = 0 then print_err ()
   done;
   print_err ()
 
