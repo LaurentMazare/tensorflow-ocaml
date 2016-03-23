@@ -1,15 +1,10 @@
 open Wrapper
 module CArray = Ctypes.CArray
-
-let ok_exn (result : 'a Session.result) ~context =
-  match result with
-  | Ok result -> result
-  | Error status ->
-    Printf.sprintf "Error in %s: %s" context (Status.message status)
-    |> failwith
+module H = Helper
+module Tensor = Wrapper.Tensor
 
 let () =
-  let input_tensor = Tensor.create1d Ctypes.float 3 in
+  let input_tensor = Tensor.create1d TF_FLOAT 3 in
   let data = Tensor.data input_tensor Ctypes.float 3 in
   CArray.set data 0 1.;
   CArray.set data 1 2.;
@@ -25,27 +20,12 @@ let () =
     Ops.sub assign placeholder
     |> Ops.abs
   in
-  let session =
-    Session.create ()
-    |> ok_exn ~context:"session creation"
-  in
-  Session.extend_graph
-    session
-    (Node_protobuf.of_nodes [ P node ])
-    |> ok_exn ~context:"extending graph";
+  let session = H.create_session [ P node ] in
   let output =
-    Session.run
+    H.run
       session
-      ~inputs:[ placeholder.name |> Node.Name.to_string, input_tensor ]
-      ~outputs:(List.map Node.Name.to_string [ node.name ])
-      ~targets:(List.map Node.Name.to_string [ node.name ])
-    |> ok_exn ~context:"session run"
+      ~inputs:[ placeholder, input_tensor ]
+      ~outputs:[ node ]
+      ~targets:[ node ]
   in
-  match output with
-  | [ output_tensor ] ->
-    let dim = Tensor.dim output_tensor 0 in
-    let data = Tensor.data output_tensor Ctypes.float dim in
-    for d = 0 to dim - 1 do
-      Printf.printf "%d %f\n%!" d (CArray.get data d)
-    done
-  | [] | _ :: _ :: _ -> assert false
+  H.print_tensors output ~names:[ "var" ]

@@ -29,6 +29,7 @@ module Input = struct
   type t =
     { name : string option
     ; type_ : Type.t
+    ; type_name : string option
     }
 
   let caml_name t ~idx =
@@ -191,8 +192,10 @@ module Op = struct
       let types = extract_types op.attr in
       let inputs =
         List.map op.input_arg ~f:(fun input_arg ->
+          let type_name, type_ = read_type types input_arg in
           { Input.name = input_arg.name
-          ; type_ = read_type types input_arg |> snd
+          ; type_
+          ; type_name
           })
       in
       let output_type_name, output_type =
@@ -260,7 +263,7 @@ let gen_mli ops =
     then p "  -> type_ : %s Node.Type.t" (Type.to_string op.output_type);
     List.iter op.attributes ~f:(fun attribute ->
       p "  -> %s" (Attribute.mli attribute));
-    List.iter op.inputs ~f:(fun { Input.name = _; type_ } ->
+    List.iter op.inputs ~f:(fun { Input.name = _; type_; type_name = _ } ->
       p "  -> %s Node.t" (Type.to_string type_));
     if List.is_empty op.inputs
     then p "  -> unit";

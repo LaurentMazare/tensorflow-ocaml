@@ -9,7 +9,7 @@ let ok_exn (result : 'a Session.result) ~context =
     |> failwith
 
 let () =
-  let input_tensor = Tensor.create1d Ctypes.float 3 in
+  let input_tensor = Tensor.create1d TF_FLOAT 3 in
   let data = Tensor.data input_tensor Ctypes.float 3 in
   CArray.set data 0 1.;
   CArray.set data 1 2.;

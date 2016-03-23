@@ -5,8 +5,10 @@
 - Proper wrapper around wrapper.ml
   - Type safe
   - Multiple calls to extend graph
-  - Use bigarray rather than carray
-  - Use the proper tensor element types
+  - Tensor wrapper
+    - Use bigarray rather than carray
+    - Pretty-printer for tensors
+    - Getter, accessor, initialization (store the dims ?)
 
 - Safer/better impls for ops:
   - Variable initialisation
@@ -15,5 +17,4 @@
 - Gradient Descent
 
 - Examples
-  - Helper module to share common functions
   - Example with gradient descent, e.g. linear regression

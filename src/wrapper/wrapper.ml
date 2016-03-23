@@ -125,6 +125,26 @@ module Tensor = struct
       t;
     t
 
+  let sizeof = function
+    | TF_FLOAT -> 4
+    | TF_DOUBLE -> 8
+    | TF_INT32 -> 4
+    | TF_UINT16
+    | TF_INT16 -> 2
+    | TF_UINT8
+    | TF_INT8 -> 1
+    | TF_INT64 -> 8
+    | TF_STRING
+    | TF_COMPLEX
+    | TF_BOOL
+    | TF_QINT8
+    | TF_QUINT8
+    | TF_QINT32
+    | TF_BFLOAT16
+    | TF_QINT16
+    | TF_QUINT16
+    | Unknown _ -> failwith "Unsupported tensor type"
+
   let create1d typ elts =
     let elt_size = sizeof typ in
     let size = elts * elt_size in

@@ -28,9 +28,9 @@ type data_type =
 module Tensor : sig
   type t
 
-  val create1d : 'a Ctypes.typ -> int -> t
+  val create1d : data_type -> int -> t
 
-  val create2d : 'a Ctypes.typ -> int -> int -> t
+  val create2d : data_type -> int -> int -> t
 
   val num_dims : t -> int
 
