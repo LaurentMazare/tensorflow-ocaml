@@ -23,8 +23,11 @@ let () =
   let b = Ops_m.varf [ n ] in
   let w_assign = Ops.assign w (H.const_float [ m; n ] 0.) in
   let b_assign = Ops.assign b (H.const_float [ n ] 0.) in
-  let diff = Ops_m.(x *^ w + b - y) in
-  let err = Ops.matMul diff diff ~transpose_b:true in
+  let err =
+    let open Ops_m in
+    let diff = x *^ w + b - y in
+    diff *. diff
+  in
   let gradient_w, gradient_b =
     Gradients.gradient err
       ~with_respect_to_float:[ w; b ]

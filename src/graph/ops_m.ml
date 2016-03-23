@@ -55,6 +55,7 @@ let (+) = Ops.add
 let (-) = Ops.sub
 let ( * ) = Ops.mul
 let ( *^ ) = Ops.matMul ~transpose_a:false ~transpose_b:false
+let ( *. ) = Ops.matMul ~transpose_a:true ~transpose_b:false
 let (/) = Ops.div
 let f x = const_float ~type_:Float ~shape:[] [ x ]
 let d x = const_float ~type_:Double ~shape:[] [ x ]

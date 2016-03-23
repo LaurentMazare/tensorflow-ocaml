@@ -24,6 +24,7 @@ val (-) : [< `float | `double | `int32 | `int64 | `complex64 ] b
 val (/) : [< `float | `double | `int32 | `int64 | `complex64 ] b
 val ( * ) : [< `float | `double | `int32 | `int64 | `complex64 ] b
 val ( *^) : [< `float | `double | `int32 | `complex64 ] b
+val ( *.) : [< `float | `double | `int32 | `complex64 ] b
 val f : float -> [ `float ] Node.t
 val d : float -> [ `double ] Node.t
 val fl : float list -> [ `float ] Node.t
