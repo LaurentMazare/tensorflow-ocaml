@@ -1,6 +1,5 @@
 - Ops Generation:
   - Handle number_attr in the code generator
-  - Fix the code generator for shape
 
 - Proper wrapper around wrapper.ml
   - Type safe

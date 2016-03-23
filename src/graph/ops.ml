@@ -52,7 +52,7 @@ let adjustContrast
     (min_value : [ `float ] t)
     (max_value : [ `float ] t)
   =
-  let attributes = [] in
+  let attributes = [ "T", Type (P images.output_type) ] in
   { name = Name.make_fresh ~name
   ; op_name = Op_name.of_string "AdjustContrast"
   ; output_type = Type.Float
@@ -250,7 +250,7 @@ let argMax
     (input : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (dimension : [ `int32 ] t)
   =
-  let attributes = [] in
+  let attributes = [ "T", Type (P input.output_type) ] in
   { name = Name.make_fresh ~name
   ; op_name = Op_name.of_string "ArgMax"
   ; output_type = Type.Int64
@@ -264,7 +264,7 @@ let argMin
     (input : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (dimension : [ `int32 ] t)
   =
-  let attributes = [] in
+  let attributes = [ "T", Type (P input.output_type) ] in
   { name = Name.make_fresh ~name
   ; op_name = Op_name.of_string "ArgMin"
   ; output_type = Type.Int64
@@ -594,7 +594,7 @@ let bitcast
     ~type_
     (input : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
   =
-  let attributes = [ "type", Type (P type_) ] in
+  let attributes = [ "T", Type (P input.output_type) ;  "type", Type (P type_) ] in
   { name = Name.make_fresh ~name
   ; op_name = Op_name.of_string "Bitcast"
   ; output_type = type_
@@ -608,7 +608,7 @@ let cast
     ~type_
     (x : 'srcT t)
   =
-  let attributes = [ "DstT", Type (P type_) ] in
+  let attributes = [ "SrcT", Type (P x.output_type) ;  "DstT", Type (P type_) ] in
   { name = Name.make_fresh ~name
   ; op_name = Op_name.of_string "Cast"
   ; output_type = type_
@@ -1149,7 +1149,7 @@ let editDistance
     (truth_values : 't t)
     (truth_shape : [ `int64 ] t)
   =
-  let attributes = [] in
+  let attributes = [ "T", Type (P hypothesis_values.output_type) ] in
   let attributes =
     match normalize with | None -> attributes | Some normalize -> ("normalize", Bool normalize) :: attributes
   in
@@ -1193,7 +1193,7 @@ let encodePng
     ?compression
     (image : 't t)
   =
-  let attributes = [] in
+  let attributes = [ "T", Type (P image.output_type) ] in
   let attributes =
     match compression with | None -> attributes | Some compression -> ("compression", Int compression) :: attributes
   in
@@ -1235,7 +1235,7 @@ let equal
     (x : ([< `float | `double | `int32 | `int64 | `complex64 | `string ] as 't) t)
     (y : ([< `float | `double | `int32 | `int64 | `complex64 | `string ] as 't) t)
   =
-  let attributes = [] in
+  let attributes = [ "T", Type (P x.output_type) ] in
   { name = Name.make_fresh ~name
   ; op_name = Op_name.of_string "Equal"
   ; output_type = Type.Bool
@@ -1462,7 +1462,7 @@ let gather
     (params : 'tparams t)
     (indices : ([< `int32 | `int64 ] as 'tindices) t)
   =
-  let attributes = [ "Tparams", Type (P params.output_type) ] in
+  let attributes = [ "Tindices", Type (P indices.output_type) ;  "Tparams", Type (P params.output_type) ] in
   let attributes =
     match validate_indices with | None -> attributes | Some validate_indices -> ("validate_indices", Bool validate_indices) :: attributes
   in
@@ -1479,7 +1479,7 @@ let greater
     (x : ([< `float | `double | `int32 | `int64 ] as 't) t)
     (y : ([< `float | `double | `int32 | `int64 ] as 't) t)
   =
-  let attributes = [] in
+  let attributes = [ "T", Type (P x.output_type) ] in
   { name = Name.make_fresh ~name
   ; op_name = Op_name.of_string "Greater"
   ; output_type = Type.Bool
@@ -1493,7 +1493,7 @@ let greaterEqual
     (x : ([< `float | `double | `int32 | `int64 ] as 't) t)
     (y : ([< `float | `double | `int32 | `int64 ] as 't) t)
   =
-  let attributes = [] in
+  let attributes = [ "T", Type (P x.output_type) ] in
   { name = Name.make_fresh ~name
   ; op_name = Op_name.of_string "GreaterEqual"
   ; output_type = Type.Bool
@@ -1541,7 +1541,7 @@ let histogramSummary
     (tag : [ `string ] t)
     (values : ([< `float | `double | `int32 | `int64 ] as 't) t)
   =
-  let attributes = [] in
+  let attributes = [ "T", Type (P values.output_type) ] in
   { name = Name.make_fresh ~name
   ; op_name = Op_name.of_string "HistogramSummary"
   ; output_type = Type.String
@@ -1616,7 +1616,7 @@ let imageSummary
     (tag : [ `string ] t)
     (tensor : ([< `float ] as 't) t)
   =
-  let attributes = [] in
+  let attributes = [ "T", Type (P tensor.output_type) ] in
   let attributes =
     match max_images with | None -> attributes | Some max_images -> ("max_images", Int max_images) :: attributes
   in
@@ -1634,7 +1634,7 @@ let inTopK
     (predictions : [ `float ] t)
     (targets : ([< `int32 | `int64 ] as 't) t)
   =
-  let attributes = [] in
+  let attributes = [ "T", Type (P targets.output_type) ] in
   let attributes =
     ("k", Int k) :: attributes
   in
@@ -1652,7 +1652,7 @@ let initializeTable
     (keys : 'tkey t)
     (values : 'tval t)
   =
-  let attributes = [] in
+  let attributes = [ "Tval", Type (P values.output_type) ;  "Tkey", Type (P keys.output_type) ] in
   { name = Name.make_fresh ~name
   ; op_name = Op_name.of_string "InitializeTable"
   ; output_type = Type.Unit
@@ -1691,7 +1691,7 @@ let isFinite
     ?(name = "IsFinite")
     (x : ([< `float | `double ] as 't) t)
   =
-  let attributes = [] in
+  let attributes = [ "T", Type (P x.output_type) ] in
   { name = Name.make_fresh ~name
   ; op_name = Op_name.of_string "IsFinite"
   ; output_type = Type.Bool
@@ -1704,7 +1704,7 @@ let isInf
     ?(name = "IsInf")
     (x : ([< `float | `double ] as 't) t)
   =
-  let attributes = [] in
+  let attributes = [ "T", Type (P x.output_type) ] in
   { name = Name.make_fresh ~name
   ; op_name = Op_name.of_string "IsInf"
   ; output_type = Type.Bool
@@ -1717,7 +1717,7 @@ let isNan
     ?(name = "IsNan")
     (x : ([< `float | `double ] as 't) t)
   =
-  let attributes = [] in
+  let attributes = [ "T", Type (P x.output_type) ] in
   { name = Name.make_fresh ~name
   ; op_name = Op_name.of_string "IsNan"
   ; output_type = Type.Bool
@@ -1804,7 +1804,7 @@ let less
     (x : ([< `float | `double | `int32 | `int64 ] as 't) t)
     (y : ([< `float | `double | `int32 | `int64 ] as 't) t)
   =
-  let attributes = [] in
+  let attributes = [ "T", Type (P x.output_type) ] in
   { name = Name.make_fresh ~name
   ; op_name = Op_name.of_string "Less"
   ; output_type = Type.Bool
@@ -1818,7 +1818,7 @@ let lessEqual
     (x : ([< `float | `double | `int32 | `int64 ] as 't) t)
     (y : ([< `float | `double | `int32 | `int64 ] as 't) t)
   =
-  let attributes = [] in
+  let attributes = [ "T", Type (P x.output_type) ] in
   { name = Name.make_fresh ~name
   ; op_name = Op_name.of_string "LessEqual"
   ; output_type = Type.Bool
@@ -1915,7 +1915,7 @@ let lookupTableFind
     (keys : 'tin t)
     (default_value : 'tout t)
   =
-  let attributes = [ "Tout", Type (P default_value.output_type) ] in
+  let attributes = [ "Tin", Type (P keys.output_type) ;  "Tout", Type (P default_value.output_type) ] in
   { name = Name.make_fresh ~name
   ; op_name = Op_name.of_string "LookupTableFind"
   ; output_type = default_value.output_type
@@ -2149,7 +2149,7 @@ let maxPoolGradWithArgmax
     (grad : [ `float ] t)
     (argmax : ([< `int32 | `int64 ] as 'targmax) t)
   =
-  let attributes = [] in
+  let attributes = [ "Targmax", Type (P argmax.output_type) ] in
   let attributes =
     ("ksize", List (Int ksize)) :: attributes
   in
@@ -2381,7 +2381,7 @@ let notEqual
     (x : ([< `float | `double | `int32 | `int64 | `complex64 | `string ] as 't) t)
     (y : ([< `float | `double | `int32 | `int64 | `complex64 | `string ] as 't) t)
   =
-  let attributes = [] in
+  let attributes = [ "T", Type (P x.output_type) ] in
   { name = Name.make_fresh ~name
   ; op_name = Op_name.of_string "NotEqual"
   ; output_type = Type.Bool
@@ -2662,7 +2662,7 @@ let randomStandardNormal
     ?seed2
     (shape : ([< `int32 | `int64 ] as 't) t)
   =
-  let attributes = [ "dtype", Type (P type_) ] in
+  let attributes = [ "T", Type (P shape.output_type) ;  "dtype", Type (P type_) ] in
   let attributes =
     match seed with | None -> attributes | Some seed -> ("seed", Int seed) :: attributes
   in
@@ -2684,7 +2684,7 @@ let randomUniform
     ?seed2
     (shape : ([< `int32 | `int64 ] as 't) t)
   =
-  let attributes = [ "dtype", Type (P type_) ] in
+  let attributes = [ "T", Type (P shape.output_type) ;  "dtype", Type (P type_) ] in
   let attributes =
     match seed with | None -> attributes | Some seed -> ("seed", Int seed) :: attributes
   in
@@ -2707,7 +2707,7 @@ let randomUniformInt
     (minval : ([< `int32 | `int64 ] as 'tout) t)
     (maxval : ([< `int32 | `int64 ] as 'tout) t)
   =
-  let attributes = [ "Tout", Type (P minval.output_type) ] in
+  let attributes = [ "T", Type (P shape.output_type) ;  "Tout", Type (P minval.output_type) ] in
   let attributes =
     match seed with | None -> attributes | Some seed -> ("seed", Int seed) :: attributes
   in
@@ -2741,7 +2741,7 @@ let rank
     ?(name = "Rank")
     (input : 't t)
   =
-  let attributes = [] in
+  let attributes = [ "T", Type (P input.output_type) ] in
   { name = Name.make_fresh ~name
   ; op_name = Op_name.of_string "Rank"
   ; output_type = Type.Int32
@@ -2998,7 +2998,7 @@ let resizeArea
     (images : ([< `int32 | `int64 | `float | `double ] as 't) t)
     (size : [ `int32 ] t)
   =
-  let attributes = [] in
+  let attributes = [ "T", Type (P images.output_type) ] in
   let attributes =
     match align_corners with | None -> attributes | Some align_corners -> ("align_corners", Bool align_corners) :: attributes
   in
@@ -3016,7 +3016,7 @@ let resizeBicubic
     (images : ([< `int32 | `int64 | `float | `double ] as 't) t)
     (size : [ `int32 ] t)
   =
-  let attributes = [] in
+  let attributes = [ "T", Type (P images.output_type) ] in
   let attributes =
     match align_corners with | None -> attributes | Some align_corners -> ("align_corners", Bool align_corners) :: attributes
   in
@@ -3034,7 +3034,7 @@ let resizeBilinear
     (images : ([< `int32 | `int64 | `float | `double ] as 't) t)
     (size : [ `int32 ] t)
   =
-  let attributes = [] in
+  let attributes = [ "T", Type (P images.output_type) ] in
   let attributes =
     match align_corners with | None -> attributes | Some align_corners -> ("align_corners", Bool align_corners) :: attributes
   in
@@ -3193,7 +3193,7 @@ let scalarSummary
     (tags : [ `string ] t)
     (values : ([< `float | `double | `int32 | `int64 ] as 't) t)
   =
-  let attributes = [] in
+  let attributes = [ "T", Type (P values.output_type) ] in
   { name = Name.make_fresh ~name
   ; op_name = Op_name.of_string "ScalarSummary"
   ; output_type = Type.String
@@ -3209,7 +3209,7 @@ let scatterAdd
     (indices : ([< `int32 | `int64 ] as 'tindices) t)
     (updates : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
   =
-  let attributes = [ "T", Type (P ref.output_type) ] in
+  let attributes = [ "Tindices", Type (P indices.output_type) ;  "T", Type (P ref.output_type) ] in
   let attributes =
     match use_locking with | None -> attributes | Some use_locking -> ("use_locking", Bool use_locking) :: attributes
   in
@@ -3228,7 +3228,7 @@ let scatterSub
     (indices : ([< `int32 | `int64 ] as 'tindices) t)
     (updates : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
   =
-  let attributes = [ "T", Type (P ref.output_type) ] in
+  let attributes = [ "Tindices", Type (P indices.output_type) ;  "T", Type (P ref.output_type) ] in
   let attributes =
     match use_locking with | None -> attributes | Some use_locking -> ("use_locking", Bool use_locking) :: attributes
   in
@@ -3247,7 +3247,7 @@ let scatterUpdate
     (indices : ([< `int32 | `int64 ] as 'tindices) t)
     (updates : 't t)
   =
-  let attributes = [ "T", Type (P ref.output_type) ] in
+  let attributes = [ "Tindices", Type (P indices.output_type) ;  "T", Type (P ref.output_type) ] in
   let attributes =
     match use_locking with | None -> attributes | Some use_locking -> ("use_locking", Bool use_locking) :: attributes
   in
@@ -3264,7 +3264,7 @@ let segmentMax
     (data : ([< `float | `double | `int32 | `int64 ] as 't) t)
     (segment_ids : ([< `int32 | `int64 ] as 'tindices) t)
   =
-  let attributes = [ "T", Type (P data.output_type) ] in
+  let attributes = [ "Tindices", Type (P segment_ids.output_type) ;  "T", Type (P data.output_type) ] in
   { name = Name.make_fresh ~name
   ; op_name = Op_name.of_string "SegmentMax"
   ; output_type = data.output_type
@@ -3278,7 +3278,7 @@ let segmentMean
     (data : ([< `float | `double | `int32 | `int64 ] as 't) t)
     (segment_ids : ([< `int32 | `int64 ] as 'tindices) t)
   =
-  let attributes = [ "T", Type (P data.output_type) ] in
+  let attributes = [ "Tindices", Type (P segment_ids.output_type) ;  "T", Type (P data.output_type) ] in
   { name = Name.make_fresh ~name
   ; op_name = Op_name.of_string "SegmentMean"
   ; output_type = data.output_type
@@ -3292,7 +3292,7 @@ let segmentMin
     (data : ([< `float | `double | `int32 | `int64 ] as 't) t)
     (segment_ids : ([< `int32 | `int64 ] as 'tindices) t)
   =
-  let attributes = [ "T", Type (P data.output_type) ] in
+  let attributes = [ "Tindices", Type (P segment_ids.output_type) ;  "T", Type (P data.output_type) ] in
   { name = Name.make_fresh ~name
   ; op_name = Op_name.of_string "SegmentMin"
   ; output_type = data.output_type
@@ -3306,7 +3306,7 @@ let segmentProd
     (data : ([< `float | `double | `int32 | `int64 ] as 't) t)
     (segment_ids : ([< `int32 | `int64 ] as 'tindices) t)
   =
-  let attributes = [ "T", Type (P data.output_type) ] in
+  let attributes = [ "Tindices", Type (P segment_ids.output_type) ;  "T", Type (P data.output_type) ] in
   { name = Name.make_fresh ~name
   ; op_name = Op_name.of_string "SegmentProd"
   ; output_type = data.output_type
@@ -3320,7 +3320,7 @@ let segmentSum
     (data : ([< `float | `double | `int32 | `int64 ] as 't) t)
     (segment_ids : ([< `int32 | `int64 ] as 'tindices) t)
   =
-  let attributes = [ "T", Type (P data.output_type) ] in
+  let attributes = [ "Tindices", Type (P segment_ids.output_type) ;  "T", Type (P data.output_type) ] in
   { name = Name.make_fresh ~name
   ; op_name = Op_name.of_string "SegmentSum"
   ; output_type = data.output_type
@@ -3363,7 +3363,7 @@ let serializeManySparse
     (sparse_values : 't t)
     (sparse_shape : [ `int64 ] t)
   =
-  let attributes = [] in
+  let attributes = [ "T", Type (P sparse_values.output_type) ] in
   { name = Name.make_fresh ~name
   ; op_name = Op_name.of_string "SerializeManySparse"
   ; output_type = Type.String
@@ -3378,7 +3378,7 @@ let serializeSparse
     (sparse_values : 't t)
     (sparse_shape : [ `int64 ] t)
   =
-  let attributes = [] in
+  let attributes = [ "T", Type (P sparse_values.output_type) ] in
   { name = Name.make_fresh ~name
   ; op_name = Op_name.of_string "SerializeSparse"
   ; output_type = Type.String
@@ -3405,7 +3405,7 @@ let shapeN
     ~n
     (input : 't t)
   =
-  let attributes = [] in
+  let attributes = [ "T", Type (P input.output_type) ] in
   let attributes =
     ("N", Int n) :: attributes
   in
@@ -3489,7 +3489,7 @@ let size
     ?(name = "Size")
     (input : 't t)
   =
-  let attributes = [] in
+  let attributes = [ "T", Type (P input.output_type) ] in
   { name = Name.make_fresh ~name
   ; op_name = Op_name.of_string "Size"
   ; output_type = Type.Int32
@@ -3504,7 +3504,7 @@ let slice
     (begin__ : ([< `int32 | `int64 ] as 'index) t)
     (size : ([< `int32 | `int64 ] as 'index) t)
   =
-  let attributes = [ "T", Type (P input.output_type) ] in
+  let attributes = [ "Index", Type (P begin__.output_type) ;  "T", Type (P input.output_type) ] in
   { name = Name.make_fresh ~name
   ; op_name = Op_name.of_string "Slice"
   ; output_type = input.output_type
@@ -3606,7 +3606,7 @@ let sparseApplyAdagrad
     (grad : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (indices : ([< `int32 | `int64 ] as 'tindices) t)
   =
-  let attributes = [ "T", Type (P var.output_type) ] in
+  let attributes = [ "Tindices", Type (P indices.output_type) ;  "T", Type (P var.output_type) ] in
   let attributes =
     match use_locking with | None -> attributes | Some use_locking -> ("use_locking", Bool use_locking) :: attributes
   in
@@ -3631,7 +3631,7 @@ let sparseApplyFtrl
     (l2 : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (lr_power : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
   =
-  let attributes = [ "T", Type (P var.output_type) ] in
+  let attributes = [ "Tindices", Type (P indices.output_type) ;  "T", Type (P var.output_type) ] in
   let attributes =
     match use_locking with | None -> attributes | Some use_locking -> ("use_locking", Bool use_locking) :: attributes
   in
@@ -3653,7 +3653,7 @@ let sparseApplyMomentum
     (indices : ([< `int32 | `int64 ] as 'tindices) t)
     (momentum : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
   =
-  let attributes = [ "T", Type (P var.output_type) ] in
+  let attributes = [ "Tindices", Type (P indices.output_type) ;  "T", Type (P var.output_type) ] in
   let attributes =
     match use_locking with | None -> attributes | Some use_locking -> ("use_locking", Bool use_locking) :: attributes
   in
@@ -3804,7 +3804,7 @@ let sparseToDense
     (sparse_values : 't t)
     (default_value : 't t)
   =
-  let attributes = [ "T", Type (P sparse_values.output_type) ] in
+  let attributes = [ "Tindices", Type (P sparse_indices.output_type) ;  "T", Type (P sparse_values.output_type) ] in
   let attributes =
     match validate_indices with | None -> attributes | Some validate_indices -> ("validate_indices", Bool validate_indices) :: attributes
   in
@@ -4189,7 +4189,7 @@ let tensorArraySplit
     (lengths : [ `int64 ] t)
     (flow_in : [ `float ] t)
   =
-  let attributes = [] in
+  let attributes = [ "T", Type (P value.output_type) ] in
   { name = Name.make_fresh ~name
   ; op_name = Op_name.of_string "TensorArraySplit"
   ; output_type = Type.Float
@@ -4204,7 +4204,7 @@ let tensorArrayUnpack
     (value : 't t)
     (flow_in : [ `float ] t)
   =
-  let attributes = [] in
+  let attributes = [ "T", Type (P value.output_type) ] in
   { name = Name.make_fresh ~name
   ; op_name = Op_name.of_string "TensorArrayUnpack"
   ; output_type = Type.Float
@@ -4220,7 +4220,7 @@ let tensorArrayWrite
     (value : 't t)
     (flow_in : [ `float ] t)
   =
-  let attributes = [] in
+  let attributes = [ "T", Type (P value.output_type) ] in
   { name = Name.make_fresh ~name
   ; op_name = Op_name.of_string "TensorArrayWrite"
   ; output_type = Type.Float
@@ -4303,7 +4303,7 @@ let truncatedNormal
     ?seed2
     (shape : ([< `int32 | `int64 ] as 't) t)
   =
-  let attributes = [ "dtype", Type (P type_) ] in
+  let attributes = [ "T", Type (P shape.output_type) ;  "dtype", Type (P type_) ] in
   let attributes =
     match seed with | None -> attributes | Some seed -> ("seed", Int seed) :: attributes
   in
@@ -4341,7 +4341,7 @@ let unsortedSegmentSum
     (segment_ids : ([< `int32 | `int64 ] as 'tindices) t)
     (num_segments : [ `int32 ] t)
   =
-  let attributes = [ "T", Type (P data.output_type) ] in
+  let attributes = [ "Tindices", Type (P segment_ids.output_type) ;  "T", Type (P data.output_type) ] in
   { name = Name.make_fresh ~name
   ; op_name = Op_name.of_string "UnsortedSegmentSum"
   ; output_type = data.output_type

@@ -300,9 +300,19 @@ let gen_ml ops =
     p "  =";
     let type_attr =
       match op.output_type_name with
-      | Some output_type_name ->
-        sprintf " \"%s\", Type (P %s) " output_type_name output_type_string
-      | None -> ""
+      | Some output_type_name -> [ output_type_name, output_type_string ]
+      | None -> []
+    in
+    let type_attr =
+      List.foldi op.inputs ~init:type_attr ~f:(fun idx acc (input : Input.t) ->
+        let name = Input.caml_name input ~idx in
+        match input.type_name with
+        | None -> acc
+        | Some type_name when List.Assoc.mem acc type_name -> acc
+        | Some type_name -> (type_name, sprintf "%s.output_type" name) :: acc)
+      |> List.map ~f:(fun (type_name, type_string) ->
+        sprintf " \"%s\", Type (P %s) " type_name type_string)
+      |> String.concat ~sep:"; "
     in
     p "  let attributes = [%s] in" type_attr;
     List.iter op.attributes ~f:(fun attribute ->
