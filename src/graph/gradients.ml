@@ -33,10 +33,14 @@ let uses_per_node node with_respect_to =
     let current_uses =
       Hashtbl.find uses_per_node node_name
     in
+    (* The [is_useful] function should be applied recursively to children only once.
+       It should also apply to all children, hence the List.map ... |> List.exists below.
+    *)
     let is_useful =
       Node.packed_is_real node
       &&
-        (  Set.mem with_respect_to node_name
+        (  Option.is_some current_uses
+        || Set.mem with_respect_to node_name
         || List.map (Node.packed_inputs node) ~f:is_useful |> List.exists ~f:Fn.id)
     in
     if is_useful
