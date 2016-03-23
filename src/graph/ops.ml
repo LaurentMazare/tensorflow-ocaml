@@ -3391,7 +3391,7 @@ let shape
     ?(name = "Shape")
     (input : 't t)
   =
-  let attributes = [] in
+  let attributes = [ "T", Type (P input.output_type) ] in
   { name = Name.make_fresh ~name
   ; op_name = Op_name.of_string "Shape"
   ; output_type = Type.Int32

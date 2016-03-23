@@ -109,12 +109,14 @@ let gradient node ~with_respect_to =
                   add_contribution input ~gradient))
       end
   in 
-  let scalar_one =
-    Ops_m.scalar
+  let one =
+    Ops_m.const_float
+      ~shape:[]
       ~type_:node.output_type
-      1.
+      [ 1. ]
+    |> Ops.fill (Ops.shape node)
   in
-  add_contribution (P node) ~gradient:(Node.P scalar_one);
+  add_contribution (P node) ~gradient:(Node.P one);
   output_gradients
 
 let gradient node ~with_respect_to_float ~with_respect_to_double =

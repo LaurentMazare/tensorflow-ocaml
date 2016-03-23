@@ -38,6 +38,7 @@ let run session ~inputs ~outputs ~targets =
   |> ok_exn ~context:"session_run"
 
 let () =
+  Ops_gradients.register_all ();
   let n = 3 in (* size of y *)
   let m = 2 in (* size of x *)
   let x_tensor = Tensor.create2d Ctypes.float 1 m in
@@ -66,13 +67,25 @@ let () =
   let b_assign = Ops.assign b (const_float [ n ] 0.) in
   let diff = Ops.matMul x w |> Ops.add b |> Ops.sub y in
   let err = Ops.matMul diff diff ~transpose_b:true in
+  let gradient_w, gradient_b =
+    Gradients.gradient err
+      ~with_respect_to_float:[ w; b ]
+      ~with_respect_to_double:[]
+    |> function
+    | [ gradient_w; gradient_b ], [] -> gradient_w, gradient_b
+    | _ -> assert false
+  in
+  let alpha = Ops_m.scalar ~type_:Float 0.4 in
+  let gd_w = Ops.applyGradientDescent w alpha gradient_w in
+  let gd_b = Ops.applyGradientDescent b alpha gradient_b in
   let session =
     Session.create ()
     |> ok_exn ~context:"session creation"
   in
   Session.extend_graph
     session
-    (Node_protobuf.of_nodes [ P err; P w_assign; P b_assign ])
+    (Node_protobuf.of_nodes
+      [ P err; P w_assign; P b_assign; P gradient_w; P gradient_b; P gd_w; P gd_b ])
     |> ok_exn ~context:"extending graph";
   let output =
     run session
@@ -88,11 +101,21 @@ let () =
       ~targets:[ w; b ]
   in
   print_tensors output ~names:[ "w"; "b" ];
-  let output =
+  let print_err () =
+    let output =
+      run session
+        ~inputs:[ x, x_tensor; y, y_tensor ]
+        ~outputs:[ err; gradient_w; gradient_b ]
+        ~targets:[ err; gradient_w; gradient_b ]
+    in
+    print_tensors output ~names:[ "err"; "grad-w"; "grad-b" ]
+  in
+  print_err ();
+  let _output =
     run session
       ~inputs:[ x, x_tensor; y, y_tensor ]
-      ~outputs:[ err ]
-      ~targets:[ err ]
+      ~outputs:[ gd_w; gd_b ]
+      ~targets:[ gd_w; gd_b ]
   in
-  print_tensors output ~names:[ "err" ]
+  print_err ()
 
