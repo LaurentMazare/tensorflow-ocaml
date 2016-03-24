@@ -60,8 +60,8 @@ let (/) = Ops.div
 let f x = const_float ~type_:Float ~shape:[] [ x ]
 let d x = const_float ~type_:Double ~shape:[] [ x ]
 
-let vecf x = const_float ~type_:Float ~shape:[ List.length x ] x
-let vecd x = const_float ~type_:Double ~shape:[ List.length x ] x
+let cf ?shape x = const_float ?shape ~type_:Float x
+let cd ?shape x = const_float ?shape ~type_:Double x
 
 let varf shape =
   Ops.variable ()

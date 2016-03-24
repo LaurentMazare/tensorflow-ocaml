@@ -30,9 +30,9 @@ val ( *.) : [< `float | `double | `int32 | `complex64 ] b
 val f : float -> [ `float ] Node.t
 val d : float -> [ `double ] Node.t
 
-(* One dimension constant vector *)
-val vecf : float list -> [ `float ] Node.t
-val vecd : float list -> [ `double ] Node.t
+(* Constant vector/matrixes *)
+val cf : ?shape:int list -> float list -> [ `float ] Node.t
+val cd : ?shape:int list -> float list -> [ `double ] Node.t
 
 (* Variables *)
 val varf : int list -> [ `float ] Node.t

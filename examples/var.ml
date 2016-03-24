@@ -10,9 +10,7 @@ let () =
   CArray.set data 1 2.;
   CArray.set data 2 6.;
   let placeholder = Ops.placeholder ~name:"x" ~type_:Float () in
-  let variable =
-    Ops.variable () ~type_:Float ~shape:[ { size = 3; name = None } ]
-  in
+  let variable = Ops_m.varf [ 3 ] in
   let assign =
     Ops.assign variable (Ops_m.const_float ~type_:Float [ 8.; 0.; 1. ])
   in

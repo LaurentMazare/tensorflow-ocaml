@@ -7,18 +7,10 @@ let () =
   Ops_gradients.register_all ();
   let n = 3 in (* size of y *)
   let m = 2 in (* size of x *)
-  let x = Ops_m.const_float ~type_:Float ~shape:[1; m] [ 1.; 2. ] in
-  let y = Ops_m.const_float ~type_:Float ~shape:[1; n] [ 5.; 8.; 12. ] in
-  let w =
-    Ops.variable ()
-      ~type_:Float
-      ~shape:[ { size = m; name = None }; { size = n; name = None } ]
-  in
-  let b =
-    Ops.variable ()
-      ~type_:Float
-      ~shape:[ { size = n; name = None } ]
-  in
+  let x = Ops_m.cf ~shape:[1; m] [ 1.; 2. ] in
+  let y = Ops_m.cf ~shape:[1; n] [ 5.; 8.; 12. ] in
+  let w = Ops_m.varf [ m; n ] in
+  let b = Ops_m.varf [ n ] in
   let w_assign = Ops.assign w (H.const_float [ m; n ] 0.) in
   let b_assign = Ops.assign b (H.const_float [ n ] 0.) in
   let diff = Ops.matMul x w |> Ops.add b |> Ops.sub y in
@@ -31,14 +23,12 @@ let () =
   in
   let output =
     H.run session
-      ~inputs:[]
       ~outputs:[ w_assign ]
       ~targets:[ w_assign; b_assign ] 
   in
   H.print_tensors output ~names:[ "init" ];
   let output =
     H.run session
-      ~inputs:[]
       ~outputs:[ w; b ]
       ~targets:[ w; b ]
   in
@@ -46,7 +36,6 @@ let () =
   let print_err () =
     let output =
       H.run session
-        ~inputs:[]
         ~outputs:[ err ]
         ~targets:[ err ]
     in

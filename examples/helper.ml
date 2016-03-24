@@ -43,7 +43,7 @@ let print_tensors tensors ~names =
   List.zip_exn names tensors
   |> List.iter ~f:print_one_tensor
 
-let run session ~inputs ~outputs ~targets =
+let run ?(inputs = []) ?(outputs = []) ?(targets = []) session =
   let f n = Node.Name.to_string n.Node.name in
   Session.run
     session
