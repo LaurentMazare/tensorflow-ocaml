@@ -1,0 +1,2 @@
+PKG core ctypes ctypes.foreign
+FLG -short-paths
