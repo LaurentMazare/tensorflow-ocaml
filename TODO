@@ -23,7 +23,6 @@
 
 - Gradient Computation and Descent.
   - Register the gradients of more functions.
-  - Bugfix: do not call [is_useful] recursively on children where [registered_gradients] returned None.
 
 - Examples and tests.
   - Example with gradient descent, e.g. linear regression.

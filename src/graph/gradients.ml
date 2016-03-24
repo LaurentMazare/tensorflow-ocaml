@@ -67,13 +67,14 @@ let gradient node ~with_respect_to =
     | None -> ()
     | Some uses ->
       assert (uses > 0);
-      Hashtbl.add_multi contributions ~key:node_name ~data:gradient;
+      Option.iter gradient ~f:(fun gradient ->
+        Hashtbl.add_multi contributions ~key:node_name ~data:gradient);
       let uses = uses - 1 in
       Hashtbl.set uses_per_node ~key:node_name ~data:uses;
       if uses = 0
-      then begin
+      then
         let gradient =
-          Hashtbl.find_exn contributions node_name |> aggregate_contributions
+          Option.map (Hashtbl.find contributions node_name) ~f:aggregate_contributions
         in
         if Set.mem with_respect_to node_name
         then Hashtbl.add_exn output_gradients ~key:node_name ~data:gradient
@@ -82,13 +83,14 @@ let gradient node ~with_respect_to =
           match Registered_gradients.find op_name with
           | None -> raise (No_derivative_for_op op_name)
           | Some fn ->
-            List.iter2_exn
-              (fn ~self:node ~gradient)
-              (Node.packed_inputs node)
-              ~f:(fun gradient input ->
-                Option.iter gradient ~f:(fun gradient ->
-                  add_contribution input ~gradient))
-      end
+            match gradient with
+            | Some gradient ->
+              List.iter2_exn
+                (fn ~self:node ~gradient)
+                (Node.packed_inputs node)
+                ~f:(fun gradient input -> add_contribution input ~gradient)
+            | None ->
+              List.iter (Node.packed_inputs node) ~f:(add_contribution ~gradient:None)
   in 
   let one =
     Ops_m.const_float
@@ -97,7 +99,7 @@ let gradient node ~with_respect_to =
       [ 1. ]
     |> Ops.fill (Ops.shape node)
   in
-  add_contribution (P node) ~gradient:(Node.P one);
+  add_contribution (P node) ~gradient:(Some (Node.P one));
   output_gradients
 
 let gradient node ~with_respect_to_float ~with_respect_to_double =
@@ -116,8 +118,8 @@ let gradient node ~with_respect_to_float ~with_respect_to_double =
   let lookup ~type_ =
     List.map ~f:(fun node ->
       match Hashtbl.find table node.Node.name with
-      | Some gradient -> cast gradient ~type_
-      | None -> (* The node hasn't been reached from the root. *)
+      | Some (Some gradient) -> cast gradient ~type_
+      | Some None | None -> (* The node hasn't been reached from the root. *)
         Ops.zerosLike node
     )
   in
