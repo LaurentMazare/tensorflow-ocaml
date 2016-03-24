@@ -88,7 +88,7 @@ let matmul_gradient ~self ~gradient =
 
 let register_all () =
   List.iter ~f:(fun (name, f) ->
-    Registered_gradients.register_gradient (Node.Op_name.of_string name) f)
+    Registered_gradients.add (Node.Op_name.of_string name) f)
     [ "Add", { Registered_gradients.f = add_gradient }
     ; "Sub", { f = sub_gradient }
     ; "Abs", { f = abs_gradient }

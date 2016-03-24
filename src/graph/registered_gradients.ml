@@ -9,7 +9,7 @@ type t =
           -> Node.p option list)
   }
 
-let register_gradient op t =
+let add op t =
   let f ~self:(Node.P self) ~gradient:(Node.P gradient) =
     match self.output_type, gradient.output_type with
     | Node.Type.Double, Node.Type.Double -> t.f ~self ~gradient

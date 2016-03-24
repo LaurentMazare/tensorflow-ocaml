@@ -5,7 +5,7 @@ type t =
           -> Node.p option list)
   }
 
-val register_gradient
+val add
   :  Node.Op_name.t
   -> t
   -> unit
