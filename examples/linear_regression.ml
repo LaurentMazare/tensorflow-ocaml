@@ -23,22 +23,11 @@ let () =
   let b_assign = Ops.assign b (H.const_float [ n ] 0.) in
   let diff = Ops.matMul x w |> Ops.add b |> Ops.sub y in
   let err = Ops.matMul diff diff ~transpose_b:true in
-  let gradient_w, gradient_b =
-    Gradients.gradient err
-      ~with_respect_to_float:[ w; b ]
-      ~with_respect_to_double:[]
-    |> function
-    | [ gradient_w; gradient_b ], [] -> gradient_w, gradient_b
-    | _ -> assert false
+  let gd =
+    Optimizers.gradient_descent_minimizer ~alpha:0.0004 ~varsf:[ w; b ] err
   in
-  let alpha = Ops_m.f 0.0004 in
-  let gradient_w = Ops.reshape gradient_w (Ops.shape w) in
-  let gradient_b = Ops.reshape gradient_b (Ops.shape b) in
-  let gd_w = Ops.applyGradientDescent w alpha gradient_w in
-  let gd_b = Ops.applyGradientDescent b alpha gradient_b in
   let session =
-    H.create_session
-      [ P err; P w_assign; P b_assign; P gradient_w; P gradient_b; P gd_w; P gd_b ]
+    H.create_session (Node.[ P err; P w_assign; P b_assign ] @ gd)
   in
   let output =
     H.run session
@@ -66,10 +55,10 @@ let () =
   print_err ();
   for i = 0 to 1000 do
     let output =
-      H.run session
+      Wrapper.Session.run session
         ~inputs:[]
-        ~outputs:[ gd_w; gd_b ]
-        ~targets:[ gd_w; gd_b ]
+        ~outputs:[]
+        ~targets:(List.map gd ~f:(fun n -> Node.packed_name n |> Node.Name.to_string))
     in
     ignore output;
     if i % 100 = 0 then print_err ()

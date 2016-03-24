@@ -16,7 +16,9 @@
   - Variable initialisation
   - Add simple functions for const/scalar/arithmetic operations
 
-- Gradient Descent
+- Gradient Computation and Descent
+  - Register the gradients of more functions
+  - Get [Ops_gradients.register_all] to be called automatically.
 
 - Examples
   - Example with gradient descent, e.g. linear regression

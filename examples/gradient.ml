@@ -13,7 +13,7 @@ let () =
   let placeholder = Ops.placeholder ~name:"x" ~type_:Float () in
   let node =
     let open Ops_m in
-    fl [ 2.; 1.; 4. ] - placeholder - placeholder
+    vecf [ 2.; 1.; 4. ] - placeholder - placeholder
   in
   let gradient =
     Gradients.gradient node

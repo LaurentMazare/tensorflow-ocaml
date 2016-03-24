@@ -25,10 +25,15 @@ val (/) : [< `float | `double | `int32 | `int64 | `complex64 ] b
 val ( * ) : [< `float | `double | `int32 | `int64 | `complex64 ] b
 val ( *^) : [< `float | `double | `int32 | `complex64 ] b
 val ( *.) : [< `float | `double | `int32 | `complex64 ] b
+
+(* Scalar *)
 val f : float -> [ `float ] Node.t
 val d : float -> [ `double ] Node.t
-val fl : float list -> [ `float ] Node.t
-val dl : float list -> [ `double ] Node.t
 
+(* One dimension constant vector *)
+val vecf : float list -> [ `float ] Node.t
+val vecd : float list -> [ `double ] Node.t
+
+(* Variables *)
 val varf : int list -> [ `float ] Node.t
 val vard : int list -> [ `double ] Node.t
