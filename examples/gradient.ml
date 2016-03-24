@@ -4,7 +4,6 @@ module H = Helper
 module Tensor = Wrapper.Tensor
 
 let () =
-  Ops_gradients.register_all ();
   let input_tensor = Tensor.create1d TF_FLOAT 3 in
   let data = Tensor.data input_tensor Ctypes.float 3 in
   CArray.set data 0 1.;

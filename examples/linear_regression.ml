@@ -4,7 +4,6 @@ module H = Helper
 module Tensor = Wrapper.Tensor
 
 let () =
-  Ops_gradients.register_all ();
   let n = 3 in (* size of y *)
   let m = 2 in (* size of x *)
   let x = Ops_m.cf ~shape:[1; m] [ 1.; 2. ] in

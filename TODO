@@ -23,7 +23,6 @@
 
 - Gradient Computation and Descent.
   - Register the gradients of more functions.
-  - Get [Ops_gradients.register_all] to be called automatically.
   - Bugfix: do not call [is_useful] recursively on children where [registered_gradients] returned None.
 
 - Examples and tests.

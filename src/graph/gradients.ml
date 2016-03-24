@@ -2,25 +2,6 @@ open Core.Std
 
 exception No_derivative_for_op of Node.Op_name.t
 
-let registered_gradients = Node.Op_name.Table.create ()
-
-type t =
-  { f : 'a .
-          (  self:([< `float | `double] as 'a) Node.t
-          -> gradient:'a Node.t
-          -> Node.p option list)
-  }
-
-let register_gradient op t =
-  let f ~self:(Node.P self) ~gradient:(Node.P gradient) =
-    match self.output_type, gradient.output_type with
-    | Node.Type.Double, Node.Type.Double -> t.f ~self ~gradient
-    | Node.Type.Float, Node.Type.Float -> t.f ~self ~gradient
-    | _, _ ->
-      failwithf "Inconsistent types %s" (Node.Op_name.to_string op) ()
-  in
-  Hashtbl.set registered_gradients ~key:op ~data:f
-
 (* Return a table mapping 'useful node' names to the number of times they
    appear as input of other useful nodes.
    Nodes are useful in they are on a path between [node] and [with_respect_to]
@@ -98,7 +79,7 @@ let gradient node ~with_respect_to =
         then Hashtbl.add_exn output_gradients ~key:node_name ~data:gradient
         else
           let op_name = Node.packed_op_name node in
-          match Hashtbl.find registered_gradients op_name with
+          match Registered_gradients.find op_name with
           | None -> raise (No_derivative_for_op op_name)
           | Some fn ->
             List.iter2_exn
@@ -143,3 +124,4 @@ let gradient node ~with_respect_to_float ~with_respect_to_double =
   lookup with_respect_to_float ~type_:Node.Type.Float,
   lookup with_respect_to_double ~type_:Node.Type.Double
 
+let () = Ops_gradients.register_all ()
