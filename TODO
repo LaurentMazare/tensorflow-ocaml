@@ -1,24 +1,26 @@
-- Ops Generation:
-  - Handle number_attr in the code generator
+- Ops Generation.
+  - Handle number_attr in the code generator.
   - Switch to ocaml-protoc ?
 
-- Proper wrapper around wrapper.ml
-  - More functional and type-safe api
-  - Allow for multiple calls to extend graph
-  - Tensor wrapper
-    - Use bigarray rather than carray
-    - Pretty-printer for tensors
-    - Getter, accessor, initialization (store the dims ?)
-    - Do not expose the C tensor but create them when calling [Session.run] using
+- Proper wrapper around wrapper.ml.
+  - More functional and type-safe api.
+  - Store in [Session.t] the current nodes and automatically extend the graph on [Session.run].
+    - Remove [Session.extend_graph].
+  - Tensor wrapper.
+    - Use bigarray rather than carray.
+    - Pretty-printer for tensors.
+    - Getter, accessor, initialization (store the dims in [Tensor.t]).
+    - Only create a C tensor when calling [Session.run], store it in a hashtable until [Session.run] has completed.
       the same [CArray] or [Bigarray].
 
-- Safer/better impls for ops:
-  - Variable initialisation
-  - Add simple functions for const/scalar/arithmetic operations
+- Safer/better impls for ops.
+  - Variable initialisation.
+  - Add simple functions for const/scalar/arithmetic operations.
 
-- Gradient Computation and Descent
-  - Register the gradients of more functions
+- Gradient Computation and Descent.
+  - Register the gradients of more functions.
   - Get [Ops_gradients.register_all] to be called automatically.
+  - Bugfix: do not call [is_useful] recursively on children where [registered_gradients] returned None.
 
-- Examples
-  - Example with gradient descent, e.g. linear regression
+- Examples and tests.
+  - Example with gradient descent, e.g. linear regression.
