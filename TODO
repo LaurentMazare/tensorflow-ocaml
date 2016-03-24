@@ -1,14 +1,16 @@
 - Ops Generation:
   - Handle number_attr in the code generator
+  - Switch to ocaml-protoc ?
 
 - Proper wrapper around wrapper.ml
   - More functional and type-safe api
   - Allow for multiple calls to extend graph
-  - Make a copy of the input tensors passed to [Session.run]
   - Tensor wrapper
     - Use bigarray rather than carray
     - Pretty-printer for tensors
     - Getter, accessor, initialization (store the dims ?)
+    - Do not expose the C tensor but create them when calling [Session.run] using
+      the same [CArray] or [Bigarray].
 
 - Safer/better impls for ops:
   - Variable initialisation

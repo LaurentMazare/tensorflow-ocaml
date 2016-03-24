@@ -151,7 +151,7 @@ module Tensor = struct
     let data = CArray.make char size in
     let id = fresh_id () in
     let tensor =
-      tf_newtensor 1
+      tf_newtensor (data_type_to_int typ)
         (CArray.of_list int64_t [ Int64.of_int elts ] |> CArray.start)
         1
         (CArray.start data |> to_voidp)
@@ -175,7 +175,7 @@ module Tensor = struct
     let data = CArray.make char size in
     let id = fresh_id () in
     let tensor =
-      tf_newtensor 1 (* 1 = float *)
+      tf_newtensor (data_type_to_int typ)
         (CArray.of_list int64_t [ Int64.of_int xelts; Int64.of_int yelts ] |> CArray.start)
         2
         (CArray.start data |> to_voidp)
@@ -411,6 +411,7 @@ module Session = struct
     let input_tensors =
       List.map
         (fun (tensor : Tensor.t) ->
+          Tensor.assert_handled_by_ocaml tensor;
           (* The memory will be handled by the C++ side. *)
           tensor.handled_by_ocaml <- false;
           tensor.tensor)
