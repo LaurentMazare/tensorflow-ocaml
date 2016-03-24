@@ -405,7 +405,7 @@ module Session = struct
       status;
     result_or_error status ()
 
-  let run t ~inputs ~outputs ~targets =
+  let run ?(inputs = []) ?(outputs = []) ?(targets = []) t =
     let status = Status.create () in
     let input_names, input_tensors = List.split inputs in
     let input_tensors =

@@ -93,9 +93,9 @@ module Session : sig
     -> unit result
 
   val run
-    :  t
-    -> inputs:(string * Tensor.t) list
-    -> outputs:string list
-    -> targets:string list
+    :  ?inputs:(string * Tensor.t) list
+    -> ?outputs:string list
+    -> ?targets:string list
+    -> t
     -> Tensor.t list result
 end

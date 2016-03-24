@@ -56,8 +56,6 @@ let () =
   for i = 0 to 1000 do
     let output =
       Wrapper.Session.run session
-        ~inputs:[]
-        ~outputs:[]
         ~targets:(List.map gd ~f:(fun n -> Node.packed_name n |> Node.Name.to_string))
     in
     ignore output;
