@@ -12,7 +12,7 @@ let () =
   let placeholder = Ops.placeholder ~name:"x" ~type_:Float () in
   let variable = Ops_m.varf [ 3 ] in
   let assign =
-    Ops.assign variable (Ops_m.const_float ~type_:Float [ 8.; 0.; 1. ])
+    Ops.assign variable (Ops_m.cf [ 8.; 0.; 1. ])
   in
   let node =
     Ops.sub assign placeholder
