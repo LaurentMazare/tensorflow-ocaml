@@ -88,3 +88,25 @@ let rec prepare_node t node =
    (node, h)
 ;;
 
+let prepare_graph t l =
+  let l =
+    List.fold l ~init:[]
+      ~f:(fun acc node ->
+        fst (prepare_node t node)::acc)
+  in
+  Hashtbl.clear t.current_table;
+  let rec build_variables i =
+    match Hashtbl.find t.uninitialised_variables i with
+    | None -> []
+    | l ->
+     l::build_variables (i + 1)
+  in
+  let _uninitialised_variables = build_variables 0 in
+  Hashtbl.clear t.uninitialised_variables;
+  let protobuf = Node_protobuf.of_nodes' t.exported_nodes l in
+  Wrapper.Session.extend_graph t.session protobuf
+
+
+
+
+

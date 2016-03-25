@@ -121,11 +121,11 @@ let of_attribute (type a) name value (output_type : a Node.Type.t) =
   ; value = Some value
   }
 
-let of_nodes ts =
-  let nodes = Node.Name.Table.create () in
+let of_nodes' nodes ts =
+  let output = ref [] in
   let rec walk p =
     let P t = p in
-    if Hashtbl.mem nodes t.name
+    if Hashtbl.mem nodes (Node.id t)
     then ()
     else begin
       let attr =
@@ -140,14 +140,14 @@ let of_nodes ts =
         ; attr
         }
       in
-      Hashtbl.add_exn nodes ~key:t.name ~data:node;
+      Hashtbl.add_exn nodes ~key:(Node.id t) ~data:p;
+      output := node :: !output;
       List.iter t.inputs ~f:walk
     end
   in
   List.iter ts ~f:walk;
-  let nodes = Hashtbl.to_alist nodes |> List.map ~f:snd in
   let graph_def =
-    { Graph_def.node = nodes
+    { Graph_def.node = !output
     ; versions =
       Some
         { Version_def.producer = Some (Int32.of_int_exn 8)
@@ -161,5 +161,9 @@ let of_nodes ts =
   gen_graph_def graph_def
   |> Piqirun.to_string
   |> Protobuf.of_string
+
+let of_nodes ts =
+  let nodes = Node.Id.Table.create () in
+  of_nodes' nodes ts
 
 let of_node t = of_nodes [ P t ]
