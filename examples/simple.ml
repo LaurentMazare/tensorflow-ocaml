@@ -6,7 +6,7 @@ let () =
   Bigarray.Genarray.set data [| 0 |] 1.;
   Bigarray.Genarray.set data [| 1 |] 2.;
   Bigarray.Genarray.set data [| 2 |] 6.;
-  let input_tensor = Tensor.P { data; kind = Bigarray.float32 } in
+  let input_tensor = Tensor.P data in
   let placeholder = Ops.placeholder ~name:"x" ~type_:Float () in
   let node =
     Ops_m.(cf [ 2.; 1.; 4. ] - placeholder)
