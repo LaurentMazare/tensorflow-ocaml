@@ -59,6 +59,7 @@ module Attribute = struct
     { name : string
     ; attr_type : attr_type
     ; has_default_value : bool
+    ; match_input_length : Input.t option
     }
 
   let caml_name t =
@@ -98,26 +99,37 @@ module Attribute = struct
     | List `shape -> "List (Shape " ^ caml_name ^ ")"
     | List `type_ -> "List (Type " ^ caml_name ^ ")"
 
-  let mli t =
-    sprintf "%s%s:%s"
-      (if t.has_default_value then "?" else "")
-      (caml_name t)
-      (caml_type t.attr_type)
+  let mli t (p : ('a, unit, string, unit) format4 -> 'a) =
+    match t.match_input_length with
+    | None ->
+      p "  -> %s%s:%s"
+        (if t.has_default_value then "?" else "")
+        (caml_name t)
+        (caml_type t.attr_type)
+    | Some _ -> ()
 
-  let ml_def t =
-    sprintf "%s%s"
-      (if t.has_default_value then "?" else "~")
-      (caml_name t)
+  let ml_def t (p : ('a, unit, string, unit) format4 -> 'a) =
+    match t.match_input_length with
+    | None ->
+      p "    %s%s"
+        (if t.has_default_value then "?" else "~")
+        (caml_name t)
+    | Some _ -> ()
 
   let ml_apply t attribute_var =
     let caml_name = caml_name t in
     let updated_attributes =
+      let caml_name =
+        match t.match_input_length with
+        | None -> caml_name
+        | Some input -> sprintf "(List.length %s)" (Input.caml_name input)
+      in
       sprintf "(\"%s\", %s) :: %s"
         t.name
         (constr caml_name t.attr_type)
         attribute_var
     in
-    if t.has_default_value
+    if t.has_default_value && t.match_input_length = None
     then
       sprintf "match %s with | None -> %s | Some %s -> %s"
         caml_name
@@ -184,12 +196,20 @@ module Op = struct
         else Some (name, allowed_values)
       | _ -> None)
 
-  let get_attr (attr : Op_def_piqi.Op_def_attr_def.t) =
+  let get_attr (attr : Op_def_piqi.Op_def_attr_def.t) ~inputs =
     Option.bind attr.type_ Attribute.of_dtype
     |> Option.map ~f:(fun attr_type ->
-      { Attribute.name = Option.value_exn attr.name
+      let name = Option.value_exn attr.name in
+      let match_input_length =
+        List.find inputs ~f:(fun (input : Input.t) ->
+          match input.number_attr with
+          | Some number when number = name -> true
+          | _ -> false)
+      in
+      { Attribute.name
       ; attr_type
       ; has_default_value = Option.is_some attr.default_value
+      ; match_input_length
       })
 
   let create (op : Op_def_piqi.Op_def.t) =
@@ -221,7 +241,7 @@ module Op = struct
         ; inputs
         ; output_type
         ; output_type_name
-        ; attributes = List.filter_map op.attr ~f:get_attr
+        ; attributes = List.filter_map op.attr ~f:(get_attr ~inputs)
         ; summary = op.summary
         ; description = op.description
         }
@@ -274,7 +294,7 @@ let gen_mli ops =
     if needs_variable_for_output_type
     then p "  -> type_ : %s Node.Type.t" (Type.to_string op.output_type);
     List.iter op.attributes ~f:(fun attribute ->
-      p "  -> %s" (Attribute.mli attribute));
+      Attribute.mli attribute p);
     List.iter op.inputs ~f:(fun input ->
       let maybe_list = if Option.is_some input.number_attr then " list" else "" in
       p "  -> %s Node.t%s" (Type.to_string input.type_) maybe_list);
@@ -303,7 +323,7 @@ let gen_ml ops =
     if needs_variable_for_output_type
     then p "    ~type_";
     List.iter op.attributes ~f:(fun attribute ->
-      p "    %s" (Attribute.ml_def attribute));
+      Attribute.ml_def attribute p);
     List.iter op.inputs ~f:(fun input ->
       let name = Input.caml_name input in
       let maybe_list = if Option.is_some input.number_attr then " list" else "" in

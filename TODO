@@ -1,5 +1,4 @@
 - Ops Generation.
-  - Handle number_attr in the code generator.
   - Switch to ocaml-protoc ?
 
 - Proper wrapper around wrapper.ml.

@@ -30,12 +30,11 @@ let add
 
 let addN
     ?(name = "AddN")
-    ~n
     (inputs : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t list)
   =
   let attributes = [ "T", Type (P (List.hd inputs).output_type) ] in
   let attributes =
-    ("N", Int n) :: attributes
+    ("N", Int (List.length inputs)) :: attributes
   in
   { name = Name.make_fresh ~name
   ; op_name = Op_name.of_string "AddN"
@@ -689,13 +688,12 @@ let complexAbs
 
 let concat
     ?(name = "Concat")
-    ~n
     (concat_dim : [ `int32 ] t)
     (values : 't t list)
   =
   let attributes = [ "T", Type (P (List.hd values).output_type) ] in
   let attributes =
-    ("N", Int n) :: attributes
+    ("N", Int (List.length values)) :: attributes
   in
   { name = Name.make_fresh ~name
   ; op_name = Op_name.of_string "Concat"
@@ -707,13 +705,12 @@ let concat
 
 let concatOffset
     ?(name = "ConcatOffset")
-    ~n
     (concat_dim : [ `int32 ] t)
     (shape : [ `int32 ] t list)
   =
   let attributes = [] in
   let attributes =
-    ("N", Int n) :: attributes
+    ("N", Int (List.length shape)) :: attributes
   in
   { name = Name.make_fresh ~name
   ; op_name = Op_name.of_string "ConcatOffset"
@@ -1123,13 +1120,12 @@ let dynamicPartition
 
 let dynamicStitch
     ?(name = "DynamicStitch")
-    ~n
     (indices : [ `int32 ] t list)
     (data : 't t list)
   =
   let attributes = [ "T", Type (P (List.hd data).output_type) ] in
   let attributes =
-    ("N", Int n) :: attributes
+    ("N", Int (List.length indices)) :: attributes
   in
   { name = Name.make_fresh ~name
   ; op_name = Op_name.of_string "DynamicStitch"
@@ -2201,12 +2197,11 @@ let mean
 
 let mergeSummary
     ?(name = "MergeSummary")
-    ~n
     (inputs : [ `string ] t list)
   =
   let attributes = [] in
   let attributes =
-    ("N", Int n) :: attributes
+    ("N", Int (List.length inputs)) :: attributes
   in
   { name = Name.make_fresh ~name
   ; op_name = Op_name.of_string "MergeSummary"
@@ -2412,12 +2407,11 @@ let oneHot
 
 let pack
     ?(name = "Pack")
-    ~n
     (values : 't t list)
   =
   let attributes = [ "T", Type (P (List.hd values).output_type) ] in
   let attributes =
-    ("N", Int n) :: attributes
+    ("N", Int (List.length values)) :: attributes
   in
   { name = Name.make_fresh ~name
   ; op_name = Op_name.of_string "Pack"
@@ -2908,13 +2902,12 @@ let refNextIteration
 
 let refSelect
     ?(name = "RefSelect")
-    ~n
     (index : [ `int32 ] t)
     (inputs : 't t list)
   =
   let attributes = [ "T", Type (P (List.hd inputs).output_type) ] in
   let attributes =
-    ("N", Int n) :: attributes
+    ("N", Int (List.length inputs)) :: attributes
   in
   { name = Name.make_fresh ~name
   ; op_name = Op_name.of_string "RefSelect"
@@ -3402,12 +3395,11 @@ let shape
 
 let shapeN
     ?(name = "ShapeN")
-    ~n
     (input : 't t list)
   =
   let attributes = [ "T", Type (P (List.hd input).output_type) ] in
   let attributes =
-    ("N", Int n) :: attributes
+    ("N", Int (List.length input)) :: attributes
   in
   { name = Name.make_fresh ~name
   ; op_name = Op_name.of_string "ShapeN"

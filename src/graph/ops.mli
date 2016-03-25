@@ -21,7 +21,6 @@ val add
 (* Add all input tensors element wise. *)
 val addN
   :  ?name:string
-  -> n:int
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t list
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
 
@@ -517,7 +516,6 @@ val complexAbs
 (* Concatenates tensors along one dimension. *)
 val concat
   :  ?name:string
-  -> n:int
   -> [ `int32 ] Node.t
   -> 't Node.t list
   -> 't Node.t
@@ -533,7 +531,6 @@ concat_offset(2, [x, y, z]) => [0, 0, 0], [0, 2, 0], [0, 5, 0]
 ``` *)
 val concatOffset
   :  ?name:string
-  -> n:int
   -> [ `int32 ] Node.t
   -> [ `int32 ] Node.t list
   -> [ `int32 ] Node.t
@@ -987,7 +984,6 @@ For example:
 </div> *)
 val dynamicStitch
   :  ?name:string
-  -> n:int
   -> [ `int32 ] Node.t list
   -> 't Node.t list
   -> 't Node.t
@@ -1745,7 +1741,6 @@ When the Op is run, it reports an `InvalidArgument` error if multiple values
 in the summaries to merge use the same tag. *)
 val mergeSummary
   :  ?name:string
-  -> n:int
   -> [ `string ] Node.t list
   -> [ `string ] Node.t
 
@@ -1985,7 +1980,6 @@ tensor in `values` and shape `[N] + values[0].shape`. The output satisfies
 This is the opposite of `unpack`. *)
 val pack
   :  ?name:string
-  -> n:int
   -> 't Node.t list
   -> 't Node.t
 
@@ -2318,7 +2312,6 @@ val refNextIteration
 (* Forwards the `index`th element of `inputs` to `output`. *)
 val refSelect
   :  ?name:string
-  -> n:int
   -> [ `int32 ] Node.t
   -> 't Node.t list
   -> 't Node.t
@@ -2899,7 +2892,6 @@ val shape
 (* This operation returns N 1-D integer tensors representing shape of `input[i]s`. *)
 val shapeN
   :  ?name:string
-  -> n:int
   -> 't Node.t list
   -> [ `int32 ] Node.t
 
