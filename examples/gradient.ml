@@ -1,13 +1,12 @@
 open Core.Std
 module H = Helper
-module Tensor = Wrapper.Tensor
 
 let () =
-  let input_tensor = Tensor.create1d TF_FLOAT 3 in
-  let data = Tensor.data input_tensor Bigarray.float32 3 in
-  Bigarray.Array1.set data 0 1.;
-  Bigarray.Array1.set data 1 2.;
-  Bigarray.Array1.set data 2 6.;
+  let data = Bigarray.Genarray.create Bigarray.float32 Bigarray.c_layout [| 3 |] in
+  Bigarray.Genarray.set data [| 0 |] 1.;
+  Bigarray.Genarray.set data [| 1 |] 2.;
+  Bigarray.Genarray.set data [| 2 |] 6.;
+  let input_tensor = Tensor.P { data; kind = Bigarray.float32 } in
   let placeholder = Ops.placeholder ~name:"x" ~type_:Float () in
   let node =
     let open Ops_m in

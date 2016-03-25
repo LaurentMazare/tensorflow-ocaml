@@ -1,14 +1,12 @@
-open Wrapper
 module H = Helper
-module Tensor = Wrapper.Tensor
 module Session = Wrapper.Session
 
 let () =
-  let input_tensor = Tensor.create1d TF_FLOAT 3 in
-  let data = Tensor.data input_tensor Bigarray.float32 3 in
-  Bigarray.Array1.set data 0 1.;
-  Bigarray.Array1.set data 1 2.;
-  Bigarray.Array1.set data 2 6.;
+  let data = Bigarray.Genarray.create Bigarray.float32 Bigarray.c_layout [| 3 |] in
+  Bigarray.Genarray.set data [| 0 |] 1.;
+  Bigarray.Genarray.set data [| 1 |] 2.;
+  Bigarray.Genarray.set data [| 2 |] 6.;
+  let input_tensor = Tensor.P { data; kind = Bigarray.float32 } in
   let placeholder = Ops.placeholder ~name:"x" ~type_:Float () in
   let node =
     Ops_m.(cf [ 2.; 1.; 4. ] - placeholder)

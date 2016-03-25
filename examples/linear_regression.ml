@@ -1,6 +1,5 @@
 open Core.Std
 module H = Helper
-module Tensor = Wrapper.Tensor
 
 let () =
   let n = 3 in (* size of y *)

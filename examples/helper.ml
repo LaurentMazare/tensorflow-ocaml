@@ -16,27 +16,28 @@ let const_float shape f =
     ~shape
     (List.init size ~f:(const f))
 
-let print_one_tensor (name, tensor) =
-  Printf.printf "%s:\n%!" name;
-  match Tensor.num_dims tensor with
-  | 1 ->
-    let dim = Tensor.dim tensor 0 in
-    let data = Tensor.data tensor Bigarray.float32 dim in
-    for d = 0 to dim - 1 do
-      Printf.printf "%d %f\n%!" d (Bigarray.Array1.get data d)
-    done
-  | 2 ->
-    let d0 = Tensor.dim tensor 0 in
-    let d1 = Tensor.dim tensor 1 in
-    let data = Tensor.data tensor Bigarray.float32 (d0 * d1) in
-    for x = 0 to d0 - 1 do
-      Printf.printf "%d " x;
-      for y = 0 to d1 - 1 do
-        Printf.printf "%f " (Bigarray.Array1.get data (x+d0*y))
-      done;
-      Printf.printf "\n%!";
-    done
-  | n -> Printf.printf "%d dims\n%!" n
+let print_one_tensor (name, Tensor.P tensor) =
+  match tensor.kind with
+  | Bigarray.Float32 ->
+    let data = tensor.data in
+    Printf.printf "%s:\n%!" name;
+    begin
+      match Bigarray.Genarray.dims data with
+      | [| dim |] ->
+        for d = 0 to dim - 1 do
+          Printf.printf "%d %f\n%!" d (Bigarray.Genarray.get data [| d |])
+        done
+      | [| d0; d1 |] ->
+        for x = 0 to d0 - 1 do
+          Printf.printf "%d " x;
+          for y = 0 to d1 - 1 do
+            Printf.printf "%f " (Bigarray.Genarray.get data [| x; y |])
+          done;
+          Printf.printf "\n%!";
+        done
+      | otherwise -> Printf.printf "%d dims\n%!" (Array.length otherwise)
+    end
+  | _ -> Printf.printf "Unsupported kind"
 
 let print_tensors tensors ~names =
   List.zip_exn names tensors

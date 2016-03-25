@@ -1,6 +1,5 @@
 open Ctypes
 open Foreign
-let verbose = false
 
 (* TF_TENSOR *)
 type tf_tensor = unit ptr
@@ -46,7 +45,7 @@ let data_type_to_int = function
   | TF_UINT16 -> 17
   | Unknown n -> n
 
-let int_of_data_type = function
+let int_to_data_type = function
   | 1 -> TF_FLOAT
   | 2 -> TF_DOUBLE
   | 3 -> TF_INT32
@@ -94,140 +93,6 @@ let tf_tensordata =
 
 let tf_tensortype =
   foreign "TF_TensorType" (tf_tensor @-> returning int)
-
-module Tensor = struct
-  let fresh_id =
-    let cnt = ref 0 in
-    fun () -> incr cnt; !cnt
-
-  type t =
-    { tensor : tf_tensor
-    ; mutable handled_by_ocaml : bool
-    ; id : int
-    (* Keep a reference to the data array to avoid it being GCed. *)
-    ; data : char CArray.t option
-    }
-
-  (* Keep references to the allocated data until they have been deallocated. *)
-  let live_tensors = Hashtbl.create 1024
-
-  let deallocate _ _ id =
-    let id = raw_address_of_ptr id |> Nativeint.to_int in
-    if verbose
-    then Printf.printf "Deallocating tensor %d\n%!" id;
-    Hashtbl.remove live_tensors id
-
-  let add_finaliser t =
-    Gc.finalise
-      (fun t ->
-        if t.handled_by_ocaml
-        then tf_deletetensor t.tensor)
-      t;
-    t
-
-  let sizeof = function
-    | TF_FLOAT -> 4
-    | TF_DOUBLE -> 8
-    | TF_INT32 -> 4
-    | TF_UINT16
-    | TF_INT16 -> 2
-    | TF_UINT8
-    | TF_INT8 -> 1
-    | TF_INT64 -> 8
-    | TF_STRING
-    | TF_COMPLEX
-    | TF_BOOL
-    | TF_QINT8
-    | TF_QUINT8
-    | TF_QINT32
-    | TF_BFLOAT16
-    | TF_QINT16
-    | TF_QUINT16
-    | Unknown _ -> failwith "Unsupported tensor type"
-
-  let create1d typ elts =
-    let elt_size = sizeof typ in
-    let size = elts * elt_size in
-    let data = CArray.make char size in
-    let id = fresh_id () in
-    let tensor =
-      tf_newtensor (data_type_to_int typ)
-        (CArray.of_list int64_t [ Int64.of_int elts ] |> CArray.start)
-        1
-        (CArray.start data |> to_voidp)
-        (Unsigned.Size_t.of_int size)
-        deallocate
-        (Nativeint.of_int id |> ptr_of_raw_address)
-    in
-    let t =
-      { tensor
-      ; handled_by_ocaml = true
-      ; id
-      ; data = Some data
-      }
-    in
-    Hashtbl.add live_tensors id t;
-    add_finaliser t
-
-  let create2d typ xelts yelts =
-    let elt_size = sizeof typ in
-    let size = xelts * yelts * elt_size in
-    let data = CArray.make char size in
-    let id = fresh_id () in
-    let tensor =
-      tf_newtensor (data_type_to_int typ)
-        (CArray.of_list int64_t [ Int64.of_int xelts; Int64.of_int yelts ] |> CArray.start)
-        2
-        (CArray.start data |> to_voidp)
-        (Unsigned.Size_t.of_int size)
-        deallocate
-        (Nativeint.of_int id |> ptr_of_raw_address)
-    in
-    let t =
-      { tensor
-      ; handled_by_ocaml = true
-      ; id
-      ; data = Some data
-      }
-    in
-    Hashtbl.add live_tensors id t;
-    add_finaliser t
-
-  let of_c_tensor tensor =
-    let id = fresh_id () in
-    add_finaliser
-      { tensor
-      ; handled_by_ocaml = true
-      ; id
-      ; data = None
-      }
-
-  let assert_handled_by_ocaml t =
-    if not t.handled_by_ocaml
-    then failwith "This tensor is not handled by ocaml anymore."
-
-  let num_dims t =
-    assert_handled_by_ocaml t;
-    tf_numdims t.tensor
-
-  let dim t =
-    assert_handled_by_ocaml t;
-    tf_dim t.tensor
-
-  let byte_size t =
-    assert_handled_by_ocaml t;
-    tf_tensorbytesize t.tensor |> Unsigned.Size_t.to_int
-
-  let data t kind len =
-    assert_handled_by_ocaml t;
-    bigarray_of_ptr array1 len kind
-      (tf_tensordata t.tensor |> Ctypes.from_voidp (typ_of_bigarray_kind kind))
-
-  let data_type t =
-    assert_handled_by_ocaml t;
-    tf_tensortype t.tensor
-    |> int_of_data_type
-end
 
 (* TF_STATUS *)
 type tf_status = unit ptr
@@ -406,18 +271,73 @@ module Session = struct
       status;
     result_or_error status ()
 
+  let sizeof = function
+    | TF_FLOAT -> 4
+    | TF_DOUBLE -> 8
+    | TF_INT32 -> 4
+    | TF_UINT16
+    | TF_INT16 -> 2
+    | TF_UINT8
+    | TF_INT8 -> 1
+    | TF_INT64 -> 8
+    | TF_STRING
+    | TF_COMPLEX
+    | TF_BOOL
+    | TF_QINT8
+    | TF_QUINT8
+    | TF_QINT32
+    | TF_BFLOAT16
+    | TF_QINT16
+    | TF_QUINT16
+    | Unknown _ -> failwith "Unsupported tensor type"
+
+  let data_type_of_kind (type a) (type b) (kind : (a, b) Bigarray.kind) =
+    match kind with
+    | Bigarray.Float32 -> TF_FLOAT
+    | Bigarray.Float64 -> TF_DOUBLE
+    | Bigarray.Int64 -> TF_INT64
+    | Bigarray.Int32 -> TF_INT32
+    | _ -> failwith "Unsupported yet"
+
+  let c_tensor_of_tensor (Tensor.P tensor) =
+    let deallocate _ _ _ = (* TODO *)
+      ignore (tf_deletetensor, ())
+    in
+    let dim_array =
+      Bigarray.Genarray.dims tensor.data
+    in
+    let dims =
+      Array.to_list dim_array
+      |> List.map Int64.of_int
+      |> CArray.of_list int64_t
+      |> CArray.start
+    in
+    let data_type = data_type_of_kind tensor.kind in
+    let size = Array.fold_left ( * ) 1 dim_array * sizeof data_type in
+    tf_newtensor (data_type_to_int data_type)
+      dims
+      (Bigarray.Genarray.num_dims tensor.data)
+      (bigarray_start genarray tensor.data |> to_voidp)
+      (Unsigned.Size_t.of_int size)
+      deallocate
+      null
+
+  let tensor_of_c_tensor c_tensor =
+    let num_dims = tf_numdims c_tensor in
+    let dims = Array.init num_dims (fun i -> tf_dim c_tensor i) in
+    let kind =
+      match tf_tensortype c_tensor |> int_to_data_type with
+      | TF_FLOAT -> Bigarray.float32
+      | _ -> failwith "TODO: support other tensor types"
+    in
+    let data = tf_tensordata c_tensor |> from_voidp (typ_of_bigarray_kind kind) in
+    let data = bigarray_of_ptr genarray dims kind data in
+    Tensor.P { data; kind }
+
   let run ?(inputs = []) ?(outputs = []) ?(targets = []) t =
     let status = Status.create () in
     let input_names, input_tensors = List.split inputs in
-    let input_tensors =
-      List.map
-        (fun (tensor : Tensor.t) ->
-          Tensor.assert_handled_by_ocaml tensor;
-          (* The memory will be handled by the C++ side. *)
-          tensor.handled_by_ocaml <- false;
-          tensor.tensor)
-        input_tensors
-    in
+    let input_tensors = List.map c_tensor_of_tensor input_tensors in
     let output_len = List.length outputs in
     let output_tensors = CArray.make tf_tensor output_len in
     tf_run
@@ -433,7 +353,7 @@ module Session = struct
       status;
     let output_tensors =
       CArray.to_list output_tensors
-      |> List.map Tensor.of_c_tensor
+      |> List.map tensor_of_c_tensor
     in
     result_or_error status output_tensors
 end
@@ -443,4 +363,5 @@ let () =
     ( data_type_to_int
     , tf_settarget
     , tf_setconfig
+    , tf_tensorbytesize
     , Status.set)

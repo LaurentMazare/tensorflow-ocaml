@@ -8,11 +8,11 @@ let ok_exn (result : 'a Session.result) ~context =
     |> failwith
 
 let () =
-  let input_tensor = Tensor.create1d TF_FLOAT 3 in
-  let data = Tensor.data input_tensor Bigarray.float32 3 in
-  Bigarray.Array1.set data 0 1.;
-  Bigarray.Array1.set data 1 2.;
-  Bigarray.Array1.set data 2 6.;
+  let data = Bigarray.Genarray.create Bigarray.float32 Bigarray.c_layout [| 3 |] in
+  Bigarray.Genarray.set data [| 0 |] 1.;
+  Bigarray.Genarray.set data [| 1 |] 2.;
+  Bigarray.Genarray.set data [| 2 |] 6.;
+  let input_tensor = Tensor.P { data; kind = Bigarray.float32 } in
   let session =
     Session.create ()
     |> ok_exn ~context:"session creation"
@@ -29,12 +29,4 @@ let () =
       ~targets:[ "add" ]
     |> ok_exn ~context:"session run"
   in
-  match output with
-  | [ output_tensor ] ->
-    let dim = Tensor.dim output_tensor 0 in
-    let data = Tensor.data output_tensor Bigarray.float32 dim in
-    for d = 0 to dim - 1 do
-      Printf.printf "%d %f\n%!" d (Bigarray.Array1.get data d)
-    done
-  | [] | _ :: _ :: _ -> assert false
-
+  Helper.print_tensors output ~names:[ "load" ]

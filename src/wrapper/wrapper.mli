@@ -18,28 +18,6 @@ type data_type =
   | TF_UINT16
   | Unknown of int
 
-module Tensor : sig
-  type t
-
-  val create1d : data_type -> int -> t
-
-  val create2d : data_type -> int -> int -> t
-
-  val num_dims : t -> int
-
-  val dim : t -> int -> int
-
-  val byte_size : t -> int
-
-  val data
-    :  t
-    -> ('a, 'b) Bigarray.kind
-    -> int
-    -> ('a, 'b, Bigarray.c_layout) Bigarray.Array1.t
-
-  val data_type : t -> data_type
-end
-
 module Session_options : sig
   type t
 
@@ -90,9 +68,9 @@ module Session : sig
     -> unit result
 
   val run
-    :  ?inputs:(string * Tensor.t) list
+    :  ?inputs:(string * Tensor.p) list
     -> ?outputs:string list
     -> ?targets:string list
     -> t
-    -> Tensor.t list result
+    -> Tensor.p list result
 end

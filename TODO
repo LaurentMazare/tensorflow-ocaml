@@ -18,6 +18,7 @@
     - When calling [Session.run], we go through the graph to upload new nodes, also get new var nodes
       and call [Session.run] a first time to perform initialization.
   - Add simple functions for const/scalar/arithmetic operations.
+  - Add src/graph/node.mli
 
 - Gradient Computation and Descent.
   - Register the gradients of more functions.
