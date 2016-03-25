@@ -1,6 +1,7 @@
 open Ctypes
 open Foreign
 
+let verbose = false
 (* TF_TENSOR *)
 type tf_tensor = unit ptr
 let tf_tensor : tf_tensor typ = ptr void
@@ -299,10 +300,20 @@ module Session = struct
     | Bigarray.Int32 -> TF_INT32
     | _ -> failwith "Unsupported yet"
 
-  let c_tensor_of_tensor (Tensor.P tensor) =
-    let deallocate _ _ _ = (* TODO *)
-      ignore (tf_deletetensor, ())
-    in
+  let fresh_id =
+    let cnt = ref 0 in
+    fun () -> incr cnt; !cnt
+
+  let live_tensors = Hashtbl.create 1024
+  let deallocate _ _ id =
+    let id = raw_address_of_ptr id |> Nativeint.to_int in
+    if verbose
+    then Printf.printf "Deallocating tensor %d\n%!" id;
+    Hashtbl.remove live_tensors id
+
+  let c_tensor_of_tensor packed_tensor =
+    let Tensor.P tensor = packed_tensor in
+    let id = fresh_id () in
     let dim_array =
       Bigarray.Genarray.dims tensor.data
     in
@@ -314,13 +325,14 @@ module Session = struct
     in
     let data_type = data_type_of_kind tensor.kind in
     let size = Array.fold_left ( * ) 1 dim_array * sizeof data_type in
+    Hashtbl.add live_tensors id packed_tensor;
     tf_newtensor (data_type_to_int data_type)
       dims
       (Bigarray.Genarray.num_dims tensor.data)
       (bigarray_start genarray tensor.data |> to_voidp)
       (Unsigned.Size_t.of_int size)
       deallocate
-      null
+      (Nativeint.of_int id |> ptr_of_raw_address)
 
   let tensor_of_c_tensor c_tensor =
     let num_dims = tf_numdims c_tensor in
