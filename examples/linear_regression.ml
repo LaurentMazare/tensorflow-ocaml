@@ -19,7 +19,7 @@ let () =
     Ops.square (xs *^ w + b - y) |> reduce_mean
   in
   let gd =
-    Optimizers.gradient_descent_minimizer ~alpha:0.0004 ~varsf:[ w; b ] err
+    Optimizers.gradient_descent_minimizer ~alpha:0.04 ~varsf:[ w; b ] err
   in
   let session =
     H.create_session (Node.[ P err; P w_assign; P b_assign ] @ gd)
@@ -38,7 +38,7 @@ let () =
     H.print_tensors output ~names:[ "err" ]
   in
   print_err ();
-  for i = 0 to 1000 do
+  for i = 0 to 500 do
     let output =
       Wrapper.Session.run session
         ~targets:(List.map gd ~f:(fun n -> Node.packed_name n |> Node.Name.to_string))
