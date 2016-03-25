@@ -55,3 +55,6 @@ val one32 : [ `int32 ] Node.t
 val zero32 : [ `int32 ] Node.t
 
 val range : [ `int32 ] Node.t -> [ `int32 ] Node.t
+
+val broadcast_gradient_args
+  : [ `int32 ] Node.t -> [ `int32 ] Node.t -> [ `int32 ] Node.t * [ `int32 ] Node.t

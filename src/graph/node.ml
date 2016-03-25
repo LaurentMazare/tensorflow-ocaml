@@ -107,7 +107,7 @@ type 'a t =
   ; output_type : 'a Type.t
   ; inputs : p list
   ; attributes : (string * attr) list
-  ; output_name : string option (* Only used for multiple outputs. *)
+  ; output_idx : int option (* Only used for multiple outputs. *)
   }
 and p = P : _ t -> p
 

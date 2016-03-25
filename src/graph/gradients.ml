@@ -51,7 +51,7 @@ let aggregate_contributions = function
       ; output_type
       ; inputs
       ; attributes
-      ; output_name = None
+      ; output_idx = None
       }
 
 (* Compute the gradients of [node] with respect to [arg] using backpropagation.

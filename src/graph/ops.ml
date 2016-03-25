@@ -11,7 +11,7 @@ let abs
   ; output_type = x.output_type
   ; inputs = [ P x ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let add
@@ -25,7 +25,7 @@ let add
   ; output_type = x.output_type
   ; inputs = [ P x; P y ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let addN
@@ -41,7 +41,7 @@ let addN
   ; output_type = (List.hd inputs).output_type
   ; inputs = List.map (fun n -> P n) inputs
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let adjustContrast
@@ -57,7 +57,7 @@ let adjustContrast
   ; output_type = Type.Float
   ; inputs = [ P images; P contrast_factor; P min_value; P max_value ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let adjustContrastv2
@@ -71,7 +71,7 @@ let adjustContrastv2
   ; output_type = Type.Float
   ; inputs = [ P images; P contrast_factor ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let all
@@ -89,7 +89,7 @@ let all
   ; output_type = Type.Bool
   ; inputs = [ P input; P reduction_indices ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let any
@@ -107,7 +107,7 @@ let any
   ; output_type = Type.Bool
   ; inputs = [ P input; P reduction_indices ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let applyAdagrad
@@ -127,7 +127,7 @@ let applyAdagrad
   ; output_type = var.output_type
   ; inputs = [ P var; P accum; P lr; P grad ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let applyAdam
@@ -153,7 +153,7 @@ let applyAdam
   ; output_type = var.output_type
   ; inputs = [ P var; P m; P v; P beta1_power; P beta2_power; P lr; P beta1; P beta2; P epsilon; P grad ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let applyFtrl
@@ -177,7 +177,7 @@ let applyFtrl
   ; output_type = var.output_type
   ; inputs = [ P var; P accum; P linear; P grad; P lr; P l1; P l2; P lr_power ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let applyGradientDescent
@@ -196,7 +196,7 @@ let applyGradientDescent
   ; output_type = var.output_type
   ; inputs = [ P var; P alpha; P delta ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let applyMomentum
@@ -217,7 +217,7 @@ let applyMomentum
   ; output_type = var.output_type
   ; inputs = [ P var; P accum; P lr; P grad; P momentum ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let applyRMSProp
@@ -241,7 +241,7 @@ let applyRMSProp
   ; output_type = var.output_type
   ; inputs = [ P var; P ms; P mom; P lr; P rho; P momentum; P epsilon; P grad ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let argMax
@@ -255,7 +255,7 @@ let argMax
   ; output_type = Type.Int64
   ; inputs = [ P input; P dimension ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let argMin
@@ -269,7 +269,7 @@ let argMin
   ; output_type = Type.Int64
   ; inputs = [ P input; P dimension ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let assign
@@ -291,7 +291,7 @@ let assign
   ; output_type = ref.output_type
   ; inputs = [ P ref; P value ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let assignAdd
@@ -309,7 +309,7 @@ let assignAdd
   ; output_type = ref.output_type
   ; inputs = [ P ref; P value ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let assignSub
@@ -327,7 +327,7 @@ let assignSub
   ; output_type = ref.output_type
   ; inputs = [ P ref; P value ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let avgPool
@@ -356,7 +356,7 @@ let avgPool
   ; output_type = value.output_type
   ; inputs = [ P value ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let avgPoolGrad
@@ -386,7 +386,7 @@ let avgPoolGrad
   ; output_type = grad.output_type
   ; inputs = [ P orig_input_shape; P grad ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let batchCholesky
@@ -399,7 +399,7 @@ let batchCholesky
   ; output_type = input.output_type
   ; inputs = [ P input ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let batchMatMul
@@ -421,7 +421,7 @@ let batchMatMul
   ; output_type = x.output_type
   ; inputs = [ P x; P y ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let batchMatrixDeterminant
@@ -434,7 +434,7 @@ let batchMatrixDeterminant
   ; output_type = input.output_type
   ; inputs = [ P input ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let batchMatrixInverse
@@ -447,7 +447,7 @@ let batchMatrixInverse
   ; output_type = input.output_type
   ; inputs = [ P input ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let batchMatrixSolve
@@ -461,7 +461,7 @@ let batchMatrixSolve
   ; output_type = matrix.output_type
   ; inputs = [ P matrix; P rhs ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let batchMatrixSolveLs
@@ -480,7 +480,7 @@ let batchMatrixSolveLs
   ; output_type = matrix.output_type
   ; inputs = [ P matrix; P rhs; P l2_regularizer ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let batchMatrixTriangularSolve
@@ -498,7 +498,7 @@ let batchMatrixTriangularSolve
   ; output_type = matrix.output_type
   ; inputs = [ P matrix; P rhs ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let batchNormWithGlobalNormalization
@@ -523,7 +523,7 @@ let batchNormWithGlobalNormalization
   ; output_type = t.output_type
   ; inputs = [ P t; P m; P v; P beta; P gamma ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let batchSelfAdjointEig
@@ -536,7 +536,7 @@ let batchSelfAdjointEig
   ; output_type = input.output_type
   ; inputs = [ P input ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let biasAdd
@@ -554,7 +554,7 @@ let biasAdd
   ; output_type = value.output_type
   ; inputs = [ P value; P bias ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let biasAddGrad
@@ -571,7 +571,7 @@ let biasAddGrad
   ; output_type = out_backprop.output_type
   ; inputs = [ P out_backprop ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let biasAddV1
@@ -585,7 +585,7 @@ let biasAddV1
   ; output_type = value.output_type
   ; inputs = [ P value; P bias ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let bitcast
@@ -599,7 +599,7 @@ let bitcast
   ; output_type = type_
   ; inputs = [ P input ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let cast
@@ -613,7 +613,7 @@ let cast
   ; output_type = type_
   ; inputs = [ P x ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let ceil
@@ -626,7 +626,7 @@ let ceil
   ; output_type = x.output_type
   ; inputs = [ P x ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let checkNumerics
@@ -643,7 +643,7 @@ let checkNumerics
   ; output_type = tensor.output_type
   ; inputs = [ P tensor ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let cholesky
@@ -656,7 +656,7 @@ let cholesky
   ; output_type = input.output_type
   ; inputs = [ P input ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let complex
@@ -670,7 +670,7 @@ let complex
   ; output_type = Type.Complex64
   ; inputs = [ P real; P imag ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let complexAbs
@@ -683,7 +683,7 @@ let complexAbs
   ; output_type = Type.Float
   ; inputs = [ P x ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let concat
@@ -700,7 +700,7 @@ let concat
   ; output_type = (List.hd values).output_type
   ; inputs = [ P concat_dim ] @ List.map (fun n -> P n) values
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let concatOffset
@@ -717,7 +717,7 @@ let concatOffset
   ; output_type = Type.Int32
   ; inputs = [ P concat_dim ] @ List.map (fun n -> P n) shape
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let conj
@@ -730,7 +730,7 @@ let conj
   ; output_type = Type.Complex64
   ; inputs = [ P in__ ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let controlTrigger
@@ -743,7 +743,7 @@ let controlTrigger
   ; output_type = Type.Unit
   ; inputs = [  ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let conv2D
@@ -773,7 +773,7 @@ let conv2D
   ; output_type = input.output_type
   ; inputs = [ P input; P filter ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let conv2DBackpropFilter
@@ -804,7 +804,7 @@ let conv2DBackpropFilter
   ; output_type = input.output_type
   ; inputs = [ P input; P filter_sizes; P out_backprop ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let conv2DBackpropInput
@@ -835,7 +835,7 @@ let conv2DBackpropInput
   ; output_type = filter.output_type
   ; inputs = [ P input_sizes; P filter; P out_backprop ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let cos
@@ -848,7 +848,7 @@ let cos
   ; output_type = x.output_type
   ; inputs = [ P x ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let countUpTo
@@ -865,7 +865,7 @@ let countUpTo
   ; output_type = ref.output_type
   ; inputs = [ P ref ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let cross
@@ -879,7 +879,7 @@ let cross
   ; output_type = a.output_type
   ; inputs = [ P a; P b ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let decodeJSONExample
@@ -892,7 +892,7 @@ let decodeJSONExample
   ; output_type = Type.String
   ; inputs = [ P json_examples ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let decodePng
@@ -910,7 +910,7 @@ let decodePng
   ; output_type = type_
   ; inputs = [ P contents ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let decodeRaw
@@ -928,7 +928,7 @@ let decodeRaw
   ; output_type = type_
   ; inputs = [ P bytes ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let depthToSpace
@@ -945,7 +945,7 @@ let depthToSpace
   ; output_type = input.output_type
   ; inputs = [ P input ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let depthwiseConv2dNative
@@ -967,7 +967,7 @@ let depthwiseConv2dNative
   ; output_type = input.output_type
   ; inputs = [ P input; P filter ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let depthwiseConv2dNativeBackpropFilter
@@ -990,7 +990,7 @@ let depthwiseConv2dNativeBackpropFilter
   ; output_type = input.output_type
   ; inputs = [ P input; P filter_sizes; P out_backprop ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let depthwiseConv2dNativeBackpropInput
@@ -1013,7 +1013,7 @@ let depthwiseConv2dNativeBackpropInput
   ; output_type = filter.output_type
   ; inputs = [ P input_sizes; P filter; P out_backprop ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let destroyTemporaryVariable
@@ -1030,7 +1030,7 @@ let destroyTemporaryVariable
   ; output_type = ref.output_type
   ; inputs = [ P ref ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let diag
@@ -1043,7 +1043,7 @@ let diag
   ; output_type = diagonal.output_type
   ; inputs = [ P diagonal ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let diagPart
@@ -1056,7 +1056,7 @@ let diagPart
   ; output_type = input.output_type
   ; inputs = [ P input ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let digamma
@@ -1069,7 +1069,7 @@ let digamma
   ; output_type = x.output_type
   ; inputs = [ P x ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let div
@@ -1083,7 +1083,7 @@ let div
   ; output_type = x.output_type
   ; inputs = [ P x; P y ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let drawBoundingBoxes
@@ -1097,7 +1097,7 @@ let drawBoundingBoxes
   ; output_type = Type.Float
   ; inputs = [ P images; P boxes ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let dynamicPartition
@@ -1115,7 +1115,7 @@ let dynamicPartition
   ; output_type = data.output_type
   ; inputs = [ P data; P partitions ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let dynamicStitch
@@ -1132,7 +1132,7 @@ let dynamicStitch
   ; output_type = (List.hd data).output_type
   ; inputs = List.map (fun n -> P n) indices @ List.map (fun n -> P n) data
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let editDistance
@@ -1154,7 +1154,7 @@ let editDistance
   ; output_type = Type.Float
   ; inputs = [ P hypothesis_indices; P hypothesis_values; P hypothesis_shape; P truth_indices; P truth_values; P truth_shape ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let elu
@@ -1167,7 +1167,7 @@ let elu
   ; output_type = features.output_type
   ; inputs = [ P features ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let eluGrad
@@ -1181,7 +1181,7 @@ let eluGrad
   ; output_type = gradients.output_type
   ; inputs = [ P gradients; P outputs ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let encodePng
@@ -1198,7 +1198,7 @@ let encodePng
   ; output_type = Type.String
   ; inputs = [ P image ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let enter
@@ -1223,7 +1223,7 @@ let enter
   ; output_type = data.output_type
   ; inputs = [ P data ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let equal
@@ -1237,7 +1237,7 @@ let equal
   ; output_type = Type.Bool
   ; inputs = [ P x; P y ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let erf
@@ -1250,7 +1250,7 @@ let erf
   ; output_type = x.output_type
   ; inputs = [ P x ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let erfc
@@ -1263,7 +1263,7 @@ let erfc
   ; output_type = x.output_type
   ; inputs = [ P x ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let exit
@@ -1276,7 +1276,7 @@ let exit
   ; output_type = data.output_type
   ; inputs = [ P data ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let exp
@@ -1289,7 +1289,7 @@ let exp
   ; output_type = x.output_type
   ; inputs = [ P x ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let expandDims
@@ -1303,7 +1303,7 @@ let expandDims
   ; output_type = input.output_type
   ; inputs = [ P input; P dim ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let extractGlimpse
@@ -1330,7 +1330,7 @@ let extractGlimpse
   ; output_type = Type.Float
   ; inputs = [ P input; P size; P offsets ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let fFT2D
@@ -1343,7 +1343,7 @@ let fFT2D
   ; output_type = Type.Complex64
   ; inputs = [ P in__ ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let fIFOQueue
@@ -1376,7 +1376,7 @@ let fIFOQueue
   ; output_type = Type.String
   ; inputs = [  ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let fact
@@ -1389,7 +1389,7 @@ let fact
   ; output_type = Type.String
   ; inputs = [  ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let fill
@@ -1403,7 +1403,7 @@ let fill
   ; output_type = value.output_type
   ; inputs = [ P dims; P value ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let fixedLengthRecordReader
@@ -1436,7 +1436,7 @@ let fixedLengthRecordReader
   ; output_type = Type.String
   ; inputs = [  ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let floor
@@ -1449,7 +1449,7 @@ let floor
   ; output_type = x.output_type
   ; inputs = [ P x ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let gather
@@ -1467,7 +1467,7 @@ let gather
   ; output_type = params.output_type
   ; inputs = [ P params; P indices ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let greater
@@ -1481,7 +1481,7 @@ let greater
   ; output_type = Type.Bool
   ; inputs = [ P x; P y ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let greaterEqual
@@ -1495,7 +1495,7 @@ let greaterEqual
   ; output_type = Type.Bool
   ; inputs = [ P x; P y ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let hSVToRGB
@@ -1508,7 +1508,7 @@ let hSVToRGB
   ; output_type = Type.Float
   ; inputs = [ P images ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let hashTable
@@ -1529,7 +1529,7 @@ let hashTable
   ; output_type = Type.String
   ; inputs = [  ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let histogramSummary
@@ -1543,7 +1543,7 @@ let histogramSummary
   ; output_type = Type.String
   ; inputs = [ P tag; P values ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let iFFT2D
@@ -1556,7 +1556,7 @@ let iFFT2D
   ; output_type = Type.Complex64
   ; inputs = [ P in__ ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let identity
@@ -1569,7 +1569,7 @@ let identity
   ; output_type = input.output_type
   ; inputs = [ P input ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let identityReader
@@ -1590,7 +1590,7 @@ let identityReader
   ; output_type = Type.String
   ; inputs = [  ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let imag
@@ -1603,7 +1603,7 @@ let imag
   ; output_type = Type.Float
   ; inputs = [ P in__ ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let imageSummary
@@ -1621,7 +1621,7 @@ let imageSummary
   ; output_type = Type.String
   ; inputs = [ P tag; P tensor ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let inTopK
@@ -1639,7 +1639,7 @@ let inTopK
   ; output_type = Type.Bool
   ; inputs = [ P predictions; P targets ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let initializeTable
@@ -1654,7 +1654,7 @@ let initializeTable
   ; output_type = Type.Unit
   ; inputs = [ P table_handle; P keys; P values ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let inv
@@ -1667,7 +1667,7 @@ let inv
   ; output_type = x.output_type
   ; inputs = [ P x ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let invertPermutation
@@ -1680,7 +1680,7 @@ let invertPermutation
   ; output_type = Type.Int32
   ; inputs = [ P x ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let isFinite
@@ -1693,7 +1693,7 @@ let isFinite
   ; output_type = Type.Bool
   ; inputs = [ P x ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let isInf
@@ -1706,7 +1706,7 @@ let isInf
   ; output_type = Type.Bool
   ; inputs = [ P x ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let isNan
@@ -1719,7 +1719,7 @@ let isNan
   ; output_type = Type.Bool
   ; inputs = [ P x ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let l2Loss
@@ -1732,7 +1732,7 @@ let l2Loss
   ; output_type = t.output_type
   ; inputs = [ P t ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let lRN
@@ -1761,7 +1761,7 @@ let lRN
   ; output_type = Type.Float
   ; inputs = [ P input ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let lRNGrad
@@ -1792,7 +1792,7 @@ let lRNGrad
   ; output_type = Type.Float
   ; inputs = [ P input_grads; P input_image; P output_image ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let less
@@ -1806,7 +1806,7 @@ let less
   ; output_type = Type.Bool
   ; inputs = [ P x; P y ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let lessEqual
@@ -1820,7 +1820,7 @@ let lessEqual
   ; output_type = Type.Bool
   ; inputs = [ P x; P y ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let lgamma
@@ -1833,7 +1833,7 @@ let lgamma
   ; output_type = x.output_type
   ; inputs = [ P x ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let linSpace
@@ -1848,7 +1848,7 @@ let linSpace
   ; output_type = start.output_type
   ; inputs = [ P start; P stop; P num ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let log
@@ -1861,7 +1861,7 @@ let log
   ; output_type = x.output_type
   ; inputs = [ P x ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let logicalAnd
@@ -1875,7 +1875,7 @@ let logicalAnd
   ; output_type = Type.Bool
   ; inputs = [ P x; P y ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let logicalNot
@@ -1888,7 +1888,7 @@ let logicalNot
   ; output_type = Type.Bool
   ; inputs = [ P x ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let logicalOr
@@ -1902,7 +1902,7 @@ let logicalOr
   ; output_type = Type.Bool
   ; inputs = [ P x; P y ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let lookupTableFind
@@ -1917,7 +1917,7 @@ let lookupTableFind
   ; output_type = default_value.output_type
   ; inputs = [ P table_handle; P keys; P default_value ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let lookupTableSize
@@ -1930,7 +1930,7 @@ let lookupTableSize
   ; output_type = Type.Int64
   ; inputs = [ P table_handle ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let loopCond
@@ -1943,7 +1943,7 @@ let loopCond
   ; output_type = Type.Bool
   ; inputs = [ P input ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let matMul
@@ -1965,7 +1965,7 @@ let matMul
   ; output_type = a.output_type
   ; inputs = [ P a; P b ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let matchingFiles
@@ -1978,7 +1978,7 @@ let matchingFiles
   ; output_type = Type.String
   ; inputs = [ P pattern ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let matrixDeterminant
@@ -1991,7 +1991,7 @@ let matrixDeterminant
   ; output_type = input.output_type
   ; inputs = [ P input ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let matrixInverse
@@ -2004,7 +2004,7 @@ let matrixInverse
   ; output_type = input.output_type
   ; inputs = [ P input ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let matrixSolve
@@ -2018,7 +2018,7 @@ let matrixSolve
   ; output_type = matrix.output_type
   ; inputs = [ P matrix; P rhs ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let matrixSolveLs
@@ -2037,7 +2037,7 @@ let matrixSolveLs
   ; output_type = matrix.output_type
   ; inputs = [ P matrix; P rhs; P l2_regularizer ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let matrixTriangularSolve
@@ -2055,7 +2055,7 @@ let matrixTriangularSolve
   ; output_type = matrix.output_type
   ; inputs = [ P matrix; P rhs ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let max
@@ -2073,7 +2073,7 @@ let max
   ; output_type = input.output_type
   ; inputs = [ P input; P reduction_indices ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let maxPool
@@ -2102,7 +2102,7 @@ let maxPool
   ; output_type = Type.Float
   ; inputs = [ P input ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let maxPoolGrad
@@ -2133,7 +2133,7 @@ let maxPoolGrad
   ; output_type = Type.Float
   ; inputs = [ P orig_input; P orig_output; P grad ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let maxPoolGradWithArgmax
@@ -2160,7 +2160,7 @@ let maxPoolGradWithArgmax
   ; output_type = Type.Float
   ; inputs = [ P input; P grad; P argmax ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let maximum
@@ -2174,7 +2174,7 @@ let maximum
   ; output_type = x.output_type
   ; inputs = [ P x; P y ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let mean
@@ -2192,7 +2192,7 @@ let mean
   ; output_type = input.output_type
   ; inputs = [ P input; P reduction_indices ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let mergeSummary
@@ -2208,7 +2208,7 @@ let mergeSummary
   ; output_type = Type.String
   ; inputs = List.map (fun n -> P n) inputs
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let min
@@ -2226,7 +2226,7 @@ let min
   ; output_type = input.output_type
   ; inputs = [ P input; P reduction_indices ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let minimum
@@ -2240,7 +2240,7 @@ let minimum
   ; output_type = x.output_type
   ; inputs = [ P x; P y ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let mirrorPad
@@ -2258,7 +2258,7 @@ let mirrorPad
   ; output_type = input.output_type
   ; inputs = [ P input; P paddings ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let mirrorPadGrad
@@ -2276,7 +2276,7 @@ let mirrorPadGrad
   ; output_type = input.output_type
   ; inputs = [ P input; P paddings ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let mod_
@@ -2290,7 +2290,7 @@ let mod_
   ; output_type = x.output_type
   ; inputs = [ P x; P y ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let mul
@@ -2304,7 +2304,7 @@ let mul
   ; output_type = x.output_type
   ; inputs = [ P x; P y ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let neg
@@ -2317,7 +2317,7 @@ let neg
   ; output_type = x.output_type
   ; inputs = [ P x ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let negTrain
@@ -2342,7 +2342,7 @@ let negTrain
   ; output_type = Type.Unit
   ; inputs = [ P w_in; P w_out; P examples; P labels; P lr ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let nextIteration
@@ -2355,7 +2355,7 @@ let nextIteration
   ; output_type = data.output_type
   ; inputs = [ P data ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let noOp
@@ -2368,7 +2368,7 @@ let noOp
   ; output_type = Type.Unit
   ; inputs = [  ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let notEqual
@@ -2382,7 +2382,7 @@ let notEqual
   ; output_type = Type.Bool
   ; inputs = [ P x; P y ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let oneHot
@@ -2402,7 +2402,7 @@ let oneHot
   ; output_type = on_value.output_type
   ; inputs = [ P indices; P depth; P on_value; P off_value ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let pack
@@ -2418,7 +2418,7 @@ let pack
   ; output_type = (List.hd values).output_type
   ; inputs = List.map (fun n -> P n) values
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let pad
@@ -2432,7 +2432,7 @@ let pad
   ; output_type = input.output_type
   ; inputs = [ P input; P paddings ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let paddingFIFOQueue
@@ -2465,7 +2465,7 @@ let paddingFIFOQueue
   ; output_type = Type.String
   ; inputs = [  ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let placeholder
@@ -2483,7 +2483,7 @@ let placeholder
   ; output_type = type_
   ; inputs = [  ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let pow
@@ -2497,7 +2497,7 @@ let pow
   ; output_type = x.output_type
   ; inputs = [ P x; P y ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let prod
@@ -2515,7 +2515,7 @@ let prod
   ; output_type = input.output_type
   ; inputs = [ P input; P reduction_indices ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let queueClose
@@ -2532,7 +2532,7 @@ let queueClose
   ; output_type = Type.Unit
   ; inputs = [ P handle ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let queueSize
@@ -2545,7 +2545,7 @@ let queueSize
   ; output_type = Type.Int32
   ; inputs = [ P handle ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let rGBToHSV
@@ -2558,7 +2558,7 @@ let rGBToHSV
   ; output_type = Type.Float
   ; inputs = [ P images ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let randomCrop
@@ -2580,7 +2580,7 @@ let randomCrop
   ; output_type = image.output_type
   ; inputs = [ P image; P size ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let randomShuffle
@@ -2601,7 +2601,7 @@ let randomShuffle
   ; output_type = value.output_type
   ; inputs = [ P value ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let randomShuffleQueue
@@ -2646,7 +2646,7 @@ let randomShuffleQueue
   ; output_type = Type.String
   ; inputs = [  ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let randomStandardNormal
@@ -2668,7 +2668,7 @@ let randomStandardNormal
   ; output_type = type_
   ; inputs = [ P shape ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let randomUniform
@@ -2690,7 +2690,7 @@ let randomUniform
   ; output_type = type_
   ; inputs = [ P shape ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let randomUniformInt
@@ -2713,7 +2713,7 @@ let randomUniformInt
   ; output_type = minval.output_type
   ; inputs = [ P shape; P minval; P maxval ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let range
@@ -2728,7 +2728,7 @@ let range
   ; output_type = Type.Int32
   ; inputs = [ P start; P limit; P delta ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let rank
@@ -2741,7 +2741,7 @@ let rank
   ; output_type = Type.Int32
   ; inputs = [ P input ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let readFile
@@ -2754,7 +2754,7 @@ let readFile
   ; output_type = Type.String
   ; inputs = [ P filename ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let readerNumRecordsProduced
@@ -2767,7 +2767,7 @@ let readerNumRecordsProduced
   ; output_type = Type.Int64
   ; inputs = [ P reader_handle ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let readerNumWorkUnitsCompleted
@@ -2780,7 +2780,7 @@ let readerNumWorkUnitsCompleted
   ; output_type = Type.Int64
   ; inputs = [ P reader_handle ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let readerReset
@@ -2793,7 +2793,7 @@ let readerReset
   ; output_type = Type.Unit
   ; inputs = [ P reader_handle ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let readerRestoreState
@@ -2807,7 +2807,7 @@ let readerRestoreState
   ; output_type = Type.Unit
   ; inputs = [ P reader_handle; P state ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let readerSerializeState
@@ -2820,7 +2820,7 @@ let readerSerializeState
   ; output_type = Type.String
   ; inputs = [ P reader_handle ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let real
@@ -2833,7 +2833,7 @@ let real
   ; output_type = Type.Float
   ; inputs = [ P in__ ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let refEnter
@@ -2858,7 +2858,7 @@ let refEnter
   ; output_type = data.output_type
   ; inputs = [ P data ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let refExit
@@ -2871,7 +2871,7 @@ let refExit
   ; output_type = data.output_type
   ; inputs = [ P data ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let refIdentity
@@ -2884,7 +2884,7 @@ let refIdentity
   ; output_type = input.output_type
   ; inputs = [ P input ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let refNextIteration
@@ -2897,7 +2897,7 @@ let refNextIteration
   ; output_type = data.output_type
   ; inputs = [ P data ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let refSelect
@@ -2914,7 +2914,7 @@ let refSelect
   ; output_type = (List.hd inputs).output_type
   ; inputs = [ P index ] @ List.map (fun n -> P n) inputs
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let relu
@@ -2927,7 +2927,7 @@ let relu
   ; output_type = features.output_type
   ; inputs = [ P features ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let relu6
@@ -2940,7 +2940,7 @@ let relu6
   ; output_type = features.output_type
   ; inputs = [ P features ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let relu6Grad
@@ -2954,7 +2954,7 @@ let relu6Grad
   ; output_type = gradients.output_type
   ; inputs = [ P gradients; P features ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let reluGrad
@@ -2968,7 +2968,7 @@ let reluGrad
   ; output_type = gradients.output_type
   ; inputs = [ P gradients; P features ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let reshape
@@ -2982,7 +2982,7 @@ let reshape
   ; output_type = tensor.output_type
   ; inputs = [ P tensor; P shape ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let resizeArea
@@ -3000,7 +3000,7 @@ let resizeArea
   ; output_type = Type.Float
   ; inputs = [ P images; P size ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let resizeBicubic
@@ -3018,7 +3018,7 @@ let resizeBicubic
   ; output_type = Type.Float
   ; inputs = [ P images; P size ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let resizeBilinear
@@ -3036,7 +3036,7 @@ let resizeBilinear
   ; output_type = Type.Float
   ; inputs = [ P images; P size ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let resizeBilinearGrad
@@ -3054,7 +3054,7 @@ let resizeBilinearGrad
   ; output_type = original_image.output_type
   ; inputs = [ P grads; P original_image ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let resizeNearestNeighbor
@@ -3072,7 +3072,7 @@ let resizeNearestNeighbor
   ; output_type = images.output_type
   ; inputs = [ P images; P size ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let resizeNearestNeighborGrad
@@ -3090,7 +3090,7 @@ let resizeNearestNeighborGrad
   ; output_type = grads.output_type
   ; inputs = [ P grads; P size ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let restore
@@ -3109,7 +3109,7 @@ let restore
   ; output_type = type_
   ; inputs = [ P file_pattern; P tensor_name ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let restoreSlice
@@ -3129,7 +3129,7 @@ let restoreSlice
   ; output_type = type_
   ; inputs = [ P file_pattern; P tensor_name; P shape_and_slice ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let reverse
@@ -3143,7 +3143,7 @@ let reverse
   ; output_type = tensor.output_type
   ; inputs = [ P tensor; P dims ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let reverseSequence
@@ -3165,7 +3165,7 @@ let reverseSequence
   ; output_type = input.output_type
   ; inputs = [ P input; P seq_lengths ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let rsqrt
@@ -3178,7 +3178,7 @@ let rsqrt
   ; output_type = x.output_type
   ; inputs = [ P x ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let scalarSummary
@@ -3192,7 +3192,7 @@ let scalarSummary
   ; output_type = Type.String
   ; inputs = [ P tags; P values ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let scatterAdd
@@ -3211,7 +3211,7 @@ let scatterAdd
   ; output_type = ref.output_type
   ; inputs = [ P ref; P indices; P updates ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let scatterSub
@@ -3230,7 +3230,7 @@ let scatterSub
   ; output_type = ref.output_type
   ; inputs = [ P ref; P indices; P updates ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let scatterUpdate
@@ -3249,7 +3249,7 @@ let scatterUpdate
   ; output_type = ref.output_type
   ; inputs = [ P ref; P indices; P updates ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let segmentMax
@@ -3263,7 +3263,7 @@ let segmentMax
   ; output_type = data.output_type
   ; inputs = [ P data; P segment_ids ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let segmentMean
@@ -3277,7 +3277,7 @@ let segmentMean
   ; output_type = data.output_type
   ; inputs = [ P data; P segment_ids ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let segmentMin
@@ -3291,7 +3291,7 @@ let segmentMin
   ; output_type = data.output_type
   ; inputs = [ P data; P segment_ids ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let segmentProd
@@ -3305,7 +3305,7 @@ let segmentProd
   ; output_type = data.output_type
   ; inputs = [ P data; P segment_ids ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let segmentSum
@@ -3319,7 +3319,7 @@ let segmentSum
   ; output_type = data.output_type
   ; inputs = [ P data; P segment_ids ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let select
@@ -3334,7 +3334,7 @@ let select
   ; output_type = t.output_type
   ; inputs = [ P condition; P t; P e ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let selfAdjointEig
@@ -3347,7 +3347,7 @@ let selfAdjointEig
   ; output_type = input.output_type
   ; inputs = [ P input ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let serializeManySparse
@@ -3362,7 +3362,7 @@ let serializeManySparse
   ; output_type = Type.String
   ; inputs = [ P sparse_indices; P sparse_values; P sparse_shape ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let serializeSparse
@@ -3377,7 +3377,7 @@ let serializeSparse
   ; output_type = Type.String
   ; inputs = [ P sparse_indices; P sparse_values; P sparse_shape ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let shape
@@ -3390,7 +3390,7 @@ let shape
   ; output_type = Type.Int32
   ; inputs = [ P input ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let shapeN
@@ -3406,7 +3406,7 @@ let shapeN
   ; output_type = Type.Int32
   ; inputs = List.map (fun n -> P n) input
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let shardedFilename
@@ -3421,7 +3421,7 @@ let shardedFilename
   ; output_type = Type.String
   ; inputs = [ P basename; P shard; P num_shards ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let shardedFilespec
@@ -3435,7 +3435,7 @@ let shardedFilespec
   ; output_type = Type.String
   ; inputs = [ P basename; P num_shards ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let sigmoid
@@ -3448,7 +3448,7 @@ let sigmoid
   ; output_type = x.output_type
   ; inputs = [ P x ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let sign
@@ -3461,7 +3461,7 @@ let sign
   ; output_type = x.output_type
   ; inputs = [ P x ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let sin
@@ -3474,7 +3474,7 @@ let sin
   ; output_type = x.output_type
   ; inputs = [ P x ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let size
@@ -3487,7 +3487,7 @@ let size
   ; output_type = Type.Int32
   ; inputs = [ P input ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let slice
@@ -3502,7 +3502,7 @@ let slice
   ; output_type = input.output_type
   ; inputs = [ P input; P begin__; P size ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let softmax
@@ -3515,7 +3515,7 @@ let softmax
   ; output_type = logits.output_type
   ; inputs = [ P logits ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let softplus
@@ -3528,7 +3528,7 @@ let softplus
   ; output_type = features.output_type
   ; inputs = [ P features ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let softplusGrad
@@ -3542,7 +3542,7 @@ let softplusGrad
   ; output_type = gradients.output_type
   ; inputs = [ P gradients; P features ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let softsign
@@ -3555,7 +3555,7 @@ let softsign
   ; output_type = features.output_type
   ; inputs = [ P features ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let softsignGrad
@@ -3569,7 +3569,7 @@ let softsignGrad
   ; output_type = gradients.output_type
   ; inputs = [ P gradients; P features ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let spaceToDepth
@@ -3586,7 +3586,7 @@ let spaceToDepth
   ; output_type = input.output_type
   ; inputs = [ P input ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let sparseApplyAdagrad
@@ -3607,7 +3607,7 @@ let sparseApplyAdagrad
   ; output_type = var.output_type
   ; inputs = [ P var; P accum; P lr; P grad; P indices ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let sparseApplyFtrl
@@ -3632,7 +3632,7 @@ let sparseApplyFtrl
   ; output_type = var.output_type
   ; inputs = [ P var; P accum; P linear; P grad; P indices; P lr; P l1; P l2; P lr_power ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let sparseApplyMomentum
@@ -3654,7 +3654,7 @@ let sparseApplyMomentum
   ; output_type = var.output_type
   ; inputs = [ P var; P accum; P lr; P grad; P indices; P momentum ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let sparseMatMul
@@ -3684,7 +3684,7 @@ let sparseMatMul
   ; output_type = Type.Float
   ; inputs = [ P a; P b ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let sparseSegmentMean
@@ -3699,7 +3699,7 @@ let sparseSegmentMean
   ; output_type = data.output_type
   ; inputs = [ P data; P indices; P segment_ids ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let sparseSegmentMeanGrad
@@ -3715,7 +3715,7 @@ let sparseSegmentMeanGrad
   ; output_type = grad.output_type
   ; inputs = [ P grad; P indices; P segment_ids; P output_dim0 ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let sparseSegmentSqrtN
@@ -3730,7 +3730,7 @@ let sparseSegmentSqrtN
   ; output_type = data.output_type
   ; inputs = [ P data; P indices; P segment_ids ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let sparseSegmentSqrtNGrad
@@ -3746,7 +3746,7 @@ let sparseSegmentSqrtNGrad
   ; output_type = grad.output_type
   ; inputs = [ P grad; P indices; P segment_ids; P output_dim0 ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let sparseSegmentSum
@@ -3761,7 +3761,7 @@ let sparseSegmentSum
   ; output_type = data.output_type
   ; inputs = [ P data; P indices; P segment_ids ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let sparseTensorDenseMatMul
@@ -3785,7 +3785,7 @@ let sparseTensorDenseMatMul
   ; output_type = a_values.output_type
   ; inputs = [ P a_indices; P a_values; P a_shape; P b ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let sparseToDense
@@ -3805,7 +3805,7 @@ let sparseToDense
   ; output_type = sparse_values.output_type
   ; inputs = [ P sparse_indices; P output_shape; P sparse_values; P default_value ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let split
@@ -3823,7 +3823,7 @@ let split
   ; output_type = value.output_type
   ; inputs = [ P split_dim; P value ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let sqrt
@@ -3836,7 +3836,7 @@ let sqrt
   ; output_type = x.output_type
   ; inputs = [ P x ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let square
@@ -3849,7 +3849,7 @@ let square
   ; output_type = x.output_type
   ; inputs = [ P x ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let squaredDifference
@@ -3863,7 +3863,7 @@ let squaredDifference
   ; output_type = x.output_type
   ; inputs = [ P x; P y ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let squeeze
@@ -3880,7 +3880,7 @@ let squeeze
   ; output_type = input.output_type
   ; inputs = [ P input ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let stack
@@ -3897,7 +3897,7 @@ let stack
   ; output_type = Type.String
   ; inputs = [  ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let stackClose
@@ -3910,7 +3910,7 @@ let stackClose
   ; output_type = Type.Unit
   ; inputs = [ P handle ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let stackPop
@@ -3924,7 +3924,7 @@ let stackPop
   ; output_type = type_
   ; inputs = [ P handle ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let stackPush
@@ -3942,7 +3942,7 @@ let stackPush
   ; output_type = elem.output_type
   ; inputs = [ P handle; P elem ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let stopGradient
@@ -3955,7 +3955,7 @@ let stopGradient
   ; output_type = input.output_type
   ; inputs = [ P input ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let stringToHashBucket
@@ -3972,7 +3972,7 @@ let stringToHashBucket
   ; output_type = Type.Int64
   ; inputs = [ P string_tensor ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let stringToNumber
@@ -3986,7 +3986,7 @@ let stringToNumber
   ; output_type = type_
   ; inputs = [ P string_tensor ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let sub
@@ -4000,7 +4000,7 @@ let sub
   ; output_type = x.output_type
   ; inputs = [ P x; P y ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let sum
@@ -4018,7 +4018,7 @@ let sum
   ; output_type = input.output_type
   ; inputs = [ P input; P reduction_indices ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let tFRecordReader
@@ -4039,7 +4039,7 @@ let tFRecordReader
   ; output_type = Type.String
   ; inputs = [  ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let tanh
@@ -4052,7 +4052,7 @@ let tanh
   ; output_type = x.output_type
   ; inputs = [ P x ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let temporaryVariable
@@ -4074,7 +4074,7 @@ let temporaryVariable
   ; output_type = type_
   ; inputs = [  ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let tensorArray
@@ -4095,7 +4095,7 @@ let tensorArray
   ; output_type = Type.String
   ; inputs = [ P size ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let tensorArrayClose
@@ -4108,7 +4108,7 @@ let tensorArrayClose
   ; output_type = Type.Unit
   ; inputs = [ P handle ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let tensorArrayGrad
@@ -4126,7 +4126,7 @@ let tensorArrayGrad
   ; output_type = Type.String
   ; inputs = [ P handle; P flow_in ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let tensorArrayPack
@@ -4141,7 +4141,7 @@ let tensorArrayPack
   ; output_type = type_
   ; inputs = [ P handle; P flow_in ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let tensorArrayRead
@@ -4157,7 +4157,7 @@ let tensorArrayRead
   ; output_type = type_
   ; inputs = [ P handle; P index; P flow_in ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let tensorArraySize
@@ -4171,7 +4171,7 @@ let tensorArraySize
   ; output_type = Type.Int32
   ; inputs = [ P handle; P flow_in ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let tensorArraySplit
@@ -4187,7 +4187,7 @@ let tensorArraySplit
   ; output_type = Type.Float
   ; inputs = [ P handle; P value; P lengths; P flow_in ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let tensorArrayUnpack
@@ -4202,7 +4202,7 @@ let tensorArrayUnpack
   ; output_type = Type.Float
   ; inputs = [ P handle; P value; P flow_in ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let tensorArrayWrite
@@ -4218,7 +4218,7 @@ let tensorArrayWrite
   ; output_type = Type.Float
   ; inputs = [ P handle; P index; P value; P flow_in ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let textLineReader
@@ -4243,7 +4243,7 @@ let textLineReader
   ; output_type = Type.String
   ; inputs = [  ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let tile
@@ -4257,7 +4257,7 @@ let tile
   ; output_type = input.output_type
   ; inputs = [ P input; P multiples ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let tileGrad
@@ -4271,7 +4271,7 @@ let tileGrad
   ; output_type = input.output_type
   ; inputs = [ P input; P multiples ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let transpose
@@ -4285,7 +4285,7 @@ let transpose
   ; output_type = x.output_type
   ; inputs = [ P x; P perm ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let truncatedNormal
@@ -4307,7 +4307,7 @@ let truncatedNormal
   ; output_type = type_
   ; inputs = [ P shape ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let unpack
@@ -4324,7 +4324,7 @@ let unpack
   ; output_type = value.output_type
   ; inputs = [ P value ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let unsortedSegmentSum
@@ -4339,7 +4339,7 @@ let unsortedSegmentSum
   ; output_type = data.output_type
   ; inputs = [ P data; P segment_ids; P num_segments ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let variable
@@ -4365,7 +4365,7 @@ let variable
   ; output_type = type_
   ; inputs = [  ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let where
@@ -4378,7 +4378,7 @@ let where
   ; output_type = Type.Int64
   ; inputs = [ P input ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let wholeFileReader
@@ -4399,7 +4399,7 @@ let wholeFileReader
   ; output_type = Type.String
   ; inputs = [  ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 
 let zerosLike
@@ -4412,6 +4412,6 @@ let zerosLike
   ; output_type = x.output_type
   ; inputs = [ P x ]
   ; attributes
-  ; output_name = None
+  ; output_idx = None
   }
 

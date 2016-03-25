@@ -37,14 +37,27 @@ let binary_extract_exn : type a . a N.t -> (a N.t * a N.t) = fun node ->
   | T.Float, T.Float, T.Float -> lhs, rhs
   | _ -> failwith "Inconsistent types"
 
-let add_gradient ~self:_ ~gradient =
-  let gradient = N.P gradient in
-  all [ gradient; gradient ]
+let add_gradient ~self ~gradient =
+  let slhs, srhs =
+    match self.N.inputs with
+    | [ N.P lhs; N.P rhs ] -> Ops.shape lhs, Ops.shape rhs
+    | _ -> failwith "Not a binary function"
+  in
+  let rlhs, rrhs = Ops_m.broadcast_gradient_args slhs srhs in
+  let lhs = Ops.reshape (Ops.sum gradient rlhs) slhs in
+  let rhs = Ops.reshape (Ops.sum gradient rrhs) srhs in
+  all [ N.P lhs; N.P rhs ]
 
-let sub_gradient ~self:_ ~gradient =
-  let minus_gradient = N.P (Ops.neg gradient) in
-  let gradient = N.P gradient in
-  all [ gradient; minus_gradient ]
+let sub_gradient ~self ~gradient =
+  let slhs, srhs =
+    match self.N.inputs with
+    | [ N.P lhs; N.P rhs ] -> Ops.shape lhs, Ops.shape rhs
+    | _ -> failwith "Not a binary function"
+  in
+  let rlhs, rrhs = Ops_m.broadcast_gradient_args slhs srhs in
+  let lhs = Ops.reshape (Ops.sum gradient rlhs) slhs in
+  let rhs = Ops.reshape (Ops.sum gradient rrhs) srhs in
+  all [ N.P lhs; N.P (Ops.neg rhs) ]
 
 let abs_gradient (type a) ~self ~(gradient : a N.t) =
   let t = { f1 = fun ~input ~gradient -> Ops.sign input |> Ops.mul gradient } in
