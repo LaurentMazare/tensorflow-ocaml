@@ -1,14 +1,13 @@
 open Wrapper
-module CArray = Ctypes.CArray
 module H = Helper
 module Tensor = Wrapper.Tensor
 
 let () =
   let input_tensor = Tensor.create1d TF_FLOAT 3 in
-  let data = Tensor.data input_tensor Ctypes.float 3 in
-  CArray.set data 0 1.;
-  CArray.set data 1 2.;
-  CArray.set data 2 6.;
+  let data = Tensor.data input_tensor Bigarray.float32 3 in
+  Bigarray.Array1.set data 0 1.;
+  Bigarray.Array1.set data 1 2.;
+  Bigarray.Array1.set data 2 6.;
   let placeholder = Ops.placeholder ~name:"x" ~type_:Float () in
   let variable = Ops_m.varf [ 3 ] in
   let assign =

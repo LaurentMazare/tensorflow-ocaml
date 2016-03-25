@@ -1,10 +1,3 @@
-(* TODO: typesafe wrapper.
-   - In Session.run:
-     - Use placeholder rather than string for inputs.
-     - Use Node.t + GADT for maching between outputs and returned tensors.
-   - Typed tensors.
-*)
-
 type data_type =
   | TF_FLOAT
   | TF_DOUBLE
@@ -38,7 +31,11 @@ module Tensor : sig
 
   val byte_size : t -> int
 
-  val data : t -> 'a Ctypes.typ -> int -> 'a Ctypes.CArray.t
+  val data
+    :  t
+    -> ('a, 'b) Bigarray.kind
+    -> int
+    -> ('a, 'b, Bigarray.c_layout) Bigarray.Array1.t
 
   val data_type : t -> data_type
 end

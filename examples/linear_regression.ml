@@ -1,5 +1,4 @@
 open Core.Std
-module CArray = Ctypes.CArray
 module H = Helper
 module Tensor = Wrapper.Tensor
 

@@ -1,6 +1,5 @@
 open Core.Std
 open Wrapper
-module CArray = Ctypes.CArray
 
 (* TODO: move the interesting functions to src/. *)
 let ok_exn (result : 'a Session.result) ~context =
@@ -22,18 +21,18 @@ let print_one_tensor (name, tensor) =
   match Tensor.num_dims tensor with
   | 1 ->
     let dim = Tensor.dim tensor 0 in
-    let data = Tensor.data tensor Ctypes.float dim in
+    let data = Tensor.data tensor Bigarray.float32 dim in
     for d = 0 to dim - 1 do
-      Printf.printf "%d %f\n%!" d (CArray.get data d)
+      Printf.printf "%d %f\n%!" d (Bigarray.Array1.get data d)
     done
   | 2 ->
     let d0 = Tensor.dim tensor 0 in
     let d1 = Tensor.dim tensor 1 in
-    let data = Tensor.data tensor Ctypes.float (d0 * d1) in
+    let data = Tensor.data tensor Bigarray.float32 (d0 * d1) in
     for x = 0 to d0 - 1 do
       Printf.printf "%d " x;
       for y = 0 to d1 - 1 do
-        Printf.printf "%f " (CArray.get data (x+d0*y))
+        Printf.printf "%f " (Bigarray.Array1.get data (x+d0*y))
       done;
       Printf.printf "\n%!";
     done

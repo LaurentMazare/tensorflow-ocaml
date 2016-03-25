@@ -218,9 +218,10 @@ module Tensor = struct
     assert_handled_by_ocaml t;
     tf_tensorbytesize t.tensor |> Unsigned.Size_t.to_int
 
-  let data t typ len =
+  let data t kind len =
     assert_handled_by_ocaml t;
-    CArray.from_ptr (tf_tensordata t.tensor |> Ctypes.from_voidp typ) len
+    bigarray_of_ptr array1 len kind
+      (tf_tensordata t.tensor |> Ctypes.from_voidp (typ_of_bigarray_kind kind))
 
   let data_type t =
     assert_handled_by_ocaml t;

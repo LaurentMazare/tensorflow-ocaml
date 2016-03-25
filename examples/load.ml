@@ -1,5 +1,4 @@
 open Wrapper
-module CArray = Ctypes.CArray
 
 let ok_exn (result : 'a Session.result) ~context =
   match result with
@@ -10,10 +9,10 @@ let ok_exn (result : 'a Session.result) ~context =
 
 let () =
   let input_tensor = Tensor.create1d TF_FLOAT 3 in
-  let data = Tensor.data input_tensor Ctypes.float 3 in
-  CArray.set data 0 1.;
-  CArray.set data 1 2.;
-  CArray.set data 2 6.;
+  let data = Tensor.data input_tensor Bigarray.float32 3 in
+  Bigarray.Array1.set data 0 1.;
+  Bigarray.Array1.set data 1 2.;
+  Bigarray.Array1.set data 2 6.;
   let session =
     Session.create ()
     |> ok_exn ~context:"session creation"
@@ -33,9 +32,9 @@ let () =
   match output with
   | [ output_tensor ] ->
     let dim = Tensor.dim output_tensor 0 in
-    let data = Tensor.data output_tensor Ctypes.float dim in
+    let data = Tensor.data output_tensor Bigarray.float32 dim in
     for d = 0 to dim - 1 do
-      Printf.printf "%d %f\n%!" d (CArray.get data d)
+      Printf.printf "%d %f\n%!" d (Bigarray.Array1.get data d)
     done
   | [] | _ :: _ :: _ -> assert false
 
