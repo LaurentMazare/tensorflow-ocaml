@@ -27,8 +27,8 @@ val ( *^) : [< `float | `double | `int32 | `complex64 ] b
 val ( *.) : [< `float | `double | `int32 | `complex64 ] b
 
 (* Scalar *)
-val f : float -> [ `float ] Node.t
-val d : float -> [ `double ] Node.t
+val f : ?shape:int list -> float -> [ `float ] Node.t
+val d : ?shape:int list -> float -> [ `double ] Node.t
 
 (* Constant vector/matrixes *)
 val cf : ?shape:int list -> float list -> [ `float ] Node.t

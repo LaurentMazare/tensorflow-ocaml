@@ -8,8 +8,8 @@ let () =
   let y = Ops_m.cf ~shape:[1; n] [ 5.; 8.; 12. ] in
   let w = Ops_m.varf [ m; n ] in
   let b = Ops_m.varf [ n ] in
-  let w_assign = Ops.assign w (H.const_float [ m; n ] 0.) in
-  let b_assign = Ops.assign b (H.const_float [ n ] 0.) in
+  let w_assign = Ops.assign w (Ops_m.f ~shape:[ m; n ] 0.) in
+  let b_assign = Ops.assign b (Ops_m.f ~shape:[ n ] 0.) in
   let err =
     let open Ops_m in
     let diff = x *^ w + b - y in

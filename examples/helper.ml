@@ -9,13 +9,6 @@ let ok_exn (result : 'a Session.result) ~context =
     Printf.sprintf "Error in %s: %s" context (Status.message status)
     |> failwith
 
-let const_float shape f =
-  let size = List.fold shape ~init:1 ~f:(( * )) in
-  Ops_m.const_float
-    ~type_:Float
-    ~shape
-    (List.init size ~f:(const f))
-
 let print_tensors tensors ~names =
   List.zip_exn names tensors
   |> List.iter ~f:(fun (name, tensor) ->

@@ -11,4 +11,7 @@ src/graph/ops.ml: gen.native
 run: $(EXAMPLES)
 	$(foreach ex,$(EXAMPLES),LD_LIBRARY_PATH=./lib:$(LD_LIBRARY_PATH) ./$(ex);)
 
+clean:
+	rm -Rf _build/
+
 .FORCE:
