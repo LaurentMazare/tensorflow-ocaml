@@ -1,23 +1,3 @@
-type data_type =
-  | TF_FLOAT
-  | TF_DOUBLE
-  | TF_INT32
-  | TF_UINT8
-  | TF_INT16
-  | TF_INT8
-  | TF_STRING
-  | TF_COMPLEX
-  | TF_INT64
-  | TF_BOOL
-  | TF_QINT8
-  | TF_QUINT8
-  | TF_QINT32
-  | TF_BFLOAT16
-  | TF_QINT16
-  | TF_QUINT16
-  | TF_UINT16
-  | Unknown of int
-
 module Session_options : sig
   type t
 
