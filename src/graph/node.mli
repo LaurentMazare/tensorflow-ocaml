@@ -23,7 +23,7 @@ module Type : sig
   val to_string : p -> string
   
   val of_dt_type
-    :  [ `dt_bool
+    :  [> `dt_bool
        | `dt_complex64
        | `dt_double
        | `dt_float
