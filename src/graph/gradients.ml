@@ -38,6 +38,8 @@ let aggregate_contributions = function
   | [] -> assert false
   | [ input ] -> input
   | (Node.P input :: _) as inputs ->
+    (* Hack: all the nodes in [inputs] should have the same type however they are packed
+       so we cannot use [Ops.addN] directly and build the node manually instead. *)
     let output_type = input.output_type in
     let attributes =
       [ "N", Node.Int (List.length inputs)
