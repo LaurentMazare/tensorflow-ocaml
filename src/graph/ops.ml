@@ -31,16 +31,16 @@ let add
 let addN
     ?(name = "AddN")
     ~n
-    (inputs : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (inputs : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t list)
   =
-  let attributes = [ "T", Type (P inputs.output_type) ] in
+  let attributes = [ "T", Type (P (List.hd inputs).output_type) ] in
   let attributes =
     ("N", Int n) :: attributes
   in
   { name = Name.make_fresh ~name
   ; op_name = Op_name.of_string "AddN"
-  ; output_type = inputs.output_type
-  ; inputs = [ P inputs ]
+  ; output_type = (List.hd inputs).output_type
+  ; inputs = List.map (fun n -> P n) inputs
   ; attributes
   ; output_name = None
   }
@@ -691,16 +691,16 @@ let concat
     ?(name = "Concat")
     ~n
     (concat_dim : [ `int32 ] t)
-    (values : 't t)
+    (values : 't t list)
   =
-  let attributes = [ "T", Type (P values.output_type) ] in
+  let attributes = [ "T", Type (P (List.hd values).output_type) ] in
   let attributes =
     ("N", Int n) :: attributes
   in
   { name = Name.make_fresh ~name
   ; op_name = Op_name.of_string "Concat"
-  ; output_type = values.output_type
-  ; inputs = [ P concat_dim; P values ]
+  ; output_type = (List.hd values).output_type
+  ; inputs = [ P concat_dim ] @ List.map (fun n -> P n) values
   ; attributes
   ; output_name = None
   }
@@ -709,7 +709,7 @@ let concatOffset
     ?(name = "ConcatOffset")
     ~n
     (concat_dim : [ `int32 ] t)
-    (shape : [ `int32 ] t)
+    (shape : [ `int32 ] t list)
   =
   let attributes = [] in
   let attributes =
@@ -718,7 +718,7 @@ let concatOffset
   { name = Name.make_fresh ~name
   ; op_name = Op_name.of_string "ConcatOffset"
   ; output_type = Type.Int32
-  ; inputs = [ P concat_dim; P shape ]
+  ; inputs = [ P concat_dim ] @ List.map (fun n -> P n) shape
   ; attributes
   ; output_name = None
   }
@@ -1124,17 +1124,17 @@ let dynamicPartition
 let dynamicStitch
     ?(name = "DynamicStitch")
     ~n
-    (indices : [ `int32 ] t)
-    (data : 't t)
+    (indices : [ `int32 ] t list)
+    (data : 't t list)
   =
-  let attributes = [ "T", Type (P data.output_type) ] in
+  let attributes = [ "T", Type (P (List.hd data).output_type) ] in
   let attributes =
     ("N", Int n) :: attributes
   in
   { name = Name.make_fresh ~name
   ; op_name = Op_name.of_string "DynamicStitch"
-  ; output_type = data.output_type
-  ; inputs = [ P indices; P data ]
+  ; output_type = (List.hd data).output_type
+  ; inputs = List.map (fun n -> P n) indices @ List.map (fun n -> P n) data
   ; attributes
   ; output_name = None
   }
@@ -2202,7 +2202,7 @@ let mean
 let mergeSummary
     ?(name = "MergeSummary")
     ~n
-    (inputs : [ `string ] t)
+    (inputs : [ `string ] t list)
   =
   let attributes = [] in
   let attributes =
@@ -2211,7 +2211,7 @@ let mergeSummary
   { name = Name.make_fresh ~name
   ; op_name = Op_name.of_string "MergeSummary"
   ; output_type = Type.String
-  ; inputs = [ P inputs ]
+  ; inputs = List.map (fun n -> P n) inputs
   ; attributes
   ; output_name = None
   }
@@ -2413,16 +2413,16 @@ let oneHot
 let pack
     ?(name = "Pack")
     ~n
-    (values : 't t)
+    (values : 't t list)
   =
-  let attributes = [ "T", Type (P values.output_type) ] in
+  let attributes = [ "T", Type (P (List.hd values).output_type) ] in
   let attributes =
     ("N", Int n) :: attributes
   in
   { name = Name.make_fresh ~name
   ; op_name = Op_name.of_string "Pack"
-  ; output_type = values.output_type
-  ; inputs = [ P values ]
+  ; output_type = (List.hd values).output_type
+  ; inputs = List.map (fun n -> P n) values
   ; attributes
   ; output_name = None
   }
@@ -2910,16 +2910,16 @@ let refSelect
     ?(name = "RefSelect")
     ~n
     (index : [ `int32 ] t)
-    (inputs : 't t)
+    (inputs : 't t list)
   =
-  let attributes = [ "T", Type (P inputs.output_type) ] in
+  let attributes = [ "T", Type (P (List.hd inputs).output_type) ] in
   let attributes =
     ("N", Int n) :: attributes
   in
   { name = Name.make_fresh ~name
   ; op_name = Op_name.of_string "RefSelect"
-  ; output_type = inputs.output_type
-  ; inputs = [ P index; P inputs ]
+  ; output_type = (List.hd inputs).output_type
+  ; inputs = [ P index ] @ List.map (fun n -> P n) inputs
   ; attributes
   ; output_name = None
   }
@@ -3403,16 +3403,16 @@ let shape
 let shapeN
     ?(name = "ShapeN")
     ~n
-    (input : 't t)
+    (input : 't t list)
   =
-  let attributes = [ "T", Type (P input.output_type) ] in
+  let attributes = [ "T", Type (P (List.hd input).output_type) ] in
   let attributes =
     ("N", Int n) :: attributes
   in
   { name = Name.make_fresh ~name
   ; op_name = Op_name.of_string "ShapeN"
   ; output_type = Type.Int32
-  ; inputs = [ P input ]
+  ; inputs = List.map (fun n -> P n) input
   ; attributes
   ; output_name = None
   }

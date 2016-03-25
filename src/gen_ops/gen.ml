@@ -27,17 +27,23 @@ end
 
 module Input = struct
   type t =
-    { name : string option
+    { name : string
     ; type_ : Type.t
     ; type_name : string option
+    (* When [number_attr] is present, the input is a list of tensors. *)
+    ; number_attr : string option
     }
 
-  let caml_name t ~idx =
+  let caml_name t =
     match t.name with
-    | Some "begin" -> "begin__"
-    | Some "in" -> "in__"
-    | Some name -> name
-    | None -> sprintf "x%d" idx
+    | "begin" -> "begin__"
+    | "in" -> "in__"
+    | name -> name
+
+  let caml_comp_name t =
+    let name = caml_name t in
+    if t.number_attr = None then name
+    else sprintf "(List.hd %s)" name
 end
 
 module Attribute = struct
@@ -191,11 +197,17 @@ module Op = struct
     try
       let types = extract_types op.attr in
       let inputs =
-        List.map op.input_arg ~f:(fun input_arg ->
+        List.mapi op.input_arg ~f:(fun idx input_arg ->
           let type_name, type_ = read_type types input_arg in
-          { Input.name = input_arg.name
+          let name =
+            match input_arg.name with
+            | None -> sprintf "x%d" idx
+            | Some name -> name
+          in
+          { Input.name
           ; type_
           ; type_name
+          ; number_attr = input_arg.number_attr
           })
       in
       let output_type_name, output_type =
@@ -225,8 +237,8 @@ end
 
 let same_input_and_output_type (op : Op.t) ~alpha =
   List.find_map op.inputs ~f:(fun input ->
-    match input.type_, input.name with
-    | Polymorphic (alpha', _), Some name when alpha = alpha' -> Some name
+    match input.type_ with
+    | Polymorphic (alpha', _) when alpha = alpha' -> Some input
     | _ -> None)
 
 let output_type_string op =
@@ -234,7 +246,7 @@ let output_type_string op =
   | Fixed p -> "Type." ^ Node.Type.to_string p
   | Polymorphic (alpha, _) ->
     match same_input_and_output_type op ~alpha with
-    | Some input_name -> sprintf "%s.output_type" input_name
+    | Some input -> sprintf "%s.output_type" (Input.caml_comp_name input)
     | None -> "type_"
 
 let needs_variable_for_output_type op =
@@ -263,8 +275,9 @@ let gen_mli ops =
     then p "  -> type_ : %s Node.Type.t" (Type.to_string op.output_type);
     List.iter op.attributes ~f:(fun attribute ->
       p "  -> %s" (Attribute.mli attribute));
-    List.iter op.inputs ~f:(fun { Input.name = _; type_; type_name = _ } ->
-      p "  -> %s Node.t" (Type.to_string type_));
+    List.iter op.inputs ~f:(fun input ->
+      let maybe_list = if Option.is_some input.number_attr then " list" else "" in
+      p "  -> %s Node.t%s" (Type.to_string input.type_) maybe_list);
     if List.is_empty op.inputs
     then p "  -> unit";
     p "  -> %s Node.t" (Type.to_string op.output_type);
@@ -291,9 +304,10 @@ let gen_ml ops =
     then p "    ~type_";
     List.iter op.attributes ~f:(fun attribute ->
       p "    %s" (Attribute.ml_def attribute));
-    List.iteri op.inputs ~f:(fun idx input ->
-      let name = Input.caml_name input ~idx in
-      p "    (%s : %s t)" name (Type.to_string input.type_));
+    List.iter op.inputs ~f:(fun input ->
+      let name = Input.caml_name input in
+      let maybe_list = if Option.is_some input.number_attr then " list" else "" in
+      p "    (%s : %s t%s)" name (Type.to_string input.type_) maybe_list);
     if List.is_empty op.inputs
     then p "    ()";
     let output_type_string = output_type_string op in
@@ -304,12 +318,13 @@ let gen_ml ops =
       | None -> []
     in
     let type_attr =
-      List.foldi op.inputs ~init:type_attr ~f:(fun idx acc (input : Input.t) ->
-        let name = Input.caml_name input ~idx in
+      List.fold op.inputs ~init:type_attr ~f:(fun acc (input : Input.t) ->
         match input.type_name with
         | None -> acc
         | Some type_name when List.Assoc.mem acc type_name -> acc
-        | Some type_name -> (type_name, sprintf "%s.output_type" name) :: acc)
+        | Some type_name ->
+          let name = Input.caml_comp_name input in
+          (type_name, sprintf "%s.output_type" name) :: acc)
       |> List.map ~f:(fun (type_name, type_string) ->
         sprintf " \"%s\", Type (P %s) " type_name type_string)
       |> String.concat ~sep:"; "
@@ -324,11 +339,21 @@ let gen_ml ops =
     p "  ; op_name = Op_name.of_string \"%s\"" op.name;
     p "  ; output_type = %s" output_type_string;
     let inputs =
-      List.mapi op.inputs ~f:(fun idx input ->
-        sprintf "P %s" (Input.caml_name input ~idx))
-      |> String.concat ~sep:"; "
+      if List.for_all op.inputs ~f:(fun input -> input.number_attr = None)
+      then
+        List.map op.inputs ~f:(fun input ->
+          sprintf "P %s" (Input.caml_name input))
+        |> String.concat ~sep:"; "
+        |> sprintf "[ %s ]"
+      else
+        List.map op.inputs ~f:(fun input ->
+          if input.number_attr = None
+          then sprintf "[ P %s ]" (Input.caml_name input)
+          else sprintf "List.map (fun n -> P n) %s" (Input.caml_name input)
+        )
+        |> String.concat ~sep:" @ "
     in
-    p "  ; inputs = [ %s ]" inputs;
+    p "  ; inputs = %s" inputs;
     p "  ; attributes";
     p "  ; output_name = None";
     p "  }";

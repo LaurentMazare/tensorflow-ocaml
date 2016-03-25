@@ -22,7 +22,7 @@ val add
 val addN
   :  ?name:string
   -> n:int
-  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t list
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) Node.t
 
 (* Deprecated. Disallowed in GraphDef version >= 2. *)
@@ -519,7 +519,7 @@ val concat
   :  ?name:string
   -> n:int
   -> [ `int32 ] Node.t
-  -> 't Node.t
+  -> 't Node.t list
   -> 't Node.t
 
 (* Computes offsets of concat inputs within its output. *)
@@ -535,7 +535,7 @@ val concatOffset
   :  ?name:string
   -> n:int
   -> [ `int32 ] Node.t
-  -> [ `int32 ] Node.t
+  -> [ `int32 ] Node.t list
   -> [ `int32 ] Node.t
 
 (* Returns the complex conjugate of a complex number. *)
@@ -988,8 +988,8 @@ For example:
 val dynamicStitch
   :  ?name:string
   -> n:int
-  -> [ `int32 ] Node.t
-  -> 't Node.t
+  -> [ `int32 ] Node.t list
+  -> 't Node.t list
   -> 't Node.t
 
 (* Computes the (possibly normalized) Levenshtein Edit Distance. *)
@@ -1746,7 +1746,7 @@ in the summaries to merge use the same tag. *)
 val mergeSummary
   :  ?name:string
   -> n:int
-  -> [ `string ] Node.t
+  -> [ `string ] Node.t list
   -> [ `string ] Node.t
 
 (* Computes the minimum of elements across dimensions of a tensor. *)
@@ -1986,7 +1986,7 @@ This is the opposite of `unpack`. *)
 val pack
   :  ?name:string
   -> n:int
-  -> 't Node.t
+  -> 't Node.t list
   -> 't Node.t
 
 (* Pads a tensor with zeros. *)
@@ -2320,7 +2320,7 @@ val refSelect
   :  ?name:string
   -> n:int
   -> [ `int32 ] Node.t
-  -> 't Node.t
+  -> 't Node.t list
   -> 't Node.t
 
 (* Computes rectified linear: `max(features, 0)`. *)
@@ -2900,7 +2900,7 @@ val shape
 val shapeN
   :  ?name:string
   -> n:int
-  -> 't Node.t
+  -> 't Node.t list
   -> [ `int32 ] Node.t
 
 (* Generate a sharded filename. The filename is printf formatted as *)
