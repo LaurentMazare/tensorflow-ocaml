@@ -332,6 +332,7 @@ module Session = struct
     in
     let data = tf_tensordata c_tensor |> from_voidp (typ_of_bigarray_kind kind) in
     let data = bigarray_of_ptr genarray dims kind data in
+    Gc.finalise (fun _ -> tf_deletetensor c_tensor) data;
     Tensor.P { data; kind }
 
   let run ?(inputs = []) ?(outputs = []) ?(targets = []) t =
