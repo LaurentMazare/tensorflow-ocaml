@@ -13,6 +13,9 @@ end = struct
     sprintf "%s-%d" name !cnt |> of_string
 end
 
+(* CR noury: change that to a real Id in the node *)
+module Id = Name
+
 module Type = struct
   (* We rely on all variants to be of the form | Variant : [ `variant ] t. *)
   type _ t =
@@ -121,3 +124,5 @@ let packed_is_real (P t) =
   | Type.Complex64 -> false
   | Type.Float -> true
   | Type.Double -> true
+
+let packed_id : p -> Id.t = packed_name

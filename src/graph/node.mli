@@ -21,7 +21,7 @@ module Type : sig
   type p = P : _ t -> p
 
   val to_string : p -> string
-  
+
   val of_dt_type
     :  [> `dt_bool
        | `dt_complex64
@@ -93,7 +93,14 @@ type 'a t =
   }
 and p = P : _ t -> p
 
+module Id :
+sig
+  include Identifiable
+end
+
+
 val packed_name : p -> Name.t
 val packed_op_name : p -> Op_name.t
 val packed_inputs : p -> p list
 val packed_is_real : p -> bool
+val packed_id : p -> Id.t
