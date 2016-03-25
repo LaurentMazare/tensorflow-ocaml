@@ -37,3 +37,13 @@ val cd : ?shape:int list -> float list -> [ `double ] Node.t
 (* Variables *)
 val varf : int list -> [ `float ] Node.t
 val vard : int list -> [ `double ] Node.t
+
+type 'a reduce_fn
+   =  ?dims:int list
+  -> ([< `complex64 | `double | `float | `int32 | `int64 ] as 'a) Node.t
+  -> 'a Node.t
+
+val reduce_sum : 'a reduce_fn
+val reduce_min : 'a reduce_fn
+val reduce_max : 'a reduce_fn
+val reduce_mean : 'a reduce_fn
