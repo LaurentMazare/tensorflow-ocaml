@@ -5,7 +5,6 @@ module Op_name : Identifiable = String_id
 module Name : sig
   include Identifiable
   val make_fresh : name:string -> t
-  val to_string : t -> string
 end = struct
   include String_id
   let cnt = ref 0
