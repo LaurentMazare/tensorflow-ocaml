@@ -314,22 +314,20 @@ module Session = struct
   let c_tensor_of_tensor packed_tensor =
     let Tensor.P tensor = packed_tensor in
     let id = fresh_id () in
-    let dim_array =
-      Bigarray.Genarray.dims tensor.data
-    in
+    let dim_array = Bigarray.Genarray.dims tensor in
     let dims =
       Array.to_list dim_array
       |> List.map Int64.of_int
       |> CArray.of_list int64_t
       |> CArray.start
     in
-    let data_type = data_type_of_kind tensor.kind in
+    let data_type = Bigarray.Genarray.kind tensor |> data_type_of_kind in
     let size = Array.fold_left ( * ) 1 dim_array * sizeof data_type in
     Hashtbl.add live_tensors id packed_tensor;
     tf_newtensor (data_type_to_int data_type)
       dims
-      (Bigarray.Genarray.num_dims tensor.data)
-      (bigarray_start genarray tensor.data |> to_voidp)
+      (Bigarray.Genarray.num_dims tensor)
+      (bigarray_start genarray tensor |> to_voidp)
       (Unsigned.Size_t.of_int size)
       deallocate
       (Nativeint.of_int id |> ptr_of_raw_address)
@@ -345,7 +343,7 @@ module Session = struct
     let data = tf_tensordata c_tensor |> from_voidp (typ_of_bigarray_kind kind) in
     let data = bigarray_of_ptr genarray dims kind data in
     Gc.finalise (fun _ -> tf_deletetensor c_tensor) data;
-    Tensor.P { data; kind }
+    Tensor.P data
 
   let run ?(inputs = []) ?(outputs = []) ?(targets = []) t =
     let status = Status.create () in

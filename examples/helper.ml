@@ -17,21 +17,20 @@ let const_float shape f =
     (List.init size ~f:(const f))
 
 let print_one_tensor (name, Tensor.P tensor) =
-  match tensor.kind with
+  match Bigarray.Genarray.kind tensor with
   | Bigarray.Float32 ->
-    let data = tensor.data in
     Printf.printf "%s:\n%!" name;
     begin
-      match Bigarray.Genarray.dims data with
+      match Bigarray.Genarray.dims tensor with
       | [| dim |] ->
         for d = 0 to dim - 1 do
-          Printf.printf "%d %f\n%!" d (Bigarray.Genarray.get data [| d |])
+          Printf.printf "%d %f\n%!" d (Bigarray.Genarray.get tensor [| d |])
         done
       | [| d0; d1 |] ->
         for x = 0 to d0 - 1 do
           Printf.printf "%d " x;
           for y = 0 to d1 - 1 do
-            Printf.printf "%f " (Bigarray.Genarray.get data [| x; y |])
+            Printf.printf "%f " (Bigarray.Genarray.get tensor [| x; y |])
           done;
           Printf.printf "\n%!";
         done
