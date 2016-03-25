@@ -80,8 +80,8 @@ let vard shape =
     ~type_:Double
     ~shape:(List.map shape ~f:(fun size -> { Node.Dim.size; name = None }))
 
-let zero32 = const_int ~type_:Int32 [ 0 ]
-let one32 = const_int ~type_:Int32 [ 1 ]
+let zero32 = const_int ~shape:[] ~type_:Int32 [ 0 ]
+let one32 = const_int ~shape:[] ~type_:Int32 [ 1 ]
 
 let reduce_op op ?dims node =
   let dims =
