@@ -1,4 +1,4 @@
-open Core.Std
+open Core_kernel.Std
 
 exception No_derivative_for_op of Node.Op_name.t
 

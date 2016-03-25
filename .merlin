@@ -1,2 +1,2 @@
-PKG core ctypes ctypes.foreign
+PKG core_kernel ctypes ctypes.foreign
 FLG -short-paths
