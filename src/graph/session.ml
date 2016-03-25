@@ -79,6 +79,7 @@ let rec prepare_node t node =
     if Node.Op_name.to_string (Node.packed_op_name node) = "Var"
     then
       begin
+       (*CR noury: should generate the code for variable initialisation *)
         Hashtbl.add_multi t.uninitialised_variables ~key:height ~data:node ;
         height + 1
       end
