@@ -123,7 +123,7 @@ let sum_gradient_ ~self ~gradient =
   Ops.tile (Ops.reshape gradient new_output_shape) tile_scaling
 
 let sum_gradient ~self ~gradient =
-  all [ N.P (sum_gradient_ ~self ~gradient) ]
+  [ Some (N.P (sum_gradient_ ~self ~gradient)); None ]
 
 let mean_gradient ~self ~gradient =
   let sum_gradient = sum_gradient_ ~self ~gradient in
@@ -132,7 +132,7 @@ let mean_gradient ~self ~gradient =
   let output_shape = Ops.shape self in
   let factor = Ops.div (Ops_m.reduce_prod input_shape) (Ops_m.reduce_prod output_shape) in
   let gradient = Ops.div sum_gradient (Ops.cast factor ~type_:sum_gradient.output_type) in
-  all [ N.P gradient ]
+  [ Some (N.P gradient); None ]
 
 let softmax_gradient ~self ~gradient =
   let gradient =

@@ -86,13 +86,16 @@ let gradient node ~with_respect_to =
           | None -> raise (No_derivative_for_op op_name)
           | Some fn ->
             match gradient with
-            | Some gradient ->
-              List.iter2_exn
-                (fn ~self:node ~gradient)
-                (Node.packed_inputs node)
-                ~f:(fun gradient input -> add_contribution input ~gradient)
             | None ->
               List.iter (Node.packed_inputs node) ~f:(add_contribution ~gradient:None)
+            | Some gradient ->
+              try
+                List.iter2_exn
+                  (fn ~self:node ~gradient)
+                  (Node.packed_inputs node)
+                  ~f:(fun gradient input -> add_contribution input ~gradient)
+              with
+              | exn -> Exn.reraise exn (Node.Op_name.to_string op_name)
   in 
   let one =
     Ops_m.const_float

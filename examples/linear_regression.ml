@@ -2,18 +2,21 @@ open Core_kernel.Std
 module H = Helper
 
 let () =
-  let n = 3 in (* size of y *)
-  let m = 2 in (* size of x *)
-  let x = Ops_m.cf ~shape:[1; m] [ 1.; 2. ] in
-  let y = Ops_m.cf ~shape:[1; n] [ 5.; 8.; 12. ] in
-  let w = Ops_m.varf [ m; n ] in
-  let b = Ops_m.varf [ n ] in
-  let w_assign = Ops.assign w (Ops_m.f ~shape:[ m; n ] 0.) in
-  let b_assign = Ops.assign b (Ops_m.f ~shape:[ n ] 0.) in
+  let samples = 100 in
+  let size_y = 1 in
+  let size_xs = 3 in
+  let x = List.init samples ~f:(fun i -> 3.14 *. float i /. float samples) in
+  let xs = List.concat_map x ~f:(fun x -> [ x; x *. x ]) in
+  let y = List.map x ~f:sin in
+  let xs = Ops_m.cf ~shape:[samples; size_xs] xs in
+  let y  = Ops_m.cf ~shape:[samples; size_y]  y in
+  let w = Ops_m.varf [ size_xs; size_y ] in
+  let b = Ops_m.varf [ size_y ] in
+  let w_assign = Ops.assign w (Ops_m.f ~shape:[ size_xs; size_y ] 0.) in
+  let b_assign = Ops.assign b (Ops_m.f ~shape:[ size_y ] 0.) in
   let err =
     let open Ops_m in
-    let diff = x *^ w + b - y in
-    diff *. diff
+    Ops.square (xs *^ w + b - y) |> reduce_mean
   in
   let gd =
     Optimizers.gradient_descent_minimizer ~alpha:0.0004 ~varsf:[ w; b ] err
@@ -21,18 +24,11 @@ let () =
   let session =
     H.create_session (Node.[ P err; P w_assign; P b_assign ] @ gd)
   in
-  let output =
+  let _output =
     H.run session
-      ~outputs:[ w_assign ]
+      ~outputs:[]
       ~targets:[ w_assign; b_assign ] 
   in
-  H.print_tensors output ~names:[ "init" ];
-  let output =
-    H.run session
-      ~outputs:[ w; b ]
-      ~targets:[ w; b ]
-  in
-  H.print_tensors output ~names:[ "w"; "b" ];
   let print_err () =
     let output =
       H.run session
@@ -51,4 +47,3 @@ let () =
     if i % 100 = 0 then print_err ()
   done;
   print_err ()
-
