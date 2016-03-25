@@ -102,3 +102,6 @@ let reduce_sum ?dims node = reduce_op Ops.sum ?dims node
 let reduce_mean ?dims node = reduce_op Ops.mean ?dims node
 let reduce_min ?dims node = reduce_op Ops.min ?dims node
 let reduce_max ?dims node = reduce_op Ops.max ?dims node
+let reduce_prod ?dims node = reduce_op Ops.prod ?dims node
+let reduce_all ?dims node = reduce_op Ops.all ?dims node
+let reduce_any ?dims node = reduce_op Ops.any ?dims node

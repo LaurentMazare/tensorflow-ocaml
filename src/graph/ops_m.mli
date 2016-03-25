@@ -47,6 +47,9 @@ val reduce_sum : 'a reduce_fn
 val reduce_min : 'a reduce_fn
 val reduce_max : 'a reduce_fn
 val reduce_mean : 'a reduce_fn
+val reduce_prod : 'a reduce_fn
+val reduce_all : ?dims:int list -> [ `bool ] Node.t -> [ `bool ] Node.t
+val reduce_any : ?dims:int list -> [ `bool ] Node.t -> [ `bool ] Node.t
 
 val one32 : [ `int32 ] Node.t
 val zero32 : [ `int32 ] Node.t
