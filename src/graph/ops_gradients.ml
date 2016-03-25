@@ -59,6 +59,10 @@ let square_gradient (type a) ~self ~(gradient : a N.t) =
   in
   pointwise_unary_exn ~self ~gradient ~t
 
+let log_gradient (type a) ~self ~(gradient : a N.t) =
+  let t = { f1 = fun ~input ~gradient -> Ops.mul gradient (Ops.inv input) } in
+  pointwise_unary_exn ~self ~gradient ~t
+
 let relu_gradient (type a) ~self ~(gradient : a N.t) =
   let t = { f1 = fun ~input ~gradient -> Ops.reluGrad gradient input } in
   pointwise_unary_exn ~self ~gradient ~t
@@ -113,20 +117,45 @@ let reduce_gradient ~self =
   in
   new_output_shape, input_shape
 
-let sum_gradient ~self ~gradient =
+let sum_gradient_ ~self ~gradient =
   let new_output_shape, input_shape = reduce_gradient ~self in
   let tile_scaling = Ops.div input_shape new_output_shape in
-  let gradient = Ops.reshape gradient new_output_shape in
-  all [ Node.P (Ops.tile gradient tile_scaling) ]
+  Ops.tile (Ops.reshape gradient new_output_shape) tile_scaling
+
+let sum_gradient ~self ~gradient =
+  all [ N.P (sum_gradient_ ~self ~gradient) ]
+
+let mean_gradient ~self ~gradient =
+  let sum_gradient = sum_gradient_ ~self ~gradient in
+  let N.P input = List.hd_exn self.inputs in
+  let input_shape = Ops.shape input in
+  let output_shape = Ops.shape self in
+  let factor = Ops.div (Ops_m.reduce_prod input_shape) (Ops_m.reduce_prod output_shape) in
+  let gradient = Ops.div sum_gradient (Ops.cast factor ~type_:sum_gradient.output_type) in
+  all [ N.P gradient ]
+
+let softmax_gradient ~self ~gradient =
+  let gradient =
+    Ops_m.(
+      (gradient
+        - Ops.reshape
+            (reduce_sum ~dims:[ 1 ] (gradient * self))
+            (const_int ~type_:Int32 [ -1; 1 ])
+      ) * self)
+  in
+  all [ N.P gradient ]
 
 let register_all () =
   List.iter ~f:(fun (name, f) ->
     Registered_gradients.add (N.Op_name.of_string name) f)
-    [ "Add", { Registered_gradients.f = add_gradient }
-    ; "Sub", { f = sub_gradient }
-    ; "Abs", { f = abs_gradient }
-    ; "Square", { f = square_gradient }
-    ; "MatMul", { f = matmul_gradient }
-    ; "Relu", { f = relu_gradient }
-    ; "Sum", { f = sum_gradient }
+    [ "Abs",     { Registered_gradients.f = abs_gradient }
+    ; "Add",     { f = add_gradient }
+    ; "Log",     { f = log_gradient }
+    ; "MatMul",  { f = matmul_gradient }
+    ; "Mean",    { f = mean_gradient }
+    ; "Relu",    { f = relu_gradient }
+    ; "Softmax", { f = softmax_gradient }
+    ; "Square",  { f = square_gradient }
+    ; "Sub",     { f = sub_gradient }
+    ; "Sum",     { f = sum_gradient }
     ]
