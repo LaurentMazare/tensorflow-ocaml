@@ -1,4 +1,4 @@
-open Core.Std
+open Core_kernel.Std
 
 let gradient_descent_minimizer ~alpha ?(varsf = []) ?(varsd = []) target =
   let gradsf, gradsd =

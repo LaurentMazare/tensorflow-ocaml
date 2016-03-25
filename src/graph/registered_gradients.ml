@@ -1,4 +1,4 @@
-open Core.Std
+open Core_kernel.Std
 
 let table = Node.Op_name.Table.create ()
 

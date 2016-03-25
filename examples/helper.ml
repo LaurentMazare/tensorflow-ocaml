@@ -1,4 +1,4 @@
-open Core.Std
+open Core_kernel.Std
 open Wrapper
 
 (* TODO: move the interesting functions to src/. *)

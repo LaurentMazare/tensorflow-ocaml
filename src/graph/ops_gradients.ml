@@ -1,4 +1,4 @@
-open Core.Std
+open Core_kernel.Std
 module N = Node
 module T = Node.Type
 

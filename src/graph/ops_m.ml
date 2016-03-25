@@ -1,4 +1,4 @@
-open Core.Std
+open Core_kernel.Std
 open Node
 
 let get_shape ?shape values =

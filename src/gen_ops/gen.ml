@@ -1,4 +1,4 @@
-open Core.Std
+open Core_kernel.Std
 exception Not_supported of string
 
 let ops_file = "src/gen_ops/ops.pb"
