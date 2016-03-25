@@ -79,3 +79,24 @@ let vard shape =
   Ops.variable ()
     ~type_:Double
     ~shape:(List.map shape ~f:(fun size -> { Node.Dim.size; name = None }))
+
+let zero32 = const_int ~shape:[] ~type_:Int32 [ 0 ]
+let one32 = const_int ~shape:[] ~type_:Int32 [ 1 ]
+
+let reduce_op op ?dims node =
+  let dims =
+    match dims with
+    | Some dims -> const_int ~type_:Int32 dims
+    | None -> Ops.range zero32 (Ops.rank node) one32
+  in
+  op node dims
+
+type 'a reduce_fn
+   =  ?dims:int list
+  -> ([< `complex64 | `double | `float | `int32 | `int64 ] as 'a) Node.t
+  -> 'a Node.t
+
+let reduce_sum ?dims node = reduce_op Ops.sum ?dims node
+let reduce_mean ?dims node = reduce_op Ops.mean ?dims node
+let reduce_min ?dims node = reduce_op Ops.min ?dims node
+let reduce_max ?dims node = reduce_op Ops.max ?dims node
