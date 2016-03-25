@@ -335,15 +335,18 @@ module Session = struct
   let tensor_of_c_tensor c_tensor =
     let num_dims = tf_numdims c_tensor in
     let dims = Array.init num_dims (fun i -> tf_dim c_tensor i) in
-    let kind =
-      match tf_tensortype c_tensor |> int_to_data_type with
-      | TF_FLOAT -> Bigarray.float32
-      | _ -> failwith "TODO: support other tensor types"
+    let apply_kind kind =
+      let data = tf_tensordata c_tensor |> from_voidp (typ_of_bigarray_kind kind) in
+      let data = bigarray_of_ptr genarray dims kind data in
+      Gc.finalise (fun _ -> tf_deletetensor c_tensor) data;
+      Tensor.P data
     in
-    let data = tf_tensordata c_tensor |> from_voidp (typ_of_bigarray_kind kind) in
-    let data = bigarray_of_ptr genarray dims kind data in
-    Gc.finalise (fun _ -> tf_deletetensor c_tensor) data;
-    Tensor.P data
+    match tf_tensortype c_tensor |> int_to_data_type with
+    | TF_FLOAT -> apply_kind Bigarray.float32
+    | TF_DOUBLE -> apply_kind Bigarray.float64
+    | TF_INT32 -> apply_kind Bigarray.int32
+    | TF_INT64 -> apply_kind Bigarray.int64
+    | _ -> failwith "Unsupported tensor type"
 
   let run ?(inputs = []) ?(outputs = []) ?(targets = []) t =
     let status = Status.create () in
