@@ -6,7 +6,6 @@
   - Store in [Session.t] the current nodes and automatically extend the graph on [Session.run].
     - Remove [Session.extend_graph].
   - Tensor wrapper.
-    - Use bigarray rather than carray.
     - Pretty-printer for tensors.
     - Getter, accessor, initialization (store the dims in [Tensor.t]).
     - Only create a C tensor when calling [Session.run], store it in a hashtable until [Session.run] has completed.
