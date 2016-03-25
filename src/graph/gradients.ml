@@ -111,11 +111,7 @@ let gradient node ~with_respect_to_float ~with_respect_to_double =
       ~with_respect_to:(pack with_respect_to_float @ pack with_respect_to_double)
   in
   let cast : type a . Node.p -> type_: a Node.Type.t -> a Node.t =
-    fun (Node.P node) ~type_ ->
-      match node.output_type, type_ with
-      | Node.Type.Double, Node.Type.Double -> node
-      | Node.Type.Float, Node.Type.Float -> node
-      | _ -> assert false
+    fun node ~type_ -> Option.value_exn (Node.extract node type_)
   in
   let lookup ~type_ =
     List.map ~f:(fun node ->

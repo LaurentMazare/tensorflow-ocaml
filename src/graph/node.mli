@@ -98,7 +98,6 @@ sig
   include Identifiable
 end
 
-
 val packed_name : p -> Name.t
 val packed_op_name : p -> Op_name.t
 val packed_inputs : p -> p list
@@ -106,3 +105,5 @@ val packed_is_real : p -> bool
 val packed_id : p -> Id.t
 
 val id : _ t -> Id.t
+
+val extract : p -> 'a Type.t -> 'a t option

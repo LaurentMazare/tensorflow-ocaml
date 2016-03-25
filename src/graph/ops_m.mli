@@ -47,3 +47,8 @@ val reduce_sum : 'a reduce_fn
 val reduce_min : 'a reduce_fn
 val reduce_max : 'a reduce_fn
 val reduce_mean : 'a reduce_fn
+
+val one32 : [ `int32 ] Node.t
+val zero32 : [ `int32 ] Node.t
+
+val range : [ `int32 ] Node.t -> [ `int32 ] Node.t

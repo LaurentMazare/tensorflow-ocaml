@@ -5,8 +5,6 @@
   - More functional and type-safe api.
   - Store in [Session.t] the current nodes and automatically extend the graph on [Session.run].
     - Remove [Session.extend_graph].
-  - Tensor wrapper.
-    - Pretty-printer for tensors.
 
 - Safer/better impls for ops.
   - Variable initialization.

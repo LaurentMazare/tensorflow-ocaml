@@ -83,6 +83,8 @@ let vard shape =
 let zero32 = const_int ~shape:[] ~type_:Int32 [ 0 ]
 let one32 = const_int ~shape:[] ~type_:Int32 [ 1 ]
 
+let range node = Ops.range zero32 node one32
+
 let reduce_op op ?dims node =
   let dims =
     match dims with

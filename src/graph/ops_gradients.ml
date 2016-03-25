@@ -3,31 +3,31 @@ module N = Node
 module T = Node.Type
 
 type unary =
-  { f1 : 'a .input:(  [< `float | `double] as 'a) Node.t
-          -> gradient:'a Node.t
-          -> 'a Node.t
+  { f1 : 'a .input:(  [< `float | `double] as 'a) N.t
+          -> gradient:'a N.t
+          -> 'a N.t
   }
 
 let all = List.map ~f:Option.some
 
-let pointwise_unary_exn (type a) ~self ~(gradient : a Node.t) ~t =
-  let Node.P input =
-    match self.Node.inputs with
+let pointwise_unary_exn (type a) ~self ~(gradient : a N.t) ~t =
+  let N.P input =
+    match self.N.inputs with
     | [] | _ :: _ :: _ -> failwith "Not a unary function"
     | [ node ] -> node
   in
   let output =
-    match input.output_type, gradient.Node.output_type with
-    | Node.Type.Double, Node.Type.Double ->
-      Node.P (t.f1 ~input ~gradient)
-    | Node.Type.Float, Node.Type.Float ->
-      Node.P (t.f1 ~input ~gradient)
+    match input.output_type, gradient.N.output_type with
+    | T.Double, T.Double ->
+      N.P (t.f1 ~input ~gradient)
+    | T.Float, T.Float ->
+      N.P (t.f1 ~input ~gradient)
     | _ -> failwith "Inconsistent types"
   in
   all [ output ]
 
-let binary_extract_exn : type a . a Node.t -> (a Node.t * a Node.t) = fun node ->
-  let Node.P lhs, Node.P rhs =
+let binary_extract_exn : type a . a N.t -> (a N.t * a N.t) = fun node ->
+  let N.P lhs, N.P rhs =
     match node.inputs with
     | [ lhs; rhs ] -> lhs, rhs
     | _ -> failwith "Not a binary function"
@@ -38,19 +38,19 @@ let binary_extract_exn : type a . a Node.t -> (a Node.t * a Node.t) = fun node -
   | _ -> failwith "Inconsistent types"
 
 let add_gradient ~self:_ ~gradient =
-  let gradient = Node.P gradient in
+  let gradient = N.P gradient in
   all [ gradient; gradient ]
 
 let sub_gradient ~self:_ ~gradient =
-  let minus_gradient = Node.P (Ops.neg gradient) in
-  let gradient = Node.P gradient in
+  let minus_gradient = N.P (Ops.neg gradient) in
+  let gradient = N.P gradient in
   all [ gradient; minus_gradient ]
 
-let abs_gradient (type a) ~self ~(gradient : a Node.t) =
+let abs_gradient (type a) ~self ~(gradient : a N.t) =
   let t = { f1 = fun ~input ~gradient -> Ops.sign input |> Ops.mul gradient } in
   pointwise_unary_exn ~self ~gradient ~t
 
-let square_gradient (type a) ~self ~(gradient : a Node.t) =
+let square_gradient (type a) ~self ~(gradient : a N.t) =
   let t =
     { f1 = fun ~input ~gradient ->
         Ops.mul input (Ops_m.scalar ~type_:input.output_type 2.)
@@ -59,17 +59,17 @@ let square_gradient (type a) ~self ~(gradient : a Node.t) =
   in
   pointwise_unary_exn ~self ~gradient ~t
 
-let relu_gradient (type a) ~self ~(gradient : a Node.t) =
+let relu_gradient (type a) ~self ~(gradient : a N.t) =
   let t = { f1 = fun ~input ~gradient -> Ops.reluGrad gradient input } in
   pointwise_unary_exn ~self ~gradient ~t
 
 let matmul_gradient ~self ~gradient =
   let get_transpose str =
-    List.Assoc.find self.Node.attributes str
+    List.Assoc.find self.N.attributes str
     |> Option.value_map
         ~default:false
         ~f:(function
-          | Node.Bool b -> b
+          | N.Bool b -> b
           | _ -> assert false)
   in
   let transpose_a = get_transpose "transpose_a" in
@@ -93,13 +93,38 @@ let matmul_gradient ~self ~gradient =
     ; N.P (Ops.matMul gradient lhs ~transpose_a:true ~transpose_b:true)
     ] |> all
 
+(* Direct adaptation of math_grad.py from the tensorflow source code. *)
+let reduce_gradient ~self =
+  let N.P input, N.P indices =
+    match self.N.inputs with
+    | [ input; indices ] -> input, indices
+    | _ -> failwith "Incorrect number of inputs"
+  in
+  let input_shape = Ops.shape input in
+  let input_rank = Ops.rank input in
+  let indices_shape = Ops.shape indices in
+  let indices =
+    N.extract (N.P indices) Int32
+  in
+  let new_output_shape =
+    Ops.dynamicStitch
+      [ Ops_m.range input_rank; Option.value_exn indices ]
+      [ input_shape; Ops.fill indices_shape Ops_m.one32 ]
+  in
+  new_output_shape, input_shape
+
+let sum_gradient ~self ~gradient =
+  ignore (reduce_gradient, self, gradient);
+  failwith "TODO: finish implementing"
+
 let register_all () =
   List.iter ~f:(fun (name, f) ->
-    Registered_gradients.add (Node.Op_name.of_string name) f)
+    Registered_gradients.add (N.Op_name.of_string name) f)
     [ "Add", { Registered_gradients.f = add_gradient }
     ; "Sub", { f = sub_gradient }
     ; "Abs", { f = abs_gradient }
     ; "Square", { f = square_gradient }
     ; "MatMul", { f = matmul_gradient }
     ; "Relu", { f = relu_gradient }
+    ; "Sum", { f = sum_gradient }
     ]
