@@ -3,8 +3,8 @@ module N = Node
 module T = Node.Type
 
 type unary =
-  { f1 : 'a .
-          (  [< `float | `double] as 'a) Node.t
+  { f1 : 'a .input:(  [< `float | `double] as 'a) Node.t
+          -> gradient:'a Node.t
           -> 'a Node.t
   }
 
@@ -19,9 +19,9 @@ let pointwise_unary_exn (type a) ~self ~(gradient : a Node.t) ~t =
   let output =
     match input.output_type, gradient.Node.output_type with
     | Node.Type.Double, Node.Type.Double ->
-      Node.P (Ops.mul gradient (t.f1 input))
+      Node.P (t.f1 ~input ~gradient)
     | Node.Type.Float, Node.Type.Float ->
-      Node.P (Ops.mul gradient (t.f1 input))
+      Node.P (t.f1 ~input ~gradient)
     | _ -> failwith "Inconsistent types"
   in
   all [ output ]
@@ -47,13 +47,20 @@ let sub_gradient ~self:_ ~gradient =
   all [ gradient; minus_gradient ]
 
 let abs_gradient (type a) ~self ~(gradient : a Node.t) =
-  let t = { f1 = fun input -> Ops.sign input } in
+  let t = { f1 = fun ~input ~gradient -> Ops.sign input |> Ops.mul gradient } in
   pointwise_unary_exn ~self ~gradient ~t
 
 let square_gradient (type a) ~self ~(gradient : a Node.t) =
   let t =
-    { f1 = fun input -> Ops.mul input (Ops_m.scalar ~type_:input.output_type 2.) }
+    { f1 = fun ~input ~gradient ->
+        Ops.mul input (Ops_m.scalar ~type_:input.output_type 2.)
+        |> Ops.mul gradient
+    }
   in
+  pointwise_unary_exn ~self ~gradient ~t
+
+let relu_gradient (type a) ~self ~(gradient : a Node.t) =
+  let t = { f1 = fun ~input ~gradient -> Ops.reluGrad gradient input } in
   pointwise_unary_exn ~self ~gradient ~t
 
 let matmul_gradient ~self ~gradient =
@@ -94,4 +101,5 @@ let register_all () =
     ; "Abs", { f = abs_gradient }
     ; "Square", { f = square_gradient }
     ; "MatMul", { f = matmul_gradient }
+    ; "Relu", { f = relu_gradient }
     ]
