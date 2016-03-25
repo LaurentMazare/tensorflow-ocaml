@@ -114,8 +114,10 @@ let reduce_gradient ~self =
   new_output_shape, input_shape
 
 let sum_gradient ~self ~gradient =
-  ignore (reduce_gradient, self, gradient);
-  failwith "TODO: finish implementing"
+  let new_output_shape, input_shape = reduce_gradient ~self in
+  let tile_scaling = Ops.div input_shape new_output_shape in
+  let gradient = Ops.reshape gradient new_output_shape in
+  all [ Node.P (Ops.tile gradient tile_scaling) ]
 
 let register_all () =
   List.iter ~f:(fun (name, f) ->
