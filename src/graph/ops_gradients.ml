@@ -61,9 +61,21 @@ let mul_gradient ~self ~gradient =
   let shape_lhs = Ops.shape lhs in
   let shape_rhs = Ops.shape rhs in
   let rlhs, rrhs = Ops_m.broadcast_gradient_args shape_lhs shape_rhs in
-  let lhs_gradient = Ops.reshape (Ops.sum (Ops.mul gradient rhs) rlhs) shape_lhs in
-  let rhs_gradient = Ops.reshape (Ops.sum (Ops.mul lhs gradient) rrhs) shape_rhs in
+  let lhs_gradient = Ops.reshape (Ops.sum Ops_m.(gradient * rhs) rlhs) shape_lhs in
+  let rhs_gradient = Ops.reshape (Ops.sum Ops_m.(lhs * gradient) rrhs) shape_rhs in
   all [ N.P lhs_gradient; N.P rhs_gradient ]
+
+let div_gradient ~self ~gradient =
+  let lhs, rhs = binary_extract_exn self in
+  let shape_lhs = Ops.shape lhs in
+  let shape_rhs = Ops.shape rhs in
+  let rlhs, rrhs = Ops_m.broadcast_gradient_args shape_lhs shape_rhs in
+  let lhs_gradient = Ops.reshape (Ops.sum Ops_m.(gradient / rhs) rlhs) shape_lhs in
+  let rhs_gradient =
+    Ops.reshape (Ops.sum Ops_m.(gradient * (Ops.neg (lhs / Ops.square rhs))) rrhs) shape_rhs
+  in
+  all [ N.P lhs_gradient; N.P rhs_gradient ]
+
 
 let neg_gradient ~self:_ ~gradient =
   all [ N.P (Ops.neg gradient) ]
@@ -159,6 +171,21 @@ let mean_gradient ~self ~gradient =
   let gradient = Ops.div sum_gradient (Ops.cast factor ~type_:sum_gradient.output_type) in
   [ Some (N.P gradient); None ]
 
+let minmax_gradient ~self ~gradient =
+  let input =
+    match self.N.inputs with
+    | [ input; _ ] -> Option.value_exn (N.extract input self.output_type)
+    | _ -> failwith "Not a binary function"
+  in
+  let new_output_shape, _ = reduce_gradient ~self in
+  let self = Ops.reshape self new_output_shape in
+  let gradient = Ops.reshape gradient new_output_shape in
+  let gradient =
+    Ops.cast (Ops.equal self input) ~type_:self.N.output_type
+    |> Ops.mul gradient
+  in
+  [ Some (N.P gradient); None ]
+
 let softmax_gradient ~self ~gradient =
   let gradient =
     Ops_m.(
@@ -170,20 +197,59 @@ let softmax_gradient ~self ~gradient =
   in
   all [ N.P gradient ]
 
+let exp_gradient ~self ~gradient =
+  all [ N.P (Ops.mul gradient self) ]
+
+let sqrt_gradient ~self ~gradient =
+  let gradient =
+    Ops_m.(gradient * const_float ~type_:self.N.output_type [ 0.5 ] * Ops.inv self)
+  in
+  all [ N.P gradient ]
+
+let tanh_gradient ~self ~gradient =
+  let gradient =
+    Ops_m.(gradient * (const_float ~type_:self.N.output_type [ 1. ] - Ops.square self))
+  in
+  all [ N.P gradient ]
+
+let sign_gradient ~self ~gradient:_ =
+  all [ N.P (Ops.zerosLike self) ]
+
+let sin_gradient (type a) ~self ~(gradient : a N.t) =
+  let t = { f1 = fun ~input ~gradient -> Ops.mul gradient (Ops.cos input) } in
+  pointwise_unary_exn ~self ~gradient ~t
+
+let cos_gradient (type a) ~self ~(gradient : a N.t) =
+  let t = { f1 = fun ~input ~gradient -> Ops.mul gradient (Ops.sin input) |> Ops.neg } in
+  pointwise_unary_exn ~self ~gradient ~t
+
+let addn_gradient ~self ~gradient =
+  List.map self.N.inputs ~f:(fun _ -> Some (N.P gradient))
+
 let register_all () =
   let module O = Ops.Op_names in
   List.iter ~f:(fun (name, f) -> Registered_gradients.add name f)
     [ O.abs,     { Registered_gradients.f = abs_gradient }
     ; O.add,     { f = add_gradient }
+    ; O.addN,    { f = addn_gradient }
+    ; O.cos,     { f = cos_gradient }
+    ; O.div,     { f = div_gradient }
+    ; O.exp,     { f = exp_gradient }
     ; O.log,     { f = log_gradient }
     ; O.matMul,  { f = matmul_gradient }
+    ; O.max,     { f = minmax_gradient }
     ; O.mean,    { f = mean_gradient }
+    ; O.min,     { f = minmax_gradient }
     ; O.mul,     { f = mul_gradient }
     ; O.neg,     { f = neg_gradient }
     ; O.relu,    { f = relu_gradient }
     ; O.sigmoid, { f = sigmoid_gradient }
+    ; O.sign,    { f = sign_gradient }
+    ; O.sin,     { f = sin_gradient }
     ; O.softmax, { f = softmax_gradient }
+    ; O.sqrt,    { f = sqrt_gradient }
     ; O.square,  { f = square_gradient }
     ; O.sub,     { f = sub_gradient }
     ; O.sum,     { f = sum_gradient }
+    ; O.tanh,    { f = tanh_gradient }
     ]

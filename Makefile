@@ -18,6 +18,12 @@ lr_gnuplot: linear_regression_gnuplot.native
 nn_gnuplot: nn_gnuplot.native
 	LD_LIBRARY_PATH=./lib:$(LD_LIBRARY_PATH) ./nn_gnuplot.native
 
+mnist_nn: mnist_nn.native
+	LD_LIBRARY_PATH=./lib:$(LD_LIBRARY_PATH) ./mnist_nn.native
+
+mnist_linear: mnist_linear.native
+	LD_LIBRARY_PATH=./lib:$(LD_LIBRARY_PATH) ./mnist_linear.native
+
 clean:
 	rm -Rf _build/
 
