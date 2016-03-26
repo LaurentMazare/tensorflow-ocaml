@@ -23,7 +23,7 @@ let one_layer ~samples ~size_xs ~size_ys ~xs ~ys ~hidden_nodes ~epochs =
   let y_ = Ops_m.(Ops.sigmoid (xs *^ w1 + b1) *^ w2 + b2) in
   let err = Ops_m.(Ops.square (y_ - y) |> reduce_mean) in
   let gd =
-    Optimizers.gradient_descent_minimizer ~alpha:0.4 ~varsf:[ w1; w2; b1; b2 ] err
+    Optimizers.gradient_descent_minimizer ~alpha:0.05 ~varsf:[ w1; w2; b1; b2 ] err
   in
   let session =
     H.create_session (Node.[ P err; P w1_assign; P b1_assign; P w2_assign; P b2_assign ] @ gd)

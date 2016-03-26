@@ -36,12 +36,12 @@ let run ~samples ~size_xs ~size_ys ~xs ~ys =
       results := (n, Tensor.to_float_list y_) :: !results
     | _ -> assert false
   in
-  for i = 0 to 500 do
+  for i = 0 to 2000 do
     let output =
       Wrapper.Session.run session
         ~targets:(List.map gd ~f:(fun n -> Node.packed_name n |> Node.Name.to_string))
     in
     ignore output;
-    if i % 100 = 0 then print_err i
+    if i % 400 = 0 then print_err i
   done;
   !results
