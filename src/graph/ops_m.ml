@@ -125,3 +125,10 @@ let broadcast_gradient_args x y =
     }
   in
   bga 0, bga 1
+
+let placeholder ?name ~type_ shape =
+  Ops.placeholder
+    ?name
+    ~type_
+    ~shape:(List.map shape ~f:(fun size -> { Node.Dim.name = None; size }))
+    ()
