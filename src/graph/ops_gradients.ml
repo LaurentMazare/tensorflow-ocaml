@@ -56,6 +56,18 @@ let sub_gradient ~self ~gradient =
   let lhs, rhs = add_gradient_ ~self ~gradient in
   all [ N.P lhs; N.P (Ops.neg rhs) ]
 
+let mul_gradient ~self ~gradient =
+  let lhs, rhs = binary_extract_exn self in
+  let shape_lhs = Ops.shape lhs in
+  let shape_rhs = Ops.shape rhs in
+  let rlhs, rrhs = Ops_m.broadcast_gradient_args shape_lhs shape_rhs in
+  let lhs = Ops.reshape (Ops.sum (Ops.mul gradient rhs) rlhs) shape_lhs in
+  let rhs = Ops.reshape (Ops.sum (Ops.mul lhs gradient) rrhs) shape_rhs in
+  all [ N.P lhs; N.P rhs ]
+
+let neg_gradient ~self:_ ~gradient =
+  all [ N.P (Ops.neg gradient) ]
+
 let abs_gradient (type a) ~self ~(gradient : a N.t) =
   let t = { f1 = fun ~input ~gradient -> Ops.sign input |> Ops.mul gradient } in
   pointwise_unary_exn ~self ~gradient ~t
@@ -166,6 +178,8 @@ let register_all () =
     ; O.log,     { f = log_gradient }
     ; O.matMul,  { f = matmul_gradient }
     ; O.mean,    { f = mean_gradient }
+    ; O.mul,     { f = mul_gradient }
+    ; O.neg,     { f = neg_gradient }
     ; O.relu,    { f = relu_gradient }
     ; O.sigmoid, { f = sigmoid_gradient }
     ; O.softmax, { f = softmax_gradient }
