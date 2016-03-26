@@ -6,6 +6,10 @@ let label_count = 10
 let hidden_nodes = 64
 let epochs = 1000
 
+let rnd ~shape =
+  Ops.randomStandardNormal (Ops_m.const_int ~type_:Int32 shape) ~type_:Float
+  |> Ops.mul (Ops_m.f 0.1)
+
 let () =
   let train_images = Mnist.read_images "data/train-images-idx3-ubyte" in
   let train_labels = Mnist.read_labels "data/train-labels-idx1-ubyte" in
@@ -16,12 +20,12 @@ let () =
   let b1 = Ops_m.varf [ hidden_nodes ] in
   let w2 = Ops_m.varf [ hidden_nodes; label_count ] in
   let b2 = Ops_m.varf [ label_count ] in
-  let w1_assign = Ops.assign w1 (Ops_m.f ~shape:[ image_dim; hidden_nodes ] 0.) in
+  let w1_assign = Ops.assign w1 (rnd ~shape:[ image_dim; hidden_nodes ]) in
   let b1_assign = Ops.assign b1 (Ops_m.f ~shape:[ hidden_nodes ] 0.) in
-  let w2_assign = Ops.assign w2 (Ops_m.f ~shape:[ hidden_nodes; label_count ] 0.) in
+  let w2_assign = Ops.assign w2 (rnd ~shape:[ hidden_nodes; label_count ]) in
   let b2_assign = Ops.assign b2 (Ops_m.f ~shape:[ label_count ] 0.) in
   let ys_ = Ops_m.(Ops.sigmoid (xs *^ w1 + b1) *^ w2 + b2) |> Ops.softmax in
-  let cross_entropy = Ops.neg Ops_m.(reduce_sum (ys * Ops.log ys_)) in
+  let cross_entropy = Ops.neg Ops_m.(reduce_mean (ys * Ops.log ys_)) in
   let accuracy =
     Ops.equal (Ops.argMax ys_ Ops_m.one32) (Ops.argMax ys Ops_m.one32)
     |> Ops.cast ~type_:Float
@@ -63,12 +67,12 @@ let () =
     let output =
       H.run session
         ~inputs
-        ~outputs:[ accuracy; ys_ ]
+        ~outputs:[ accuracy; cross_entropy; ys_ ]
         ~targets:[ accuracy ]
     in
     match output with
-    | [ accuracy; ys_ ] ->
-      H.print_tensors [ accuracy ] ~names:[ sprintf "ce %d" n ];
+    | [ accuracy; cross_entropy; ys_ ] ->
+      H.print_tensors [ accuracy; cross_entropy ] ~names:[ sprintf "acc %d" n; "ce" ];
       results := (n, Tensor.to_float_list ys_) :: !results
     | _ -> assert false
   in

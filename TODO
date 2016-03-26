@@ -15,6 +15,7 @@
 
 - Gradient Computation and Descent.
   - Register the gradients of more functions.
+  - Add new optimizers.
 
 - Examples and tests.
   - Example with hidden layer.
