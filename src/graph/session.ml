@@ -4,16 +4,6 @@ open Core_kernel.Std
 (* CR-soon noury: the whole renaming of fresh variables and export can be done in one
    pass but we need to think more. *)
 
-(* the structure of variable to initialize might be slightly tricky:
-   some variables migh depend on other to be already initialised in order to be
-   initialised.
-   I think it can even be a nice way to make sure the size of multiple layers matches.
-   (use the parameter of one layer to initialise the parameter of the next) *)
-module Variable_initialisation =
-struct
-  (* Initialisation will run each list in order *)
-  type t = Node.p list list
-end
 (* There is no uninitialised variables because I think we can initialize
 them last minute when someone call run, as there is no extend graph *)
 type t =
@@ -154,6 +144,9 @@ module Input =
 
   let float (node : [`float ] Node.t)  (tensor : (float, Bigarray.float32_elt) Tensor.t)  =
     I (node, tensor)
+
+  let double (node : [`double ] Node.t)  (tensor : (float, Bigarray.float64_elt) Tensor.t)  =
+    I (node, tensor)
  end
 
 
@@ -176,6 +169,7 @@ struct
   let map t ~f = Map(t,f)
   let return node = Return node
   let both t1 t2 = Both(t1, t2)
+  let empty = Empty
 
   (* CR-someday noury: this could be just one function with modular implicits *)
   let float (node : [`float] Node.t) : (float, Bigarray.float32_elt) Tensor.t t =
@@ -186,7 +180,7 @@ struct
       | Bigarray.Float32 -> (tensor : (float, Bigarray.float32_elt) Tensor.t)
       | _ -> failwith "PANIC: wrong kind in float")
 
-  let double (node : [`float] Node.t) : (float, Bigarray.float64_elt) Tensor.t t =
+  let double (node : [`double] Node.t) : (float, Bigarray.float64_elt) Tensor.t t =
     Compute node
     |> map
     ~f:(fun (Tensor.P tensor) ->
