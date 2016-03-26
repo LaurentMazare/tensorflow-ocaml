@@ -73,9 +73,8 @@ let log_gradient (type a) ~self ~(gradient : a N.t) =
   let t = { f1 = fun ~input ~gradient -> Ops.mul gradient (Ops.inv input) } in
   pointwise_unary_exn ~self ~gradient ~t
 
-let relu_gradient (type a) ~self ~(gradient : a N.t) =
-  let t = { f1 = fun ~input ~gradient -> Ops.reluGrad gradient input } in
-  pointwise_unary_exn ~self ~gradient ~t
+let relu_gradient ~self ~gradient =
+  all [ N.P (Ops.reluGrad gradient self) ]
 
 let matmul_gradient ~self ~gradient =
   let get_transpose str =
