@@ -11,8 +11,8 @@ let hidden_nodes = 64
 let epochs = 10000
 
 let () =
-  let train_images = Mnist.read_images "train-images-idx3-ubyte" in
-  let train_labels = Mnist.read_labels "train-labels-idx1-ubyte" in
+  let train_images = Mnist.read_images "data/train-images-idx3-ubyte" in
+  let train_labels = Mnist.read_labels "data/train-labels-idx1-ubyte" in
   let xs = Ops_m.placeholder [ -1; image_dim ] ~type_:Float in
   let ys = Ops_m.placeholder [ -1; label_count ] ~type_:Float in
   let w1 = Ops_m.varf [ image_dim; hidden_nodes ] in
