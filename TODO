@@ -18,8 +18,7 @@
   - Add new optimizers.
 
 - Examples and tests.
-  - Example with hidden layer.
-  - Tutorials (MNIST ?)
+  - Tutorials
   - Add tests.
     - Arithmetic operations.
     - Gradient, graph with sharing/multiple contributions...

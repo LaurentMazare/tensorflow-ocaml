@@ -1,7 +1,6 @@
 open Core_kernel.Std
 open Wrapper
 
-(* TODO: move the interesting functions to src/. *)
 let ok_exn (result : 'a Session.result) ~context =
   match result with
   | Ok result -> result
