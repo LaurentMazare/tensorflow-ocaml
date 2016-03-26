@@ -51,7 +51,7 @@ let aggregate_contributions = function
       ; output_type
       ; inputs
       ; attributes
-      ; output_name = None
+      ; output_idx = None
       }
 
 (* Compute the gradients of [node] with respect to [arg] using backpropagation.
@@ -86,13 +86,16 @@ let gradient node ~with_respect_to =
           | None -> raise (No_derivative_for_op op_name)
           | Some fn ->
             match gradient with
-            | Some gradient ->
-              List.iter2_exn
-                (fn ~self:node ~gradient)
-                (Node.packed_inputs node)
-                ~f:(fun gradient input -> add_contribution input ~gradient)
             | None ->
               List.iter (Node.packed_inputs node) ~f:(add_contribution ~gradient:None)
+            | Some gradient ->
+              try
+                List.iter2_exn
+                  (fn ~self:node ~gradient)
+                  (Node.packed_inputs node)
+                  ~f:(fun gradient input -> add_contribution input ~gradient)
+              with
+              | exn -> Exn.reraise exn (Node.Op_name.to_string op_name)
   in 
   let one =
     Ops_m.const_float
@@ -111,11 +114,7 @@ let gradient node ~with_respect_to_float ~with_respect_to_double =
       ~with_respect_to:(pack with_respect_to_float @ pack with_respect_to_double)
   in
   let cast : type a . Node.p -> type_: a Node.Type.t -> a Node.t =
-    fun (Node.P node) ~type_ ->
-      match node.output_type, type_ with
-      | Node.Type.Double, Node.Type.Double -> node
-      | Node.Type.Float, Node.Type.Float -> node
-      | _ -> assert false
+    fun node ~type_ -> Option.value_exn (Node.extract node type_)
   in
   let lookup ~type_ =
     List.map ~f:(fun node ->

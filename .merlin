@@ -1,2 +1,4 @@
-PKG core_kernel ctypes ctypes.foreign
+PKG core_kernel ctypes ctypes.foreign gnuplot
 FLG -short-paths
+B _build/examples
+B _build/src/*

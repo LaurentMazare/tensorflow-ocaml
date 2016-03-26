@@ -28,3 +28,20 @@ let print (P tensor) =
   | Bigarray.Int32 -> print tensor (fun i -> Printf.sprintf "%d" (Int32.to_int i))
   | Bigarray.Int64 -> print tensor (fun i -> Printf.sprintf "%d" (Int64.to_int i))
   | _ -> Printf.printf "Unsupported kind"
+
+let to_elt_list : type a b. (a, b) t -> a list = fun tensor ->
+  let size = Array.fold_left ( * ) 1 (Bigarray.Genarray.dims tensor) in
+  let tensor = Bigarray.reshape_1 tensor size in
+  let dim = Bigarray.Array1.dim tensor in
+  let result = ref [] in
+  for i = dim - 1 downto 0 do
+    result := Bigarray.Array1.get tensor i :: !result
+  done;
+  !result
+
+let to_float_list (P tensor) =
+  let to_elt_list : type a. (float, a) t -> float list = to_elt_list in
+  match Bigarray.Genarray.kind tensor with
+  | Bigarray.Float32 -> to_elt_list tensor
+  | Bigarray.Float64 -> to_elt_list tensor
+  | _ -> failwith "Not a float tensor"

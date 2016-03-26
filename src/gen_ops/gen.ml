@@ -375,7 +375,7 @@ let gen_ml ops =
     in
     p "  ; inputs = %s" inputs;
     p "  ; attributes";
-    p "  ; output_name = None";
+    p "  ; output_idx = None";
     p "  }";
     p "";
   in

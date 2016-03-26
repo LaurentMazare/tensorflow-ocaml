@@ -2,9 +2,13 @@ open Core_kernel.Std
 open Node
 
 let get_shape ?shape values =
-  (* TODO: check shape. *)
   match shape with
-  | Some shape -> shape
+  | Some shape ->
+    let vs = List.fold shape ~init:1 ~f:( * ) in
+    let len = List.length values in
+    if vs <> len
+    then raise (Invalid_argument (sprintf "Input length mismatch %d <> %d" vs len));
+    shape
   | None -> [ List.length values ]
 
 let const_float
@@ -22,7 +26,7 @@ let const_float
       "dtype", Type (P type_);
       "value", Tensor_float { type_ = P type_; shape; values };
     ]
-  ; output_name = None
+  ; output_idx = None
   }
 
 let const_int
@@ -40,7 +44,7 @@ let const_int
       "dtype", Type (P type_);
       "value", Tensor_int { type_ = P type_; shape; values };
     ]
-  ; output_name = None
+  ; output_idx = None
   }
 
 let scalar ~type_ f =
@@ -83,6 +87,8 @@ let vard shape =
 let zero32 = const_int ~shape:[] ~type_:Int32 [ 0 ]
 let one32 = const_int ~shape:[] ~type_:Int32 [ 1 ]
 
+let range node = Ops.range zero32 node one32
+
 let reduce_op op ?dims node =
   let dims =
     match dims with
@@ -100,3 +106,22 @@ let reduce_sum ?dims node = reduce_op Ops.sum ?dims node
 let reduce_mean ?dims node = reduce_op Ops.mean ?dims node
 let reduce_min ?dims node = reduce_op Ops.min ?dims node
 let reduce_max ?dims node = reduce_op Ops.max ?dims node
+let reduce_prod ?dims node = reduce_op Ops.prod ?dims node
+let reduce_all ?dims node = reduce_op Ops.all ?dims node
+let reduce_any ?dims node = reduce_op Ops.any ?dims node
+
+(* Hacky implementation for now, we should support multiple outputs and maybe
+   be able to generate this one. *)
+let broadcast_gradient_args x y =
+  let open Node in
+  let bga_name = Name.make_fresh ~name:"BGA" in
+  let bga idx =
+    { name = bga_name
+    ; op_name = Op_name.of_string "BroadcastGradientArgs"
+    ; output_type = Int32
+    ; inputs = [ P x; P y ]
+    ; attributes = []
+    ; output_idx = Some idx
+    }
+  in
+  bga 0, bga 1

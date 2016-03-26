@@ -132,10 +132,15 @@ let of_nodes' nodes ts =
         List.map t.attributes ~f:(fun (name, value) ->
           of_attribute name value t.output_type)
       in
+      let input =
+        List.map t.inputs ~f:(fun (P input) ->
+          let idx = Option.value_map input.output_idx ~default:"" ~f:(sprintf ":%d") in
+          Node.Name.to_string input.name ^ idx)
+      in
       let node =
         { Node_def.name = Some (Node.Name.to_string t.name)
         ; op = Some (Node.Op_name.to_string t.op_name)
-        ; input = List.map t.inputs ~f:(fun (P input) -> Node.Name.to_string input.name)
+        ; input
         ; device = None
         ; attr
         }

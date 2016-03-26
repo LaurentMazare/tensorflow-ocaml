@@ -107,7 +107,7 @@ type 'a t =
   ; output_type : 'a Type.t
   ; inputs : p list
   ; attributes : (string * attr) list
-  ; output_name : string option (* Only used for multiple outputs. *)
+  ; output_idx : int option (* Only used for multiple outputs. *)
   }
 and p = P : _ t -> p
 
@@ -129,3 +129,15 @@ let packed_id : p -> Id.t = packed_name
 
 let id t = t.name
 
+let extract : type a . p -> a Type.t -> a t option = fun p type_ ->
+  let P t = p in
+  match t.output_type, type_ with
+  | Type.Unit, Type.Unit -> Some t
+  | Type.Int32, Type.Int32 -> Some t
+  | Type.Int64, Type.Int64 -> Some t
+  | Type.Bool, Type.Bool -> Some t
+  | Type.String, Type.String -> Some t
+  | Type.Complex64, Type.Complex64 -> Some t
+  | Type.Float, Type.Float -> Some t
+  | Type.Double, Type.Double -> Some t
+  | _, _ -> None
