@@ -61,9 +61,9 @@ let mul_gradient ~self ~gradient =
   let shape_lhs = Ops.shape lhs in
   let shape_rhs = Ops.shape rhs in
   let rlhs, rrhs = Ops_m.broadcast_gradient_args shape_lhs shape_rhs in
-  let lhs = Ops.reshape (Ops.sum (Ops.mul gradient rhs) rlhs) shape_lhs in
-  let rhs = Ops.reshape (Ops.sum (Ops.mul lhs gradient) rrhs) shape_rhs in
-  all [ N.P lhs; N.P rhs ]
+  let lhs_gradient = Ops.reshape (Ops.sum (Ops.mul gradient rhs) rlhs) shape_lhs in
+  let rhs_gradient = Ops.reshape (Ops.sum (Ops.mul lhs gradient) rrhs) shape_rhs in
+  all [ N.P lhs_gradient; N.P rhs_gradient ]
 
 let neg_gradient ~self:_ ~gradient =
   all [ N.P (Ops.neg gradient) ]
