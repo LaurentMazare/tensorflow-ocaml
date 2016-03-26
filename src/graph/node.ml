@@ -1,4 +1,3 @@
-module Weak_make = Weak.Make
 open Core_kernel.Std
 
 module Op_name : Identifiable = String_id

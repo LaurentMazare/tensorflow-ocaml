@@ -6,6 +6,7 @@ module Name : sig
   include Identifiable
   val make_fresh : name:string -> t
 end
+module Id : Identifiable
 
 module Type : sig
   type _ t =
@@ -92,11 +93,6 @@ type 'a t =
   ; output_idx : int option (* Only used for multiple outputs. *)
   }
 and p = P : _ t -> p
-
-module Id :
-sig
-  include Identifiable
-end
 
 val packed_name : p -> Name.t
 val packed_op_name : p -> Op_name.t

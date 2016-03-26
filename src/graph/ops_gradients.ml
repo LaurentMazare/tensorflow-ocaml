@@ -159,17 +159,17 @@ let softmax_gradient ~self ~gradient =
   all [ N.P gradient ]
 
 let register_all () =
-  List.iter ~f:(fun (name, f) ->
-    Registered_gradients.add (N.Op_name.of_string name) f)
-    [ "Abs",     { Registered_gradients.f = abs_gradient }
-    ; "Add",     { f = add_gradient }
-    ; "Log",     { f = log_gradient }
-    ; "MatMul",  { f = matmul_gradient }
-    ; "Mean",    { f = mean_gradient }
-    ; "Relu",    { f = relu_gradient }
-    ; "Sigmoid", { f = sigmoid_gradient }
-    ; "Softmax", { f = softmax_gradient }
-    ; "Square",  { f = square_gradient }
-    ; "Sub",     { f = sub_gradient }
-    ; "Sum",     { f = sum_gradient }
+  let module O = Ops.Op_names in
+  List.iter ~f:(fun (name, f) -> Registered_gradients.add name f)
+    [ O.abs,     { Registered_gradients.f = abs_gradient }
+    ; O.add,     { f = add_gradient }
+    ; O.log,     { f = log_gradient }
+    ; O.matMul,  { f = matmul_gradient }
+    ; O.mean,    { f = mean_gradient }
+    ; O.relu,    { f = relu_gradient }
+    ; O.sigmoid, { f = sigmoid_gradient }
+    ; O.softmax, { f = softmax_gradient }
+    ; O.square,  { f = square_gradient }
+    ; O.sub,     { f = sub_gradient }
+    ; O.sum,     { f = sum_gradient }
     ]

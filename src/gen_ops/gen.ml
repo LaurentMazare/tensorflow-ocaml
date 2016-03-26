@@ -292,19 +292,23 @@ let gen_mli ops =
     p "val %s" (Op.caml_name op);
     p "  :  ?name:string";
     if needs_variable_for_output_type
-    then p "  -> type_ : %s Node.Type.t" (Type.to_string op.output_type);
+    then p "  -> type_ : %s Type.t" (Type.to_string op.output_type);
     List.iter op.attributes ~f:(fun attribute ->
       Attribute.mli attribute p);
     List.iter op.inputs ~f:(fun input ->
       let maybe_list = if Option.is_some input.number_attr then " list" else "" in
-      p "  -> %s Node.t%s" (Type.to_string input.type_) maybe_list);
+      p "  -> %s t%s" (Type.to_string input.type_) maybe_list);
     if List.is_empty op.inputs
     then p "  -> unit";
-    p "  -> %s Node.t" (Type.to_string op.output_type);
+    p "  -> %s t" (Type.to_string op.output_type);
     p "";
   in
   p "%s" automatically_generated_file;
   p "open Node";
+  p "";
+  p "module Op_names : sig";
+  List.iter ops ~f:(fun op -> p "  val %s : Op_name.t" (Op.caml_name op));
+  p "end";
   p "";
   List.iter ops ~f:handle_one_op;
   Out_channel.close out_channel
@@ -356,7 +360,7 @@ let gen_ml ops =
       p "  in";
     );
     p "  { name = Name.make_fresh ~name";
-    p "  ; op_name = Op_name.of_string \"%s\"" op.name;
+    p "  ; op_name = Op_names.%s" (Op.caml_name op);
     p "  ; output_type = %s" output_type_string;
     let inputs =
       if List.for_all op.inputs ~f:(fun input -> input.number_attr = None)
@@ -381,6 +385,11 @@ let gen_ml ops =
   in
   p "%s" automatically_generated_file;
   p "open Node";
+  p "";
+  p "module Op_names = struct";
+  List.iter ops ~f:(fun op ->
+    p "  let %s = Op_name.of_string \"%s\"" (Op.caml_name op) op.name);
+  p "end";
   p "";
   List.iter ops ~f:handle_one_op;
   Out_channel.close out_channel
