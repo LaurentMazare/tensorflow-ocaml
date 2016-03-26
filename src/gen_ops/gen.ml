@@ -278,13 +278,14 @@ let needs_variable_for_output_type op =
 let automatically_generated_file =
   "(* THIS FILE HAS BEEN AUTOMATICALLY GENERATED, DO NOT EDIT BY HAND! *)"
 
+let p out_channel s =
+  ksprintf (fun line ->
+    Out_channel.output_string out_channel line;
+    Out_channel.output_char out_channel '\n') s
+
 let gen_mli ops =
   let out_channel = Out_channel.create (sprintf "%s.mli" output_file) in
-  let p s =
-    ksprintf (fun line ->
-      Out_channel.output_string out_channel line;
-      Out_channel.output_char out_channel '\n') s
-  in
+  let p s = p out_channel s in
   let handle_one_op (op : Op.t) =
     let needs_variable_for_output_type = needs_variable_for_output_type op in
     Option.iter op.summary ~f:(fun summary -> p "(* %s *)" summary);
@@ -313,76 +314,73 @@ let gen_mli ops =
   List.iter ops ~f:handle_one_op;
   Out_channel.close out_channel
 
+let handle_one_op (op : Op.t) out_channel =
+  let p s = p out_channel s in
+  let needs_variable_for_output_type = needs_variable_for_output_type op in
+  p "let %s" (Op.caml_name op);
+  p "    ?(name = \"%s\")" op.name;
+  if needs_variable_for_output_type
+  then p "    ~type_";
+  List.iter op.attributes ~f:(fun attribute ->
+    Attribute.ml_def attribute p);
+  List.iter op.inputs ~f:(fun input ->
+    let name = Input.caml_name input in
+    let maybe_list = if Option.is_some input.number_attr then " list" else "" in
+    p "    (%s : %s t%s)" name (Type.to_string input.type_) maybe_list);
+  if List.is_empty op.inputs
+  then p "    ()";
+  let output_type_string = output_type_string op in
+  p "  =";
+  let type_attr =
+    match op.output_type_name with
+    | Some output_type_name -> [ output_type_name, output_type_string ]
+    | None -> []
+  in
+  let type_attr =
+    List.fold op.inputs ~init:type_attr ~f:(fun acc (input : Input.t) ->
+      match input.type_name with
+      | None -> acc
+      | Some type_name when List.Assoc.mem acc type_name -> acc
+      | Some type_name ->
+        let name = Input.caml_comp_name input in
+        (type_name, sprintf "%s.output_type" name) :: acc)
+    |> List.map ~f:(fun (type_name, type_string) ->
+      sprintf " \"%s\", Type (P %s) " type_name type_string)
+    |> String.concat ~sep:"; "
+  in
+  p "  let attributes = [%s] in" type_attr;
+  List.iter op.attributes ~f:(fun attribute ->
+    p "  let attributes =";
+    p "    %s" (Attribute.ml_apply attribute "attributes");
+    p "  in";
+  );
+  p "  { name = Name.make_fresh ~name";
+  p "  ; op_name = Op_names.%s" (Op.caml_name op);
+  p "  ; output_type = %s" output_type_string;
+  let inputs =
+    if List.for_all op.inputs ~f:(fun input -> input.number_attr = None)
+    then
+      List.map op.inputs ~f:(fun input ->
+        sprintf "P %s" (Input.caml_name input))
+      |> String.concat ~sep:"; "
+      |> sprintf "[ %s ]"
+    else
+      List.map op.inputs ~f:(fun input ->
+        if input.number_attr = None
+        then sprintf "[ P %s ]" (Input.caml_name input)
+        else sprintf "List.map (fun n -> P n) %s" (Input.caml_name input)
+      )
+      |> String.concat ~sep:" @ "
+  in
+  p "  ; inputs = %s" inputs;
+  p "  ; attributes";
+  p "  ; output_idx = None";
+  p "  }";
+  p ""
+
 let gen_ml ops =
   let out_channel = Out_channel.create (sprintf "%s.ml" output_file) in
-  let p s =
-    ksprintf (fun line ->
-      Out_channel.output_string out_channel line;
-      Out_channel.output_char out_channel '\n') s
-  in
-  let handle_one_op (op : Op.t) =
-    let needs_variable_for_output_type = needs_variable_for_output_type op in
-    p "let %s" (Op.caml_name op);
-    p "    ?(name = \"%s\")" op.name;
-    if needs_variable_for_output_type
-    then p "    ~type_";
-    List.iter op.attributes ~f:(fun attribute ->
-      Attribute.ml_def attribute p);
-    List.iter op.inputs ~f:(fun input ->
-      let name = Input.caml_name input in
-      let maybe_list = if Option.is_some input.number_attr then " list" else "" in
-      p "    (%s : %s t%s)" name (Type.to_string input.type_) maybe_list);
-    if List.is_empty op.inputs
-    then p "    ()";
-    let output_type_string = output_type_string op in
-    p "  =";
-    let type_attr =
-      match op.output_type_name with
-      | Some output_type_name -> [ output_type_name, output_type_string ]
-      | None -> []
-    in
-    let type_attr =
-      List.fold op.inputs ~init:type_attr ~f:(fun acc (input : Input.t) ->
-        match input.type_name with
-        | None -> acc
-        | Some type_name when List.Assoc.mem acc type_name -> acc
-        | Some type_name ->
-          let name = Input.caml_comp_name input in
-          (type_name, sprintf "%s.output_type" name) :: acc)
-      |> List.map ~f:(fun (type_name, type_string) ->
-        sprintf " \"%s\", Type (P %s) " type_name type_string)
-      |> String.concat ~sep:"; "
-    in
-    p "  let attributes = [%s] in" type_attr;
-    List.iter op.attributes ~f:(fun attribute ->
-      p "  let attributes =";
-      p "    %s" (Attribute.ml_apply attribute "attributes");
-      p "  in";
-    );
-    p "  { name = Name.make_fresh ~name";
-    p "  ; op_name = Op_names.%s" (Op.caml_name op);
-    p "  ; output_type = %s" output_type_string;
-    let inputs =
-      if List.for_all op.inputs ~f:(fun input -> input.number_attr = None)
-      then
-        List.map op.inputs ~f:(fun input ->
-          sprintf "P %s" (Input.caml_name input))
-        |> String.concat ~sep:"; "
-        |> sprintf "[ %s ]"
-      else
-        List.map op.inputs ~f:(fun input ->
-          if input.number_attr = None
-          then sprintf "[ P %s ]" (Input.caml_name input)
-          else sprintf "List.map (fun n -> P n) %s" (Input.caml_name input)
-        )
-        |> String.concat ~sep:" @ "
-    in
-    p "  ; inputs = %s" inputs;
-    p "  ; attributes";
-    p "  ; output_idx = None";
-    p "  }";
-    p "";
-  in
+  let p s = p out_channel s in
   p "%s" automatically_generated_file;
   p "open Node";
   p "";
@@ -391,7 +389,7 @@ let gen_ml ops =
     p "  let %s = Op_name.of_string \"%s\"" (Op.caml_name op) op.name);
   p "end";
   p "";
-  List.iter ops ~f:handle_one_op;
+  List.iter ops ~f:(fun op -> handle_one_op op out_channel);
   Out_channel.close out_channel
 
 let run () =
