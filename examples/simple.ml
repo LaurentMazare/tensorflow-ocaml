@@ -7,16 +7,13 @@ let () =
   Bigarray.Genarray.set data [| 1 |] 2.;
   Bigarray.Genarray.set data [| 2 |] 6.;
   let input_tensor = Tensor.P data in
-  let placeholder = Ops.placeholder ~name:"x" ~type_:Float () in
-  let node =
-    Ops_m.(cf [ 2.; 1.; 4. ] - placeholder)
-    |> Ops.abs
-  in
+  let ph = Ops.placeholder ~name:"x" ~type_:Float () in
+  let node = Ops_m.(cf [ 2.; 1.; 4. ] - ph) |> Ops.abs in
   let session = H.create_session [ Node.P node ] in
   let output =
     H.run
       session
-      ~inputs:[ placeholder, input_tensor ]
+      ~inputs:[ ph, input_tensor ]
       ~outputs:[ node ]
       ~targets:[ node ]
   in

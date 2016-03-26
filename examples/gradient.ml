@@ -7,14 +7,14 @@ let () =
   Bigarray.Genarray.set data [| 1 |] 2.;
   Bigarray.Genarray.set data [| 2 |] 6.;
   let input_tensor = Tensor.P data in
-  let placeholder = Ops.placeholder ~name:"x" ~type_:Float () in
+  let ph = Ops.placeholder ~name:"x" ~type_:Float () in
   let node =
     let open Ops_m in
-    cf [ 2.; 1.; 4. ] - placeholder - placeholder
+    cf [ 2.; 1.; 4. ] - ph - ph
   in
   let gradient =
     Gradients.gradient node
-      ~with_respect_to_float:[ placeholder ]
+      ~with_respect_to_float:[ ph ]
       ~with_respect_to_double:[]
     |> function
     | [ float ], [] -> float
@@ -24,7 +24,7 @@ let () =
   let output =
     H.run
       session
-      ~inputs:[ placeholder, input_tensor ]
+      ~inputs:[ ph, input_tensor ]
       ~outputs:[ gradient ]
       ~targets:[ gradient ]
   in
