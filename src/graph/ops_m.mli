@@ -58,3 +58,5 @@ val range : [ `int32 ] Node.t -> [ `int32 ] Node.t
 
 val broadcast_gradient_args
   : [ `int32 ] Node.t -> [ `int32 ] Node.t -> [ `int32 ] Node.t * [ `int32 ] Node.t
+
+val placeholder : ?name:string -> type_:'a Node.Type.t -> int list -> 'a Node.t
