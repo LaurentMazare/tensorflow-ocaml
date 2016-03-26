@@ -57,6 +57,6 @@ let one_layer ~samples ~size_xs ~size_ys ~xs ~ys ~hidden_nodes ~epochs =
         ~targets:(List.map gd ~f:(fun n -> Node.packed_name n |> Node.Name.to_string))
     in
     ignore output;
-    if i % 1000 = 0 then print_err i
+    if i % (epochs / 5) = 0 then print_err i
   done;
   !results

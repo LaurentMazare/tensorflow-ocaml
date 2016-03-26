@@ -1,5 +1,4 @@
 EXAMPLES = simple.native var.native load.native gradient.native linear_regression.native
-GNUPLOT_EXAMPLES = linear_regression_gnuplot.native
 
 %.native: .FORCE
 	ocamlbuild examples/$@
@@ -13,8 +12,11 @@ src/graph/ops: gen.native
 run: $(EXAMPLES)
 	$(foreach ex,$(EXAMPLES),LD_LIBRARY_PATH=./lib:$(LD_LIBRARY_PATH) ./$(ex);)
 
-gnuplot: $(GNUPLOT_EXAMPLES)
-	$(foreach ex,$(GNUPLOT_EXAMPLES),LD_LIBRARY_PATH=./lib:$(LD_LIBRARY_PATH) ./$(ex);)
+lr_gnuplot: linear_regression_gnuplot.native
+	LD_LIBRARY_PATH=./lib:$(LD_LIBRARY_PATH) ./linear_regression_gnuplot.native
+
+nn_gnuplot: nn_gnuplot.native
+	LD_LIBRARY_PATH=./lib:$(LD_LIBRARY_PATH) ./nn_gnuplot.native
 
 clean:
 	rm -Rf _build/

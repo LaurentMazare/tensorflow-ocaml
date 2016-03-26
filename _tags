@@ -1,5 +1,5 @@
 true: package(ctypes), package(ctypes.foreign)
-<examples/linear_regression_gnuplot.*>: package(gnuplot)
+<examples/*_gnuplot.*>: package(gnuplot)
 
 not <src/piqi/*>: warn(A-4-29-40-41-42-44-45-48)
 not <src/piqi/*>: warn_error(A-4-29-40-41-42-44-45-48)
