@@ -13,8 +13,9 @@ let epochs = 10000
 let () =
   let train_images = Mnist.read_images "data/train-images-idx3-ubyte" in
   let train_labels = Mnist.read_labels "data/train-labels-idx1-ubyte" in
-  let xs = Ops_m.placeholder [ -1; image_dim ] ~type_:Float in
-  let ys = Ops_m.placeholder [ -1; label_count ] ~type_:Float in
+  let nsamples = Bigarray.Array1.dim train_labels in
+  let xs = Ops_m.placeholder [] ~type_:Float in
+  let ys = Ops_m.placeholder [] ~type_:Float in
   let w1 = Ops_m.varf [ image_dim; hidden_nodes ] in
   let b1 = Ops_m.varf [ hidden_nodes ] in
   let w2 = Ops_m.varf [ hidden_nodes; label_count ] in
@@ -40,9 +41,26 @@ let () =
   let results = ref [] in
   let print_err n =
     let output =
-      ignore (train_images, train_labels);
+      let inputs =
+        let train_labels_p =
+          Bigarray.Genarray.create
+            Bigarray.float32
+            Bigarray.c_layout
+            [| nsamples; label_count |]
+        in
+        for idx = 0 to nsamples - 1 do
+          for lbl = 0 to 9 do
+            Bigarray.Genarray.set train_labels_p [| idx; lbl |] 0.
+          done;
+          let lbl = Bigarray.Array1.get train_labels idx |> Int32.to_int_exn in
+          Bigarray.Genarray.set train_labels_p [| idx; lbl |] 1.
+        done;
+        [ xs, Tensor.P (Bigarray.genarray_of_array2 train_images)
+        ; ys, Tensor.P train_labels_p
+        ]
+      in
       H.run session
-        ~inputs:[] (* TODO use train_images/train_labels *)
+        ~inputs
         ~outputs:[ cross_entropy; ys_ ]
         ~targets:[ cross_entropy ]
     in
