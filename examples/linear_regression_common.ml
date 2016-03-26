@@ -1,14 +1,15 @@
 open Core_kernel.Std
 module H = Helper
 
-let run ~samples ~size_xs ~size_y ~xs ~y =
+let run ~samples ~size_xs ~size_ys ~xs ~ys =
   let xs = List.concat xs in
+  let ys = List.concat ys in
   let xs = Ops_m.cf ~shape:[samples; size_xs] xs in
-  let y  = Ops_m.cf ~shape:[samples; size_y]  y in
-  let w = Ops_m.varf [ size_xs; size_y ] in
-  let b = Ops_m.varf [ size_y ] in
-  let w_assign = Ops.assign w (Ops_m.f ~shape:[ size_xs; size_y ] 0.) in
-  let b_assign = Ops.assign b (Ops_m.f ~shape:[ size_y ] 0.) in
+  let y  = Ops_m.cf ~shape:[samples; size_ys] ys in
+  let w = Ops_m.varf [ size_xs; size_ys ] in
+  let b = Ops_m.varf [ size_ys ] in
+  let w_assign = Ops.assign w (Ops_m.f ~shape:[ size_xs; size_ys ] 0.) in
+  let b_assign = Ops.assign b (Ops_m.f ~shape:[ size_ys ] 0.) in
   let y_ = Ops_m.(xs *^ w + b) in
   let err = Ops_m.(Ops.square (y_ - y) |> reduce_mean) in
   let gd =
