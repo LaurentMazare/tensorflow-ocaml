@@ -132,6 +132,11 @@ let run ?(inputs=[]) ?(outputs=[]) ?(targets=[]) t =
   let input_tensors = List.map ~f:snd inputs in
   let inputs = List.map ~f:fst inputs in
   let inputs, targets, outputs, variables_init = prepare_graph t ~inputs ~targets ~outputs in
+  (* add outputs to targets *)
+  let targets =
+    List.fold outputs ~init:(String.Set.of_list targets) ~f:Set.add
+    |> Set.to_list
+  in
   let inputs = List.zip_exn inputs input_tensors in
   (* Run variable init *)
   List.iter variables_init
@@ -142,5 +147,93 @@ let run ?(inputs=[]) ?(outputs=[]) ?(targets=[]) t =
   | Error _ -> assert false
   | Ok output -> output
 
+module Input =
+ struct
+   type t =
+   | I : _ Node.t * (_,_) Tensor.t -> t
+
+  let float (node : [`float ] Node.t)  (tensor : (float, Bigarray.float32_elt) Tensor.t)  =
+    I (node, tensor)
+ end
+
+
+module Target =
+  struct
+    type t = Node.p
+  end
+
+let target node = Node.P node
+
+module Output =
+struct
+  type _ t =
+    | Return : 'a -> 'a t
+    | Compute : _ Node.t -> Tensor.p t
+    | Both : 'a t * 'b t ->  ('a * 'b) t
+    | Map : 'a t * ('a -> 'b) -> 'b t
+    | Empty : unit t
+
+  let map t ~f = Map(t,f)
+  let return node = Return node
+  let both t1 t2 = Both(t1, t2)
+
+  (* CR-someday noury: this could be just one function with modular implicits *)
+  let float (node : [`float] Node.t) : (float, Bigarray.float32_elt) Tensor.t t =
+    Compute node
+    |> map
+    ~f:(fun (Tensor.P tensor) ->
+      match Bigarray.Genarray.kind tensor with
+      | Bigarray.Float32 -> (tensor : (float, Bigarray.float32_elt) Tensor.t)
+      | _ -> failwith "PANIC: wrong kind in float")
+
+  let double (node : [`float] Node.t) : (float, Bigarray.float64_elt) Tensor.t t =
+    Compute node
+    |> map
+    ~f:(fun (Tensor.P tensor) ->
+      match Bigarray.Genarray.kind tensor with
+      | Bigarray.Float64 -> (tensor : (float, Bigarray.float64_elt) Tensor.t)
+      | _ -> failwith "PANIC: wrong kind in double")
+
+  (* CR noury: add more output types *)
+
+
+  let scalar_float node =
+    float node |> map ~f:(fun t -> Bigarray.Genarray.get t [| 0 |])
+
+  let scalar_double node =
+    double node |> map ~f:(fun t -> Bigarray.Genarray.get t [| 0 |])
+
+  let rec build_output
+    : type a. a t ->  Node.p list * (Tensor.p list -> a) =
+    function
+    | Return a -> [], fun _ -> a
+    | Both (o1, o2) ->
+      let l1, k1 = build_output o1 in
+      let l2, k2 = build_output o2 in
+      let n1 = List.length l1 in
+      l1 @ l2,
+        (fun l ->
+        let l1, l2 = List.split_n l n1 in
+        k1 l1, k2 l2)
+    | Map (o, f) ->
+      let l, k = build_output o in
+      l, (fun l -> f (k l))
+    | Empty -> [], fun _ -> ()
+    | Compute node ->
+     [P node],
+     function
+     | [ t ] -> t
+     | _ -> failwith "wrong number of elts in output dispatch"
+
+end
+
+
+let run ?inputs ?targets t output =
+  let inputs =
+    Option.map inputs
+     ~f:(List.map ~f:(fun (Input.I(n,t)) -> Node.P n, Tensor.P t))
+  in
+  let outputs, k = Output.build_output output in
+  k (run ?inputs ?targets ~outputs t)
 
 

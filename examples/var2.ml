@@ -5,7 +5,6 @@ let () =
   Bigarray.Genarray.set data [| 0 |] 1.;
   Bigarray.Genarray.set data [| 1 |] 2.;
   Bigarray.Genarray.set data [| 2 |] 6.;
-  let input_tensor = Tensor.P data in
   let placeholder = Ops.placeholder ~name:"x" ~type_:Float () in
   let variable = Variable.float [ 3 ] ~init:(Ops_m.cf [ 8.; 0.; 1. ]) in
   let node =
@@ -14,11 +13,10 @@ let () =
   in
   let sum = Ops_m.reduce_sum node in
   let session = Session.create () in
-  let output =
-    Session.run
+  let var, sum =
+    Session.(run
       session
-      ~inputs:[ P placeholder, input_tensor ]
-      ~outputs:[ P node; P sum ]
-      ~targets:[ P node; P sum ]
+      ~inputs:[ Input.float placeholder data ]
+       (Output.(both (float node) (float sum))))
   in
-    H.print_tensors output ~names:[ "var"; "sum" ]
+  H.print_tensors [Tensor.P var; P sum] ~names:[ "var"; "sum" ]
