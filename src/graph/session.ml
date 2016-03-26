@@ -198,26 +198,30 @@ struct
     double node |> map ~f:(fun t -> Bigarray.Genarray.get t [| 0 |])
 
   let rec build_output
-    : type a. a t ->  Node.p list * (Tensor.p list -> a) =
+    : type a. a t ->  (Node.p list -> Node.p list) * (Tensor.p list -> a * Tensor.p list) =
     function
-    | Return a -> [], fun _ -> a
+    | Return a -> (fun l -> l), (fun l -> a, l)
     | Both (o1, o2) ->
       let l1, k1 = build_output o1 in
       let l2, k2 = build_output o2 in
-      let n1 = List.length l1 in
-      l1 @ l2,
+      (fun l -> l2 (l1 l)),
         (fun l ->
-        let l1, l2 = List.split_n l n1 in
-        k1 l1, k2 l2)
+        let a, l = k1 l in
+        let b, l = k2 l in
+        (a, b), l)
     | Map (o, f) ->
       let l, k = build_output o in
-      l, (fun l -> f (k l))
-    | Empty -> [], fun _ -> ()
+      l, (fun l -> let a, l = (k l) in f a, l)
+    | Empty -> Fn.id, fun l -> (),l
     | Compute node ->
-     [P node],
+     (fun l -> (P node) :: l),
      function
-     | [ t ] -> t
-     | _ -> failwith "wrong number of elts in output dispatch"
+     | t::l -> t,l
+     | [] -> failwith "wrong number of elts in output dispatch"
+
+  let build_output o =
+   let f, k = build_output o in
+   f [], fun l -> fst (k l)
 
 end
 
