@@ -20,7 +20,7 @@ let one_layer ~samples ~size_xs ~size_ys ~xs ~ys ~hidden_nodes ~epochs =
   let b1_assign = Ops.assign b1 (Ops_m.f ~shape:[ hidden_nodes ] 0.) in
   let w2_assign = Ops.assign w2 (rnd ~shape:[ hidden_nodes; size_ys ]) in
   let b2_assign = Ops.assign b2 (Ops_m.f ~shape:[ size_ys ] 0.) in
-  let y_ = Ops_m.(Ops.relu (xs *^ w1 + b1) *^ w2 + b2) in
+  let y_ = Ops_m.(Ops.sigmoid (xs *^ w1 + b1) *^ w2 + b2) in
   let err = Ops_m.(Ops.square (y_ - y) |> reduce_mean) in
   let gd =
     Optimizers.gradient_descent_minimizer ~alpha:0.4 ~varsf:[ w1; w2; b1; b2 ] err
@@ -57,6 +57,6 @@ let one_layer ~samples ~size_xs ~size_ys ~xs ~ys ~hidden_nodes ~epochs =
         ~targets:(List.map gd ~f:(fun n -> Node.packed_name n |> Node.Name.to_string))
     in
     ignore output;
-    if i % 100 = 0 then print_err i
+    if i % 1000 = 0 then print_err i
   done;
   !results

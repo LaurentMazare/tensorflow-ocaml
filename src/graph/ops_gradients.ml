@@ -76,6 +76,10 @@ let log_gradient (type a) ~self ~(gradient : a N.t) =
 let relu_gradient ~self ~gradient =
   all [ N.P (Ops.reluGrad gradient self) ]
 
+let sigmoid_gradient ~self ~gradient =
+  let one = Ops_m.const_float ~type_:self.N.output_type [ 1. ] in
+  all [ N.P Ops_m.(gradient * self * (one - self)) ]
+
 let matmul_gradient ~self ~gradient =
   let get_transpose str =
     List.Assoc.find self.N.attributes str
@@ -163,6 +167,7 @@ let register_all () =
     ; "MatMul",  { f = matmul_gradient }
     ; "Mean",    { f = mean_gradient }
     ; "Relu",    { f = relu_gradient }
+    ; "Sigmoid", { f = sigmoid_gradient }
     ; "Softmax", { f = softmax_gradient }
     ; "Square",  { f = square_gradient }
     ; "Sub",     { f = sub_gradient }
