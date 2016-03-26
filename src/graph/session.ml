@@ -33,6 +33,17 @@ type t =
   current_table : (Node.p * int) Node.Id.Table.t
 }
 
+let create () =
+  match Wrapper.Session.create () with
+  | Error _ -> assert false
+  | Ok session ->
+{ session;
+    exported_nodes = Node.Id.Table.create ();
+    names = String.Table.create ();
+    uninitialised_variables = Int.Table.create ();
+    current_table = Node.Id.Table.create()
+}
+
 let rec choose_name t node =
   let base_name = Node.Name.to_string (Node.packed_name node) in
   match Hashtbl.find t.names  base_name with
@@ -126,7 +137,10 @@ let run ?(inputs=[]) ?(outputs=[]) ?(targets=[]) t =
   List.iter variables_init
    ~f:(fun targets ->
       ignore (Wrapper.Session.run t.session ~inputs:[] ~outputs:[] ~targets));
-  Wrapper.Session.run t.session ~inputs ~outputs ~targets
+  let output = Wrapper.Session.run t.session ~inputs ~outputs ~targets in
+  match output with
+  | Error _ -> assert false
+  | Ok output -> output
 
 
 

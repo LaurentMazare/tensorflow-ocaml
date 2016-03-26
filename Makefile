@@ -1,4 +1,4 @@
-EXAMPLES = simple.native var.native load.native gradient.native linear_regression.native
+EXAMPLES = simple.native var.native load.native gradient.native linear_regression.native var2.native
 
 %.native: .FORCE
 	ocamlbuild examples/$@

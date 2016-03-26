@@ -13,12 +13,12 @@ let () =
     |> Ops.abs
   in
   let sum = Ops_m.reduce_sum node in
-  let session = H.create_session [ P node; P sum ] in
+  let session = Session.create () in
   let output =
-    H.run
+    Session.run
       session
-      ~inputs:[ placeholder, input_tensor ]
-      ~outputs:[ node; sum ]
-      ~targets:[ node; sum ]
+      ~inputs:[ P placeholder, input_tensor ]
+      ~outputs:[ P node; P sum ]
+      ~targets:[ P node; P sum ]
   in
-  H.print_tensors output ~names:[ "var"; "sum" ]
+    H.print_tensors output ~names:[ "var"; "sum" ]
