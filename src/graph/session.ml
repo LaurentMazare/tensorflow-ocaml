@@ -204,7 +204,7 @@ struct
     | Both (o1, o2) ->
       let l1, k1 = build_output o1 in
       let l2, k2 = build_output o2 in
-      (fun l -> l2 (l1 l)),
+      (fun l -> l1 (l2 l)),
         (fun l ->
         let a, l = k1 l in
         let b, l = k2 l in
