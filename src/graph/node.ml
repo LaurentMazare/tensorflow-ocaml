@@ -1,3 +1,4 @@
+module Weak_make = Weak.Make
 open Core_kernel.Std
 
 module Op_name : Identifiable = String_id
@@ -141,3 +142,13 @@ let extract : type a . p -> a Type.t -> a t option = fun p type_ ->
   | Type.Float, Type.Float -> Some t
   | Type.Double, Type.Double -> Some t
   | _, _ -> None
+
+(* CR noury: actually make weak *)
+module Weak_table =
+  struct
+   type 'a t = 'a Id.Table.t
+   let create () = Id.Table.create ()
+   let set t ~key ~data =
+     Id.Table.set t ~key:(packed_id key) ~data
+   let find t key = Id.Table.find t (packed_id key)
+  end

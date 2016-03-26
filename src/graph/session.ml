@@ -68,7 +68,7 @@ let rec prepare_node t node =
           let input, h = prepare_node t input in
           input::rev_inputs, max h height)
     in
-    let node =
+    let res =
       Node.P
       { u_node with
         name = choose_name t node
@@ -76,38 +76,51 @@ let rec prepare_node t node =
       }
    in
    let h =
-    if Node.Op_name.to_string (Node.packed_op_name node) = "Var"
-    then
-      begin
-       (*CR noury: should generate the code for variable initialisation *)
-        Hashtbl.add_multi t.uninitialised_variables ~key:height ~data:node ;
-        height + 1
-      end
-    else height
+    match Variable.get_init node with
+    | None -> height
+    | Some init ->
+      let init, h = prepare_node t init in
+      Hashtbl.add_multi t.uninitialised_variables ~key:h ~data:init;
+      h + 1
    in
-   Hashtbl.set t.current_table ~key:id ~data:(node,h);
-   (node, h)
+   Hashtbl.set t.current_table ~key:id ~data:(res ,h);
+   (res, h)
 ;;
 
-let prepare_graph t l =
-  let l =
-    List.fold l ~init:[]
-      ~f:(fun acc node ->
-        fst (prepare_node t node)::acc)
+let prepare_graph t ~inputs ~targets ~outputs =
+  let prep l =
+    List.map l ~f:(fun node -> fst (prepare_node t node))
   in
+  let inputs  = prep inputs in
+  let targets = prep targets in
+  let outputs = prep outputs in
   Hashtbl.clear t.current_table;
   let rec build_variables i =
     match Hashtbl.find t.uninitialised_variables i with
     | None -> []
-    | l ->
+    | Some l ->
      l::build_variables (i + 1)
   in
-  let _uninitialised_variables = build_variables 0 in
+  let uninitialised_variables = build_variables 0 in
   Hashtbl.clear t.uninitialised_variables;
-  let protobuf = Node_protobuf.of_nodes' t.exported_nodes l in
-  Wrapper.Session.extend_graph t.session protobuf
+  let all_nodes_to_export =
+  List.concat uninitialised_variables @ List.concat [ inputs; outputs; targets ]
+  in
+  let protobuf = Node_protobuf.of_nodes' t.exported_nodes all_nodes_to_export in
+  ignore(Wrapper.Session.extend_graph t.session protobuf);
+  let ret = List.map ~f:(fun x -> Node.packed_name x |> Node.Name.to_string) in
+  ret inputs, ret targets, ret outputs, List.map ~f:ret uninitialised_variables
 
-
+let run ?(inputs=[]) ?(outputs=[]) ?(targets=[]) t =
+  let input_tensors = List.map ~f:snd inputs in
+  let inputs = List.map ~f:fst inputs in
+  let inputs, targets, outputs, variables_init = prepare_graph t ~inputs ~targets ~outputs in
+  let inputs = List.zip_exn inputs input_tensors in
+  (* Run variable init *)
+  List.iter variables_init
+   ~f:(fun targets ->
+      ignore (Wrapper.Session.run t.session ~inputs:[] ~outputs:[] ~targets));
+  Wrapper.Session.run t.session ~inputs ~outputs ~targets
 
 
 

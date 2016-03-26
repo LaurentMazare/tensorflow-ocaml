@@ -107,3 +107,11 @@ val packed_id : p -> Id.t
 val id : _ t -> Id.t
 
 val extract : p -> 'a Type.t -> 'a t option
+
+module Weak_table :
+sig
+  type 'a t
+  val create : unit -> 'a t
+  val set : 'a t -> key:p -> data:'a -> unit
+  val find : 'a t -> p -> 'a option
+end
