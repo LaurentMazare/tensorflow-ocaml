@@ -12,12 +12,13 @@
     - Store the initialization details somewhere.
     - When calling [Session.run], we go through the graph to upload new nodes, also get new var nodes
       and call [Session.run] a first time to perform initialization.
-  - Add simple functions for const/scalar/arithmetic operations.
 
 - Gradient Computation and Descent.
   - Register the gradients of more functions.
-    - reduce_sum, reduce_mean, ...
 
 - Examples and tests.
-  - Example with gradient descent, e.g. linear regression.
+  - Example with hidden layer.
   - Tutorials (MNIST ?)
+  - Add tests.
+    - Arithmetic operations.
+    - Gradient, graph with sharing/multiple contributions...
