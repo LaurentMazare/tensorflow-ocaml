@@ -13,10 +13,10 @@ let () =
   in
   let sum = Ops_m.reduce_sum node in
   let session = Session.create () in
-  let var, sum =
+  let node, sum =
     Session.(run
       session
       ~inputs:[ Input.float placeholder data ]
        (Output.(both (float node) (float sum))))
   in
-  H.print_tensors [Tensor.P var; P sum] ~names:[ "var"; "sum" ]
+  H.print_tensors [Tensor.P node; P sum] ~names:[ "node"; "sum" ]
