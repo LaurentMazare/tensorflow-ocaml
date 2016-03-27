@@ -6,17 +6,14 @@ let image_dim = Mnist.image_dim
 let label_count = Mnist.label_count
 let epochs = 1000
 
-let var_zero shape =
-  Variable.float shape ~init:(Ops_m.f ~shape 0.)
-
 let () =
   let { Mnist.train_images; train_labels; validation_images; validation_labels } =
     Mnist.read_files ~train_size ~validation_size ()
   in
   let xs = Ops_m.placeholder [] ~type_:Float in
   let ys = Ops_m.placeholder [] ~type_:Float in
-  let w = var_zero [ image_dim; label_count ] in
-  let b = var_zero [ label_count ] in
+  let w = Var.f [ image_dim; label_count ] 0. in
+  let b = Var.f [ label_count ] 0. in
   let ys_ = Ops_m.(xs *^ w + b) |> Ops.softmax in
   let cross_entropy = Ops.neg Ops_m.(reduce_sum (ys * Ops.log ys_)) in
   let accuracy =

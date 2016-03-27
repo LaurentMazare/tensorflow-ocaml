@@ -80,7 +80,7 @@ let rec prepare_node t node =
         }
       in
       let h =
-       match Variable.get_init node with
+       match Var.get_init node with
        | None -> height
        | Some assign ->
          Hashtbl.set t.current_table ~key:id ~data:(res, 0);

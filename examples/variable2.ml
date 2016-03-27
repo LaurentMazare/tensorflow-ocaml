@@ -6,7 +6,7 @@ let () =
   Bigarray.Genarray.set data [| 1 |] 2.;
   Bigarray.Genarray.set data [| 2 |] 6.;
   let placeholder = Ops.placeholder ~name:"x" ~type_:Float () in
-  let variable = Variable.float [ 3 ] ~init:(Ops_m.cf [ 8.; 0.; 1. ]) in
+  let variable = Var.float [ 3 ] ~init:(Ops_m.cf [ 8.; 0.; 1. ]) in
   let node =
     Ops.sub variable placeholder
     |> Ops.abs
