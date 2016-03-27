@@ -11,7 +11,7 @@ type unary =
 
 let all = List.map ~f:Option.some
 
-let pointwise_unary_exn (type a) ~self ~(gradient : a N.t) ~t =
+let unary_wrapper_exn (type a) ~self ~(gradient : a N.t) ~t =
   let N.P x =
     match self.N.inputs with
     | [] | _ :: _ :: _ -> failwith "Not a unary function"
@@ -96,7 +96,7 @@ let neg_gradient ~self:_ ~gradient =
 
 let abs_gradient (type a) ~self ~(gradient : a N.t) =
   let t = { f1 = fun ~x ~y:_ ~gradient -> Ops.sign x |> Ops.mul gradient } in
-  pointwise_unary_exn ~self ~gradient ~t
+  unary_wrapper_exn ~self ~gradient ~t
 
 let square_gradient (type a) ~self ~(gradient : a N.t) =
   let t =
@@ -105,11 +105,11 @@ let square_gradient (type a) ~self ~(gradient : a N.t) =
         |> Ops.mul gradient
     }
   in
-  pointwise_unary_exn ~self ~gradient ~t
+  unary_wrapper_exn ~self ~gradient ~t
 
 let log_gradient (type a) ~self ~(gradient : a N.t) =
   let t = { f1 = fun ~x ~y:_ ~gradient -> Ops.mul gradient (Ops.inv x) } in
-  pointwise_unary_exn ~self ~gradient ~t
+  unary_wrapper_exn ~self ~gradient ~t
 
 let relu_gradient ~self ~gradient =
   all [ N.P (Ops.reluGrad gradient self) ]
@@ -231,11 +231,11 @@ let sign_gradient ~self ~gradient:_ =
 
 let sin_gradient (type a) ~self ~(gradient : a N.t) =
   let t = { f1 = fun ~x ~y:_ ~gradient -> Ops.mul gradient (Ops.cos x) } in
-  pointwise_unary_exn ~self ~gradient ~t
+  unary_wrapper_exn ~self ~gradient ~t
 
 let cos_gradient (type a) ~self ~(gradient : a N.t) =
   let t = { f1 = fun ~x ~y:_ ~gradient -> Ops.mul gradient (Ops.sin x) |> Ops.neg } in
-  pointwise_unary_exn ~self ~gradient ~t
+  unary_wrapper_exn ~self ~gradient ~t
 
 let addn_gradient ~self ~gradient =
   List.map self.N.inputs ~f:(fun _ -> Some (N.P gradient))
@@ -249,7 +249,7 @@ let rsqrt_gradient (type a) ~self ~(gradient : a N.t) =
         Ops_m.(gradient * const_float ~type_:y.N.output_type [ -0.5 ] * Ops.inv x * y)
     }
   in
-  pointwise_unary_exn ~self ~gradient ~t
+  unary_wrapper_exn ~self ~gradient ~t
 
 let two_over_pi = 2. /. 3.1415926535897932384626434
 
@@ -260,7 +260,7 @@ let erf_gradient (type a) ~self ~(gradient : a N.t) =
           * Ops.exp (Ops.neg (Ops.square x)))
     }
   in
-  pointwise_unary_exn ~self ~gradient ~t
+  unary_wrapper_exn ~self ~gradient ~t
 
 let erfc_gradient (type a) ~self ~(gradient : a N.t) =
   let t =
@@ -269,13 +269,13 @@ let erfc_gradient (type a) ~self ~(gradient : a N.t) =
           * Ops.exp (Ops.neg (Ops.square x)))
     }
   in
-  pointwise_unary_exn ~self ~gradient ~t
+  unary_wrapper_exn ~self ~gradient ~t
 
 let lgamma_gradient (type a) ~self ~(gradient : a N.t) =
   let t =
     { f1 = fun ~x ~y:_ ~gradient -> Ops.mul gradient (Ops.digamma x) }
   in
-  pointwise_unary_exn ~self ~gradient ~t
+  unary_wrapper_exn ~self ~gradient ~t
 
 let conv2d_gradient ~self ~gradient =
   let inputs0, inputs1 = binary_extract_exn self in
@@ -305,6 +305,35 @@ let conv2d_gradient ~self ~gradient =
   in
   all [ N.P gradient_input; N.P gradient_filter ]
 
+let maxpool_gradient : type a. self:a N.t -> gradient:a N.t -> N.p option list
+  = fun ~self ~gradient ->
+  match self.N.output_type, gradient.N.output_type with
+  | N.Type.Float, N.Type.Float ->
+    let ksize = Option.value_exn (N.get_attr_int_list self "ksize") in
+    let strides = Option.value_exn (N.get_attr_int_list self "strides") in
+    let padding = Option.value_exn (N.get_attr_string self "padding") in
+    let data_format = N.get_attr_string self "data_format" in
+    let input =
+      match self.N.inputs with
+      | [] | _ :: _ :: _ -> failwith "Not a unary function"
+      | [ N.P input ] ->
+        match input.output_type with
+        | T.Float -> (input : [ `float ] N.t)
+        | _ -> failwith "Inconsistent types"
+    in
+    let gradient =
+      Ops.maxPoolGrad
+        input
+        self
+        gradient
+        ~ksize
+        ~strides
+        ~padding
+        ?data_format
+    in
+    all [ N.P gradient ]
+  | _, _ -> failwith "Inconsistent types"
+
 let register_all () =
   let module O = Ops.Op_names in
   List.iter ~f:(fun (name, f) -> Registered_gradients.add name f)
@@ -322,6 +351,7 @@ let register_all () =
     ; O.log,     { f = log_gradient }
     ; O.matMul,  { f = matmul_gradient }
     ; O.max,     { f = minmax_gradient }
+    ; O.maxPool, { f = maxpool_gradient }
     ; O.mean,    { f = mean_gradient }
     ; O.min,     { f = minmax_gradient }
     ; O.mul,     { f = mul_gradient }
