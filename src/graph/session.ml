@@ -79,12 +79,7 @@ let rec prepare_node t node =
    let h =
     match Variable.get_init node with
     | None -> height
-    | Some init ->
-      let init =
-        Option.value_exn (
-        Node.extract init u_node.Node.output_type)
-      in
-      let assign = Node.P (Ops.assign u_node init) in
+    | Some assign ->
       Hashtbl.set t.current_table ~key:id ~data:(res, 0);
       let assign, h = prepare_node t assign in
       Hashtbl.add_multi t.uninitialised_variables ~key:h ~data:assign;

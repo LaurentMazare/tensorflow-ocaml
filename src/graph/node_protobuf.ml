@@ -183,7 +183,7 @@ let of_nodes' ?verbose ~already_exported_nodes ts =
   |> Piqirun.to_string
   |> Protobuf.of_string
 
-let of_nodes ts =
-  of_nodes' ~already_exported_nodes:(Node.Id.Table.create ()) ts
+let of_nodes ?verbose ts =
+  of_nodes' ?verbose ~already_exported_nodes:(Node.Id.Table.create ()) ts
 
-let of_node t = of_nodes [ P t ]
+let of_node ?verbose t = of_nodes ?verbose [ P t ]
