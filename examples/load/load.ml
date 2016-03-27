@@ -19,7 +19,7 @@ let () =
   in
   Session.extend_graph
     session
-    (Protobuf.read_file "examples/load.pb")
+    (Protobuf.read_file "examples/load/load.pb")
     |> ok_exn ~context:"extending graph";
   let output =
     Session.run
