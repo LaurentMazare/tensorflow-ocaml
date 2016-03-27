@@ -22,8 +22,11 @@ If you've installed the cuda version of TensorFlow then you should be able to us
 
 #### Try executing the examples from the root of the cloned repo
 ```bash
-make run
+make load
+make mnist_linear
+make mnist_nn
 ```
+For the MNIST examples, you will have to unzip the [MNIST data files](http://yann.lecun.com/exdb/mnist/) in `data/`.
 Enjoy!
 
 ## Examples

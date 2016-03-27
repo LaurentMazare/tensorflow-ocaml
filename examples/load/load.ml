@@ -29,4 +29,6 @@ let () =
       ~targets:[ "add" ]
     |> ok_exn ~context:"session run"
   in
-  Helper.print_tensors output ~names:[ "load" ]
+  match output with
+  | [ output ] -> Tensor.print output
+  | _ -> assert false
