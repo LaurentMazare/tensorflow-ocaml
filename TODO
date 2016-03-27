@@ -2,19 +2,10 @@
   - Switch to ocaml-protoc ?
 
 - Proper wrapper around wrapper.ml.
-  - More functional and type-safe api.
-  - Store in [Session.t] the current nodes and automatically extend the graph on [Session.run].
-    - Remove [Session.extend_graph].
-
-- Safer/better impls for ops.
-  - Variable initialization.
-    - Force variables to have an initialization in [Ops_m.var{f,d}], init could be zero/const/..., maybe a tensor ?
-    - Store the initialization details somewhere.
-    - When calling [Session.run], we go through the graph to upload new nodes, also get new var nodes
-      and call [Session.run] a first time to perform initialization.
+  - Even more functional and type-safe api.
 
 - Gradient Computation and Descent.
-  - Register the gradients of more functions.
+  - Register the gradients for even more functions.
   - Add new optimizers.
 
 - Examples and tests.
