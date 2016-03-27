@@ -130,6 +130,25 @@ let packed_output_idx (P t) = t.output_idx
 
 let id t = t.name
 
+let get_attr t str =
+  List.Assoc.find t.attributes str
+
+let get_attr_bool t str =
+  Option.bind (get_attr t str) (function
+    | Bool b -> Some b
+    | _ -> None)
+
+let get_attr_string t str =
+  Option.bind (get_attr t str) (function
+    | String s -> Some s
+    | _ -> None)
+
+let get_attr_int_list t str =
+  Option.bind (get_attr t str) (function
+    | List (Int l) -> Some l
+    | _ -> None)
+
+
 let extract : type a . p -> a Type.t -> a t option = fun p type_ ->
   let P t = p in
   match t.output_type, type_ with

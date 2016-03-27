@@ -101,6 +101,10 @@ val packed_is_real : p -> bool
 val packed_id : p -> Id.t
 val packed_output_idx : p -> int option
 
+val get_attr_bool : _ t -> string -> bool option
+val get_attr_string : _ t -> string -> string option
+val get_attr_int_list : _ t -> string -> int list option
+
 val id : _ t -> Id.t
 
 val extract : p -> 'a Type.t -> 'a t option

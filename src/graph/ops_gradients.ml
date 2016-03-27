@@ -277,6 +277,34 @@ let lgamma_gradient (type a) ~self ~(gradient : a N.t) =
   in
   pointwise_unary_exn ~self ~gradient ~t
 
+let conv2d_gradient ~self ~gradient =
+  let inputs0, inputs1 = binary_extract_exn self in
+  let strides = Option.value_exn (N.get_attr_int_list self "strides") in
+  let use_cudnn_on_gpu = N.get_attr_bool self "use_cudnn_on_gpu" in
+  let padding = Option.value_exn (N.get_attr_string self "padding") in
+  let data_format = N.get_attr_string self "data_format" in
+  let gradient_input =
+    Ops.conv2DBackpropInput
+      (Ops.shape inputs0)
+      inputs1
+      gradient
+      ~strides
+      ?use_cudnn_on_gpu
+      ~padding
+      ?data_format
+  in
+  let gradient_filter =
+    Ops.conv2DBackpropFilter
+      inputs0
+      (Ops.shape inputs1)
+      gradient
+      ~strides
+      ?use_cudnn_on_gpu
+      ~padding
+      ?data_format
+  in
+  all [ N.P gradient_input; N.P gradient_filter ]
+
 let register_all () =
   let module O = Ops.Op_names in
   List.iter ~f:(fun (name, f) -> Registered_gradients.add name f)
@@ -284,6 +312,7 @@ let register_all () =
     ; O.add,     { f = add_gradient }
     ; O.addN,    { f = addn_gradient }
     ; O.cos,     { f = cos_gradient }
+    ; O.conv2D,  { f = conv2d_gradient }
     ; O.div,     { f = div_gradient }
     ; O.erf,     { f = erf_gradient }
     ; O.erfc,    { f = erfc_gradient }
