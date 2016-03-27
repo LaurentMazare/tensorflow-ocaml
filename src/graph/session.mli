@@ -11,7 +11,7 @@ end
 
 module Target :
 sig
-  type t
+  type t = Node.p
 end
 
 val target : 'a Node.t -> Target.t

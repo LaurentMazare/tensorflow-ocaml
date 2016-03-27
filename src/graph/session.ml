@@ -192,10 +192,14 @@ struct
 
 
   let scalar_float node =
-    float node |> map ~f:(fun t -> Bigarray.Genarray.get t [| 0 |])
+    float node |> map ~f:(fun t ->
+      Array.create 0 ~len:(Bigarray.Genarray.num_dims t)
+      |> Bigarray.Genarray.get t)
 
   let scalar_double node =
-    double node |> map ~f:(fun t -> Bigarray.Genarray.get t [| 0 |])
+    double node |> map ~f:(fun t ->
+      Array.create 0 ~len:(Bigarray.Genarray.num_dims t)
+      |> Bigarray.Genarray.get t)
 
   let rec build_output
     : type a. a t ->  (Node.p list -> Node.p list) * (Tensor.p list -> a * Tensor.p list) =
