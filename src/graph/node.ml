@@ -126,6 +126,7 @@ let packed_is_real (P t) =
   | Type.Double -> true
 
 let packed_id : p -> Id.t = packed_name
+let packed_output_idx (P t) = t.output_idx
 
 let id t = t.name
 

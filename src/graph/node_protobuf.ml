@@ -130,7 +130,7 @@ let of_nodes' ?verbose ~already_exported_nodes ts =
     then ()
     else begin
       if verbose
-      then
+      then begin
         let inputs =
           if List.is_empty t.inputs
           then "No inputs"
@@ -143,7 +143,8 @@ let of_nodes' ?verbose ~already_exported_nodes ts =
         printf "Node: %s Op: %s %s\n%!"
           (Node.Name.to_string t.name)
           (Node.Op_name.to_string t.op_name)
-          inputs;
+          inputs
+      end;
       let attr =
         List.map t.attributes ~f:(fun (name, value) ->
           of_attribute name value t.output_type)

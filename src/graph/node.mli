@@ -99,6 +99,7 @@ val packed_op_name : p -> Op_name.t
 val packed_inputs : p -> p list
 val packed_is_real : p -> bool
 val packed_id : p -> Id.t
+val packed_output_idx : p -> int option
 
 val id : _ t -> Id.t
 

@@ -53,40 +53,43 @@ let rec choose_name t node =
    returns what would be the height of a variable just above.
 *)
 let rec prepare_node t node =
+  let choose_correct_output (Node.P n) =
+    Node.P { n with output_idx = Node.packed_output_idx node }
+  in
   let id = Node.packed_id node in
   match
-   Hashtbl.find t.exported_nodes id
+    Hashtbl.find t.exported_nodes id
   with
-  | Some h -> (h, 0) (* already exported before starting this run *)
+  | Some h -> (choose_correct_output h, 0) (* already exported before starting this run *)
   | None ->
-  match Hashtbl.find t.current_table id with
-  | Some res -> res (* already exported this round *)
-  | None ->
-    let Node.P u_node = node in
-    let rev_inputs, height =
-    List.fold u_node.inputs ~init:([], 0)
-      ~f:(fun (rev_inputs, height) input ->
-          let input, h = prepare_node t input in
-          input::rev_inputs, max h height)
-    in
-    let res =
-      Node.P
-      { u_node with
-        name = choose_name t node
-      ; inputs = List.rev rev_inputs
-      }
-   in
-   let h =
-    match Variable.get_init node with
-    | None -> height
-    | Some assign ->
-      Hashtbl.set t.current_table ~key:id ~data:(res, 0);
-      let assign, h = prepare_node t assign in
-      Hashtbl.add_multi t.uninitialised_variables ~key:h ~data:assign;
-      h + 1
-   in
-   Hashtbl.set t.current_table ~key:id ~data:(res, h);
-   (res, h)
+    match Hashtbl.find t.current_table id with
+    | Some (node, h) -> choose_correct_output node, h (* already exported this round *)
+    | None ->
+      let Node.P u_node = node in
+      let rev_inputs, height =
+        List.fold u_node.inputs ~init:([], 0)
+          ~f:(fun (rev_inputs, height) input ->
+              let input, h = prepare_node t input in
+              input::rev_inputs, max h height)
+      in
+      let res =
+        Node.P
+        { u_node with
+          name = choose_name t node
+        ; inputs = List.rev rev_inputs
+        }
+      in
+      let h =
+       match Variable.get_init node with
+       | None -> height
+       | Some assign ->
+         Hashtbl.set t.current_table ~key:id ~data:(res, 0);
+         let assign, h = prepare_node t assign in
+         Hashtbl.add_multi t.uninitialised_variables ~key:h ~data:assign;
+         h + 1
+      in
+      Hashtbl.set t.current_table ~key:id ~data:(res, h);
+      (res, h)
 ;;
 
 let prepare_graph t ~inputs ~targets ~outputs =
@@ -109,15 +112,14 @@ let prepare_graph t ~inputs ~targets ~outputs =
     List.concat uninitialised_variables @ List.concat [ inputs; outputs; targets ]
   in
   let protobuf =
-    Node_protobuf.of_nodes' ~verbose:() ~already_exported_nodes:t.exported_nodes all_nodes_to_export
+    Node_protobuf.of_nodes' ~already_exported_nodes:t.exported_nodes all_nodes_to_export
   in
   Wrapper.Session.(extend_graph t.session protobuf |> ok_exn);
   let ret = List.map ~f:(fun x -> Node.packed_name x |> Node.Name.to_string) in
   ret inputs, ret targets, ret outputs, List.map ~f:ret uninitialised_variables
 
 let run ?(inputs=[]) ?(outputs=[]) ?(targets=[]) t =
-  let input_tensors = List.map ~f:snd inputs in
-  let inputs = List.map ~f:fst inputs in
+  let inputs, input_tensors = List.unzip inputs in
   let inputs, targets, outputs, variables_init = prepare_graph t ~inputs ~targets ~outputs in
   (* add outputs to targets *)
   let targets =
@@ -224,7 +226,6 @@ struct
    f [], fun l -> fst (k l)
 
 end
-
 
 let run ?inputs ?targets t output =
   let inputs =
