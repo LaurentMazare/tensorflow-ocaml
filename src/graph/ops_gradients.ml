@@ -342,6 +342,9 @@ let reshape_gradient ~self ~gradient =
   in
   [ Some (N.P (Ops.reshape gradient input_shape)); None ]
 
+let none ~self ~gradient:_ =
+  List.map self.N.inputs ~f:(fun _ -> None)
+
 let register_all () =
   let module O = Ops.Op_names in
   List.iter ~f:(fun (name, f) -> Registered_gradients.add name f)
@@ -354,6 +357,7 @@ let register_all () =
     ; O.erf,     { f = erf_gradient }
     ; O.erfc,    { f = erfc_gradient }
     ; O.exp,     { f = exp_gradient }
+    ; O.floor,   { f = none }
     ; O.inv,     { f = inv_gradient }
     ; O.lgamma,  { f = lgamma_gradient }
     ; O.log,     { f = log_gradient }

@@ -1,5 +1,10 @@
 open Core_kernel.Std
 
+let scalar_tensor f =
+  let array = Bigarray.Genarray.create Bigarray.float32 Bigarray.c_layout [| 1 |] in
+  Bigarray.Genarray.set array [| 0 |] f;
+  array
+
 let train_size = 50000
 let batch_size = 500
 let validation_size = 1000
@@ -15,6 +20,7 @@ let () =
   let { Mnist.train_images; train_labels; validation_images; validation_labels } =
     Mnist.read_files ~train_size ~validation_size ()
   in
+  let keep_prob = Ops_m.placeholder [] ~type_:Float in
   let xs = Ops_m.placeholder [] ~type_:Float in
   let ys = Ops_m.placeholder [] ~type_:Float in
 
@@ -33,11 +39,12 @@ let () =
   let b_fc1 = Var.f [ 1024 ] 0. in
   let h_pool2_flat = Ops.reshape h_pool2 (Ops_m.const_int ~type_:Int32 [ -1; 7*7*64 ]) in
   let h_fc1 = Ops.relu Ops_m.(h_pool2_flat *^ w_fc1 + b_fc1) in
+  let h_fc1_dropout = Ops_m.dropout h_fc1 ~keep_prob in
 
   let w_fc2 = Var.normalf [ 1024; 10 ] ~stddev:0.1 in
   let b_fc2 = Var.f [ 10 ] 0. in
 
-  let ys_ = Ops_m.(h_fc1 *^ w_fc2 + b_fc2) |> Ops.softmax in
+  let ys_ = Ops_m.(h_fc1_dropout *^ w_fc2 + b_fc2) |> Ops.softmax in
   let cross_entropy = Ops.neg Ops_m.(reduce_mean (ys * Ops.log ys_)) in
   let accuracy =
     Ops.equal (Ops.argMax ys_ Ops_m.one32) (Ops.argMax ys Ops_m.one32)
@@ -51,7 +58,8 @@ let () =
   in
   let session = Session.create () in
   let validation_inputs =
-    Session.Input.[ float xs validation_images; float ys validation_labels ]
+    let one = scalar_tensor 1. in
+    Session.Input.[ float xs validation_images; float ys validation_labels; float keep_prob one ]
   in
   let print_err n ~train_inputs =
     let vaccuracy =
@@ -81,7 +89,8 @@ let () =
       |> Bigarray.genarray_of_array2
     in
     let batch_inputs =
-      Session.Input.[ float xs batch_images; float ys batch_labels ]
+      let half = scalar_tensor 0.5 in
+      Session.Input.[ float xs batch_images; float ys batch_labels; float keep_prob half ]
     in
     print_err batch_idx ~train_inputs:batch_inputs;
     Session.run

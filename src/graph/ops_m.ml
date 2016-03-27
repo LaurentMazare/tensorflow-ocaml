@@ -132,3 +132,10 @@ let placeholder ?name ~type_ shape =
     ~type_
     ~shape:(List.map shape ~f:(fun size -> { Node.Dim.name = None; size }))
     ()
+
+let dropout node ~keep_prob =
+  let type_ = node.Node.output_type in
+  (keep_prob + Ops.randomUniform ~type_ (Ops.shape node))
+  |> Ops.floor
+  |> fun binary_tensor -> node * (Ops.inv keep_prob) * binary_tensor
+

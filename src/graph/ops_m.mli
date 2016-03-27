@@ -60,3 +60,8 @@ val broadcast_gradient_args
   : [ `int32 ] Node.t -> [ `int32 ] Node.t -> [ `int32 ] Node.t * [ `int32 ] Node.t
 
 val placeholder : ?name:string -> type_:'a Node.Type.t -> int list -> 'a Node.t
+
+val dropout
+  :  ([< `float | `double ] as 'a) Node.t
+  -> keep_prob:'a Node.t
+  -> 'a Node.t
