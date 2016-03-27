@@ -24,6 +24,9 @@ mnist_nn: mnist/mnist_nn.native
 mnist_linear: mnist/mnist_linear.native
 	LD_LIBRARY_PATH=./lib:$(LD_LIBRARY_PATH) ./mnist_linear.native
 
+mnist_conv: mnist/mnist_conv.native
+	LD_LIBRARY_PATH=./lib:$(LD_LIBRARY_PATH) ./mnist_conv.native
+
 clean:
 	rm -Rf _build/
 

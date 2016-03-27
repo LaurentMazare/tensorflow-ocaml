@@ -18,3 +18,11 @@ val read_files
 
 val image_dim : int
 val label_count : int
+
+val slice1
+  :  ('a, 'b, 'c) Bigarray.Array1.t
+  -> int -> int -> ('a, 'b, Bigarray.c_layout) Bigarray.Array1.t
+
+val slice2
+  :  ('a, 'b, 'c) Bigarray.Array2.t
+  -> int -> int -> ('a, 'b, Bigarray.c_layout) Bigarray.Array2.t

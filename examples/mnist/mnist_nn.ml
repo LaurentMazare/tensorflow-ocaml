@@ -1,5 +1,4 @@
 open Core_kernel.Std
-module H = Helper
 
 let train_size = 10000
 let validation_size = 1000

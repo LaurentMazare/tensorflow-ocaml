@@ -334,6 +334,14 @@ let maxpool_gradient : type a. self:a N.t -> gradient:a N.t -> N.p option list
     all [ N.P gradient ]
   | _, _ -> failwith "Inconsistent types"
 
+let reshape_gradient ~self ~gradient =
+  let input_shape =
+    match self.N.inputs with
+    | [ N.P input; _ ] -> Ops.shape input
+    | _ -> failwith "Not a binary function"
+  in
+  [ Some (N.P (Ops.reshape gradient input_shape)); None ]
+
 let register_all () =
   let module O = Ops.Op_names in
   List.iter ~f:(fun (name, f) -> Registered_gradients.add name f)
@@ -358,6 +366,7 @@ let register_all () =
     ; O.neg,     { f = neg_gradient }
     ; O.pow,     { f = pow_gradient }
     ; O.relu,    { f = relu_gradient }
+    ; O.reshape, { f = reshape_gradient }
     ; O.rsqrt,   { f = rsqrt_gradient }
     ; O.sigmoid, { f = sigmoid_gradient }
     ; O.sign,    { f = sign_gradient }
