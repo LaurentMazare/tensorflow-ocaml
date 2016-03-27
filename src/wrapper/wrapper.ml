@@ -370,6 +370,12 @@ module Session = struct
       |> List.map tensor_of_c_tensor
     in
     result_or_error status output_tensors
+
+  let ok_exn = function
+    | Ok ok -> ok
+    | Error status ->
+      failwith
+        (Printf.sprintf "%d %s" (tf_getcode status) (Status.message status))
 end
 
 let () =

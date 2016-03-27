@@ -53,4 +53,6 @@ module Session : sig
     -> ?targets:string list
     -> t
     -> Tensor.p list result
+
+  val ok_exn : 'a result -> 'a
 end

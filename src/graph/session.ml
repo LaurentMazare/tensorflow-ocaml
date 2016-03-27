@@ -111,10 +111,12 @@ let prepare_graph t ~inputs ~targets ~outputs =
   let uninitialised_variables = build_variables 0 in
   Hashtbl.clear t.uninitialised_variables;
   let all_nodes_to_export =
-  List.concat uninitialised_variables @ List.concat [ inputs; outputs; targets ]
+    List.concat uninitialised_variables @ List.concat [ inputs; outputs; targets ]
   in
-  let protobuf = Node_protobuf.of_nodes' t.exported_nodes all_nodes_to_export in
-  ignore(Wrapper.Session.extend_graph t.session protobuf);
+  let protobuf =
+    Node_protobuf.of_nodes' ~verbose:() ~already_exported_nodes:t.exported_nodes all_nodes_to_export
+  in
+  Wrapper.Session.(extend_graph t.session protobuf |> ok_exn);
   let ret = List.map ~f:(fun x -> Node.packed_name x |> Node.Name.to_string) in
   ret inputs, ret targets, ret outputs, List.map ~f:ret uninitialised_variables
 
@@ -131,11 +133,10 @@ let run ?(inputs=[]) ?(outputs=[]) ?(targets=[]) t =
   (* Run variable init *)
   List.iter variables_init
    ~f:(fun targets ->
-      ignore (Wrapper.Session.run t.session ~inputs:[] ~outputs:[] ~targets));
-  let output = Wrapper.Session.run t.session ~inputs ~outputs ~targets in
-  match output with
-  | Error _ -> assert false
-  | Ok output -> output
+      Wrapper.Session.run t.session ~inputs:[] ~outputs:[] ~targets
+      |> Wrapper.Session.ok_exn
+      |> fun tensor_list -> assert (List.is_empty tensor_list));
+  Wrapper.Session.(run t.session ~inputs ~outputs ~targets |> ok_exn)
 
 module Input =
  struct
