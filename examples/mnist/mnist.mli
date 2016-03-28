@@ -26,6 +26,6 @@ val image_dim : int
 val label_count : int
 
 val slice2
-  :  ('a, 'b, 'c) Bigarray.Array2.t
-  -> int -> int -> ('a, 'b, Bigarray.c_layout) Bigarray.Array2.t
+  :  ('a, 'b, 'c) Bigarray.Genarray.t
+  -> int -> int -> ('a, 'b, Bigarray.c_layout) Bigarray.Genarray.t
 

@@ -55,8 +55,10 @@ let () =
   in
   let validation_inputs =
     let one = scalar_tensor 1. in
+    let validation_images = Mnist.slice2 mnist.test_images 0 512 in
+    let validation_labels = Mnist.slice2 mnist.test_labels 0 512 in
     Session.Input.
-      [ float xs mnist.test_images; float ys mnist.test_labels; float keep_prob one ]
+      [ float xs validation_images; float ys validation_labels; float keep_prob one ]
   in
   let print_err n ~train_inputs =
     let vaccuracy =
