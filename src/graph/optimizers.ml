@@ -92,14 +92,18 @@ let adam_minimizer ~alpha ?beta1 ?beta2 ?epsilon ?(varsf = []) ?(varsd = []) tar
         Var.create (get_shape var) ~type_:var.output_type
           ~init:(Ops.fill var_shape (Ops.scalar ~empty_shape:() ~type_:var.output_type 0.))
       in
+      let create_scalar_var () =
+        Var.create [] ~type_:var.output_type
+          ~init:(Ops.scalar ~empty_shape:() ~type_:var.output_type 0.)
+      in
       let grad = Ops.reshape grad var_shape in
       let adam =
         Ops.applyAdam
           var
           (create_var ()) (* m *)
           (create_var ()) (* v *)
-          (create_var ()) (* beta1_power *)
-          (create_var ()) (* beta2_power *)
+          (create_scalar_var ()) (* beta1_power *)
+          (create_scalar_var ()) (* beta2_power *)
           alpha
           beta1
           beta2
