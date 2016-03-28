@@ -1,4 +1,5 @@
 open Core_kernel.Std
+open Tf_ocaml
 module H = Helper
 module O = Ops
 

@@ -1,3 +1,4 @@
+open Tf_ocaml
 open Wrapper
 
 let ok_exn (result : 'a Session.result) ~context =
