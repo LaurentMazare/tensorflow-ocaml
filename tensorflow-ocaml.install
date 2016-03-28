@@ -3,13 +3,7 @@ lib: [
   "_build/src/tf_ocaml.cmxa" {"tf_ocaml.cmxa"}
   "_build/src/tf_ocaml.cma" {"tf_ocaml.cma"}
   "_build/src/tf_ocaml.cmxs" {"tf_ocaml.cmxs"}
-  "_build/src/graph/node.cmi" {"node.cmi"}
-  "_build/src/graph/ops.cmi" {"ops.cmi"}
-  "_build/src/graph/optimizers.cmi" {"optimizers.cmi"}
-  "_build/src/graph/var.cmi" {"var.cmi"}
-  "_build/src/graph/session.cmi" {"session.cmi"}
-  "_build/src/wrapper/protobuf.cmi" {"protobuf.cmi"}
-  "_build/src/wrapper/tensor.cmi" {"tensor.cmi"}
-  "_build/src/wrapper/wrapper.cmi" {"wrapper.cmi"}
+  "_build/src/tf_ocaml.cmx" {"tf_ocaml.cmx"}
+  "_build/src/tf_ocaml.cmi" {"tf_ocaml.cmi"}
   "META"
 ]

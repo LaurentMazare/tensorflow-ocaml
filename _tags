@@ -7,3 +7,4 @@ not <src/piqi/*>: warn_error(A-4-29-40-41-42-44-45-48)
 <src/gen_ops/*> or <src/graph/*> or <examples/*> or <examples/*/*>: package(core_kernel), thread
 <lib>: -traverse
 <src/piqi> or <src/wrapper> or <src/graph> or <src>: include
+<src/*/*>: for-pack(Tf_ocaml)
