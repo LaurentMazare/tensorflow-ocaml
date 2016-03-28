@@ -6,9 +6,7 @@ let scalar_tensor f =
   Bigarray.Genarray.set array [| 0 |] f;
   array
 
-let train_size = 50000
-let batch_size = 500
-let validation_size = 1000
+let batch_size = 512
 let epochs = 5000
 
 let conv2d x w =
@@ -18,9 +16,10 @@ let max_pool_2x2 x =
   O.maxPool x ~ksize:[ 1; 2; 2; 1 ] ~strides:[ 1; 2; 2; 1 ] ~padding:"SAME"
 
 let () =
-  let { Mnist.train_images; train_labels; validation_images; validation_labels } =
-    Mnist.read_files ~train_size ~validation_size ()
+  let { Mnist.train_images; train_labels; test_images; test_labels } =
+    Mnist.read_files ()
   in
+  let train_size = (Bigarray.Genarray.dims train_images).(0) in
   let keep_prob = O.placeholder [] ~type_:Float in
   let xs = O.placeholder [] ~type_:Float in
   let ys = O.placeholder [] ~type_:Float in
@@ -59,7 +58,7 @@ let () =
   in
   let validation_inputs =
     let one = scalar_tensor 1. in
-    Session.Input.[ float xs validation_images; float ys validation_labels; float keep_prob one ]
+    Session.Input.[ float xs test_images; float ys test_labels; float keep_prob one ]
   in
   let print_err n ~train_inputs =
     let vaccuracy =

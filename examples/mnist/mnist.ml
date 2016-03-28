@@ -4,15 +4,6 @@ open Core_kernel.Std
 let image_dim = 28 * 28
 let label_count = 10
 
-let slice1 data start_idx n =
-  let slice =
-    Bigarray.Array1.create (Bigarray.Array1.kind data) Bigarray.c_layout n
-  in
-  for i = 0 to n - 1 do
-    Bigarray.Array1.set slice i (Bigarray.Array1.get data (start_idx + i))
-  done;
-  slice
-
 let slice2 data start_idx n =
   let dim2 = Bigarray.Array2.dim2 data in
   let slice =
@@ -89,25 +80,23 @@ type float32_genarray =
 type t =
   { train_images : float32_genarray
   ; train_labels : float32_genarray
-  ; validation_images : float32_genarray
-  ; validation_labels : float32_genarray
+  ; test_images : float32_genarray
+  ; test_labels : float32_genarray
   }
 
 let read_files
-      ?(image_file = "data/train-images-idx3-ubyte")
-      ?(label_file = "data/train-labels-idx1-ubyte")
-      ~train_size
-      ~validation_size
+      ?(train_image_file = "data/train-images-idx3-ubyte")
+      ?(train_label_file = "data/train-labels-idx1-ubyte")
+      ?(test_image_file = "data/t10k-images-idx3-ubyte")
+      ?(test_label_file = "data/t10k-labels-idx1-ubyte")
       ()
   =
-  let all_images = read_images image_file in
-  let all_labels = read_labels label_file in
-  let train_images = slice2 all_images 0 train_size in
-  let train_labels = slice1 all_labels 0 train_size in
-  let validation_images = slice2 all_images train_size validation_size in
-  let validation_labels = slice1 all_labels train_size validation_size in
+  let train_images = read_images train_image_file in
+  let train_labels = read_labels train_label_file in
+  let test_images = read_images test_image_file in
+  let test_labels = read_labels test_label_file in
   { train_images = Bigarray.genarray_of_array2 train_images
   ; train_labels = one_hot train_labels
-  ; validation_images = Bigarray.genarray_of_array2 validation_images
-  ; validation_labels = one_hot validation_labels
+  ; test_images = Bigarray.genarray_of_array2 test_images
+  ; test_labels = one_hot test_labels
   }
