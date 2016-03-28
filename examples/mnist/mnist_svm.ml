@@ -1,45 +1,43 @@
 open Core_kernel.Std
 
-let train_size = 1000
-let validation_size = 1000
 let image_dim = Mnist.image_dim
 let label_count = Mnist.label_count
 let epochs = 10000
-let lambda = 0.001
+let lambda = 10.0
 
 let () =
-  let { Mnist.train_images; train_labels; validation_images; validation_labels } =
-    Mnist.read_files ~train_size ~validation_size ()
+  let { Mnist.train_images; train_labels; test_images; test_labels } =
+    Mnist.read_files ()
   in
-  let xs = Ops_m.placeholder [] ~type_:Float in
-  let ys = Ops_m.placeholder [] ~type_:Float in
+  let xs = Ops.placeholder [] ~type_:Float in
+  let ys = Ops.placeholder [] ~type_:Float in
   let w = Var.f [ image_dim; label_count ] 0. in
   let b = Var.f [ label_count ] 0. in
-  let ys_ = Ops_m.(xs *^ w - b) in
+  let ys_ = Ops.(xs *^ w - b) in
   let accuracy =
-    Ops.equal (Ops.argMax ys_ Ops_m.one32) (Ops.argMax ys Ops_m.one32)
+    Ops.equal (Ops.argMax ys_ Ops.one32) (Ops.argMax ys Ops.one32)
     |> Ops.cast ~type_:Float
-    |> Ops_m.reduce_mean
+    |> Ops.reduce_mean
   in
 
   (* ys in {-1 ; + 1} *)
-  let ys' = Ops_m.(f 2.0 * ys - f 1.0) in
+  let ys' = Ops.(f 2.0 * ys - f 1.0) in
   let distance_from_margin =
-    Ops_m.(f 1.0 - ys' * ys_ )
+    Ops.(f 1.0 - ys' * ys_ )
   in
   let hinge_loss =
-     Ops.relu distance_from_margin |> Ops_m.reduce_mean
+     Ops.relu distance_from_margin |> Ops.reduce_mean
   in
   let square_norm =
-    Ops_m.(f lambda * reduce_sum (w * w))
+    Ops.(f lambda * reduce_sum (w * w))
   in
   let gd =
-    Optimizers.gradient_descent_minimizer ~alpha:(Ops_m.f 0.02) ~varsf:[ w; b ]
-      Ops_m.(square_norm + hinge_loss)
+    Optimizers.gradient_descent_minimizer ~alpha:(Ops.f 0.1) ~varsf:[ w; b ]
+      Ops.(square_norm + hinge_loss)
   in
   let train_inputs = Session.Input.[ float xs train_images; float ys train_labels ] in
   let validation_inputs =
-    Session.Input.[ float xs validation_images; float ys validation_labels ]
+    Session.Input.[ float xs test_images; float ys test_labels ]
   in
   let print_err n =
     let vaccuracy =
