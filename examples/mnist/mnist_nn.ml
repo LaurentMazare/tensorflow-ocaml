@@ -1,10 +1,11 @@
 open Core_kernel.Std
 module O = Ops
 
+(* This should reach ~96.5% accuracy. *)
 let image_dim = Mnist.image_dim
 let label_count = Mnist.label_count
 let hidden_nodes = 128
-let epochs = 2000
+let epochs = 4000
 
 let () =
   let { Mnist.train_images; train_labels; test_images; test_labels } =
@@ -25,7 +26,7 @@ let () =
   in
   let gd =
     Optimizers.momentum_minimizer cross_entropy
-      ~alpha:(O.f 0.4) ~momentum:(O.f 0.9) ~varsf:[ w1; w2; b1; b2 ]
+      ~alpha:(O.f 0.6) ~momentum:(O.f 0.9) ~varsf:[ w1; w2; b1; b2 ]
   in
   let train_inputs = Session.Input.[ float xs train_images; float ys train_labels ] in
   let validation_inputs =
