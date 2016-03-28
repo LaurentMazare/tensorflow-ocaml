@@ -39,19 +39,14 @@ let momentum_minimizer ~alpha ~momentum ?(varsf = []) ?(varsd = []) target =
       ~with_respect_to_float:varsf
       ~with_respect_to_double:varsd
   in
-  let varsf =
-    List.map varsf ~f:(fun var ->
-      check_var var;
-      var, Var.f (get_shape var) 0.)
-  in
-  let varsd =
-    List.map varsd ~f:(fun var ->
-      check_var var;
-      var, Var.d (get_shape var) 0.)
-  in
   let apply_momentum grads vars ~alpha ~momentum =
-    List.map2_exn grads vars ~f:(fun grad (var, accum) ->
-      let grad = Ops.reshape grad (Ops.shape var) in
+    List.map2_exn grads vars ~f:(fun grad var ->
+      let var_shape = Ops.shape var in
+      let accum =
+        Var.create (get_shape var) ~type_:var.output_type
+          ~init:(Ops.fill var_shape (Ops.scalar ~empty_shape:() ~type_:var.output_type 0.))
+      in
+      let grad = Ops.reshape grad var_shape in
       Node.P (Ops.applyMomentum var accum alpha grad momentum))
   in
   let gdf =

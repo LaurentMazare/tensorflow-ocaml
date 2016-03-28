@@ -13,7 +13,8 @@ val const_int
   -> 'dtype Node.t
 
 val scalar
-  :  type_:([< `float | `double ] as 'dtype) Node.Type.t
+  :  ?empty_shape:unit
+  -> type_:([< `float | `double ] as 'dtype) Node.Type.t
   -> float
   -> 'dtype Node.t
 

@@ -47,10 +47,10 @@ let const_int
   ; output_idx = None
   }
 
-let scalar ~type_ f =
+let scalar ?empty_shape ~type_ f =
   const_float
     ~type_
-    ~shape:[ 1 ]
+    ~shape:(if Option.is_some empty_shape then [] else [ 1 ])
     [ f ]
 
 type 't b =  ?name:string -> 't Node.t -> 't Node.t -> 't Node.t
