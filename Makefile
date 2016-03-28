@@ -1,3 +1,7 @@
+MNIST = examples/mnist
+MNIST_ALL = $(MNIST)/mnist_conv.native $(MNIST)/mnist_nn.native $(MNIST)/mnist_linear.native
+ALL = gen.native examples/load/load.native examples/basics/linear_regression.native $(MNIST_ALL)
+
 %.native: .FORCE
 	ocamlbuild $@
 
@@ -29,3 +33,5 @@ clean:
 	rm -Rf _build/
 
 .FORCE:
+
+all: $(ALL)
