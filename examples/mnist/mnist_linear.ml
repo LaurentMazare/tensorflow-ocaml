@@ -1,4 +1,5 @@
 open Core_kernel.Std
+module O = Ops
 
 let train_size = 1000
 let validation_size = 1000
@@ -10,19 +11,19 @@ let () =
   let { Mnist.train_images; train_labels; validation_images; validation_labels } =
     Mnist.read_files ~train_size ~validation_size ()
   in
-  let xs = Ops_m.placeholder [] ~type_:Float in
-  let ys = Ops_m.placeholder [] ~type_:Float in
+  let xs = O.placeholder [] ~type_:Float in
+  let ys = O.placeholder [] ~type_:Float in
   let w = Var.f [ image_dim; label_count ] 0. in
   let b = Var.f [ label_count ] 0. in
-  let ys_ = Ops_m.(xs *^ w + b) |> Ops.softmax in
-  let cross_entropy = Ops.neg Ops_m.(reduce_sum (ys * Ops.log ys_)) in
+  let ys_ = O.(xs *^ w + b) |> O.softmax in
+  let cross_entropy = O.(neg (reduce_sum (ys * log ys_))) in
   let accuracy =
-    Ops.equal (Ops.argMax ys_ Ops_m.one32) (Ops.argMax ys Ops_m.one32)
-    |> Ops.cast ~type_:Float
-    |> Ops_m.reduce_mean
+    O.(equal (argMax ys_ O.one32) (argMax ys O.one32))
+    |> O.cast ~type_:Float
+    |> O.reduce_mean
   in
   let gd =
-    Optimizers.gradient_descent_minimizer ~alpha:(Ops_m.f 0.0001) ~varsf:[ w; b ]
+    Optimizers.gradient_descent_minimizer ~alpha:(O.f 0.0001) ~varsf:[ w; b ]
       cross_entropy
   in
   let train_inputs = Session.Input.[ float xs train_images; float ys train_labels ] in

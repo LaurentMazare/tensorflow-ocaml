@@ -55,18 +55,17 @@ let scalar ~type_ f =
 
 type 't b =  ?name:string -> 't Node.t -> 't Node.t -> 't Node.t
 
-let (+) = Ops.add
-let (-) = Ops.sub
-let ( * ) = Ops.mul
-let ( *^ ) = Ops.matMul ~transpose_a:false ~transpose_b:false
-let ( *. ) = Ops.matMul ~transpose_a:false ~transpose_b:true
-let (/) = Ops.div
+let (+) = Ops_generated.add
+let (-) = Ops_generated.sub
+let ( * ) = Ops_generated.mul
+let ( *^ ) = Ops_generated.matMul ~transpose_a:false ~transpose_b:false
+let (/) = Ops_generated.div
 
 let f_or_d ?shape ~type_ x =
   let scalar = const_float ~type_ ~shape:[] [ x ] in
   match shape with
   | None -> scalar
-  | Some dims -> Ops.fill (const_int ~type_:Int32 dims) scalar
+  | Some dims -> Ops_generated.fill (const_int ~type_:Int32 dims) scalar
 
 let f ?shape x = f_or_d ?shape ~type_:Float x
 let d ?shape x = f_or_d ?shape ~type_:Double x
@@ -74,26 +73,16 @@ let d ?shape x = f_or_d ?shape ~type_:Double x
 let cf ?shape x = const_float ?shape ~type_:Float x
 let cd ?shape x = const_float ?shape ~type_:Double x
 
-let varf shape =
-  Ops.variable ()
-    ~type_:Float
-    ~shape:(List.map shape ~f:(fun size -> { Node.Dim.size; name = None }))
-
-let vard shape =
-  Ops.variable ()
-    ~type_:Double
-    ~shape:(List.map shape ~f:(fun size -> { Node.Dim.size; name = None }))
-
 let zero32 = const_int ~shape:[] ~type_:Int32 [ 0 ]
 let one32 = const_int ~shape:[] ~type_:Int32 [ 1 ]
 
-let range node = Ops.range zero32 node one32
+let range node = Ops_generated.range zero32 node one32
 
 let reduce_op op ?dims node =
   let dims =
     match dims with
     | Some dims -> const_int ~type_:Int32 dims
-    | None -> Ops.range zero32 (Ops.rank node) one32
+    | None -> Ops_generated.range zero32 (Ops_generated.rank node) one32
   in
   op node dims
 
@@ -102,13 +91,13 @@ type 'a reduce_fn
   -> ([< `complex64 | `double | `float | `int32 | `int64 ] as 'a) Node.t
   -> 'a Node.t
 
-let reduce_sum ?dims node = reduce_op Ops.sum ?dims node
-let reduce_mean ?dims node = reduce_op Ops.mean ?dims node
-let reduce_min ?dims node = reduce_op Ops.min ?dims node
-let reduce_max ?dims node = reduce_op Ops.max ?dims node
-let reduce_prod ?dims node = reduce_op Ops.prod ?dims node
-let reduce_all ?dims node = reduce_op Ops.all ?dims node
-let reduce_any ?dims node = reduce_op Ops.any ?dims node
+let reduce_sum ?dims node = reduce_op Ops_generated.sum ?dims node
+let reduce_mean ?dims node = reduce_op Ops_generated.mean ?dims node
+let reduce_min ?dims node = reduce_op Ops_generated.min ?dims node
+let reduce_max ?dims node = reduce_op Ops_generated.max ?dims node
+let reduce_prod ?dims node = reduce_op Ops_generated.prod ?dims node
+let reduce_all ?dims node = reduce_op Ops_generated.all ?dims node
+let reduce_any ?dims node = reduce_op Ops_generated.any ?dims node
 
 (* Hacky implementation for now, we should support multiple outputs and maybe
    be able to generate this one. *)
@@ -127,7 +116,7 @@ let broadcast_gradient_args x y =
   bga 0, bga 1
 
 let placeholder ?name ~type_ shape =
-  Ops.placeholder
+  Ops_generated.placeholder
     ?name
     ~type_
     ~shape:(List.map shape ~f:(fun size -> { Node.Dim.name = None; size }))
@@ -135,7 +124,7 @@ let placeholder ?name ~type_ shape =
 
 let dropout node ~keep_prob =
   let type_ = node.Node.output_type in
-  (keep_prob + Ops.randomUniform ~type_ (Ops.shape node))
-  |> Ops.floor
-  |> fun binary_tensor -> node * (Ops.inv keep_prob) * binary_tensor
+  (keep_prob + Ops_generated.randomUniform ~type_ (Ops_generated.shape node))
+  |> Ops_generated.floor
+  |> fun binary_tensor -> node * (Ops_generated.inv keep_prob) * binary_tensor
 

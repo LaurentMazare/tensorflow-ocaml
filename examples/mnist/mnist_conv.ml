@@ -1,4 +1,5 @@
 open Core_kernel.Std
+module O = Ops
 
 let scalar_tensor f =
   let array = Bigarray.Genarray.create Bigarray.float32 Bigarray.c_layout [| 1 |] in
@@ -11,48 +12,48 @@ let validation_size = 1000
 let epochs = 5000
 
 let conv2d x w =
-  Ops.conv2D x w ~strides:[ 1; 1; 1; 1 ] ~padding:"SAME"
+  O.conv2D x w ~strides:[ 1; 1; 1; 1 ] ~padding:"SAME"
 
 let max_pool_2x2 x =
-  Ops.maxPool x ~ksize:[ 1; 2; 2; 1 ] ~strides:[ 1; 2; 2; 1 ] ~padding:"SAME"
+  O.maxPool x ~ksize:[ 1; 2; 2; 1 ] ~strides:[ 1; 2; 2; 1 ] ~padding:"SAME"
 
 let () =
   let { Mnist.train_images; train_labels; validation_images; validation_labels } =
     Mnist.read_files ~train_size ~validation_size ()
   in
-  let keep_prob = Ops_m.placeholder [] ~type_:Float in
-  let xs = Ops_m.placeholder [] ~type_:Float in
-  let ys = Ops_m.placeholder [] ~type_:Float in
+  let keep_prob = O.placeholder [] ~type_:Float in
+  let xs = O.placeholder [] ~type_:Float in
+  let ys = O.placeholder [] ~type_:Float in
 
-  let x_image = Ops.reshape xs (Ops_m.const_int ~type_:Int32 [ -1; 28; 28; 1 ]) in
+  let x_image = O.reshape xs (O.const_int ~type_:Int32 [ -1; 28; 28; 1 ]) in
   let w_conv1 = Var.normalf [ 5; 5; 1; 32 ] ~stddev:0.1 in
   let b_conv1 = Var.f [ 32 ] 0. in
-  let h_conv1 = Ops.add (conv2d x_image w_conv1) b_conv1 in
+  let h_conv1 = O.add (conv2d x_image w_conv1) b_conv1 in
   let h_pool1 = max_pool_2x2 h_conv1 in
 
   let w_conv2 = Var.normalf [ 5; 5; 32; 64 ] ~stddev:0.1 in
   let b_conv2 = Var.f [ 64 ] 0. in
-  let h_conv2 = Ops.add (conv2d h_pool1 w_conv2) b_conv2 |> Ops.relu in
+  let h_conv2 = O.add (conv2d h_pool1 w_conv2) b_conv2 |> O.relu in
   let h_pool2 = max_pool_2x2 h_conv2 in
 
   let w_fc1 = Var.normalf [ 7*7*64; 1024 ] ~stddev:0.1 in
   let b_fc1 = Var.f [ 1024 ] 0. in
-  let h_pool2_flat = Ops.reshape h_pool2 (Ops_m.const_int ~type_:Int32 [ -1; 7*7*64 ]) in
-  let h_fc1 = Ops.relu Ops_m.(h_pool2_flat *^ w_fc1 + b_fc1) in
-  let h_fc1_dropout = Ops_m.dropout h_fc1 ~keep_prob in
+  let h_pool2_flat = O.reshape h_pool2 (O.const_int ~type_:Int32 [ -1; 7*7*64 ]) in
+  let h_fc1 = O.(relu (h_pool2_flat *^ w_fc1 + b_fc1)) in
+  let h_fc1_dropout = O.dropout h_fc1 ~keep_prob in
 
   let w_fc2 = Var.normalf [ 1024; 10 ] ~stddev:0.1 in
   let b_fc2 = Var.f [ 10 ] 0. in
 
-  let ys_ = Ops_m.(h_fc1_dropout *^ w_fc2 + b_fc2) |> Ops.softmax in
-  let cross_entropy = Ops.neg Ops_m.(reduce_mean (ys * Ops.log ys_)) in
+  let ys_ = O.(h_fc1_dropout *^ w_fc2 + b_fc2) |> O.softmax in
+  let cross_entropy = O.(neg (reduce_mean (ys * O.log ys_))) in
   let accuracy =
-    Ops.equal (Ops.argMax ys_ Ops_m.one32) (Ops.argMax ys Ops_m.one32)
-    |> Ops.cast ~type_:Float
-    |> Ops_m.reduce_mean
+    O.(equal (argMax ys_ one32) (argMax ys one32))
+    |> O.cast ~type_:Float
+    |> O.reduce_mean
   in
   let gd =
-    Optimizers.gradient_descent_minimizer ~alpha:(Ops_m.f 0.02)
+    Optimizers.gradient_descent_minimizer ~alpha:(O.f 0.02)
       ~varsf:[ w_conv1; b_conv1; w_conv2; b_conv2; w_fc1; b_fc1; w_fc2; b_fc2 ]
       cross_entropy
   in

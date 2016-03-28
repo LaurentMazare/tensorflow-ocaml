@@ -98,7 +98,7 @@ let gradient node ~with_respect_to =
               | exn -> Exn.reraise exn (Node.Op_name.to_string op_name)
   in 
   let one =
-    Ops_m.const_float
+    Ops.const_float
       ~shape:[]
       ~type_:node.output_type
       [ 1. ]
