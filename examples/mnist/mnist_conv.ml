@@ -55,8 +55,8 @@ let () =
   in
   let validation_inputs =
     let one = scalar_tensor 1. in
-    let validation_images = Mnist.slice2 mnist.test_images 0 512 in
-    let validation_labels = Mnist.slice2 mnist.test_labels 0 512 in
+    let validation_images = Mnist.slice2 mnist.test_images 0 1024 in
+    let validation_labels = Mnist.slice2 mnist.test_labels 0 1024 in
     Session.Input.
       [ float xs validation_images; float ys validation_labels; float keep_prob one ]
   in
@@ -79,7 +79,7 @@ let () =
       let half = scalar_tensor 0.5 in
       Session.Input.[ float xs batch_images; float ys batch_labels; float keep_prob half ]
     in
-    print_err batch_idx ~train_inputs:batch_inputs;
+    if batch_idx % 25 = 0 then print_err batch_idx ~train_inputs:batch_inputs;
     Session.run
       ~inputs:batch_inputs
       ~targets:gd
