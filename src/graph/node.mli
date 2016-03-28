@@ -104,6 +104,7 @@ val packed_output_idx : p -> int option
 val get_attr_bool : _ t -> string -> bool option
 val get_attr_string : _ t -> string -> string option
 val get_attr_int_list : _ t -> string -> int list option
+val get_shape : _ t -> Dim.t list option
 
 val id : _ t -> Id.t
 

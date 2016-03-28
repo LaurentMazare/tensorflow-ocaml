@@ -148,6 +148,10 @@ let get_attr_int_list t str =
     | List (Int l) -> Some l
     | _ -> None)
 
+let get_shape t =
+  Option.bind (get_attr t "shape") (function
+    | Shape shape -> Some shape
+    | _ -> None)
 
 let extract : type a . p -> a Type.t -> a t option = fun p type_ ->
   let P t = p in
