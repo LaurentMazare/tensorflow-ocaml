@@ -25,6 +25,9 @@ mnist_linear: examples/mnist/mnist_linear.native
 mnist_conv: examples/mnist/mnist_conv.native
 	LD_LIBRARY_PATH=./lib:$(LD_LIBRARY_PATH) ./mnist_conv.native
 
+mnist_svm: examples/mnist/mnist_svm.native
+	LD_LIBRARY_PATH=./lib:$(LD_LIBRARY_PATH) ./mnist_svm.native
+
 clean:
 	rm -Rf _build/
 
