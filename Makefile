@@ -1,9 +1,13 @@
 MNIST = examples/mnist
 MNIST_ALL = $(MNIST)/mnist_conv.native $(MNIST)/mnist_nn.native $(MNIST)/mnist_linear.native $(MNIST)/mnist_svm.native
-ALL = tf_ocaml.cmxa gen.native examples/load/load.native examples/basics/linear_regression.native $(MNIST_ALL)
+ALL = tf_ocaml.cmxa tf_ocaml.cma tf_ocaml.cmxs gen.native examples/load/load.native examples/basics/linear_regression.native $(MNIST_ALL)
 
 tf_ocaml.cmxa: .FORCE
 	ocamlbuild tf_ocaml.cmxa
+tf_ocaml.cma: .FORCE
+	ocamlbuild tf_ocaml.cma
+tf_ocaml.cmxs: .FORCE
+	ocamlbuild tf_ocaml.cmxs
 
 %.native: .FORCE
 	ocamlbuild $@
