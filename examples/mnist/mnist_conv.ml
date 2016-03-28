@@ -16,10 +16,7 @@ let max_pool_2x2 x =
   O.maxPool x ~ksize:[ 1; 2; 2; 1 ] ~strides:[ 1; 2; 2; 1 ] ~padding:"SAME"
 
 let () =
-  let { Mnist.train_images; train_labels; test_images; test_labels } =
-    Mnist.read_files ()
-  in
-  let train_size = (Bigarray.Genarray.dims train_images).(0) in
+  let mnist = Mnist.read_files () in
   let keep_prob = O.placeholder [] ~type_:Float in
   let xs = O.placeholder [] ~type_:Float in
   let ys = O.placeholder [] ~type_:Float in
@@ -58,7 +55,8 @@ let () =
   in
   let validation_inputs =
     let one = scalar_tensor 1. in
-    Session.Input.[ float xs test_images; float ys test_labels; float keep_prob one ]
+    Session.Input.
+      [ float xs mnist.test_images; float ys mnist.test_labels; float keep_prob one ]
   in
   let print_err n ~train_inputs =
     let vaccuracy =
@@ -74,17 +72,7 @@ let () =
     printf "epoch %d, vaccuracy %.2f%% taccuracy: %.2f%%\n%!" n (100. *. vaccuracy) (100. *. taccuracy)
   in
   for batch_idx = 1 to epochs do
-    let start_batch = batch_size * batch_idx in
-    (* Stochastic gradient descent... *)
-    let start_batch = if start_batch + batch_size >= train_size then 0 else start_batch in
-    let batch_images =
-      Mnist.slice2 (Bigarray.array2_of_genarray train_images) start_batch batch_size
-      |> Bigarray.genarray_of_array2
-    in
-    let batch_labels =
-      Mnist.slice2 (Bigarray.array2_of_genarray train_labels) start_batch batch_size
-      |> Bigarray.genarray_of_array2
-    in
+    let batch_images, batch_labels = Mnist.train_batch mnist ~batch_size ~batch_idx in
     let batch_inputs =
       let half = scalar_tensor 0.5 in
       Session.Input.[ float xs batch_images; float ys batch_labels; float keep_prob half ]

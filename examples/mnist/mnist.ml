@@ -100,3 +100,18 @@ let read_files
   ; test_images = Bigarray.genarray_of_array2 test_images
   ; test_labels = one_hot test_labels
   }
+
+let train_batch { train_images; train_labels; _ } ~batch_size ~batch_idx =
+  let train_size = (Bigarray.Genarray.dims train_images).(0) in
+  let start_batch = batch_size * batch_idx in
+  let start_batch = if start_batch + batch_size >= train_size then 1 else start_batch in
+  let batch_images =
+    slice2 (Bigarray.array2_of_genarray train_images) start_batch batch_size
+    |> Bigarray.genarray_of_array2
+  in
+  let batch_labels =
+    slice2 (Bigarray.array2_of_genarray train_labels) start_batch batch_size
+    |> Bigarray.genarray_of_array2
+  in
+  batch_images, batch_labels
+

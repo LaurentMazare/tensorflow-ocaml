@@ -16,9 +16,16 @@ val read_files
   -> unit
   -> t
 
+val train_batch
+  :  t
+  -> batch_size:int
+  -> batch_idx:int
+  -> float32_genarray * float32_genarray
+
 val image_dim : int
 val label_count : int
 
 val slice2
   :  ('a, 'b, 'c) Bigarray.Array2.t
   -> int -> int -> ('a, 'b, Bigarray.c_layout) Bigarray.Array2.t
+
