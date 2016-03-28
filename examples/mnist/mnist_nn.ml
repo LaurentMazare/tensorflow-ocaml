@@ -25,7 +25,7 @@ let () =
     |> Ops_m.reduce_mean
   in
   let gd =
-    Optimizers.gradient_descent_minimizer ~alpha:0.8 ~varsf:[ w1; w2; b1; b2 ]
+    Optimizers.gradient_descent_minimizer ~alpha:(Ops_m.f 0.8) ~varsf:[ w1; w2; b1; b2 ]
       cross_entropy
   in
   let session = Session.create () in

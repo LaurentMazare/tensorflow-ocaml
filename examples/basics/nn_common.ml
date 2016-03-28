@@ -13,7 +13,7 @@ let one_layer ~samples ~size_xs ~size_ys ~xs ~ys ~hidden_nodes ~epochs =
   let y_ = Ops_m.(Ops.sigmoid (xs *^ w1 + b1) *^ w2 + b2) in
   let err = Ops_m.(Ops.square (y_ - y) |> reduce_mean) in
   let gd =
-    Optimizers.gradient_descent_minimizer ~alpha:0.05 ~varsf:[ w1; w2; b1; b2 ] err
+    Optimizers.gradient_descent_minimizer ~alpha:(Ops_m.f 0.05) ~varsf:[ w1; w2; b1; b2 ] err
   in
   let session = Session.create () in
   let results = ref [] in

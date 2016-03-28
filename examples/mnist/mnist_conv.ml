@@ -52,7 +52,7 @@ let () =
     |> Ops_m.reduce_mean
   in
   let gd =
-    Optimizers.gradient_descent_minimizer ~alpha:0.02
+    Optimizers.gradient_descent_minimizer ~alpha:(Ops_m.f 0.02)
       ~varsf:[ w_conv1; b_conv1; w_conv2; b_conv2; w_fc1; b_fc1; w_fc2; b_fc2 ]
       cross_entropy
   in

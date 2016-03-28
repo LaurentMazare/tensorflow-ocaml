@@ -11,7 +11,7 @@ let run ~samples ~size_xs ~size_ys ~xs ~ys =
   let y_ = Ops_m.(xs *^ w + b) in
   let err = Ops_m.(Ops.square (y_ - y) |> reduce_mean) in
   let gd =
-    Optimizers.gradient_descent_minimizer ~alpha:0.04 ~varsf:[ w; b ] err
+    Optimizers.gradient_descent_minimizer ~alpha:(Ops_m.f 0.04) ~varsf:[ w; b ] err
   in
   let session = Session.create () in
   let results = ref [] in

@@ -13,12 +13,12 @@ let gradient_descent_minimizer ~alpha ?(varsf = []) ?(varsd = []) target =
   in
   let gdf =
     if not (List.is_empty varsf)
-    then apply_gradient_descent gradsf varsf ~alpha:(Ops_m.f alpha)
+    then apply_gradient_descent gradsf varsf ~alpha
     else []
   in
   let gdd =
     if not (List.is_empty varsd)
-    then apply_gradient_descent gradsd varsd ~alpha:(Ops_m.d alpha)
+    then apply_gradient_descent gradsd varsd ~alpha:(Ops.cast alpha ~type_:Double)
     else []
   in
   gdf @ gdd
