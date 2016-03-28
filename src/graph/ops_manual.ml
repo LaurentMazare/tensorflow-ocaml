@@ -73,16 +73,6 @@ let d ?shape x = f_or_d ?shape ~type_:Double x
 let cf ?shape x = const_float ?shape ~type_:Float x
 let cd ?shape x = const_float ?shape ~type_:Double x
 
-let varf shape =
-  Ops_generated.variable ()
-    ~type_:Float
-    ~shape:(List.map shape ~f:(fun size -> { Node.Dim.size; name = None }))
-
-let vard shape =
-  Ops_generated.variable ()
-    ~type_:Double
-    ~shape:(List.map shape ~f:(fun size -> { Node.Dim.size; name = None }))
-
 let zero32 = const_int ~shape:[] ~type_:Int32 [ 0 ]
 let one32 = const_int ~shape:[] ~type_:Int32 [ 1 ]
 

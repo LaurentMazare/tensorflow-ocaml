@@ -22,7 +22,9 @@ type 't b =  ?name:string -> 't Node.t -> 't Node.t -> 't Node.t
 val (+) : [< `float | `double | `int32 | `int64 | `complex64 | `string ] b
 val (-) : [< `float | `double | `int32 | `int64 | `complex64 ] b
 val (/) : [< `float | `double | `int32 | `int64 | `complex64 ] b
+(* Pointwise multiplication. *)
 val ( * ) : [< `float | `double | `int32 | `int64 | `complex64 ] b
+(* Matrix multiplication. *)
 val ( *^) : [< `float | `double | `int32 | `complex64 ] b
 
 (* Scalar *)
@@ -32,10 +34,6 @@ val d : ?shape:int list -> float -> [ `double ] Node.t
 (* Constant vector/matrixes *)
 val cf : ?shape:int list -> float list -> [ `float ] Node.t
 val cd : ?shape:int list -> float list -> [ `double ] Node.t
-
-(* Variables *)
-val varf : int list -> [ `float ] Node.t
-val vard : int list -> [ `double ] Node.t
 
 type 'a reduce_fn
    =  ?dims:int list
