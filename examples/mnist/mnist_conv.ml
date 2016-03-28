@@ -45,14 +45,14 @@ let () =
   let b_fc2 = Var.f [ 10 ] 0. in
 
   let ys_ = O.(h_fc1_dropout *^ w_fc2 + b_fc2) |> O.softmax in
-  let cross_entropy = O.(neg (reduce_mean (ys * O.log ys_))) in
+  let cross_entropy = O.(neg (reduce_sum (ys * O.log ys_))) in
   let accuracy =
     O.(equal (argMax ys_ one32) (argMax ys one32))
     |> O.cast ~type_:Float
     |> O.reduce_mean
   in
   let gd =
-    Optimizers.gradient_descent_minimizer ~alpha:(O.f 0.02)
+    Optimizers.adam_minimizer ~alpha:(O.f 1e-5)
       ~varsf:[ w_conv1; b_conv1; w_conv2; b_conv2; w_fc1; b_fc1; w_fc2; b_fc2 ]
       cross_entropy
   in
