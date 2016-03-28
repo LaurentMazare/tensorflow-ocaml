@@ -28,7 +28,6 @@ let () =
     Optimizers.gradient_descent_minimizer ~alpha:(Ops_m.f 0.8) ~varsf:[ w1; w2; b1; b2 ]
       cross_entropy
   in
-  let session = Session.create () in
   let train_inputs = Session.Input.[ float xs train_images; float ys train_labels ] in
   let validation_inputs =
     Session.Input.[ float xs validation_images; float ys validation_labels ]
@@ -36,7 +35,6 @@ let () =
   let print_err n =
     let accuracy =
       Session.run
-        session
         ~inputs:validation_inputs
         (Session.Output.scalar_float accuracy)
     in
@@ -45,7 +43,6 @@ let () =
   for i = 1 to epochs do
     if i % 100 = 0 then print_err i;
     Session.run
-      session
       ~inputs:train_inputs
       ~targets:gd
       Session.Output.empty;

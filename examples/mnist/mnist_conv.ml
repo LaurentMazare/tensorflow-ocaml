@@ -56,7 +56,6 @@ let () =
       ~varsf:[ w_conv1; b_conv1; w_conv2; b_conv2; w_fc1; b_fc1; w_fc2; b_fc2 ]
       cross_entropy
   in
-  let session = Session.create () in
   let validation_inputs =
     let one = scalar_tensor 1. in
     Session.Input.[ float xs validation_images; float ys validation_labels; float keep_prob one ]
@@ -64,13 +63,11 @@ let () =
   let print_err n ~train_inputs =
     let vaccuracy =
       Session.run
-        session
         ~inputs:validation_inputs
         (Session.Output.scalar_float accuracy)
     in
     let taccuracy =
       Session.run
-        session
         ~inputs:train_inputs
         (Session.Output.scalar_float accuracy)
     in
@@ -94,7 +91,6 @@ let () =
     in
     print_err batch_idx ~train_inputs:batch_inputs;
     Session.run
-      session
       ~inputs:batch_inputs
       ~targets:gd
       Session.Output.empty;

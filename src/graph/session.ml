@@ -34,6 +34,8 @@ let create () =
     current_table = Node.Id.Table.create()
 }
 
+let default_session = lazy (create ())
+
 let rec choose_name t node =
   let base_name = Node.Name.to_string (Node.packed_name node) in
   match Hashtbl.find t.names  base_name with
@@ -227,7 +229,12 @@ struct
 
 end
 
-let run ?inputs ?targets t output =
+let run ?inputs ?targets ?session output =
+  let t =
+    match session with
+    | None -> Lazy.force default_session
+    | Some session -> session
+  in
   let inputs =
     Option.map inputs
      ~f:(List.map ~f:(fun (Input.I(n,t)) -> Node.P n, Tensor.P t))

@@ -35,6 +35,6 @@ end
 val run :
   ?inputs:Input.t list
   -> ?targets:Target.t list
-  -> t
+  -> ?session:t
   -> 'a Output.t
   -> 'a
