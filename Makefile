@@ -4,7 +4,7 @@
 gen.native: .FORCE
 	ocamlbuild src/gen_ops/gen.native
 
-src/graph/ops: gen.native
+src/graph/ops_generated: gen.native
 	LD_LIBRARY_PATH=./lib:$(LD_LIBRARY_PATH) ./gen.native
 
 load: examples/load/load.native

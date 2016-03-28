@@ -24,7 +24,6 @@ val (-) : [< `float | `double | `int32 | `int64 | `complex64 ] b
 val (/) : [< `float | `double | `int32 | `int64 | `complex64 ] b
 val ( * ) : [< `float | `double | `int32 | `int64 | `complex64 ] b
 val ( *^) : [< `float | `double | `int32 | `complex64 ] b
-val ( *.) : [< `float | `double | `int32 | `complex64 ] b
 
 (* Scalar *)
 val f : ?shape:int list -> float -> [ `float ] Node.t

@@ -2,7 +2,7 @@ open Core_kernel.Std
 exception Not_supported of string
 
 let ops_file = "src/gen_ops/ops.pb"
-let output_file = "src/graph/ops"
+let output_file = "src/graph/ops_generated"
 let do_not_generate_these_ops =
   String.Set.of_list
     [ "Const"

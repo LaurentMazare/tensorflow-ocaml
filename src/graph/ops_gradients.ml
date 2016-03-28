@@ -44,7 +44,7 @@ let add_gradient_ ~self ~gradient =
     | [ N.P lhs; N.P rhs ] -> Ops.shape lhs, Ops.shape rhs
     | _ -> failwith "Not a binary function"
   in
-  let rlhs, rrhs = Ops_m.broadcast_gradient_args slhs srhs in
+  let rlhs, rrhs = Ops.broadcast_gradient_args slhs srhs in
   let lhs = Ops.reshape (Ops.sum gradient rlhs) slhs in
   let rhs = Ops.reshape (Ops.sum gradient rrhs) srhs in
   lhs, rhs
@@ -61,19 +61,19 @@ let mul_gradient ~self ~gradient =
   let lhs, rhs = binary_extract_exn self in
   let shape_lhs = Ops.shape lhs in
   let shape_rhs = Ops.shape rhs in
-  let rlhs, rrhs = Ops_m.broadcast_gradient_args shape_lhs shape_rhs in
-  let lhs_gradient = Ops.reshape (Ops.sum Ops_m.(gradient * rhs) rlhs) shape_lhs in
-  let rhs_gradient = Ops.reshape (Ops.sum Ops_m.(lhs * gradient) rrhs) shape_rhs in
+  let rlhs, rrhs = Ops.broadcast_gradient_args shape_lhs shape_rhs in
+  let lhs_gradient = Ops.reshape (Ops.sum Ops.(gradient * rhs) rlhs) shape_lhs in
+  let rhs_gradient = Ops.reshape (Ops.sum Ops.(lhs * gradient) rrhs) shape_rhs in
   all [ N.P lhs_gradient; N.P rhs_gradient ]
 
 let div_gradient ~self ~gradient =
   let lhs, rhs = binary_extract_exn self in
   let shape_lhs = Ops.shape lhs in
   let shape_rhs = Ops.shape rhs in
-  let rlhs, rrhs = Ops_m.broadcast_gradient_args shape_lhs shape_rhs in
-  let lhs_gradient = Ops.reshape (Ops.sum Ops_m.(gradient / rhs) rlhs) shape_lhs in
+  let rlhs, rrhs = Ops.broadcast_gradient_args shape_lhs shape_rhs in
+  let lhs_gradient = Ops.reshape (Ops.sum Ops.(gradient / rhs) rlhs) shape_lhs in
   let rhs_gradient =
-    Ops.reshape (Ops.sum Ops_m.(gradient * (Ops.neg (lhs / Ops.square rhs))) rrhs) shape_rhs
+    Ops.reshape (Ops.sum Ops.(gradient * (Ops.neg (lhs / Ops.square rhs))) rrhs) shape_rhs
   in
   all [ N.P lhs_gradient; N.P rhs_gradient ]
 
@@ -81,13 +81,13 @@ let pow_gradient ~self ~gradient =
   let lhs, rhs = binary_extract_exn self in
   let shape_lhs = Ops.shape lhs in
   let shape_rhs = Ops.shape rhs in
-  let rlhs, rrhs = Ops_m.broadcast_gradient_args shape_lhs shape_rhs in
-  let one = Ops_m.const_float ~type_:self.N.output_type [ 1. ] in
+  let rlhs, rrhs = Ops.broadcast_gradient_args shape_lhs shape_rhs in
+  let one = Ops.const_float ~type_:self.N.output_type [ 1. ] in
   let lhs_gradient =
-    Ops.reshape (Ops.sum Ops_m.(gradient * rhs * Ops.pow lhs (rhs - one)) rlhs) shape_lhs
+    Ops.reshape (Ops.sum Ops.(gradient * rhs * Ops.pow lhs (rhs - one)) rlhs) shape_lhs
   in
   let rhs_gradient =
-    Ops.reshape (Ops.sum Ops_m.(gradient * self * Ops.log lhs) rrhs) shape_rhs
+    Ops.reshape (Ops.sum Ops.(gradient * self * Ops.log lhs) rrhs) shape_rhs
   in
   all [ N.P lhs_gradient; N.P rhs_gradient ]
 
@@ -101,7 +101,7 @@ let abs_gradient (type a) ~self ~(gradient : a N.t) =
 let square_gradient (type a) ~self ~(gradient : a N.t) =
   let t =
     { f1 = fun ~x ~y:_ ~gradient ->
-        Ops.mul x (Ops_m.scalar ~type_:x.output_type 2.)
+        Ops.mul x (Ops.scalar ~type_:x.output_type 2.)
         |> Ops.mul gradient
     }
   in
@@ -115,8 +115,8 @@ let relu_gradient ~self ~gradient =
   all [ N.P (Ops.reluGrad gradient self) ]
 
 let sigmoid_gradient ~self ~gradient =
-  let one = Ops_m.const_float ~type_:self.N.output_type [ 1. ] in
-  all [ N.P Ops_m.(gradient * self * (one - self)) ]
+  let one = Ops.const_float ~type_:self.N.output_type [ 1. ] in
+  all [ N.P Ops.(gradient * self * (one - self)) ]
 
 let matmul_gradient ~self ~gradient =
   let get_transpose str =
@@ -163,8 +163,8 @@ let reduce_gradient ~self =
   in
   let new_output_shape =
     Ops.dynamicStitch
-      [ Ops_m.range input_rank; Option.value_exn indices ]
-      [ input_shape; Ops.fill indices_shape Ops_m.one32 ]
+      [ Ops.range input_rank; Option.value_exn indices ]
+      [ input_shape; Ops.fill indices_shape Ops.one32 ]
   in
   new_output_shape, input_shape
 
@@ -181,7 +181,7 @@ let mean_gradient ~self ~gradient =
   let N.P input = List.hd_exn self.inputs in
   let input_shape = Ops.shape input in
   let output_shape = Ops.shape self in
-  let factor = Ops.div (Ops_m.reduce_prod input_shape) (Ops_m.reduce_prod output_shape) in
+  let factor = Ops.div (Ops.reduce_prod input_shape) (Ops.reduce_prod output_shape) in
   let gradient = Ops.div sum_gradient (Ops.cast factor ~type_:sum_gradient.output_type) in
   [ Some (N.P gradient); None ]
 
@@ -202,7 +202,7 @@ let minmax_gradient ~self ~gradient =
 
 let softmax_gradient ~self ~gradient =
   let gradient =
-    Ops_m.(
+    Ops.(
       (gradient
         - Ops.reshape
             (reduce_sum ~dims:[ 1 ] (gradient * self))
@@ -216,13 +216,13 @@ let exp_gradient ~self ~gradient =
 
 let sqrt_gradient ~self ~gradient =
   let gradient =
-    Ops_m.(gradient * const_float ~type_:self.N.output_type [ 0.5 ] * Ops.inv self)
+    Ops.(gradient * const_float ~type_:self.N.output_type [ 0.5 ] * Ops.inv self)
   in
   all [ N.P gradient ]
 
 let tanh_gradient ~self ~gradient =
   let gradient =
-    Ops_m.(gradient * (const_float ~type_:self.N.output_type [ 1. ] - Ops.square self))
+    Ops.(gradient * (const_float ~type_:self.N.output_type [ 1. ] - Ops.square self))
   in
   all [ N.P gradient ]
 
@@ -246,7 +246,7 @@ let inv_gradient ~self ~gradient =
 let rsqrt_gradient (type a) ~self ~(gradient : a N.t) =
   let t =
     { f1 = fun ~x ~y ~gradient ->
-        Ops_m.(gradient * const_float ~type_:y.N.output_type [ -0.5 ] * Ops.inv x * y)
+        Ops.(gradient * const_float ~type_:y.N.output_type [ -0.5 ] * Ops.inv x * y)
     }
   in
   unary_wrapper_exn ~self ~gradient ~t
@@ -256,7 +256,7 @@ let two_over_pi = 2. /. 3.1415926535897932384626434
 let erf_gradient (type a) ~self ~(gradient : a N.t) =
   let t =
     { f1 = fun ~x ~y ~gradient ->
-        Ops_m.(gradient * const_float ~type_:y.N.output_type [ two_over_pi ]
+        Ops.(gradient * const_float ~type_:y.N.output_type [ two_over_pi ]
           * Ops.exp (Ops.neg (Ops.square x)))
     }
   in
@@ -265,7 +265,7 @@ let erf_gradient (type a) ~self ~(gradient : a N.t) =
 let erfc_gradient (type a) ~self ~(gradient : a N.t) =
   let t =
     { f1 = fun ~x ~y ~gradient ->
-        Ops_m.(gradient * const_float ~type_:y.N.output_type [ -. two_over_pi ]
+        Ops.(gradient * const_float ~type_:y.N.output_type [ -. two_over_pi ]
           * Ops.exp (Ops.neg (Ops.square x)))
     }
   in
