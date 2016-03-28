@@ -1,6 +1,9 @@
 open Ctypes
 open Foreign
 
+let _ = Dl.dlopen ~filename:"libpython2.7.so" ~flags:[ RTLD_GLOBAL; RTLD_LAZY ]
+let from = Dl.dlopen ~filename:"libtensorflow.so" ~flags:[ RTLD_LAZY ]
+
 let verbose = false
 (* TF_TENSOR *)
 type tf_tensor = unit ptr
@@ -67,7 +70,7 @@ let int_to_data_type = function
   | n -> Unknown n
 
 let tf_newtensor =
-  foreign "TF_NewTensor"
+  foreign "TF_NewTensor" ~from
     (int
     @-> ptr int64_t (* dims *)
     @-> int         (* num dims *)
@@ -78,41 +81,41 @@ let tf_newtensor =
     @-> returning tf_tensor)
 
 let tf_deletetensor =
-  foreign "TF_DeleteTensor" (tf_tensor @-> returning void)
+  foreign "TF_DeleteTensor" ~from (tf_tensor @-> returning void)
 
 let tf_numdims =
-  foreign "TF_NumDims" (tf_tensor @-> returning int)
+  foreign "TF_NumDims" ~from (tf_tensor @-> returning int)
 
 let tf_dim =
-  foreign "TF_Dim" (tf_tensor @-> int @-> returning int)
+  foreign "TF_Dim" ~from (tf_tensor @-> int @-> returning int)
 
 let tf_tensorbytesize =
-  foreign "TF_TensorByteSize" (tf_tensor @-> returning size_t)
+  foreign "TF_TensorByteSize" ~from (tf_tensor @-> returning size_t)
 
 let tf_tensordata =
-  foreign "TF_TensorData" (tf_tensor @-> returning (ptr void))
+  foreign "TF_TensorData" ~from (tf_tensor @-> returning (ptr void))
 
 let tf_tensortype =
-  foreign "TF_TensorType" (tf_tensor @-> returning int)
+  foreign "TF_TensorType" ~from (tf_tensor @-> returning int)
 
 (* TF_STATUS *)
 type tf_status = unit ptr
 let tf_status : tf_status typ = ptr void
 
 let tf_newstatus =
-  foreign "TF_NewStatus" (void @-> returning tf_status)
+  foreign "TF_NewStatus" ~from (void @-> returning tf_status)
 
 let tf_deletestatus =
-  foreign "TF_DeleteStatus" (tf_status @-> returning void)
+  foreign "TF_DeleteStatus" ~from (tf_status @-> returning void)
 
 let tf_setstatus =
-  foreign "TF_SetStatus" (tf_status @-> int @-> string @-> returning void)
+  foreign "TF_SetStatus" ~from (tf_status @-> int @-> string @-> returning void)
 
 let tf_getcode =
-  foreign "TF_GetCode" (tf_status @-> returning int)
+  foreign "TF_GetCode" ~from (tf_status @-> returning int)
 
 let tf_message =
-  foreign "TF_Message" (tf_status @-> returning string)
+  foreign "TF_Message" ~from (tf_status @-> returning string)
 
 module Status = struct
   type t = tf_status
@@ -176,13 +179,13 @@ type tf_sessionoptions = unit ptr
 let tf_sessionoptions : tf_sessionoptions typ = ptr void
 
 let tf_newsessionoptions =
-  foreign "TF_NewSessionOptions" (void @-> returning tf_sessionoptions)
+  foreign "TF_NewSessionOptions" ~from (void @-> returning tf_sessionoptions)
 
 let tf_settarget =
-  foreign "TF_SetTarget" (tf_sessionoptions @-> string @-> returning void)
+  foreign "TF_SetTarget" ~from (tf_sessionoptions @-> string @-> returning void)
 
 let tf_setconfig =
-  foreign "TF_SetConfig"
+  foreign "TF_SetConfig" ~from
     (tf_sessionoptions
     @-> ptr void
     @-> size_t
@@ -190,7 +193,7 @@ let tf_setconfig =
     @-> returning tf_sessionoptions)
 
 let tf_deletesessionoptions =
-  foreign "TF_DeleteSessionOptions" (tf_sessionoptions @-> returning void)
+  foreign "TF_DeleteSessionOptions" ~from (tf_sessionoptions @-> returning void)
 
 module Session_options = struct
   type t = tf_sessionoptions
@@ -206,19 +209,21 @@ type tf_session = unit ptr
 let tf_session : tf_session typ = ptr void
 
 let tf_newsession =
-  foreign "TF_NewSession" (tf_sessionoptions @-> tf_status @-> returning tf_session)
+  foreign "TF_NewSession" ~from
+    (tf_sessionoptions @-> tf_status @-> returning tf_session)
 
 let tf_closesession =
-  foreign "TF_CloseSession" (tf_session @-> tf_status @-> returning void)
+  foreign "TF_CloseSession" ~from (tf_session @-> tf_status @-> returning void)
 
 let tf_deletesession =
-  foreign "TF_DeleteSession" (tf_session @-> tf_status @-> returning void)
+  foreign "TF_DeleteSession" ~from (tf_session @-> tf_status @-> returning void)
 
 let tf_extendgraph =
-  foreign "TF_ExtendGraph" (tf_session @-> string @-> size_t @-> tf_status @-> returning void)
+  foreign "TF_ExtendGraph" ~from
+    (tf_session @-> string @-> size_t @-> tf_status @-> returning void)
 
 let tf_run =
-  foreign "TF_Run"
+  foreign "TF_Run" ~from
     (tf_session
     (* Input tensors *)
     @-> ptr string
