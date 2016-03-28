@@ -1,0 +1,25 @@
+opam-version: "1.2"
+bug-reports:  "https://github.com/LaurentMazare/tensorflow-ocaml/issues"
+homepage:  "https://github.com/LaurentMazare/tensorflow-ocaml"
+dev-repo:     "git+https://github.com/LaurentMazare/tensorflow-ocaml.git"
+
+version: "dev"
+
+build:   [make "all"]
+install: []
+remove:  []
+
+depends: [
+  "core_kernel"
+  "ctypes"
+  "ctypes-foreign"
+  "ocamlfind"
+  "ocamlbuild"
+]
+
+depopts: ["gnuplot"]
+
+conflicts: [
+]
+
+available: [ ocaml-version >= "4.00.0" ]

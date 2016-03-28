@@ -6,7 +6,6 @@
 
 - Gradient Computation and Descent.
   - Register the gradients for even more functions.
-  - Add new optimizers.
 
 - Operators.
   - Create an API module that includes Ops.
