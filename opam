@@ -12,7 +12,7 @@ remove:  []
 
 depends: [
   "core_kernel"
-  "ctypes"
+  "ctypes" {>= "0.5"}
   "ctypes-foreign"
   "ocamlfind"
   "ocamlbuild"
@@ -23,4 +23,4 @@ depopts: ["gnuplot"]
 conflicts: [
 ]
 
-available: [ ocaml-version >= "4.00.0" ]
+available: [ ocaml-version >= "4.02.1" ]
