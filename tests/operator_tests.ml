@@ -2,6 +2,10 @@ open Core_kernel.Std
 open Tensorflow
 module O = Ops
 
+let assert_equal value ~expected_value ~tol =
+  if Float.abs (value -. expected_value) > tol
+  then failwithf "Got %f, expected %f" value expected_value ()
+
 let assert_scalar tensor ~expected_value ~tol =
   let index =
     match Bigarray.Genarray.dims tensor with
@@ -10,9 +14,16 @@ let assert_scalar tensor ~expected_value ~tol =
     | [| n |] -> failwithf "Single dimension tensor with %d elements" n ()
     | _ -> failwith "Multi-dimensional tensor."
   in
-  let value = Bigarray.Genarray.get tensor index in
-  if Float.abs (value -. expected_value) > tol
-  then failwithf "Got %f, expected %f" value expected_value ()
+  assert_equal (Bigarray.Genarray.get tensor index) ~expected_value ~tol
+
+let assert_vector tensor ~expected_value ~tol =
+  match Bigarray.Genarray.dims tensor with
+  | [||] -> failwith "Scalar rather than vector"
+  | [| n |] ->
+    List.init n ~f:(fun i -> Bigarray.Genarray.get tensor [| i |])
+    |> List.iter2_exn expected_value ~f:(fun expected_value value ->
+      assert_equal value ~expected_value ~tol)
+  | _ -> failwith "Multi-dimensional tensor."
 
 let test_scalar () =
   List.iter ~f:(fun (tol, ops, expected_value) ->
@@ -24,9 +35,23 @@ let test_scalar () =
     ; 0.,   O.(pow (f 2.) (f 10.) - square (f 10.)), 924.
     ; 1e-7, O.(sin (f 1.) + cos (f 2.) - tanh (f 3.)), sin 1. +. cos 2. -. tanh 3.
     ; 0.,   O.(reduce_mean (pow (cf (List.init 100 ~f:float)) (f 3.))), 245025.
-    ; 0.,   O.(reduce_mean (range (const_int ~shape:[] ~type_:Int32 [ 10 ])
-              |> cast ~type_:Float)), 4.5
+    ; 0.,   O.(reduce_sum (range (const_int ~shape:[] ~type_:Int32 [ 10 ])
+              |> cast ~type_:Float)), 45.
+    ; 0.,   O.(maximum (f 2.) (f 3.) - minimum (f 5.) (f (-5.))), 8.
+    ]
+
+let test_vector () =
+  List.iter ~f:(fun (tol, ops, expected_value) ->
+    let tensor = Session.run (Session.Output.double ops) in
+    assert_vector tensor ~expected_value ~tol)
+    [ 0., O.(range (const_int ~shape:[] ~type_:Int32 [ 3 ]) |> cast ~type_:Double), [ 0.; 1.; 2. ]
+    ; 0., O.(concat zero32
+        [ floor (cd [ 1.0; 1.1; 1.9; 2.0 ])
+        ; ceil (cd [ 1.0; 1.1; 1.9; 2.0 ])
+        ])
+      , [ 1.; 1.; 1.; 2.; 1.; 2.; 2.; 2. ]
     ]
 
 let () =
-  test_scalar ()
+  test_scalar ();
+  test_vector ()
