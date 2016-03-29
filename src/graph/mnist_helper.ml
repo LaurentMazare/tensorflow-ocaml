@@ -104,8 +104,7 @@ let read_files
 
 let train_batch { train_images; train_labels; _ } ~batch_size ~batch_idx =
   let train_size = (Bigarray.Genarray.dims train_images).(0) in
-  let start_batch = batch_size * batch_idx in
-  let start_batch = if start_batch + batch_size >= train_size then 0 else start_batch in
+  let start_batch = (batch_size * batch_idx) mod (train_size - batch_size) in
   let batch_images = slice2 train_images start_batch batch_size in
   let batch_labels = slice2 train_labels start_batch batch_size in
   batch_images, batch_labels
