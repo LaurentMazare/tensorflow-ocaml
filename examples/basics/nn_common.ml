@@ -1,5 +1,5 @@
 open Core_kernel.Std
-open Tf_ocaml
+open Tensorflow
 module H = Helper
 module O = Ops
 

@@ -1,5 +1,5 @@
 open Core_kernel.Std
-open Tf_ocaml
+open Tensorflow
 module O = Ops
 
 let scalar_tensor f =

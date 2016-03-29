@@ -13,5 +13,5 @@ let () =
         flag ["ocaml"; "link"] (S [ A "-cclib"; A "-ltensorflow"; A "-cclib"; A "-lpython2.7"; A "-cclib"; A "-L../lib2" ]);
       Options.use_ocamlfind := true
     | After_rules ->
-      ocaml_lib "src/tf_ocaml"
+      ocaml_lib "src/tensorflow"
     | _ -> ())
