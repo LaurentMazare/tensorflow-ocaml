@@ -41,6 +41,7 @@ let momentum_minimizer ~alpha ~momentum ?(varsf = []) ?(varsd = []) target =
   in
   let apply_momentum grads vars ~alpha ~momentum =
     List.map2_exn grads vars ~f:(fun grad var ->
+      check_var var;
       let var_shape = Ops.shape var in
       let accum =
         Var.create (get_shape var) ~type_:var.output_type
@@ -87,6 +88,7 @@ let adam_minimizer ~alpha ?beta1 ?beta2 ?epsilon ?(varsf = []) ?(varsd = []) tar
   in
   let apply_adam grads vars ~alpha ~beta1 ~beta2 ~epsilon =
     List.map2_exn grads vars ~f:(fun grad var ->
+      check_var var;
       let var_shape = Ops.shape var in
       let create_var () =
         Var.create (get_shape var) ~type_:var.output_type
@@ -125,6 +127,36 @@ let adam_minimizer ~alpha ?beta1 ?beta2 ?epsilon ?(varsf = []) ?(varsd = []) tar
         ~beta1:(Ops.cast beta1 ~type_:Double)
         ~beta2:(Ops.cast beta2 ~type_:Double)
         ~epsilon:(Ops.cast epsilon ~type_:Double)
+    else []
+  in
+  gdf @ gdd
+
+let adagrad_minimizer ~alpha ?(init=0.1) ?(varsf = []) ?(varsd = []) target =
+  let gradsf, gradsd =
+    Gradients.gradient target
+      ~with_respect_to_float:varsf
+      ~with_respect_to_double:varsd
+  in
+  let apply_adagrad grads vars ~alpha =
+    List.map2_exn grads vars ~f:(fun grad var ->
+      check_var var;
+      let var_shape = Ops.shape var in
+      let init =
+        Ops.fill var_shape (Ops.scalar ~empty_shape:() ~type_:var.output_type init)
+      in
+      let accum = Var.create (get_shape var) ~type_:var.output_type ~init in
+      let grad = Ops.reshape grad var_shape in
+      Node.P (Ops.applyAdagrad var accum alpha grad))
+  in
+  let gdf =
+    if not (List.is_empty varsf)
+    then apply_adagrad gradsf varsf ~alpha
+    else []
+  in
+  let gdd =
+    if not (List.is_empty varsd)
+    then
+      apply_adagrad gradsd varsd ~alpha:(Ops.cast alpha ~type_:Double)
     else []
   in
   gdf @ gdd
