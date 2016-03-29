@@ -370,11 +370,14 @@ module Session = struct
       CArray.(of_list string targets |> start)
       (List.length targets)
       status;
-    let output_tensors =
-      CArray.to_list output_tensors
-      |> List.map tensor_of_c_tensor
-    in
-    result_or_error status output_tensors
+    match result_or_error status () with
+    | Ok () ->
+      let output_tensors =
+        CArray.to_list output_tensors
+        |> List.map tensor_of_c_tensor
+      in
+      Ok output_tensors
+    | Error _ as err -> err
 
   let ok_exn = function
     | Ok ok -> ok

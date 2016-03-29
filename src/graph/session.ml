@@ -27,12 +27,12 @@ let create () =
   match Wrapper.Session.create () with
   | Error _ -> assert false
   | Ok session ->
-{ session;
-    exported_nodes = Node.Id.Table.create ();
-    names = String.Table.create ();
-    uninitialised_variables = Int.Table.create ();
-    current_table = Node.Id.Table.create()
-}
+    { session;
+      exported_nodes = Node.Id.Table.create ();
+      names = String.Table.create ();
+      uninitialised_variables = Int.Table.create ();
+      current_table = Node.Id.Table.create()
+    }
 
 let default_session = lazy (create ())
 
