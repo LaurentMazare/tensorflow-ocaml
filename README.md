@@ -4,19 +4,23 @@ These bindings are in an early stage of their development. Some operators are no
 
 ## Installation
 
-You can either clone the git repo and build things from there or use opam to build and install the lib.
+The easiest way is probably to use opam.
 
 ```bash
 opam pin add tensorflow-ocaml git://github.com/LaurentMazare/tensorflow-ocaml
 ```
 
-After that you have to install the shared library for TensorFlow, you can do so by [installing TensorFlow](https://www.tensorflow.org/versions/r0.7/get_started/os_setup.html#pip-installation) then copying the `.so` file in `libtensorflow.so` (and have the corresponding directory in your LD_LIBRARY_PATH). You may have to tweak the following command depending on where TensorFlow was installed.
+After that you have to get/build the TensorFlow library `libtensorflow.so`, you can either build it from source by following these steps:
+* [Install the Bazel build system](http://bazel.io/docs/install.html)
+* Clone the TensorFlow repo `git clone --recurse-submodules https://github.com/tensorflow/tensorflow`
+* In `tensorflow` run `./configure` then `bazel build -c opt tensorflow:libtensorflow.so`
+
+Or an alternative is to [install TensorFlow using pip](https://www.tensorflow.org/versions/r0.7/get_started/os_setup.html#pip-installation) then copy the `.so` file in `libtensorflow.so`. You may have to tweak the following command depending on where TensorFlow was installed by pip.
 ```bash
 cp ~/.local/lib/python2.7/site-packages/tensorflow/python/_pywrap_tensorflow.so libtensorflow.so
 ```
-If you've installed the cuda version of TensorFlow then you should be able to use your GPU from the OCaml bindings too.
 
-Finally download a [very simple example](https://github.com/LaurentMazare/tensorflow-ocaml/tree/master/examples/basics/forty_two.ml) and compile it with the following command:
+Adjust your LD_LIBRARY_PATH to include the directory in which you've put `libtensorflow.so` and finally download a [very simple example](https://github.com/LaurentMazare/tensorflow-ocaml/tree/master/examples/basics/forty_two.ml) and compile it with the following command:
 ```bash
 ocamlbuild forty_two.native -package ctypes -package ctypes.foreign -package core_kernel -package tensorflow-ocaml
 ```
