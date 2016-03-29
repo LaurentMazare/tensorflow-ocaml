@@ -1,11 +1,12 @@
 opam-version: "1.2"
 bug-reports:  "https://github.com/LaurentMazare/tensorflow-ocaml/issues"
-homepage:  "https://github.com/LaurentMazare/tensorflow-ocaml"
+homepage:     "https://github.com/LaurentMazare/tensorflow-ocaml"
 dev-repo:     "git+https://github.com/LaurentMazare/tensorflow-ocaml.git"
+maintainer:   "Laurent Mazare <lmazare@gmail.com>"
 
 version: "dev"
 
-build:   [make "all"]
+build:   [make "tensorflow.lib"]
 install: []
 remove:  []
 
