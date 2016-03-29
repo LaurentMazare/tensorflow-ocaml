@@ -17,7 +17,7 @@ let max_pool_2x2 x =
   O.maxPool x ~ksize:[ 1; 2; 2; 1 ] ~strides:[ 1; 2; 2; 1 ] ~padding:"SAME"
 
 let () =
-  let mnist = Mnist.read_files () in
+  let mnist = Mnist_helper.read_files () in
   let keep_prob = O.placeholder [] ~type_:Float in
   let xs = O.placeholder [] ~type_:Float in
   let ys = O.placeholder [] ~type_:Float in
@@ -56,8 +56,8 @@ let () =
   in
   let validation_inputs =
     let one = scalar_tensor 1. in
-    let validation_images = Mnist.slice2 mnist.test_images 0 1024 in
-    let validation_labels = Mnist.slice2 mnist.test_labels 0 1024 in
+    let validation_images = Mnist_helper.slice2 mnist.test_images 0 1024 in
+    let validation_labels = Mnist_helper.slice2 mnist.test_labels 0 1024 in
     Session.Input.
       [ float xs validation_images; float ys validation_labels; float keep_prob one ]
   in
@@ -75,7 +75,9 @@ let () =
     printf "epoch %d, vaccuracy %.2f%% taccuracy: %.2f%%\n%!" n (100. *. vaccuracy) (100. *. taccuracy)
   in
   for batch_idx = 1 to epochs do
-    let batch_images, batch_labels = Mnist.train_batch mnist ~batch_size ~batch_idx in
+    let batch_images, batch_labels =
+      Mnist_helper.train_batch mnist ~batch_size ~batch_idx
+    in
     let batch_inputs =
       let half = scalar_tensor 0.5 in
       Session.Input.[ float xs batch_images; float ys batch_labels; float keep_prob half ]

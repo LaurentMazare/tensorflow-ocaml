@@ -3,14 +3,14 @@ open Tensorflow
 module O = Ops
 
 (* This should reach ~96.5% accuracy. *)
-let image_dim = Mnist.image_dim
-let label_count = Mnist.label_count
+let image_dim = Mnist_helper.image_dim
+let label_count = Mnist_helper.label_count
 let hidden_nodes = 128
 let epochs = 4000
 
 let () =
-  let { Mnist.train_images; train_labels; test_images; test_labels } =
-    Mnist.read_files ()
+  let { Mnist_helper.train_images; train_labels; test_images; test_labels } =
+    Mnist_helper.read_files ()
   in
   let xs = O.placeholder [] ~type_:Float in
   let ys = O.placeholder [] ~type_:Float in
