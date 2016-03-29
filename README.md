@@ -42,5 +42,5 @@ Only the basic operators are likely to work for now.
 ## Dependencies
 
 * [ocaml-ctypes](https://github.com/ocamllabs/ocaml-ctypes) is used for the C bindings.
-* [Core](https://github.com/janestreet/core) is only necessary when generating the graph from OCaml, the wrapper itself does not need it.
+* [Core_kernel](https://github.com/janestreet/core_kernel) is only necessary when generating the graph from OCaml, the wrapper itself does not need it.
 * The code in the piqi directory comes from the [Piqi project](http://piqi.org). There is no need to install piqi though.
