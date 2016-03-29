@@ -25,7 +25,8 @@ type t =
 
 let create () =
   match Wrapper.Session.create () with
-  | Error _ -> assert false
+  | Error status ->
+    failwithf "Unable to generate session: %s" (Wrapper.Status.message status) ()
   | Ok session ->
     { session;
       exported_nodes = Node.Id.Table.create ();
@@ -59,9 +60,7 @@ let rec prepare_node t node =
     Node.P { n with output_idx = Node.packed_output_idx node }
   in
   let id = Node.packed_id node in
-  match
-    Hashtbl.find t.exported_nodes id
-  with
+  match Hashtbl.find t.exported_nodes id with
   | Some h -> (choose_correct_output h, 0) (* already exported before starting this run *)
   | None ->
     match Hashtbl.find t.current_table id with
@@ -94,6 +93,13 @@ let rec prepare_node t node =
       (res, h)
 ;;
 
+type node_names =
+  { inputs : string list
+  ; targets : string list
+  ; outputs : string list
+  ; variables_to_initialize : string list list
+  }
+
 let prepare_graph t ~inputs ~targets ~outputs =
   let prep l =
     List.map l ~f:(fun node -> fst (prepare_node t node))
@@ -105,8 +111,7 @@ let prepare_graph t ~inputs ~targets ~outputs =
   let rec build_variables i =
     match Hashtbl.find t.uninitialised_variables i with
     | None -> []
-    | Some l ->
-     l::build_variables (i + 1)
+    | Some l -> l::build_variables (i + 1)
   in
   let uninitialised_variables = build_variables 0 in
   Hashtbl.clear t.uninitialised_variables;
@@ -117,12 +122,18 @@ let prepare_graph t ~inputs ~targets ~outputs =
     Node_protobuf.of_nodes' ~already_exported_nodes:t.exported_nodes all_nodes_to_export
   in
   Wrapper.Session.(extend_graph t.session protobuf |> ok_exn);
-  let ret = List.map ~f:(fun x -> Node.packed_name x |> Node.Name.to_string) in
-  ret inputs, ret targets, ret outputs, List.map ~f:ret uninitialised_variables
+  let node_names = List.map ~f:(fun x -> Node.packed_name x |> Node.Name.to_string) in
+  { inputs = node_names inputs
+  ; targets = node_names targets
+  ; outputs = node_names outputs
+  ; variables_to_initialize = List.map ~f:node_names uninitialised_variables
+  }
 
 let run ?(inputs=[]) ?(outputs=[]) ?(targets=[]) t =
   let inputs, input_tensors = List.unzip inputs in
-  let inputs, targets, outputs, variables_init = prepare_graph t ~inputs ~targets ~outputs in
+  let { inputs; targets; outputs; variables_to_initialize } =
+    prepare_graph t ~inputs ~targets ~outputs
+  in
   (* add outputs to targets *)
   let targets =
     List.fold outputs ~init:(String.Set.of_list targets) ~f:Set.add
@@ -130,11 +141,10 @@ let run ?(inputs=[]) ?(outputs=[]) ?(targets=[]) t =
   in
   let inputs = List.zip_exn inputs input_tensors in
   (* Run variable init *)
-  List.iter variables_init
-   ~f:(fun targets ->
-      Wrapper.Session.run t.session ~inputs:[] ~outputs:[] ~targets
-      |> Wrapper.Session.ok_exn
-      |> fun tensor_list -> assert (List.is_empty tensor_list));
+  List.iter variables_to_initialize ~f:(fun targets ->
+    Wrapper.Session.run t.session ~inputs:[] ~outputs:[] ~targets
+    |> Wrapper.Session.ok_exn
+    |> fun tensor_list -> assert (List.is_empty tensor_list));
   Wrapper.Session.(run t.session ~inputs ~outputs ~targets |> ok_exn)
 
 module Input =

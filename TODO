@@ -7,11 +7,8 @@
 - Gradient Computation and Descent.
   - Register the gradients for even more functions.
 
-- Operators.
-  - Create an API module that includes Ops.
-
 - Examples and tests.
-  - Tutorials
+  - Tutorials (MNIST based).
   - Add tests.
     - Arithmetic operations.
     - Gradient, graph with sharing/multiple contributions...
