@@ -2,11 +2,11 @@ open Core_kernel.Std
 open Tensorflow
 module O = Ops
 
-(* This should reach ~96.5% accuracy. *)
+(* This should reach ~97% accuracy. *)
 let image_dim = Mnist_helper.image_dim
 let label_count = Mnist_helper.label_count
 let hidden_nodes = 128
-let epochs = 4000
+let epochs = 1000
 
 let () =
   let { Mnist_helper.train_images; train_labels; test_images; test_labels } =
@@ -18,7 +18,7 @@ let () =
   let b1 = Var.f [ hidden_nodes ] 0. in
   let w2 = Var.normalf [ hidden_nodes; label_count ] ~stddev:0.1 in
   let b2 = Var.f [ label_count ] 0. in
-  let ys_ = O.(sigmoid (xs *^ w1 + b1) *^ w2 + b2) |> O.softmax in
+  let ys_ = O.(relu (xs *^ w1 + b1) *^ w2 + b2) |> O.softmax in
   let cross_entropy = O.(neg (reduce_mean (ys * log ys_))) in
   let accuracy =
     O.(equal (argMax ys_ one32) (argMax ys one32))
