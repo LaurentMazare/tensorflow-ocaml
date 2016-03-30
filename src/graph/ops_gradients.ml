@@ -271,18 +271,11 @@ let erfc_gradient (type a) ~self ~(gradient : a N.t) =
   in
   unary_wrapper_exn ~self ~gradient ~t
 
-let lgamma_gradient (type a) ~self ~(gradient : a N.t) =
-  let t =
-    { f1 = fun ~x ~y:_ ~gradient -> Ops.mul gradient (Ops.digamma x) }
-  in
-  unary_wrapper_exn ~self ~gradient ~t
-
 let conv2d_gradient ~self ~gradient =
   let inputs0, inputs1 = binary_extract_exn self in
   let strides = Option.value_exn (N.get_attr_int_list self "strides") in
   let use_cudnn_on_gpu = N.get_attr_bool self "use_cudnn_on_gpu" in
   let padding = Option.value_exn (N.get_attr_string self "padding") in
-  let data_format = N.get_attr_string self "data_format" in
   let gradient_input =
     Ops.conv2DBackpropInput
       (Ops.shape inputs0)
@@ -291,7 +284,6 @@ let conv2d_gradient ~self ~gradient =
       ~strides
       ?use_cudnn_on_gpu
       ~padding
-      ?data_format
   in
   let gradient_filter =
     Ops.conv2DBackpropFilter
@@ -301,7 +293,6 @@ let conv2d_gradient ~self ~gradient =
       ~strides
       ?use_cudnn_on_gpu
       ~padding
-      ?data_format
   in
   all [ N.P gradient_input; N.P gradient_filter ]
 
@@ -312,7 +303,6 @@ let maxpool_gradient : type a. self:a N.t -> gradient:a N.t -> N.p option list
     let ksize = Option.value_exn (N.get_attr_int_list self "ksize") in
     let strides = Option.value_exn (N.get_attr_int_list self "strides") in
     let padding = Option.value_exn (N.get_attr_string self "padding") in
-    let data_format = N.get_attr_string self "data_format" in
     let input =
       match self.N.inputs with
       | [] | _ :: _ :: _ -> failwith "Not a unary function"
@@ -329,7 +319,6 @@ let maxpool_gradient : type a. self:a N.t -> gradient:a N.t -> N.p option list
         ~ksize
         ~strides
         ~padding
-        ?data_format
     in
     all [ N.P gradient ]
   | _, _ -> failwith "Inconsistent types"
@@ -359,7 +348,6 @@ let register_all () =
     ; O.exp,     { f = exp_gradient }
     ; O.floor,   { f = none }
     ; O.inv,     { f = inv_gradient }
-    ; O.lgamma,  { f = lgamma_gradient }
     ; O.log,     { f = log_gradient }
     ; O.matMul,  { f = matmul_gradient }
     ; O.max,     { f = minmax_gradient }

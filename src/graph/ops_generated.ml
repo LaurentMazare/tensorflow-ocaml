@@ -11,7 +11,6 @@ module Op_names = struct
   let any = Op_name.of_string "Any"
   let applyAdagrad = Op_name.of_string "ApplyAdagrad"
   let applyAdam = Op_name.of_string "ApplyAdam"
-  let applyFtrl = Op_name.of_string "ApplyFtrl"
   let applyGradientDescent = Op_name.of_string "ApplyGradientDescent"
   let applyMomentum = Op_name.of_string "ApplyMomentum"
   let applyRMSProp = Op_name.of_string "ApplyRMSProp"
@@ -32,9 +31,6 @@ module Op_names = struct
   let batchNormWithGlobalNormalization = Op_name.of_string "BatchNormWithGlobalNormalization"
   let batchSelfAdjointEig = Op_name.of_string "BatchSelfAdjointEig"
   let biasAdd = Op_name.of_string "BiasAdd"
-  let biasAddGrad = Op_name.of_string "BiasAddGrad"
-  let biasAddV1 = Op_name.of_string "BiasAddV1"
-  let bitcast = Op_name.of_string "Bitcast"
   let cast = Op_name.of_string "Cast"
   let ceil = Op_name.of_string "Ceil"
   let checkNumerics = Op_name.of_string "CheckNumerics"
@@ -55,13 +51,8 @@ module Op_names = struct
   let decodePng = Op_name.of_string "DecodePng"
   let decodeRaw = Op_name.of_string "DecodeRaw"
   let depthToSpace = Op_name.of_string "DepthToSpace"
-  let depthwiseConv2dNative = Op_name.of_string "DepthwiseConv2dNative"
-  let depthwiseConv2dNativeBackpropFilter = Op_name.of_string "DepthwiseConv2dNativeBackpropFilter"
-  let depthwiseConv2dNativeBackpropInput = Op_name.of_string "DepthwiseConv2dNativeBackpropInput"
   let destroyTemporaryVariable = Op_name.of_string "DestroyTemporaryVariable"
   let diag = Op_name.of_string "Diag"
-  let diagPart = Op_name.of_string "DiagPart"
-  let digamma = Op_name.of_string "Digamma"
   let div = Op_name.of_string "Div"
   let drawBoundingBoxes = Op_name.of_string "DrawBoundingBoxes"
   let dynamicPartition = Op_name.of_string "DynamicPartition"
@@ -132,8 +123,6 @@ module Op_names = struct
   let mergeSummary = Op_name.of_string "MergeSummary"
   let min = Op_name.of_string "Min"
   let minimum = Op_name.of_string "Minimum"
-  let mirrorPad = Op_name.of_string "MirrorPad"
-  let mirrorPadGrad = Op_name.of_string "MirrorPadGrad"
   let mod_ = Op_name.of_string "Mod"
   let mul = Op_name.of_string "Mul"
   let neg = Op_name.of_string "Neg"
@@ -141,7 +130,6 @@ module Op_names = struct
   let nextIteration = Op_name.of_string "NextIteration"
   let noOp = Op_name.of_string "NoOp"
   let notEqual = Op_name.of_string "NotEqual"
-  let oneHot = Op_name.of_string "OneHot"
   let pack = Op_name.of_string "Pack"
   let pad = Op_name.of_string "Pad"
   let paddingFIFOQueue = Op_name.of_string "PaddingFIFOQueue"
@@ -216,7 +204,6 @@ module Op_names = struct
   let softsignGrad = Op_name.of_string "SoftsignGrad"
   let spaceToDepth = Op_name.of_string "SpaceToDepth"
   let sparseApplyAdagrad = Op_name.of_string "SparseApplyAdagrad"
-  let sparseApplyFtrl = Op_name.of_string "SparseApplyFtrl"
   let sparseApplyMomentum = Op_name.of_string "SparseApplyMomentum"
   let sparseMatMul = Op_name.of_string "SparseMatMul"
   let sparseSegmentMean = Op_name.of_string "SparseSegmentMean"
@@ -224,12 +211,10 @@ module Op_names = struct
   let sparseSegmentSqrtN = Op_name.of_string "SparseSegmentSqrtN"
   let sparseSegmentSqrtNGrad = Op_name.of_string "SparseSegmentSqrtNGrad"
   let sparseSegmentSum = Op_name.of_string "SparseSegmentSum"
-  let sparseTensorDenseMatMul = Op_name.of_string "SparseTensorDenseMatMul"
   let sparseToDense = Op_name.of_string "SparseToDense"
   let split = Op_name.of_string "Split"
   let sqrt = Op_name.of_string "Sqrt"
   let square = Op_name.of_string "Square"
-  let squaredDifference = Op_name.of_string "SquaredDifference"
   let squeeze = Op_name.of_string "Squeeze"
   let stack = Op_name.of_string "Stack"
   let stackClose = Op_name.of_string "StackClose"
@@ -249,7 +234,6 @@ module Op_names = struct
   let tensorArrayPack = Op_name.of_string "TensorArrayPack"
   let tensorArrayRead = Op_name.of_string "TensorArrayRead"
   let tensorArraySize = Op_name.of_string "TensorArraySize"
-  let tensorArraySplit = Op_name.of_string "TensorArraySplit"
   let tensorArrayUnpack = Op_name.of_string "TensorArrayUnpack"
   let tensorArrayWrite = Op_name.of_string "TensorArrayWrite"
   let textLineReader = Op_name.of_string "TextLineReader"
@@ -420,30 +404,6 @@ let applyAdam
   ; output_idx = None
   }
 
-let applyFtrl
-    ?(name = "ApplyFtrl")
-    ?use_locking
-    (var : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (accum : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (linear : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (grad : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (lr : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (l1 : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (l2 : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (lr_power : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-  =
-  let attributes = [ "T", Type (P var.output_type) ] in
-  let attributes =
-    match use_locking with | None -> attributes | Some use_locking -> ("use_locking", Bool use_locking) :: attributes
-  in
-  { name = Name.make_fresh ~name
-  ; op_name = Op_names.applyFtrl
-  ; output_type = var.output_type
-  ; inputs = [ P var; P accum; P linear; P grad; P lr; P l1; P l2; P lr_power ]
-  ; attributes
-  ; output_idx = None
-  }
-
 let applyGradientDescent
     ?(name = "ApplyGradientDescent")
     ?use_locking
@@ -599,7 +559,6 @@ let avgPool
     ~ksize
     ~strides
     ~padding
-    ?data_format
     (value : ([< `float | `double ] as 't) t)
   =
   let attributes = [ "T", Type (P value.output_type) ] in
@@ -611,9 +570,6 @@ let avgPool
   in
   let attributes =
     ("padding", String padding) :: attributes
-  in
-  let attributes =
-    match data_format with | None -> attributes | Some data_format -> ("data_format", String data_format) :: attributes
   in
   { name = Name.make_fresh ~name
   ; op_name = Op_names.avgPool
@@ -628,7 +584,6 @@ let avgPoolGrad
     ~ksize
     ~strides
     ~padding
-    ?data_format
     (orig_input_shape : [ `int32 ] t)
     (grad : ([< `float | `double ] as 't) t)
   =
@@ -641,9 +596,6 @@ let avgPoolGrad
   in
   let attributes =
     ("padding", String padding) :: attributes
-  in
-  let attributes =
-    match data_format with | None -> attributes | Some data_format -> ("data_format", String data_format) :: attributes
   in
   { name = Name.make_fresh ~name
   ; op_name = Op_names.avgPoolGrad
@@ -805,63 +757,14 @@ let batchSelfAdjointEig
 
 let biasAdd
     ?(name = "BiasAdd")
-    ?data_format
     (value : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (bias : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
   =
   let attributes = [ "T", Type (P value.output_type) ] in
-  let attributes =
-    match data_format with | None -> attributes | Some data_format -> ("data_format", String data_format) :: attributes
-  in
   { name = Name.make_fresh ~name
   ; op_name = Op_names.biasAdd
   ; output_type = value.output_type
   ; inputs = [ P value; P bias ]
-  ; attributes
-  ; output_idx = None
-  }
-
-let biasAddGrad
-    ?(name = "BiasAddGrad")
-    ?data_format
-    (out_backprop : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-  =
-  let attributes = [ "T", Type (P out_backprop.output_type) ] in
-  let attributes =
-    match data_format with | None -> attributes | Some data_format -> ("data_format", String data_format) :: attributes
-  in
-  { name = Name.make_fresh ~name
-  ; op_name = Op_names.biasAddGrad
-  ; output_type = out_backprop.output_type
-  ; inputs = [ P out_backprop ]
-  ; attributes
-  ; output_idx = None
-  }
-
-let biasAddV1
-    ?(name = "BiasAddV1")
-    (value : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (bias : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-  =
-  let attributes = [ "T", Type (P value.output_type) ] in
-  { name = Name.make_fresh ~name
-  ; op_name = Op_names.biasAddV1
-  ; output_type = value.output_type
-  ; inputs = [ P value; P bias ]
-  ; attributes
-  ; output_idx = None
-  }
-
-let bitcast
-    ?(name = "Bitcast")
-    ~type_
-    (input : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-  =
-  let attributes = [ "T", Type (P input.output_type) ;  "type", Type (P type_) ] in
-  { name = Name.make_fresh ~name
-  ; op_name = Op_names.bitcast
-  ; output_type = type_
-  ; inputs = [ P input ]
   ; attributes
   ; output_idx = None
   }
@@ -1015,7 +918,6 @@ let conv2D
     ~strides
     ?use_cudnn_on_gpu
     ~padding
-    ?data_format
     (input : ([< `float | `double ] as 't) t)
     (filter : ([< `float | `double ] as 't) t)
   =
@@ -1028,9 +930,6 @@ let conv2D
   in
   let attributes =
     ("padding", String padding) :: attributes
-  in
-  let attributes =
-    match data_format with | None -> attributes | Some data_format -> ("data_format", String data_format) :: attributes
   in
   { name = Name.make_fresh ~name
   ; op_name = Op_names.conv2D
@@ -1045,7 +944,6 @@ let conv2DBackpropFilter
     ~strides
     ?use_cudnn_on_gpu
     ~padding
-    ?data_format
     (input : ([< `float | `double ] as 't) t)
     (filter_sizes : [ `int32 ] t)
     (out_backprop : ([< `float | `double ] as 't) t)
@@ -1060,9 +958,6 @@ let conv2DBackpropFilter
   let attributes =
     ("padding", String padding) :: attributes
   in
-  let attributes =
-    match data_format with | None -> attributes | Some data_format -> ("data_format", String data_format) :: attributes
-  in
   { name = Name.make_fresh ~name
   ; op_name = Op_names.conv2DBackpropFilter
   ; output_type = input.output_type
@@ -1076,7 +971,6 @@ let conv2DBackpropInput
     ~strides
     ?use_cudnn_on_gpu
     ~padding
-    ?data_format
     (input_sizes : [ `int32 ] t)
     (filter : ([< `float | `double ] as 't) t)
     (out_backprop : ([< `float | `double ] as 't) t)
@@ -1090,9 +984,6 @@ let conv2DBackpropInput
   in
   let attributes =
     ("padding", String padding) :: attributes
-  in
-  let attributes =
-    match data_format with | None -> attributes | Some data_format -> ("data_format", String data_format) :: attributes
   in
   { name = Name.make_fresh ~name
   ; op_name = Op_names.conv2DBackpropInput
@@ -1212,74 +1103,6 @@ let depthToSpace
   ; output_idx = None
   }
 
-let depthwiseConv2dNative
-    ?(name = "DepthwiseConv2dNative")
-    ~strides
-    ~padding
-    (input : ([< `float | `double ] as 't) t)
-    (filter : ([< `float | `double ] as 't) t)
-  =
-  let attributes = [ "T", Type (P input.output_type) ] in
-  let attributes =
-    ("strides", List (Int strides)) :: attributes
-  in
-  let attributes =
-    ("padding", String padding) :: attributes
-  in
-  { name = Name.make_fresh ~name
-  ; op_name = Op_names.depthwiseConv2dNative
-  ; output_type = input.output_type
-  ; inputs = [ P input; P filter ]
-  ; attributes
-  ; output_idx = None
-  }
-
-let depthwiseConv2dNativeBackpropFilter
-    ?(name = "DepthwiseConv2dNativeBackpropFilter")
-    ~strides
-    ~padding
-    (input : ([< `float | `double ] as 't) t)
-    (filter_sizes : [ `int32 ] t)
-    (out_backprop : ([< `float | `double ] as 't) t)
-  =
-  let attributes = [ "T", Type (P input.output_type) ] in
-  let attributes =
-    ("strides", List (Int strides)) :: attributes
-  in
-  let attributes =
-    ("padding", String padding) :: attributes
-  in
-  { name = Name.make_fresh ~name
-  ; op_name = Op_names.depthwiseConv2dNativeBackpropFilter
-  ; output_type = input.output_type
-  ; inputs = [ P input; P filter_sizes; P out_backprop ]
-  ; attributes
-  ; output_idx = None
-  }
-
-let depthwiseConv2dNativeBackpropInput
-    ?(name = "DepthwiseConv2dNativeBackpropInput")
-    ~strides
-    ~padding
-    (input_sizes : [ `int32 ] t)
-    (filter : ([< `float | `double ] as 't) t)
-    (out_backprop : ([< `float | `double ] as 't) t)
-  =
-  let attributes = [ "T", Type (P filter.output_type) ] in
-  let attributes =
-    ("strides", List (Int strides)) :: attributes
-  in
-  let attributes =
-    ("padding", String padding) :: attributes
-  in
-  { name = Name.make_fresh ~name
-  ; op_name = Op_names.depthwiseConv2dNativeBackpropInput
-  ; output_type = filter.output_type
-  ; inputs = [ P input_sizes; P filter; P out_backprop ]
-  ; attributes
-  ; output_idx = None
-  }
-
 let destroyTemporaryVariable
     ?(name = "DestroyTemporaryVariable")
     ~var_name
@@ -1306,32 +1129,6 @@ let diag
   ; op_name = Op_names.diag
   ; output_type = diagonal.output_type
   ; inputs = [ P diagonal ]
-  ; attributes
-  ; output_idx = None
-  }
-
-let diagPart
-    ?(name = "DiagPart")
-    (input : ([< `float | `double | `int32 | `int64 ] as 't) t)
-  =
-  let attributes = [ "T", Type (P input.output_type) ] in
-  { name = Name.make_fresh ~name
-  ; op_name = Op_names.diagPart
-  ; output_type = input.output_type
-  ; inputs = [ P input ]
-  ; attributes
-  ; output_idx = None
-  }
-
-let digamma
-    ?(name = "Digamma")
-    (x : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
-  =
-  let attributes = [ "T", Type (P x.output_type) ] in
-  { name = Name.make_fresh ~name
-  ; op_name = Op_names.digamma
-  ; output_type = x.output_type
-  ; inputs = [ P x ]
   ; attributes
   ; output_idx = None
   }
@@ -2345,7 +2142,6 @@ let maxPool
     ~ksize
     ~strides
     ~padding
-    ?data_format
     (input : [ `float ] t)
   =
   let attributes = [] in
@@ -2357,9 +2153,6 @@ let maxPool
   in
   let attributes =
     ("padding", String padding) :: attributes
-  in
-  let attributes =
-    match data_format with | None -> attributes | Some data_format -> ("data_format", String data_format) :: attributes
   in
   { name = Name.make_fresh ~name
   ; op_name = Op_names.maxPool
@@ -2374,7 +2167,6 @@ let maxPoolGrad
     ~ksize
     ~strides
     ~padding
-    ?data_format
     (orig_input : [ `float ] t)
     (orig_output : [ `float ] t)
     (grad : [ `float ] t)
@@ -2388,9 +2180,6 @@ let maxPoolGrad
   in
   let attributes =
     ("padding", String padding) :: attributes
-  in
-  let attributes =
-    match data_format with | None -> attributes | Some data_format -> ("data_format", String data_format) :: attributes
   in
   { name = Name.make_fresh ~name
   ; op_name = Op_names.maxPoolGrad
@@ -2507,42 +2296,6 @@ let minimum
   ; output_idx = None
   }
 
-let mirrorPad
-    ?(name = "MirrorPad")
-    ~mode
-    (input : 't t)
-    (paddings : [ `int32 ] t)
-  =
-  let attributes = [ "T", Type (P input.output_type) ] in
-  let attributes =
-    ("mode", String mode) :: attributes
-  in
-  { name = Name.make_fresh ~name
-  ; op_name = Op_names.mirrorPad
-  ; output_type = input.output_type
-  ; inputs = [ P input; P paddings ]
-  ; attributes
-  ; output_idx = None
-  }
-
-let mirrorPadGrad
-    ?(name = "MirrorPadGrad")
-    ~mode
-    (input : 't t)
-    (paddings : [ `int32 ] t)
-  =
-  let attributes = [ "T", Type (P input.output_type) ] in
-  let attributes =
-    ("mode", String mode) :: attributes
-  in
-  { name = Name.make_fresh ~name
-  ; op_name = Op_names.mirrorPadGrad
-  ; output_type = input.output_type
-  ; inputs = [ P input; P paddings ]
-  ; attributes
-  ; output_idx = None
-  }
-
 let mod_
     ?(name = "Mod")
     (x : ([< `int32 | `int64 | `float | `double ] as 't) t)
@@ -2645,26 +2398,6 @@ let notEqual
   ; op_name = Op_names.notEqual
   ; output_type = Type.Bool
   ; inputs = [ P x; P y ]
-  ; attributes
-  ; output_idx = None
-  }
-
-let oneHot
-    ?(name = "OneHot")
-    ?axis
-    (indices : [ `int64 ] t)
-    (depth : [ `int32 ] t)
-    (on_value : 't t)
-    (off_value : 't t)
-  =
-  let attributes = [ "T", Type (P on_value.output_type) ] in
-  let attributes =
-    match axis with | None -> attributes | Some axis -> ("axis", Int axis) :: attributes
-  in
-  { name = Name.make_fresh ~name
-  ; op_name = Op_names.oneHot
-  ; output_type = on_value.output_type
-  ; inputs = [ P indices; P depth; P on_value; P off_value ]
   ; attributes
   ; output_idx = None
   }
@@ -3874,31 +3607,6 @@ let sparseApplyAdagrad
   ; output_idx = None
   }
 
-let sparseApplyFtrl
-    ?(name = "SparseApplyFtrl")
-    ?use_locking
-    (var : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (accum : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (linear : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (grad : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (indices : ([< `int32 | `int64 ] as 'tindices) t)
-    (lr : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (l1 : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (l2 : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (lr_power : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-  =
-  let attributes = [ "Tindices", Type (P indices.output_type) ;  "T", Type (P var.output_type) ] in
-  let attributes =
-    match use_locking with | None -> attributes | Some use_locking -> ("use_locking", Bool use_locking) :: attributes
-  in
-  { name = Name.make_fresh ~name
-  ; op_name = Op_names.sparseApplyFtrl
-  ; output_type = var.output_type
-  ; inputs = [ P var; P accum; P linear; P grad; P indices; P lr; P l1; P l2; P lr_power ]
-  ; attributes
-  ; output_idx = None
-  }
-
 let sparseApplyMomentum
     ?(name = "SparseApplyMomentum")
     ?use_locking
@@ -4028,30 +3736,6 @@ let sparseSegmentSum
   ; output_idx = None
   }
 
-let sparseTensorDenseMatMul
-    ?(name = "SparseTensorDenseMatMul")
-    ?adjoint_a
-    ?adjoint_b
-    (a_indices : [ `int64 ] t)
-    (a_values : 't t)
-    (a_shape : [ `int64 ] t)
-    (b : 't t)
-  =
-  let attributes = [ "T", Type (P a_values.output_type) ] in
-  let attributes =
-    match adjoint_a with | None -> attributes | Some adjoint_a -> ("adjoint_a", Bool adjoint_a) :: attributes
-  in
-  let attributes =
-    match adjoint_b with | None -> attributes | Some adjoint_b -> ("adjoint_b", Bool adjoint_b) :: attributes
-  in
-  { name = Name.make_fresh ~name
-  ; op_name = Op_names.sparseTensorDenseMatMul
-  ; output_type = a_values.output_type
-  ; inputs = [ P a_indices; P a_values; P a_shape; P b ]
-  ; attributes
-  ; output_idx = None
-  }
-
 let sparseToDense
     ?(name = "SparseToDense")
     ?validate_indices
@@ -4112,20 +3796,6 @@ let square
   ; op_name = Op_names.square
   ; output_type = x.output_type
   ; inputs = [ P x ]
-  ; attributes
-  ; output_idx = None
-  }
-
-let squaredDifference
-    ?(name = "SquaredDifference")
-    (x : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
-    (y : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
-  =
-  let attributes = [ "T", Type (P x.output_type) ] in
-  { name = Name.make_fresh ~name
-  ; op_name = Op_names.squaredDifference
-  ; output_type = x.output_type
-  ; inputs = [ P x; P y ]
   ; attributes
   ; output_idx = None
   }
@@ -4193,14 +3863,10 @@ let stackPop
 
 let stackPush
     ?(name = "StackPush")
-    ?swap_memory
     (handle : [ `string ] t)
     (elem : 't t)
   =
   let attributes = [ "T", Type (P elem.output_type) ] in
-  let attributes =
-    match swap_memory with | None -> attributes | Some swap_memory -> ("swap_memory", Bool swap_memory) :: attributes
-  in
   { name = Name.make_fresh ~name
   ; op_name = Op_names.stackPush
   ; output_type = elem.output_type
@@ -4434,22 +4100,6 @@ let tensorArraySize
   ; op_name = Op_names.tensorArraySize
   ; output_type = Type.Int32
   ; inputs = [ P handle; P flow_in ]
-  ; attributes
-  ; output_idx = None
-  }
-
-let tensorArraySplit
-    ?(name = "TensorArraySplit")
-    (handle : [ `string ] t)
-    (value : 't t)
-    (lengths : [ `int64 ] t)
-    (flow_in : [ `float ] t)
-  =
-  let attributes = [ "T", Type (P value.output_type) ] in
-  { name = Name.make_fresh ~name
-  ; op_name = Op_names.tensorArraySplit
-  ; output_type = Type.Float
-  ; inputs = [ P handle; P value; P lengths; P flow_in ]
   ; attributes
   ; output_idx = None
   }
