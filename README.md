@@ -10,12 +10,14 @@ The easiest way is probably to use opam.
 opam pin add tensorflow-ocaml git://github.com/LaurentMazare/tensorflow-ocaml
 ```
 
-After that you have to get/build the TensorFlow library `libtensorflow.so` for release 0.7, you can either build it from source by following these steps:
-* [Install the Bazel build system](http://bazel.io/docs/install.html)
-* Clone the TensorFlow repo `git clone --recurse-submodules -b r0.7 https://github.com/tensorflow/tensorflow`
-* In `tensorflow` run `./configure` then `bazel build -c opt tensorflow:libtensorflow.so`
+After that you have to get/build the TensorFlow library `libtensorflow.so` for release 0.7, there are three possibilities to do so:
 
-Or an alternative is to [install TensorFlow using pip](https://www.tensorflow.org/versions/r0.7/get_started/os_setup.html#pip-installation) then copy the `.so` file in `libtensorflow.so`. You may have to tweak the following command depending on where TensorFlow was installed by pip.
+* Download the [pre-built binary](https://github.com/LaurentMazare/tensorflow-ocaml/releases/download/v0.0.1/libtensorflow.so) for x86_64 (cpu only).
+* Or you can build it from source by following these steps:
+    1. [Install the Bazel build system](http://bazel.io/docs/install.html)
+    1. Clone the TensorFlow repo `git clone --recurse-submodules -b r0.7 https://github.com/tensorflow/tensorflow`
+    1. In `tensorflow` run `./configure` then `bazel build -c opt tensorflow:libtensorflow.so`
+* An alternative is to [install TensorFlow using pip](https://www.tensorflow.org/versions/r0.7/get_started/os_setup.html#pip-installation) then copy the `.so` file in `libtensorflow.so`. You may have to tweak the following command depending on where TensorFlow was installed by pip.
 ```bash
 cp ~/.local/lib/python2.7/site-packages/tensorflow/python/_pywrap_tensorflow.so libtensorflow.so
 ```
