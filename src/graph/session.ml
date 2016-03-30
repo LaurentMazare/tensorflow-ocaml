@@ -159,13 +159,6 @@ module Input =
     I (node, tensor)
  end
 
-module Target =
-struct
-  type t = Node.p
-end
-
-let target node = Node.P node
-
 module Output =
 struct
   type _ t =
@@ -194,31 +187,43 @@ struct
   (* CR-someday noury: this could be just one function with modular implicits *)
   let float (node : [`float] Node.t) : (float, Bigarray.float32_elt) Tensor.t t =
     Compute node
-    |> map
-    ~f:(fun (Tensor.P tensor) ->
+    |> map ~f:(fun (Tensor.P tensor) ->
       match Bigarray.Genarray.kind tensor with
       | Bigarray.Float32 -> (tensor : (float, Bigarray.float32_elt) Tensor.t)
       | _ -> failwith "PANIC: wrong kind in float")
 
   let double (node : [`double] Node.t) : (float, Bigarray.float64_elt) Tensor.t t =
     Compute node
-    |> map
-    ~f:(fun (Tensor.P tensor) ->
+    |> map ~f:(fun (Tensor.P tensor) ->
       match Bigarray.Genarray.kind tensor with
       | Bigarray.Float64 -> (tensor : (float, Bigarray.float64_elt) Tensor.t)
       | _ -> failwith "PANIC: wrong kind in double")
 
+  let int32 (node : [`int32] Node.t) : (int32, Bigarray.int32_elt) Tensor.t t =
+    Compute node
+    |> map ~f:(fun (Tensor.P tensor) ->
+      match Bigarray.Genarray.kind tensor with
+      | Bigarray.Int32 -> (tensor : (int32, Bigarray.int32_elt) Tensor.t)
+      | _ -> failwith "PANIC: wrong kind in double")
+
+  let int64 (node : [`int64] Node.t) : (Int64.t, Bigarray.int64_elt) Tensor.t t =
+    Compute node
+    |> map ~f:(fun (Tensor.P tensor) ->
+      match Bigarray.Genarray.kind tensor with
+      | Bigarray.Int64 -> (tensor : (Int64.t, Bigarray.int64_elt) Tensor.t)
+      | _ -> failwith "PANIC: wrong kind in double")
+
   (* CR noury: add more output types *)
 
-  let scalar_float node =
-    float node |> map ~f:(fun t ->
+  let scalar_gen extract node =
+    extract node |> map ~f:(fun t ->
       Array.create 0 ~len:(Bigarray.Genarray.num_dims t)
       |> Bigarray.Genarray.get t)
 
-  let scalar_double node =
-    double node |> map ~f:(fun t ->
-      Array.create 0 ~len:(Bigarray.Genarray.num_dims t)
-      |> Bigarray.Genarray.get t)
+  let scalar_float n = scalar_gen float n
+  let scalar_double n = scalar_gen double n
+  let scalar_int32 n = scalar_gen int32 n |> map ~f:Int32.to_int_exn
+  let scalar_int64 n = scalar_gen int64 n
 
   let rec build_output
     : type a. a t ->  (Node.p list -> Node.p list) * (Tensor.p list -> a * Tensor.p list) =
