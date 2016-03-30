@@ -31,3 +31,13 @@ val adagrad_minimizer
   -> ?varsd:[ `double ] Node.t list (* Have to be variables. *)
   -> [< `float | `double ] Node.t
   -> Node.p list
+
+val rmsprop_minimizer
+  :  alpha:[ `float ] Node.t
+  -> ?decay:[ `float ] Node.t
+  -> ?momentum:[ `float ] Node.t
+  -> ?epsilon:[ `float ] Node.t
+  -> ?varsf:[ `float ] Node.t list (* Have to be variables. *)
+  -> ?varsd:[ `double ] Node.t list (* Have to be variables. *)
+  -> [< `float | `double ] Node.t
+  -> Node.p list

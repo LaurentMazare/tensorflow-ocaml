@@ -54,10 +54,8 @@ let gradient_descent_minimizer ~alpha ?varsf ?varsd target =
 
 let momentum_minimizer ~alpha ~momentum ?varsf ?varsd target =
   let apply ~gradient ~var ~type_ =
-    let var_shape = Ops.shape var in
     let accum =
-      Var.create (get_shape var) ~type_
-        ~init:(Ops.fill var_shape (Ops.scalar ~empty_shape:() ~type_ 0.))
+      Var.create (get_shape var) ~type_ ~init:(Ops.zerosLike var)
     in
     Ops.applyMomentum var accum (maybe_cast alpha ~type_) gradient (maybe_cast momentum ~type_)
   in
@@ -68,10 +66,8 @@ let adam_minimizer ~alpha ?beta1 ?beta2 ?epsilon ?varsf ?varsd target =
   let beta2 = match beta2 with | Some b -> b | None -> Ops.f 0.999 in
   let epsilon = match epsilon with | Some b -> b | None -> Ops.f 1e-8 in
   let apply ~gradient ~var ~type_ =
-    let var_shape = Ops.shape var in
     let create_var () =
-      Var.create (get_shape var) ~type_
-        ~init:(Ops.fill var_shape (Ops.scalar ~empty_shape:() ~type_ 0.))
+      Var.create (get_shape var) ~type_ ~init:(Ops.zerosLike var)
     in
     let create_scalar_var () =
       Var.create [] ~type_
@@ -98,5 +94,26 @@ let adagrad_minimizer ~alpha ?init ?varsf ?varsd target =
     let init = Ops.fill var_shape (maybe_cast init ~type_) in
     let accum = Var.create (get_shape var) ~type_ ~init in
     Ops.applyAdagrad var accum (maybe_cast alpha ~type_) gradient
+  in
+  general_minimizer { apply } ?varsf ?varsd target
+
+let rmsprop_minimizer ~alpha ?decay ?momentum ?epsilon ?varsf ?varsd target =
+  let decay = match decay with | Some b -> b | None -> Ops.f 0.9 in
+  let momentum = match momentum with | Some b -> b | None -> Ops.f 0. in
+  let epsilon = match epsilon with | Some b -> b | None -> Ops.f 1e-10 in
+  let apply ~gradient ~var ~type_ =
+    let rms_var =
+      Var.create (get_shape var) ~type_ ~init:(Ops.zerosLike var)
+    in
+    let momentum_var = Var.create (get_shape var) ~type_ ~init:(Ops.zerosLike var) in
+    Ops.applyRMSProp
+      var
+      rms_var
+      momentum_var
+      (maybe_cast alpha ~type_)
+      (maybe_cast decay ~type_)
+      (maybe_cast momentum ~type_)
+      (maybe_cast epsilon ~type_)
+      gradient
   in
   general_minimizer { apply } ?varsf ?varsd target
