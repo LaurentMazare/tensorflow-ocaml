@@ -16,23 +16,31 @@ let float shape ~init = create shape ~type_:Float ~init
 
 let f shape x = float shape ~init:(Ops.f ~shape x)
 
-let normalf shape ~stddev =
+let normalf_gen node shape ~stddev =
   let init =
-    Ops.randomStandardNormal (Ops.const_int ~type_:Int32 shape) ~type_:Float
+    node (Ops.const_int ~type_:Int32 shape) ~type_:Node.Type.Float
     |> Ops.mul (Ops.f stddev)
   in
   float shape ~init
+
+let normalf = normalf_gen (fun shape -> Ops.randomStandardNormal shape)
+
+let truncated_normalf = normalf_gen (fun shape -> Ops.truncatedNormal shape)
 
 let double shape ~init = create shape ~type_:Double ~init
 
 let d shape x = double shape ~init:(Ops.d ~shape x)
 
-let normald shape ~stddev =
+let normald_gen node shape ~stddev =
   let init =
-    Ops.randomStandardNormal (Ops.const_int ~type_:Int32 shape) ~type_:Double
+    node (Ops.const_int ~type_:Int32 shape) ~type_:Node.Type.Double
     |> Ops.mul (Ops.d stddev)
   in
   double shape ~init
+
+let normald = normald_gen (fun shape -> Ops.randomStandardNormal shape)
+
+let truncated_normald = normald_gen (fun shape -> Ops.truncatedNormal shape)
 
 let get_init p =
   Node.Weak_table.find init_table p

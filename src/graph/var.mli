@@ -10,5 +10,7 @@ val f : int list -> float -> [ `float ] Node.t
 val d : int list -> float -> [ `double ] Node.t
 val normalf : int list -> stddev:float -> [ `float ] Node.t
 val normald : int list -> stddev:float -> [ `double ] Node.t
+val truncated_normalf : int list -> stddev:float -> [ `float ] Node.t
+val truncated_normald : int list -> stddev:float -> [ `double ] Node.t
 
 val get_init : Node.p -> Node.p option
