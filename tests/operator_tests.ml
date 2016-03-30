@@ -38,6 +38,7 @@ let test_scalar () =
     ; 0.,   O.(reduce_sum (range (const_int ~shape:[] ~type_:Int32 [ 10 ])
               |> cast ~type_:Float)), 45.
     ; 0.,   O.(maximum (f 2.) (f 3.) - minimum (f 5.) (f (-5.))), 8.
+    ; 1e-6, O.(matrixDeterminant (cf ~shape:[ 2; 2 ] [ 1.; 2.; 3.; 4. ])), -2.
     ]
 
 let test_vector () =
@@ -50,6 +51,13 @@ let test_vector () =
         ; ceil (cd [ 1.0; 1.1; 1.9; 2.0 ])
         ])
       , [ 1.; 1.; 1.; 2.; 1.; 2.; 2.; 2. ]
+    ; 0., O.((cd ~shape:[ 2; 2 ] [ 1.; 2.; 3.; 4. ]) *^ (cd ~shape:[ 2; 1 ] [ 5.; 6. ])
+            |> reduce_sum ~dims:[ 1 ])
+      , [ 17.; 39. ]
+    ; 1e-8, O.(matrixSolve (cd ~shape:[ 2; 2 ] [ 1.; 2.; 3.; 4. ])
+                           (cd ~shape:[ 2; 1 ] [ 4.; 10. ])
+            |> reduce_sum ~dims:[ 1 ])
+      , [ 2.; 1. ]
     ]
 
 let () =
