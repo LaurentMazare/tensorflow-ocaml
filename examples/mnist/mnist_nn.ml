@@ -27,7 +27,7 @@ let () =
   in
   let gd =
     Optimizers.momentum_minimizer cross_entropy
-      ~alpha:(O.f 0.6) ~momentum:(O.f 0.9) ~varsf:[ w1; w2; b1; b2 ]
+      ~alpha:(O.f 0.6) ~momentum:0.9 ~varsf:[ w1; w2; b1; b2 ]
   in
   let train_inputs = Session.Input.[ float xs train_images; float ys train_labels ] in
   let validation_inputs =

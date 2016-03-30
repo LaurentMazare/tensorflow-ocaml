@@ -8,7 +8,7 @@ val gradient_descent_minimizer
 
 val momentum_minimizer
   :  alpha:[ `float ] Node.t
-  -> momentum:[ `float ] Node.t
+  -> momentum:float
   -> ?varsf:[ `float ] Node.t list (* Have to be variables. *)
   -> ?varsd:[ `double ] Node.t list (* Have to be variables. *)
   -> [< `float | `double ] Node.t
@@ -16,9 +16,9 @@ val momentum_minimizer
 
 val adam_minimizer
   :  alpha:[ `float ] Node.t
-  -> ?beta1:[ `float ] Node.t
-  -> ?beta2:[ `float ] Node.t
-  -> ?epsilon:[ `float ] Node.t
+  -> ?beta1:float
+  -> ?beta2:float
+  -> ?epsilon:float
   -> ?varsf:[ `float ] Node.t list (* Have to be variables. *)
   -> ?varsd:[ `double ] Node.t list (* Have to be variables. *)
   -> [< `float | `double ] Node.t
