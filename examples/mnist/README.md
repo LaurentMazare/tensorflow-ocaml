@@ -5,36 +5,40 @@ The examples in this directory have been adapted from the [TensorFlow tutorials]
 
 The code can be found in `mnist_linear.ml`.
 
-We first load the data from the MNIST samples that you will have to extract in
-the `data/` directory. This is done using the the MNIST helper module, labels
+We first load the MNIST data. This is done using the the MNIST helper module, labels
 are returned using one-hot encoding.
 
 ```ocaml
   let { Mnist_helper.train_images; train_labels; test_images; test_labels } =
     Mnist_helper.read_files ()
   in
+```
+
+After that the computation graph is defined. Two placeholders are introduced
+to store the input images and labels, these placeholders will be replaced with actual
+tensors when calling `Session.run`. Train images and labels are used when training the models.
+Test images and labels are used to estimate the validation error.
+
+```ocaml
+  let xs = O.placeholder [] ~type_:Float in
+  let ys = O.placeholder [] ~type_:Float in
   let train_inputs = Session.Input.[ float xs train_images; float ys train_labels ] in
   let validation_inputs =
     Session.Input.[ float xs test_images; float ys test_labels ]
   in
 ```
-
-After that the computation graph is defined. Two place holder are introduced
-to store the input images and labels. In the linear model there are two variables, a
+In the linear model there are two variables, a
 matrix and a bias and the output is computed by multiplying the matrix by the input
 vector and adding the bias. To transform the output into a probability distribution
 the softmax function is used.
-
 ```ocaml
-  let xs = O.placeholder [] ~type_:Float in
-  let ys = O.placeholder [] ~type_:Float in
   let w = Var.f [ image_dim; label_count ] 0. in
   let b = Var.f [ label_count ] 0. in
   let ys_ = O.(xs *^ w + b) |> O.softmax in
 ```
 
 The error measure that we will try to minimize is cross-entropy. We also compute
-the accuracy, i.e. the percentage of images that where correctly labeled, in order
+the accuracy, i.e. the percentage of images that were correctly labeled, in order
 to make the output easier to understand.
 
 ```ocaml
@@ -47,7 +51,7 @@ to make the output easier to understand.
 ```
 
 Finally we use gradient descent to minimize cross-entropy with respect to variables
-w and b.
+w and b and iterate this a couple hundred times.
 
 ```ocaml
   let gd =
