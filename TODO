@@ -10,5 +10,4 @@
 - Examples and tests.
   - Tutorials (MNIST based).
   - Add tests.
-    - Arithmetic operations.
     - Gradient, graph with sharing/multiple contributions...
