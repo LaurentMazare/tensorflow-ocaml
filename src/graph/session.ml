@@ -159,11 +159,10 @@ module Input =
     I (node, tensor)
  end
 
-
 module Target =
-  struct
-    type t = Node.p
-  end
+struct
+  type t = Node.p
+end
 
 let target node = Node.P node
 
@@ -176,10 +175,21 @@ struct
     | Map : 'a t * ('a -> 'b) -> 'b t
     | Empty : unit t
 
-  let map t ~f = Map(t,f)
+  let map t ~f = Map (t, f)
   let return node = Return node
-  let both t1 t2 = Both(t1, t2)
+  let both t1 t2 = Both (t1, t2)
   let empty = Empty
+
+  let three t1 t2 t3 =
+    both t1 (both t2 t3) |> map ~f:(fun (t1, (t2, t3)) -> t1, t2, t3)
+
+  let four t1 t2 t3 t4 =
+    both (both t1 t2) (both t3 t4)
+    |> map ~f:(fun ((t1, t2), (t3, t4)) -> t1, t2, t3, t4)
+
+  let five t1 t2 t3 t4 t5 =
+    both (both (both t1 t2) (both t3 t4)) t5
+    |> map ~f:(fun (((t1, t2), (t3, t4)), t5) -> t1, t2, t3, t4, t5)
 
   (* CR-someday noury: this could be just one function with modular implicits *)
   let float (node : [`float] Node.t) : (float, Bigarray.float32_elt) Tensor.t t =
@@ -199,7 +209,6 @@ struct
       | _ -> failwith "PANIC: wrong kind in double")
 
   (* CR noury: add more output types *)
-
 
   let scalar_float node =
     float node |> map ~f:(fun t ->
@@ -226,17 +235,16 @@ struct
     | Map (o, f) ->
       let l, k = build_output o in
       l, (fun l -> let a, l = (k l) in f a, l)
-    | Empty -> Fn.id, fun l -> (),l
+    | Empty -> Fn.id, fun l -> (), l
     | Compute node ->
      (fun l -> (P node) :: l),
      function
-     | t::l -> t,l
+     | t::l -> t, l
      | [] -> failwith "wrong number of elts in output dispatch"
 
   let build_output o =
    let f, k = build_output o in
    f [], fun l -> fst (k l)
-
 end
 
 let run ?inputs ?targets ?session output =
@@ -247,9 +255,7 @@ let run ?inputs ?targets ?session output =
   in
   let inputs =
     Option.map inputs
-     ~f:(List.map ~f:(fun (Input.I(n,t)) -> Node.P n, Tensor.P t))
+     ~f:(List.map ~f:(fun (Input.I (n, t)) -> Node.P n, Tensor.P t))
   in
   let outputs, k = Output.build_output output in
   k (run ?inputs ?targets ~outputs t)
-
-
