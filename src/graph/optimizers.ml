@@ -61,10 +61,15 @@ let momentum_minimizer ~alpha ~momentum ?varsf ?varsd target =
   in
   general_minimizer { apply } ?varsf ?varsd target
 
-let adam_minimizer ~alpha ?beta1 ?beta2 ?epsilon ?varsf ?varsd target =
-  let beta1 = match beta1 with | Some b -> b | None -> Ops.f 0.9 in
-  let beta2 = match beta2 with | Some b -> b | None -> Ops.f 0.999 in
-  let epsilon = match epsilon with | Some b -> b | None -> Ops.f 1e-8 in
+let adam_minimizer
+    ~alpha
+    ?(beta1 = Ops.f 0.9)
+    ?(beta2 = Ops.f 0.999)
+    ?(epsilon = Ops.f 1e-8)
+    ?varsf
+    ?varsd
+    target
+  =
   let apply ~gradient ~var ~type_ =
     let create_var () =
       Var.create (get_shape var) ~type_ ~init:(Ops.zerosLike var)
@@ -87,8 +92,7 @@ let adam_minimizer ~alpha ?beta1 ?beta2 ?epsilon ?varsf ?varsd target =
   in
   general_minimizer { apply } ?varsf ?varsd target
 
-let adagrad_minimizer ~alpha ?init ?varsf ?varsd target =
-  let init = match init with | Some b -> b | None -> Ops.f 0.1 in
+let adagrad_minimizer ~alpha ?(init = Ops.f 0.1) ?varsf ?varsd target =
   let apply ~gradient ~var ~type_ =
     let var_shape = Ops.shape var in
     let init = Ops.fill var_shape (maybe_cast init ~type_) in
@@ -97,10 +101,15 @@ let adagrad_minimizer ~alpha ?init ?varsf ?varsd target =
   in
   general_minimizer { apply } ?varsf ?varsd target
 
-let rmsprop_minimizer ~alpha ?decay ?momentum ?epsilon ?varsf ?varsd target =
-  let decay = match decay with | Some b -> b | None -> Ops.f 0.9 in
-  let momentum = match momentum with | Some b -> b | None -> Ops.f 0. in
-  let epsilon = match epsilon with | Some b -> b | None -> Ops.f 1e-10 in
+let rmsprop_minimizer
+      ~alpha
+      ?(decay = Ops.f 0.9)
+      ?(momentum = Ops.f 0.)
+      ?(epsilon = Ops.f 1e-10)
+      ?varsf
+      ?varsd
+      target
+  =
   let apply ~gradient ~var ~type_ =
     let rms_var =
       Var.create (get_shape var) ~type_ ~init:(Ops.zerosLike var)
