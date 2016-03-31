@@ -47,6 +47,23 @@ let const_int
   ; output_idx = None
   }
 
+let const_string
+    ?(name = "Const")
+    ?shape
+    values
+  =
+  let shape = get_shape ?shape values in
+  { name = Name.make_fresh ~name
+  ; op_name = Op_name.of_string "Const"
+  ; output_type = String
+  ; inputs = []
+  ; attributes = [
+      "dtype", Type (P String);
+      "value", Tensor_string { type_ = P String; shape; values };
+    ]
+  ; output_idx = None
+  }
+
 let scalar ?empty_shape ~type_ f =
   const_float
     ~type_

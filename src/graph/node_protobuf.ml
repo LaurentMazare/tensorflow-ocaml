@@ -41,7 +41,15 @@ let create_attr_value_list_value
 
 let default_tensor_proto = default_tensor_proto ()
 
-let tensor_attr ?(float_val = []) ?(double_val = []) ?(int_val = []) ?(int64_val = []) ~shape output_type =
+let tensor_attr
+      ?(float_val = [])
+      ?(double_val = [])
+      ?(int_val = [])
+      ?(int64_val = [])
+      ?(string_val = [])
+      ~shape
+      output_type
+  =
   let dim =
     List.map shape ~f:(fun d ->
       { Tensor_shape_proto_dim.size = Some (Int64.of_int d); name = None })
@@ -53,6 +61,7 @@ let tensor_attr ?(float_val = []) ?(double_val = []) ?(int_val = []) ?(int64_val
     ; double_val
     ; int_val
     ; int64_val
+    ; string_val
     ; tensor_shape = Some { dim; unknown_rank = None }
     }
   in
@@ -103,6 +112,13 @@ let of_attribute (type a) name value (output_type : a Node.Type.t) =
         | Node.Type.Int64 ->
           let int64_val = List.map tensor.values ~f:Int64.of_int in
           tensor_attr ~int64_val ~shape:tensor.shape output_type
+        | _ -> tensor_attr ~shape:tensor.shape output_type
+      end
+    | Tensor_string tensor ->
+      begin
+        match output_type with
+        | Node.Type.String ->
+          tensor_attr ~string_val:tensor.values ~shape:tensor.shape output_type
         | _ -> tensor_attr ~shape:tensor.shape output_type
       end
     | List attr_list ->

@@ -82,6 +82,7 @@ type attr =
   | List of Attr_list.t
   | Tensor_float of float Tensor.t
   | Tensor_int of int Tensor.t
+  | Tensor_string of string Tensor.t
   | Shape of Dim.t list
 
 type 'a t =
