@@ -701,7 +701,7 @@ val broadcastGradientArgs
 (* Cast x of type SrcT to y of DstT. *)
 val cast
   :  ?name:string
-  -> type_ : 'dstT Type.t
+  -> type_:'dstT Type.t
   -> 'srcT t
   -> 'dstT t
 
@@ -937,7 +937,7 @@ If needed, the PNG-encoded image is transformed to match the requested number
 of color channels. *)
 val decodePng
   :  ?name:string
-  -> type_ : 'dtype Type.t
+  -> type_:'dtype Type.t
   -> ?channels:int
   -> [ `string ] t
   -> 'dtype t
@@ -945,7 +945,7 @@ val decodePng
 (* Reinterpret the bytes of a string as a vector of numbers. *)
 val decodeRaw
   :  ?name:string
-  -> type_ : ([< `float | `double | `int32 | `int64 ] as 'out_type) Type.t
+  -> type_:([< `float | `double | `int32 | `int64 ] as 'out_type) Type.t
   -> ?little_endian:bool
   -> [ `string ] t
   -> ([< `float | `double | `int32 | `int64 ] as 'out_type) t
@@ -1079,7 +1079,7 @@ then the final deserialized `SparseTensor` will be:
     shape = [2 50] *)
 val deserializeManySparse
   :  ?name:string
-  -> type_ : 'dtype Type.t
+  -> type_1:'dtype Type.t
   -> [ `string ] t
   -> [ `int64 ] t * 'dtype t * [ `int64 ] t
 
@@ -2063,7 +2063,7 @@ val maxPoolGradWithArgmax
 `((b * height + y) * width + x) * channels + c`. *)
 val maxPoolWithArgmax
   :  ?name:string
-  -> type_ : ([< `int32 | `int64 ] as 'targmax) Type.t
+  -> type_1:([< `int32 | `int64 ] as 'targmax) Type.t
   -> ksize:int list
   -> strides:int list
   -> padding:string
@@ -2246,7 +2246,7 @@ intended as a way to represent a value that will always be fed, and to
 provide attrs that enable the fed value to be checked at runtime. *)
 val placeholder
   :  ?name:string
-  -> type_ : 'dtype Type.t
+  -> type_:'dtype Type.t
   -> ?shape:Dim.t list
   -> unit
   -> 'dtype t
@@ -2359,7 +2359,7 @@ val randomShuffleQueue
 (* The generated values will have mean 0 and standard deviation 1. *)
 val randomStandardNormal
   :  ?name:string
-  -> type_ : ([< `float | `double ] as 'dtype) Type.t
+  -> type_:([< `float | `double ] as 'dtype) Type.t
   -> ?seed:int
   -> ?seed2:int
   -> ([< `int32 | `int64 ] as 't) t
@@ -2370,7 +2370,7 @@ val randomStandardNormal
 lower bound 0 is included in the range, while the upper bound 1 is excluded. *)
 val randomUniform
   :  ?name:string
-  -> type_ : ([< `float | `double ] as 'dtype) Type.t
+  -> type_:([< `float | `double ] as 'dtype) Type.t
   -> ?seed:int
   -> ?seed2:int
   -> ([< `int32 | `int64 ] as 't) t
@@ -2710,7 +2710,7 @@ order.
 See also `RestoreSlice`. *)
 val restore
   :  ?name:string
-  -> type_ : 'dt Type.t
+  -> type_:'dt Type.t
   -> ?preferred_shard:int
   -> [ `string ] t
   -> [ `string ] t
@@ -2725,7 +2725,7 @@ The `shape_and_slice` input has the same format as the
 elements of the `shapes_and_slices` input of the `SaveSlices` op. *)
 val restoreSlice
   :  ?name:string
-  -> type_ : 'dt Type.t
+  -> type_:'dt Type.t
   -> ?preferred_shard:int
   -> [ `string ] t
   -> [ `string ] t
@@ -3698,7 +3698,7 @@ val stackClose
 (* Pop the element at the top of the stack. *)
 val stackPop
   :  ?name:string
-  -> type_ : 'elem_type Type.t
+  -> type_:'elem_type Type.t
   -> [ `string ] t
   -> 'elem_type t
 
@@ -3750,7 +3750,7 @@ val stringToHashBucket
 results in a rounded value.) *)
 val stringToNumber
   :  ?name:string
-  -> type_ : ([< `float | `int32 ] as 'out_type) Type.t
+  -> type_:([< `float | `int32 ] as 'out_type) Type.t
   -> [ `string ] t
   -> ([< `float | `int32 ] as 'out_type) t
 
@@ -3815,7 +3815,7 @@ Outputs a ref to the tensor state so it may be read or modified.
       final = state_ops._destroy_temporary_variable(var, var_name=var_name) *)
 val temporaryVariable
   :  ?name:string
-  -> type_ : 'dtype Type.t
+  -> type_:'dtype Type.t
   -> shape:Dim.t list
   -> ?var_name:string
   -> unit
@@ -3865,7 +3865,7 @@ val tensorArrayGrad
 (* All elements must have the same shape. *)
 val tensorArrayPack
   :  ?name:string
-  -> type_ : 'dtype Type.t
+  -> type_:'dtype Type.t
   -> [ `string ] t
   -> [ `float ] t
   -> 'dtype t
@@ -3873,7 +3873,7 @@ val tensorArrayPack
 (* Read an element from the TensorArray. *)
 val tensorArrayRead
   :  ?name:string
-  -> type_ : 'dtype Type.t
+  -> type_:'dtype Type.t
   -> [ `string ] t
   -> [ `int32 ] t
   -> [ `float ] t
@@ -4010,7 +4010,7 @@ deviation 1, except that values whose magnitude is more than 2 standard
 deviations from the mean are dropped and re-picked. *)
 val truncatedNormal
   :  ?name:string
-  -> type_ : ([< `float | `double ] as 'dtype) Type.t
+  -> type_:([< `float | `double ] as 'dtype) Type.t
   -> ?seed:int
   -> ?seed2:int
   -> ([< `int32 | `int64 ] as 't) t
@@ -4124,7 +4124,7 @@ TODO(zhifengc/mrry): Adds a pointer to a more detail document
 about sharing states in tensorflow. *)
 val variable
   :  ?name:string
-  -> type_ : 'dtype Type.t
+  -> type_:'dtype Type.t
   -> shape:Dim.t list
   -> ?container:string
   -> ?shared_name:string

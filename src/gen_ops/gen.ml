@@ -259,13 +259,18 @@ let same_input_and_output_type (op : Op.t) ~alpha =
     | Polymorphic (alpha', _) when alpha = alpha' -> Some input
     | _ -> None)
 
-let output_type_string op output_type =
+let type_variable ~idx =
+  if idx = 0
+  then "type_"
+  else sprintf "type_%d" idx
+
+let output_type_string op output_type ~idx =
   match (output_type : Type.t) with
   | Fixed p -> "Type." ^ Node.Type.to_string p
   | Polymorphic (alpha, _) ->
     match same_input_and_output_type op ~alpha with
     | Some input -> sprintf "%s.output_type" (Input.caml_comp_name input)
-    | None -> "type_"
+    | None -> type_variable ~idx
 
 let needs_variable_for_output_type op output_type =
   match (output_type : Type.t) with
@@ -289,9 +294,9 @@ let gen_mli ops =
     Option.iter op.description ~f:(fun description -> p "(* %s *)" description);
     p "val %s" (Op.caml_name op);
     p "  :  ?name:string";
-    List.iter op.output_types ~f:(fun (_, output_type) ->
+    List.iteri op.output_types ~f:(fun idx (_, output_type) ->
       if needs_variable_for_output_type op output_type
-      then p "  -> type_ : %s Type.t" (Type.to_string output_type));
+      then p "  -> %s:%s Type.t" (type_variable ~idx) (Type.to_string output_type));
     List.iter op.attributes ~f:(fun attribute ->
       Attribute.mli attribute p);
     List.iter op.inputs ~f:(fun input ->
@@ -317,9 +322,9 @@ let handle_one_op (op : Op.t) out_channel =
   let p s = p out_channel s in
   p "let %s" (Op.caml_name op);
   p "    ?(name = \"%s\")" op.name;
-  List.iter op.output_types ~f:(fun (_, output_type) ->
+  List.iteri op.output_types ~f:(fun idx (_, output_type) ->
     if needs_variable_for_output_type op output_type
-    then p "    ~type_");
+    then p "    ~%s" (type_variable ~idx));
   List.iter op.attributes ~f:(fun attribute ->
     Attribute.ml_def attribute p);
   List.iter op.inputs ~f:(fun input ->
@@ -330,9 +335,9 @@ let handle_one_op (op : Op.t) out_channel =
   then p "    ()";
   p "  =";
   let type_attr =
-    List.filter_map op.output_types ~f:(fun (output_type_name, output_type) ->
+    List.filter_mapi op.output_types ~f:(fun idx (output_type_name, output_type) ->
       Option.map output_type_name ~f:(fun output_type_name ->
-        output_type_name, output_type_string op output_type))
+        output_type_name, output_type_string op output_type ~idx))
   in
   let type_attr =
     List.fold op.inputs ~init:type_attr ~f:(fun acc (input : Input.t) ->
@@ -372,7 +377,7 @@ let handle_one_op (op : Op.t) out_channel =
   p "  let inputs = %s in" inputs;
   let multiple_outputs = 1 < List.length op.output_types in
   List.iteri op.output_types ~f:(fun idx (_, output_type) ->
-    let output_type_string = output_type_string op output_type in
+    let output_type_string = output_type_string op output_type ~idx in
     if 0 < idx then p "  ,";
     p "  { name";
     p "  ; op_name";

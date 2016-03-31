@@ -1462,10 +1462,10 @@ let depthToSpace
 
 let deserializeManySparse
     ?(name = "DeserializeManySparse")
-    ~type_
+    ~type_1
     (serialized_sparse : [ `string ] t)
   =
-  let attributes = [ "dtype", Type (P type_) ] in
+  let attributes = [ "dtype", Type (P type_1) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.deserializeManySparse in
   let inputs = [ P serialized_sparse ] in
@@ -1479,7 +1479,7 @@ let deserializeManySparse
   ,
   { name
   ; op_name
-  ; output_type = type_
+  ; output_type = type_1
   ; inputs
   ; attributes
   ; output_idx = Some 1
@@ -3026,13 +3026,13 @@ let maxPoolGradWithArgmax
 
 let maxPoolWithArgmax
     ?(name = "MaxPoolWithArgmax")
-    ~type_
+    ~type_1
     ~ksize
     ~strides
     ~padding
     (input : [ `float ] t)
   =
-  let attributes = [ "Targmax", Type (P type_) ] in
+  let attributes = [ "Targmax", Type (P type_1) ] in
   let attributes =
     ("ksize", List (Int ksize)) :: attributes
   in
@@ -3055,7 +3055,7 @@ let maxPoolWithArgmax
   ,
   { name
   ; op_name
-  ; output_type = type_
+  ; output_type = type_1
   ; inputs
   ; attributes
   ; output_idx = Some 1
