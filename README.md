@@ -12,7 +12,7 @@ opam pin add tensorflow-ocaml git://github.com/LaurentMazare/tensorflow-ocaml
 
 After that you have to get/build the TensorFlow library `libtensorflow.so` for release 0.7, there are three possibilities to do so:
 
-* Download the [pre-built binary](https://github.com/LaurentMazare/tensorflow-ocaml/releases/download/v0.0.1/libtensorflow.so) for x86_64 (cpu only).
+* Download the [pre-built binary](https://github.com/LaurentMazare/tensorflow-ocaml/releases/download/v0.0.1/libtensorflow.so) for linux/x86_64 (cpu only).
 * Or you can build it from source by following these steps:
     1. [Install the Bazel build system](http://bazel.io/docs/install.html)
     1. Clone the TensorFlow repo `git clone --recurse-submodules -b r0.7 https://github.com/tensorflow/tensorflow`

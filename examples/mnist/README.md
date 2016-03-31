@@ -16,7 +16,7 @@ are returned using one-hot encoding.
 
 After that the computation graph is defined. Two placeholders are introduced
 to store the input images and labels, these placeholders will be replaced with actual
-tensors when calling `Session.run`. Train images and labels are used when training the models.
+tensors when calling `Session.run`. Train images and labels are used when training the model.
 Test images and labels are used to estimate the validation error.
 
 ```ocaml
