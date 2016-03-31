@@ -72,9 +72,6 @@ val range : [ `int32 ] Node.t -> [ `int32 ] Node.t
 (* A placeholder that can be bound to a tensor via [inputs] in [Session.run]. *)
 val placeholder : ?name:string -> type_:'a Node.Type.t -> int list -> 'a Node.t
 
-val broadcast_gradient_args
-  : [ `int32 ] Node.t -> [ `int32 ] Node.t -> [ `int32 ] Node.t * [ `int32 ] Node.t
-
 (* [dropout n ~keep_prob] returns a tensor with the same shape as [n] that either
    have the same value as [n] with prob [keep_prob] or else is [0].
    The resulting values are then scaled by [1/keep_prob]. *)

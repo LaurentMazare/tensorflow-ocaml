@@ -44,7 +44,7 @@ let add_gradient_ ~self ~gradient =
     | [ N.P lhs; N.P rhs ] -> Ops.shape lhs, Ops.shape rhs
     | _ -> failwith "Not a binary function"
   in
-  let rlhs, rrhs = Ops.broadcast_gradient_args slhs srhs in
+  let rlhs, rrhs = Ops.broadcastGradientArgs slhs srhs in
   let lhs = Ops.reshape (Ops.sum gradient rlhs) slhs in
   let rhs = Ops.reshape (Ops.sum gradient rrhs) srhs in
   lhs, rhs
@@ -61,7 +61,7 @@ let mul_gradient ~self ~gradient =
   let lhs, rhs = binary_extract_exn self in
   let shape_lhs = Ops.shape lhs in
   let shape_rhs = Ops.shape rhs in
-  let rlhs, rrhs = Ops.broadcast_gradient_args shape_lhs shape_rhs in
+  let rlhs, rrhs = Ops.broadcastGradientArgs shape_lhs shape_rhs in
   let lhs_gradient = Ops.reshape (Ops.sum Ops.(gradient * rhs) rlhs) shape_lhs in
   let rhs_gradient = Ops.reshape (Ops.sum Ops.(lhs * gradient) rrhs) shape_rhs in
   all [ N.P lhs_gradient; N.P rhs_gradient ]
@@ -70,7 +70,7 @@ let div_gradient ~self ~gradient =
   let lhs, rhs = binary_extract_exn self in
   let shape_lhs = Ops.shape lhs in
   let shape_rhs = Ops.shape rhs in
-  let rlhs, rrhs = Ops.broadcast_gradient_args shape_lhs shape_rhs in
+  let rlhs, rrhs = Ops.broadcastGradientArgs shape_lhs shape_rhs in
   let lhs_gradient = Ops.reshape (Ops.sum Ops.(gradient / rhs) rlhs) shape_lhs in
   let rhs_gradient =
     Ops.reshape (Ops.sum Ops.(gradient * (Ops.neg (lhs / Ops.square rhs))) rrhs) shape_rhs
@@ -81,7 +81,7 @@ let pow_gradient ~self ~gradient =
   let lhs, rhs = binary_extract_exn self in
   let shape_lhs = Ops.shape lhs in
   let shape_rhs = Ops.shape rhs in
-  let rlhs, rrhs = Ops.broadcast_gradient_args shape_lhs shape_rhs in
+  let rlhs, rrhs = Ops.broadcastGradientArgs shape_lhs shape_rhs in
   let one = Ops.const_float ~type_:self.N.output_type [ 1. ] in
   let lhs_gradient =
     Ops.reshape (Ops.sum Ops.(gradient * rhs * Ops.pow lhs (rhs - one)) rlhs) shape_lhs

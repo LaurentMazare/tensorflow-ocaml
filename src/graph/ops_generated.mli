@@ -8,6 +8,7 @@ module Op_names : sig
   val adjustContrast : Op_name.t
   val adjustContrastv2 : Op_name.t
   val all : Op_name.t
+  val allCandidateSampler : Op_name.t
   val any : Op_name.t
   val applyAdagrad : Op_name.t
   val applyAdam : Op_name.t
@@ -29,14 +30,17 @@ module Op_names : sig
   val batchMatrixSolveLs : Op_name.t
   val batchMatrixTriangularSolve : Op_name.t
   val batchNormWithGlobalNormalization : Op_name.t
+  val batchNormWithGlobalNormalizationGrad : Op_name.t
   val batchSelfAdjointEig : Op_name.t
   val biasAdd : Op_name.t
+  val broadcastGradientArgs : Op_name.t
   val cast : Op_name.t
   val ceil : Op_name.t
   val checkNumerics : Op_name.t
   val cholesky : Op_name.t
   val complex : Op_name.t
   val complexAbs : Op_name.t
+  val computeAccidentalHits : Op_name.t
   val concat : Op_name.t
   val concatOffset : Op_name.t
   val conj : Op_name.t
@@ -51,6 +55,7 @@ module Op_names : sig
   val decodePng : Op_name.t
   val decodeRaw : Op_name.t
   val depthToSpace : Op_name.t
+  val deserializeManySparse : Op_name.t
   val destroyTemporaryVariable : Op_name.t
   val diag : Op_name.t
   val div : Op_name.t
@@ -74,6 +79,7 @@ module Op_names : sig
   val fact : Op_name.t
   val fill : Op_name.t
   val fixedLengthRecordReader : Op_name.t
+  val fixedUnigramCandidateSampler : Op_name.t
   val floor : Op_name.t
   val gather : Op_name.t
   val greater : Op_name.t
@@ -96,11 +102,14 @@ module Op_names : sig
   val l2Loss : Op_name.t
   val lRN : Op_name.t
   val lRNGrad : Op_name.t
+  val learnedUnigramCandidateSampler : Op_name.t
   val less : Op_name.t
   val lessEqual : Op_name.t
   val lgamma : Op_name.t
   val linSpace : Op_name.t
+  val listDiff : Op_name.t
   val log : Op_name.t
+  val logUniformCandidateSampler : Op_name.t
   val logicalAnd : Op_name.t
   val logicalNot : Op_name.t
   val logicalOr : Op_name.t
@@ -118,8 +127,10 @@ module Op_names : sig
   val maxPool : Op_name.t
   val maxPoolGrad : Op_name.t
   val maxPoolGradWithArgmax : Op_name.t
+  val maxPoolWithArgmax : Op_name.t
   val maximum : Op_name.t
   val mean : Op_name.t
+  val merge : Op_name.t
   val mergeSummary : Op_name.t
   val min : Op_name.t
   val minimum : Op_name.t
@@ -150,6 +161,7 @@ module Op_names : sig
   val readFile : Op_name.t
   val readerNumRecordsProduced : Op_name.t
   val readerNumWorkUnitsCompleted : Op_name.t
+  val readerRead : Op_name.t
   val readerReset : Op_name.t
   val readerRestoreState : Op_name.t
   val readerSerializeState : Op_name.t
@@ -157,8 +169,10 @@ module Op_names : sig
   val refEnter : Op_name.t
   val refExit : Op_name.t
   val refIdentity : Op_name.t
+  val refMerge : Op_name.t
   val refNextIteration : Op_name.t
   val refSelect : Op_name.t
+  val refSwitch : Op_name.t
   val relu : Op_name.t
   val relu6 : Op_name.t
   val relu6Grad : Op_name.t
@@ -175,6 +189,7 @@ module Op_names : sig
   val reverse : Op_name.t
   val reverseSequence : Op_name.t
   val rsqrt : Op_name.t
+  val sampleDistortedBoundingBox : Op_name.t
   val scalarSummary : Op_name.t
   val scatterAdd : Op_name.t
   val scatterSub : Op_name.t
@@ -196,8 +211,10 @@ module Op_names : sig
   val sign : Op_name.t
   val sin : Op_name.t
   val size : Op_name.t
+  val skipgram : Op_name.t
   val slice : Op_name.t
   val softmax : Op_name.t
+  val softmaxCrossEntropyWithLogits : Op_name.t
   val softplus : Op_name.t
   val softplusGrad : Op_name.t
   val softsign : Op_name.t
@@ -205,12 +222,16 @@ module Op_names : sig
   val spaceToDepth : Op_name.t
   val sparseApplyAdagrad : Op_name.t
   val sparseApplyMomentum : Op_name.t
+  val sparseConcat : Op_name.t
   val sparseMatMul : Op_name.t
+  val sparseReorder : Op_name.t
   val sparseSegmentMean : Op_name.t
   val sparseSegmentMeanGrad : Op_name.t
   val sparseSegmentSqrtN : Op_name.t
   val sparseSegmentSqrtNGrad : Op_name.t
   val sparseSegmentSum : Op_name.t
+  val sparseSoftmaxCrossEntropyWithLogits : Op_name.t
+  val sparseSplit : Op_name.t
   val sparseToDense : Op_name.t
   val split : Op_name.t
   val sqrt : Op_name.t
@@ -225,6 +246,7 @@ module Op_names : sig
   val stringToNumber : Op_name.t
   val sub : Op_name.t
   val sum : Op_name.t
+  val switch : Op_name.t
   val tFRecordReader : Op_name.t
   val tanh : Op_name.t
   val temporaryVariable : Op_name.t
@@ -237,10 +259,16 @@ module Op_names : sig
   val tensorArrayUnpack : Op_name.t
   val tensorArrayWrite : Op_name.t
   val textLineReader : Op_name.t
+  val threadUnsafeUnigramCandidateSampler : Op_name.t
   val tile : Op_name.t
   val tileGrad : Op_name.t
+  val topK : Op_name.t
+  val topKV2 : Op_name.t
   val transpose : Op_name.t
   val truncatedNormal : Op_name.t
+  val uniformCandidateSampler : Op_name.t
+  val unique : Op_name.t
+  val uniqueWithCounts : Op_name.t
   val unpack : Op_name.t
   val unsortedSegmentSum : Op_name.t
   val variable : Op_name.t
@@ -308,6 +336,26 @@ val all
   -> [ `bool ] t
   -> [ `int32 ] t
   -> [ `bool ] t
+
+(* Generates labels for candidate sampling with a learned unigram distribution. *)
+(* See explanations of candidate sampling and the data formats at
+go/candidate-sampling.
+
+For each batch, this op picks a single set of sampled candidate labels.
+
+The advantages of sampling candidates per-batch are simplicity and the
+possibility of efficient dense matrix multiplication. The disadvantage is that
+the sampled candidates must be chosen independently of the context and of the
+true labels. *)
+val allCandidateSampler
+  :  ?name:string
+  -> num_true:int
+  -> num_sampled:int
+  -> unique:bool
+  -> ?seed:int
+  -> ?seed2:int
+  -> [ `int64 ] t
+  -> [ `int64 ] t * [ `float ] t * [ `float ] t
 
 (* Computes the "logical or" of elements across dimensions of a tensor. *)
 (* Reduces `input` along the dimensions given in `reduction_indices`. Unless
@@ -609,6 +657,18 @@ val batchNormWithGlobalNormalization
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
 
+(* Gradients for batch normalization. *)
+val batchNormWithGlobalNormalizationGrad
+  :  ?name:string
+  -> variance_epsilon:float
+  -> scale_after_normalization:bool
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t * ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t * ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t * ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t * ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
+
 (* Calculates the Eigen Decomposition of a batch of square self-adjoint matrices. *)
 (* The input is a tensor of shape `[..., M, M]` whose inner-most 2 dimensions
 form square matrices, with the same constraints as the single matrix
@@ -629,6 +689,14 @@ val biasAdd
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
+
+(* Return the reduction indices for computing gradients of s0 op s1 with broadcast. *)
+(* This is typically used by gradient computations for a broadcasting operation. *)
+val broadcastGradientArgs
+  :  ?name:string
+  -> [ `int32 ] t
+  -> [ `int32 ] t
+  -> [ `int32 ] t * [ `int32 ] t
 
 (* Cast x of type SrcT to y of DstT. *)
 val cast
@@ -701,6 +769,20 @@ val complexAbs
   :  ?name:string
   -> [ `complex64 ] t
   -> [ `float ] t
+
+(* Computes the ids of the positions in sampled_candidates that match true_labels. *)
+(* When doing log-odds NCE, the result of this op should be passed through a
+SparseToDense op, then added to the logits of the sampled candidates. This has
+the effect of 'removing' the sampled labels that match the true labels by
+making the classifier sure that they are sampled labels. *)
+val computeAccidentalHits
+  :  ?name:string
+  -> num_true:int
+  -> ?seed:int
+  -> ?seed2:int
+  -> [ `int64 ] t
+  -> [ `int64 ] t
+  -> [ `int32 ] t * [ `int64 ] t * [ `float ] t
 
 (* Concatenates tensors along one dimension. *)
 val concat
@@ -952,6 +1034,54 @@ val depthToSpace
   -> block_size:int
   -> 't t
   -> 't t
+
+(* Deserialize and concatenate `SparseTensors` from a serialized minibatch. *)
+(* The input `serialized_sparse` must be a string matrix of shape `[N x 3]` where
+`N` is the minibatch size and the rows correspond to packed outputs of
+`SerializeSparse`.  The ranks of the original `SparseTensor` objects
+must all match.  When the final `SparseTensor` is created, it has rank one
+higher than the ranks of the incoming `SparseTensor` objects
+(they have been concatenated along a new row dimension).
+
+The output `SparseTensor` object's shape values for all dimensions but the
+first are the max across the input `SparseTensor` objects' shape values
+for the corresponding dimensions.  Its first shape value is `N`, the minibatch
+size.
+
+The input `SparseTensor` objects' indices are assumed ordered in
+standard lexicographic order.  If this is not the case, after this
+step run `SparseReorder` to restore index ordering.
+
+For example, if the serialized input is a `[2 x 3]` matrix representing two
+original `SparseTensor` objects:
+
+    index = [ 0]
+            [10]
+            [20]
+    values = [1, 2, 3]
+    shape = [50]
+
+and
+
+    index = [ 2]
+            [10]
+    values = [4, 5]
+    shape = [30]
+
+then the final deserialized `SparseTensor` will be:
+
+    index = [0  0]
+            [0 10]
+            [0 20]
+            [1  2]
+            [1 10]
+    values = [1, 2, 3, 4, 5]
+    shape = [2 50] *)
+val deserializeManySparse
+  :  ?name:string
+  -> type_ : 'dtype Type.t
+  -> [ `string ] t
+  -> [ `int64 ] t * 'dtype t * [ `int64 ] t
 
 (* Destroys the temporary variable and returns its final value. *)
 (* Sets output to the value of the Tensor pointed to by 'ref', then destroys
@@ -1308,6 +1438,38 @@ val fixedLengthRecordReader
   -> unit
   -> [ `string ] t
 
+(* Generates labels for candidate sampling with a learned unigram distribution. *)
+(* A unigram sampler could use a fixed unigram distribution read from a
+file or passed in as an in-memory array instead of building up the distribution
+from data on the fly. There is also an option to skew the distribution by
+applying a distortion power to the weights.
+
+The vocabulary file should be in CSV-like format, with the last field
+being the weight associated with the word.
+
+For each batch, this op picks a single set of sampled candidate labels.
+
+The advantages of sampling candidates per-batch are simplicity and the
+possibility of efficient dense matrix multiplication. The disadvantage is that
+the sampled candidates must be chosen independently of the context and of the
+true labels. *)
+val fixedUnigramCandidateSampler
+  :  ?name:string
+  -> num_true:int
+  -> num_sampled:int
+  -> unique:bool
+  -> range_max:int
+  -> ?vocab_file:string
+  -> ?distortion:float
+  -> ?num_reserved_ids:int
+  -> ?num_shards:int
+  -> ?shard:int
+  -> ?unigrams:float list
+  -> ?seed:int
+  -> ?seed2:int
+  -> [ `int64 ] t
+  -> [ `int64 ] t * [ `float ] t * [ `float ] t
+
 (* Returns element-wise largest integer not greater than x. *)
 val floor
   :  ?name:string
@@ -1587,6 +1749,27 @@ val lRNGrad
   -> [ `float ] t
   -> [ `float ] t
 
+(* Generates labels for candidate sampling with a learned unigram distribution. *)
+(* See explanations of candidate sampling and the data formats at
+go/candidate-sampling.
+
+For each batch, this op picks a single set of sampled candidate labels.
+
+The advantages of sampling candidates per-batch are simplicity and the
+possibility of efficient dense matrix multiplication. The disadvantage is that
+the sampled candidates must be chosen independently of the context and of the
+true labels. *)
+val learnedUnigramCandidateSampler
+  :  ?name:string
+  -> num_true:int
+  -> num_sampled:int
+  -> unique:bool
+  -> range_max:int
+  -> ?seed:int
+  -> ?seed2:int
+  -> [ `int64 ] t
+  -> [ `int64 ] t * [ `float ] t * [ `float ] t
+
 (* Returns the truth value of (x < y) element-wise. *)
 val less
   :  ?name:string
@@ -1624,12 +1807,61 @@ val linSpace
   -> [ `int32 ] t
   -> ([< `float | `double ] as 't) t
 
+(* Computes the difference between two lists of numbers or strings. *)
+(* Given a list `x` and a list `y`, this operation returns a list `out` that
+represents all values that are in `x` but not in `y`. The returned list `out`
+is sorted in the same order that the numbers appear in `x` (duplicates are
+preserved). This operation also returns a list `idx` that represents the
+position of each `out` element in `x`. In other words:
+
+`out[i] = x[idx[i]] for i in [0, 1, ..., len(out) - 1]`
+
+For example, given this input:
+
+```prettyprint
+x = [1, 2, 3, 4, 5, 6]
+y = [1, 3, 5]
+```
+
+This operation would return:
+
+```prettyprint
+out ==> [2, 4, 6]
+idx ==> [1, 3, 5]
+``` *)
+val listDiff
+  :  ?name:string
+  -> 't t
+  -> 't t
+  -> 't t * [ `int32 ] t
+
 (* Computes natural logarithm of x element-wise. *)
 (* I.e., \\(y = \log_e x\\). *)
 val log
   :  ?name:string
   -> ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t
   -> ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t
+
+(* Generates labels for candidate sampling with a log-uniform distribution. *)
+(* See explanations of candidate sampling and the data formats at
+go/candidate-sampling.
+
+For each batch, this op picks a single set of sampled candidate labels.
+
+The advantages of sampling candidates per-batch are simplicity and the
+possibility of efficient dense matrix multiplication. The disadvantage is that
+the sampled candidates must be chosen independently of the context and of the
+true labels. *)
+val logUniformCandidateSampler
+  :  ?name:string
+  -> num_true:int
+  -> num_sampled:int
+  -> unique:bool
+  -> range_max:int
+  -> ?seed:int
+  -> ?seed2:int
+  -> [ `int64 ] t
+  -> [ `int64 ] t * [ `float ] t * [ `float ] t
 
 (* Returns the truth value of x AND y element-wise. *)
 val logicalAnd
@@ -1825,6 +2057,19 @@ val maxPoolGradWithArgmax
   -> ([< `int32 | `int64 ] as 'targmax) t
   -> [ `float ] t
 
+(* Performs max pooling on the input and outputs both max values and indices. *)
+(* The indices in `argmax` are flattened, so that a maximum value at position
+`[b, y, x, c]` becomes flattened index
+`((b * height + y) * width + x) * channels + c`. *)
+val maxPoolWithArgmax
+  :  ?name:string
+  -> type_ : ([< `int32 | `int64 ] as 'targmax) Type.t
+  -> ksize:int list
+  -> strides:int list
+  -> padding:string
+  -> [ `float ] t
+  -> [ `float ] t * ([< `int32 | `int64 ] as 'targmax) t
+
 (* Returns the max of x and y (i.e. x > y ? x : y) element-wise, broadcasts. *)
 val maximum
   :  ?name:string
@@ -1843,6 +2088,19 @@ val mean
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
   -> [ `int32 ] t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
+
+(* Forwards the value of an available tensor from `inputs` to `output`. *)
+(* `Merge` waits for at least one of the tensors in `inputs` to become available.
+It is usually combined with `Switch` to implement branching.
+
+`Merge` forwards the first tensor for become available to `output`, and sets
+`value_index` to its index in `inputs`.
+
+It is an error if more than one tensor in `inputs` is available. *)
+val merge
+  :  ?name:string
+  -> 't t list
+  -> 't t * [ `int32 ] t
 
 (* Merges summaries. *)
 (* This op creates a
@@ -2193,6 +2451,16 @@ val readerNumWorkUnitsCompleted
   -> [ `string ] t
   -> [ `int64 ] t
 
+(* Returns the next record (key, value pair) produced by a Reader. *)
+(* Will dequeue from the input queue if necessary (e.g. when the
+Reader needs to start reading from a new file since it has finished
+with the previous file). *)
+val readerRead
+  :  ?name:string
+  -> [ `string ] t
+  -> [ `string ] t
+  -> [ `string ] t * [ `string ] t
+
 (* Restore a Reader to its initial clean state. *)
 val readerReset
   :  ?name:string
@@ -2259,6 +2527,19 @@ val refIdentity
   -> 't t
   -> 't t
 
+(* Forwards the value of an available tensor from `inputs` to `output`. *)
+(* `Merge` waits for at least one of the tensors in `inputs` to become available.
+It is usually combined with `Switch` to implement branching.
+
+`Merge` forwards the first tensor for become available to `output`, and sets
+`value_index` to its index in `inputs`.
+
+It is an error if more than one tensor in `inputs` is available. *)
+val refMerge
+  :  ?name:string
+  -> 't t list
+  -> 't t * [ `int32 ] t
+
 (* Makes its input available to the next iteration. *)
 val refNextIteration
   :  ?name:string
@@ -2271,6 +2552,17 @@ val refSelect
   -> [ `int32 ] t
   -> 't t list
   -> 't t
+
+(* Forwards the ref tensor `data` to the output port determined by `pred`. *)
+(* If `pred` is true, the `data` input is forwarded to `output_true`. Otherwise,
+the data goes to `output_false`.
+
+See also `Switch` and `Merge`. *)
+val refSwitch
+  :  ?name:string
+  -> 't t
+  -> [ `bool ] t
+  -> 't t * 't t
 
 (* Computes rectified linear: `max(features, 0)`. *)
 val relu
@@ -2560,6 +2852,36 @@ val rsqrt
   :  ?name:string
   -> ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t
   -> ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t
+
+(* Generate a single randomly distorted bounding box for an image. *)
+(* Bounding box annotations are often supplied in addition to ground-truth labels
+in image recognition or object localization tasks. A common technique for
+training such a system is to randomly distort an image while preserving
+its content, i.e. *data augmentation*. This Op outputs a randomly distorted
+localization of an object, i.e. bounding box, given an `image_size`,
+`bounding_boxes` and a series of constraints.
+
+The output of this Op is a single bounding box that may be used to crop the
+original image. The output is returned as 3 tensors: `begin`, `size` and
+`bboxes`. The first 2 tensors can be fed directly into `tf.slice` to crop the
+image. The latter may be supplied to `tf.image.draw_bounding_box` to visualize
+what the bounding box looks like.
+
+Bounding boxes are supplied and returned as `[y_min, x_min, y_max, x_max]`. The
+bounding box coordinates are floats in `[0.0, 1.0]` relative to the width and
+height of the underlying image. *)
+val sampleDistortedBoundingBox
+  :  ?name:string
+  -> ?seed:int
+  -> ?seed2:int
+  -> ?min_object_covered:float
+  -> ?aspect_ratio_range:float list
+  -> ?area_range:float list
+  -> ?max_attempts:int
+  -> ?use_image_if_no_bounding_boxes:bool
+  -> ([< `int32 | `int64 ] as 't) t
+  -> [ `float ] t
+  -> ([< `int32 | `int64 ] as 't) t * ([< `int32 | `int64 ] as 't) t * [ `float ] t
 
 (* Outputs a `Summary` protocol buffer with scalar values. *)
 (* The input `tags` and `values` must have the same shape.  The generated summary
@@ -2901,6 +3223,17 @@ val size
   -> 't t
   -> [ `int32 ] t
 
+(* Parses a text file and creates a batch of examples. *)
+val skipgram
+  :  ?name:string
+  -> filename:string
+  -> batch_size:int
+  -> ?window_size:int
+  -> ?min_count:int
+  -> ?subsample:float
+  -> unit
+  -> [ `string ] t * [ `int32 ] t * [ `int64 ] t * [ `int32 ] t * [ `int64 ] t * [ `int32 ] t * [ `int32 ] t
+
 (* Return a slice from 'input'. *)
 (* The output tensor is a tensor with dimensions described by 'size'
 whose values are extracted from 'input' starting at the offsets in
@@ -2923,6 +3256,14 @@ val softmax
   :  ?name:string
   -> ([< `float | `double ] as 't) t
   -> ([< `float | `double ] as 't) t
+
+(* Computes softmax cross entropy cost and gradients to backpropagate. *)
+(* Inputs are the logits, not probabilities. *)
+val softmaxCrossEntropyWithLogits
+  :  ?name:string
+  -> ([< `float | `double ] as 't) t
+  -> ([< `float | `double ] as 't) t
+  -> ([< `float | `double ] as 't) t * ([< `float | `double ] as 't) t
 
 (* Computes softplus: `log(exp(features) + 1)`. *)
 val softplus
@@ -3058,6 +3399,56 @@ val sparseApplyMomentum
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
 
+(* Concatenates a list of `SparseTensor` along the specified dimension. *)
+(* Concatenation is with respect to the dense versions of these sparse tensors.
+It is assumed that each input is a `SparseTensor` whose elements are ordered
+along increasing dimension number.
+
+All inputs' shapes must match, except for the concat dimension.  The
+`indices`, `values`, and `shapes` lists must have the same length.
+
+The output shape is identical to the inputs', except along the concat
+dimension, where it is the sum of the inputs' sizes along that dimension.
+
+The output elements will be resorted to preserve the sort order along
+increasing dimension number.
+
+This op runs in `O(M log M)` time, where `M` is the total number of non-empty
+values across all inputs. This is due to the need for an internal sort in
+order to concatenate efficiently across an arbitrary dimension.
+
+For example, if `concat_dim = 1` and the inputs are
+
+    sp_inputs[0]: shape = [2, 3]
+    [0, 2]: "a"
+    [1, 0]: "b"
+    [1, 1]: "c"
+
+    sp_inputs[1]: shape = [2, 4]
+    [0, 1]: "d"
+    [0, 2]: "e"
+
+then the output will be
+
+    shape = [2, 7]
+    [0, 2]: "a"
+    [0, 4]: "d"
+    [0, 5]: "e"
+    [1, 0]: "b"
+    [1, 1]: "c"
+
+Graphically this is equivalent to doing
+
+    [    a] concat [  d e  ] = [    a   d e  ]
+    [b c  ]        [       ]   [b c          ] *)
+val sparseConcat
+  :  ?name:string
+  -> concat_dim:int
+  -> [ `int64 ] t list
+  -> 't t list
+  -> [ `int64 ] t list
+  -> [ `int64 ] t * 't t * [ `int64 ] t
+
 (* Multiply matrix "a" by matrix "b". *)
 (* The inputs must be two-dimensional matrices and the inner dimension of "a" must
 match the outer dimension of "b". This op is optimized for the case where at
@@ -3072,6 +3463,22 @@ val sparseMatMul
   -> [ `float ] t
   -> [ `float ] t
   -> [ `float ] t
+
+(* Reorders a SparseTensor into the canonical, row-major ordering. *)
+(* Note that by convention, all sparse ops preserve the canonical ordering along
+increasing dimension number. The only time ordering can be violated is during
+manual manipulation of the indices and values vectors to add entries.
+
+Reordering does not affect the shape of the SparseTensor.
+
+If the tensor has rank `R` and `N` non-empty values, `input_indices` has
+shape `[N, R]`, input_values has length `N`, and input_shape has length `R`. *)
+val sparseReorder
+  :  ?name:string
+  -> [ `int64 ] t
+  -> 't t
+  -> [ `int64 ] t
+  -> [ `int64 ] t * 't t
 
 (* Computes the mean along sparse segments of a tensor. *)
 (* Read [the section on
@@ -3158,6 +3565,46 @@ val sparseSegmentSum
   -> [ `int32 ] t
   -> [ `int32 ] t
   -> ([< `float | `double | `int32 | `int64 ] as 't) t
+
+(* Computes softmax cross entropy cost and gradients to backpropagate. *)
+(* Unlike `SoftmaxCrossEntropyWithLogits`, this operation does not accept
+a matrix of label probabilities, but rather a single label per row
+of features.  This label is considered to have probability 1.0 for the
+given row.
+
+Inputs are the logits, not probabilities. *)
+val sparseSoftmaxCrossEntropyWithLogits
+  :  ?name:string
+  -> ([< `float | `double ] as 't) t
+  -> [ `int64 ] t
+  -> ([< `float | `double ] as 't) t * ([< `float | `double ] as 't) t
+
+(* Split a `SparseTensor` into `num_split` tensors along one dimension. *)
+(* If the `shape[split_dim]` is not an integer multiple of `num_split`. Slices
+`[0 : shape[split_dim] % num_split]` gets one extra dimension.
+For example, if `split_dim = 1` and `num_split = 2` and the input is
+
+    input_tensor = shape = [2, 7]
+    [    a   d e  ]
+    [b c          ]
+
+Graphically the output tensors are:
+
+    output_tensor[0] = shape = [2, 4]
+    [    a  ]
+    [b c    ]
+
+    output_tensor[1] = shape = [2, 3]
+    [ d e  ]
+    [      ] *)
+val sparseSplit
+  :  ?name:string
+  -> num_split:int
+  -> [ `int64 ] t
+  -> [ `int64 ] t
+  -> 't t
+  -> [ `int64 ] t
+  -> [ `int64 ] t * 't t * [ `int64 ] t
 
 (* Converts a sparse representation into a dense tensor. *)
 (* Builds an array `dense` with shape `output_shape` such that
@@ -3326,6 +3773,17 @@ val sum
   -> [ `int32 ] t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
 
+(* Forwards `data` to the output port determined by `pred`. *)
+(* If `pred` is true, the `data` input is forwarded to `output_true`. Otherwise,
+the data goes to `output_false`.
+
+See also `RefSwitch` and `Merge`. *)
+val switch
+  :  ?name:string
+  -> 't t
+  -> [ `bool ] t
+  -> 't t * 't t
+
 (* A Reader that outputs the records from a TensorFlow Records file. *)
 val tFRecordReader
   :  ?name:string
@@ -3454,6 +3912,27 @@ val textLineReader
   -> unit
   -> [ `string ] t
 
+(* Generates labels for candidate sampling with a learned unigram distribution. *)
+(* See explanations of candidate sampling and the data formats at
+go/candidate-sampling.
+
+For each batch, this op picks a single set of sampled candidate labels.
+
+The advantages of sampling candidates per-batch are simplicity and the
+possibility of efficient dense matrix multiplication. The disadvantage is that
+the sampled candidates must be chosen independently of the context and of the
+true labels. *)
+val threadUnsafeUnigramCandidateSampler
+  :  ?name:string
+  -> num_true:int
+  -> num_sampled:int
+  -> unique:bool
+  -> range_max:int
+  -> ?seed:int
+  -> ?seed2:int
+  -> [ `int64 ] t
+  -> [ `int64 ] t * [ `float ] t * [ `float ] t
+
 (* Constructs a tensor by tiling a given tensor. *)
 (* This operation creates a new tensor by replicating `input` `multiples` times.
 The output tensor's i'th dimension has `input.dims(i) * multiples[i]` elements,
@@ -3476,6 +3955,46 @@ val tileGrad
   -> [ `int32 ] t
   -> 't t
 
+(* Finds values and indices of the `k` largest elements for the last dimension. *)
+(* If the input is a vector (rank-1), finds the `k` largest entries in the vector
+and outputs their values and indices as vectors.  Thus `values[j]` is the
+`j`-th largest entry in `input`, and its index is `indices[j]`.
+
+For matrices (resp. higher rank input), computes the top `k` entries in each
+row (resp. vector along the last dimension).  Thus,
+
+    values.shape = indices.shape = input.shape[:-1] + [k]
+
+If two elements are equal, the lower-index element appears first.
+
+If `k` varies dynamically, use `TopKV2` below. *)
+val topK
+  :  ?name:string
+  -> k:int
+  -> ?sorted:bool
+  -> ([< `float | `double | `int32 | `int64 ] as 't) t
+  -> ([< `float | `double | `int32 | `int64 ] as 't) t * [ `int32 ] t
+
+(* Finds values and indices of the `k` largest elements for the last dimension. *)
+(* If the input is a vector (rank-1), finds the `k` largest entries in the vector
+and outputs their values and indices as vectors.  Thus `values[j]` is the
+`j`-th largest entry in `input`, and its index is `indices[j]`.
+
+For matrices (resp. higher rank input), computes the top `k` entries in each
+row (resp. vector along the last dimension).  Thus,
+
+    values.shape = indices.shape = input.shape[:-1] + [k]
+
+If two elements are equal, the lower-index element appears first.
+
+This is the same as `TopK`, but takes `k` as in input rather than an attr. *)
+val topKV2
+  :  ?name:string
+  -> ?sorted:bool
+  -> ([< `float | `double | `int32 | `int64 ] as 't) t
+  -> [ `int32 ] t
+  -> ([< `float | `double | `int32 | `int64 ] as 't) t * [ `int32 ] t
+
 (* Shuffle dimensions of x according to a permutation. *)
 (* The output `y` has the same rank as `x`. The shapes of `x` and `y` satisfy:
   `y.shape[i] == x.shape[perm[i]] for i in [0, 1, ..., rank(x) - 1]` *)
@@ -3496,6 +4015,71 @@ val truncatedNormal
   -> ?seed2:int
   -> ([< `int32 | `int64 ] as 't) t
   -> ([< `float | `double ] as 'dtype) t
+
+(* Generates labels for candidate sampling with a uniform distribution. *)
+(* See explanations of candidate sampling and the data formats at
+go/candidate-sampling.
+
+For each batch, this op picks a single set of sampled candidate labels.
+
+The advantages of sampling candidates per-batch are simplicity and the
+possibility of efficient dense matrix multiplication. The disadvantage is that
+the sampled candidates must be chosen independently of the context and of the
+true labels. *)
+val uniformCandidateSampler
+  :  ?name:string
+  -> num_true:int
+  -> num_sampled:int
+  -> unique:bool
+  -> range_max:int
+  -> ?seed:int
+  -> ?seed2:int
+  -> [ `int64 ] t
+  -> [ `int64 ] t * [ `float ] t * [ `float ] t
+
+(* Finds unique elements in a 1-D tensor. *)
+(* This operation returns a tensor `y` containing all of the unique elements of `x`
+sorted in the same order that they occur in `x`. This operation also returns a
+tensor `idx` the same size as `x` that contains the index of each value of `x`
+in the unique output `y`. In other words:
+
+`y[idx[i]] = x[i] for i in [0, 1,...,rank(x) - 1]`
+
+For example:
+
+```prettyprint
+# tensor 'x' is [1, 1, 2, 4, 4, 4, 7, 8, 8]
+y, idx = unique(x)
+y ==> [1, 2, 4, 7, 8]
+idx ==> [0, 0, 1, 2, 2, 2, 3, 4, 4]
+``` *)
+val unique
+  :  ?name:string
+  -> 't t
+  -> 't t * [ `int32 ] t
+
+(* Finds unique elements in a 1-D tensor. *)
+(* This operation returns a tensor `y` containing all of the unique elements of `x`
+sorted in the same order that they occur in `x`. This operation also returns a
+tensor `idx` the same size as `x` that contains the index of each value of `x`
+in the unique output `y`. Finally, it returns a third tensor `count` that
+contains the count of each element of `y` in `x`. In other words:
+
+`y[idx[i]] = x[i] for i in [0, 1,...,rank(x) - 1]`
+
+For example:
+
+```prettyprint
+# tensor 'x' is [1, 1, 2, 4, 4, 4, 7, 8, 8]
+y, idx, count = unique_with_counts(x)
+y ==> [1, 2, 4, 7, 8]
+idx ==> [0, 0, 1, 2, 2, 2, 3, 4, 4]
+count ==> [2, 1, 3, 1, 2]
+``` *)
+val uniqueWithCounts
+  :  ?name:string
+  -> 't t
+  -> 't t * [ `int32 ] t * [ `int32 ] t
 
 (* Unpacks the outer dimension of a rank-`R` tensor into `num` rank-`(R-1)` tensors. *)
 (* Unpacks `num` tensors from `value` by chipping it along the first dimension.

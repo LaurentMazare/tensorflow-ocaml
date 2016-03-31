@@ -99,22 +99,6 @@ let reduce_prod ?dims node = reduce_op Ops_generated.prod ?dims node
 let reduce_all ?dims node = reduce_op Ops_generated.all ?dims node
 let reduce_any ?dims node = reduce_op Ops_generated.any ?dims node
 
-(* Hacky implementation for now, we should support multiple outputs and maybe
-   be able to generate this one. *)
-let broadcast_gradient_args x y =
-  let open Node in
-  let bga_name = Name.make_fresh ~name:"BGA" in
-  let bga idx =
-    { name = bga_name
-    ; op_name = Op_name.of_string "BroadcastGradientArgs"
-    ; output_type = Int32
-    ; inputs = [ P x; P y ]
-    ; attributes = []
-    ; output_idx = Some idx
-    }
-  in
-  bga 0, bga 1
-
 let placeholder ?name ~type_ shape =
   Ops_generated.placeholder
     ?name

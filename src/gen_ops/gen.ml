@@ -38,6 +38,7 @@ module Input = struct
     match t.name with
     | "begin" -> "begin__"
     | "in" -> "in__"
+    | "inputs" -> "inputs__"
     | name -> name
 
   let caml_comp_name t =
@@ -143,8 +144,7 @@ module Op = struct
   type t =
     { name : string
     ; inputs : Input.t list 
-    ; output_type : Type.t
-    ; output_type_name : string option
+    ; output_types : (string option * Type.t) list
     ; attributes : Attribute.t list
     ; summary : string option
     ; description : string option
@@ -230,17 +230,15 @@ module Op = struct
           ; number_attr = input_arg.number_attr
           })
       in
-      let output_type_name, output_type =
-        match op.output_arg with
-        | [] -> None, Type.Fixed (P Unit)
-        | _ :: _ :: _ -> raise (Not_supported "multiple outputs")
-        | [ output_arg ] -> read_type types output_arg
+      let output_types =
+        match List.map op.output_arg ~f:(read_type types) with
+        | [] -> [ None, Type.Fixed (P Unit) ]
+        | output_types -> output_types
       in
       Ok
         { name
         ; inputs
-        ; output_type
-        ; output_type_name
+        ; output_types
         ; attributes = List.filter_map op.attr ~f:(get_attr ~inputs)
         ; summary = op.summary
         ; description = op.description
@@ -261,16 +259,16 @@ let same_input_and_output_type (op : Op.t) ~alpha =
     | Polymorphic (alpha', _) when alpha = alpha' -> Some input
     | _ -> None)
 
-let output_type_string op =
-  match op.Op.output_type with
+let output_type_string op output_type =
+  match (output_type : Type.t) with
   | Fixed p -> "Type." ^ Node.Type.to_string p
   | Polymorphic (alpha, _) ->
     match same_input_and_output_type op ~alpha with
     | Some input -> sprintf "%s.output_type" (Input.caml_comp_name input)
     | None -> "type_"
 
-let needs_variable_for_output_type op =
-  match op.Op.output_type with
+let needs_variable_for_output_type op output_type =
+  match (output_type : Type.t) with
   | Fixed _ -> false
   | Polymorphic (alpha, _) ->
     same_input_and_output_type op ~alpha |> Option.is_none
@@ -287,13 +285,13 @@ let gen_mli ops =
   let out_channel = Out_channel.create (sprintf "%s.mli" output_file) in
   let p s = p out_channel s in
   let handle_one_op (op : Op.t) =
-    let needs_variable_for_output_type = needs_variable_for_output_type op in
     Option.iter op.summary ~f:(fun summary -> p "(* %s *)" summary);
     Option.iter op.description ~f:(fun description -> p "(* %s *)" description);
     p "val %s" (Op.caml_name op);
     p "  :  ?name:string";
-    if needs_variable_for_output_type
-    then p "  -> type_ : %s Type.t" (Type.to_string op.output_type);
+    List.iter op.output_types ~f:(fun (_, output_type) ->
+      if needs_variable_for_output_type op output_type
+      then p "  -> type_ : %s Type.t" (Type.to_string output_type));
     List.iter op.attributes ~f:(fun attribute ->
       Attribute.mli attribute p);
     List.iter op.inputs ~f:(fun input ->
@@ -301,7 +299,8 @@ let gen_mli ops =
       p "  -> %s t%s" (Type.to_string input.type_) maybe_list);
     if List.is_empty op.inputs
     then p "  -> unit";
-    p "  -> %s t" (Type.to_string op.output_type);
+    p "  -> %s" (List.map op.output_types ~f:(fun (_, output_type) ->
+      sprintf "%s t" (Type.to_string output_type)) |> String.concat ~sep:" * ");
     p "";
   in
   p "%s" automatically_generated_file;
@@ -316,11 +315,11 @@ let gen_mli ops =
 
 let handle_one_op (op : Op.t) out_channel =
   let p s = p out_channel s in
-  let needs_variable_for_output_type = needs_variable_for_output_type op in
   p "let %s" (Op.caml_name op);
   p "    ?(name = \"%s\")" op.name;
-  if needs_variable_for_output_type
-  then p "    ~type_";
+  List.iter op.output_types ~f:(fun (_, output_type) ->
+    if needs_variable_for_output_type op output_type
+    then p "    ~type_");
   List.iter op.attributes ~f:(fun attribute ->
     Attribute.ml_def attribute p);
   List.iter op.inputs ~f:(fun input ->
@@ -329,12 +328,11 @@ let handle_one_op (op : Op.t) out_channel =
     p "    (%s : %s t%s)" name (Type.to_string input.type_) maybe_list);
   if List.is_empty op.inputs
   then p "    ()";
-  let output_type_string = output_type_string op in
   p "  =";
   let type_attr =
-    match op.output_type_name with
-    | Some output_type_name -> [ output_type_name, output_type_string ]
-    | None -> []
+    List.filter_map op.output_types ~f:(fun (output_type_name, output_type) ->
+      Option.map output_type_name ~f:(fun output_type_name ->
+        output_type_name, output_type_string op output_type))
   in
   let type_attr =
     List.fold op.inputs ~init:type_attr ~f:(fun acc (input : Input.t) ->
@@ -354,9 +352,8 @@ let handle_one_op (op : Op.t) out_channel =
     p "    %s" (Attribute.ml_apply attribute "attributes");
     p "  in";
   );
-  p "  { name = Name.make_fresh ~name";
-  p "  ; op_name = Op_names.%s" (Op.caml_name op);
-  p "  ; output_type = %s" output_type_string;
+  p "  let name = Name.make_fresh ~name in";
+  p "  let op_name = Op_names.%s in" (Op.caml_name op);
   let inputs =
     if List.for_all op.inputs ~f:(fun input -> input.number_attr = None)
     then
@@ -372,10 +369,18 @@ let handle_one_op (op : Op.t) out_channel =
       )
       |> String.concat ~sep:" @ "
   in
-  p "  ; inputs = %s" inputs;
-  p "  ; attributes";
-  p "  ; output_idx = None";
-  p "  }";
+  p "  let inputs = %s in" inputs;
+  let multiple_outputs = 1 < List.length op.output_types in
+  List.iteri op.output_types ~f:(fun idx (_, output_type) ->
+    let output_type_string = output_type_string op output_type in
+    if 0 < idx then p "  ,";
+    p "  { name";
+    p "  ; op_name";
+    p "  ; output_type = %s" output_type_string;
+    p "  ; inputs";
+    p "  ; attributes";
+    p "  ; output_idx = %s" (if multiple_outputs then sprintf "Some %d" idx else "None");
+    p "  }");
   p ""
 
 let gen_ml ops =
