@@ -1,5 +1,36 @@
 open Core_kernel.Std
 
+type 'a optimizer
+  =  alpha:[ `float ] Node.t
+  -> ?varsf:[ `float ] Node.t list (* Have to be variables. *)
+  -> ?varsd:[ `double ] Node.t list (* Have to be variables. *)
+  -> 'a Node.t
+  -> Node.p list
+
+(* Collect float and double variables below a given node.
+   Using this is an overapproximation as we would only need the variables that
+   can be reached from the node via a 'derivable' path. *)
+let get_all_vars node =
+  let processed_nodes = Node.Name.Hash_set.create () in
+  (* Using references here make the following code quite consise. *)
+  let varsf = ref ([] : [ `float ] Node.t list) in
+  let varsd = ref ([] : [ `double ] Node.t list) in
+  let rec vars (Node.P node) =
+    if not (Hash_set.mem processed_nodes node.name)
+    then begin
+      Hash_set.add processed_nodes node.name;
+      if Node.Op_name.(=) node.op_name Ops.Op_names.variable
+      then
+        match node.output_type with
+        | Node.Type.Float -> varsf := node :: !varsf
+        | Node.Type.Double -> varsd := node :: !varsd
+        | _ -> ()
+      else List.iter node.inputs ~f:vars
+    end
+  in
+  vars (Node.P node);
+  !varsf, !varsd
+
 let check_var (type a) (node : a Node.t) =
   if Node.Op_name.(<>) node.Node.op_name Ops.Op_names.variable
   then
@@ -17,7 +48,14 @@ type t =
     -> 'a Node.t
   }
 
-let general_minimizer t ?(varsf = []) ?(varsd = []) target =
+let general_minimizer t ?varsf ?varsd target =
+  let varsf, varsd =
+    match varsf, varsd with
+    | Some varsf, Some varsd -> varsf, varsd
+    | Some varsf, None -> varsf, snd (get_all_vars target)
+    | None, Some varsd -> fst (get_all_vars target), varsd
+    | None, None -> get_all_vars target
+  in
   let gradsf, gradsd =
     Gradients.gradient target
       ~with_respect_to_float:varsf
@@ -52,7 +90,7 @@ let gradient_descent_minimizer ~alpha ?varsf ?varsd target =
   in
   general_minimizer { apply } ?varsf ?varsd target
 
-let momentum_minimizer ~alpha ~momentum ?varsf ?varsd target =
+let momentum_minimizer ~momentum ~alpha ?varsf ?varsd target =
   let apply ~gradient ~var ~type_ =
     let accum =
       Var.create (get_shape var) ~type_ ~init:(Ops.zerosLike var)
@@ -62,10 +100,10 @@ let momentum_minimizer ~alpha ~momentum ?varsf ?varsd target =
   general_minimizer { apply } ?varsf ?varsd target
 
 let adam_minimizer
-    ~alpha
     ?(beta1 = Ops.f 0.9)
     ?(beta2 = Ops.f 0.999)
     ?(epsilon = Ops.f 1e-8)
+    ~alpha
     ?varsf
     ?varsd
     target
@@ -92,7 +130,7 @@ let adam_minimizer
   in
   general_minimizer { apply } ?varsf ?varsd target
 
-let adagrad_minimizer ~alpha ?(init = Ops.f 0.1) ?varsf ?varsd target =
+let adagrad_minimizer ?(init = Ops.f 0.1) ~alpha ?varsf ?varsd target =
   let apply ~gradient ~var ~type_ =
     let var_shape = Ops.shape var in
     let init = Ops.fill var_shape (maybe_cast init ~type_) in
@@ -102,10 +140,10 @@ let adagrad_minimizer ~alpha ?(init = Ops.f 0.1) ?varsf ?varsd target =
   general_minimizer { apply } ?varsf ?varsd target
 
 let rmsprop_minimizer
-      ~alpha
       ?(decay = Ops.f 0.9)
       ?(momentum = Ops.f 0.)
       ?(epsilon = Ops.f 1e-10)
+      ~alpha
       ?varsf
       ?varsd
       target

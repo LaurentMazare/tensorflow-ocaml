@@ -49,11 +49,7 @@ let () =
     |> O.cast ~type_:Float
     |> O.reduce_mean
   in
-  let gd =
-    Optimizers.adam_minimizer ~alpha:(O.f 1e-5)
-      ~varsf:[ w_conv1; b_conv1; w_conv2; b_conv2; w_fc1; b_fc1; w_fc2; b_fc2 ]
-      cross_entropy
-  in
+  let gd = Optimizers.adam_minimizer ~alpha:(O.f 1e-5) cross_entropy in
   let validation_inputs =
     let one = scalar_tensor 1. in
     let validation_images = Mnist_helper.slice2 mnist.test_images 0 1024 in

@@ -23,8 +23,7 @@ let () =
     |> O.reduce_mean
   in
   let gd =
-    Optimizers.gradient_descent_minimizer ~alpha:(O.f 8.) ~varsf:[ w; b ]
-      cross_entropy
+    Optimizers.gradient_descent_minimizer ~alpha:(O.f 8.) cross_entropy
   in
   let train_inputs = Session.Input.[ float xs train_images; float ys train_labels ] in
   let validation_inputs =
