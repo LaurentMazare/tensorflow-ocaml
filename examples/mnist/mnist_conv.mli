@@ -1,1 +1,1 @@
-(* Intentionnaly left blank. *)
+(* Intentionally left blank. *)
