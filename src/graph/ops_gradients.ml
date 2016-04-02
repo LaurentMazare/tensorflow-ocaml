@@ -337,12 +337,44 @@ let none ~self ~gradient:_ =
 let fill_gradient ~self:_ ~gradient =
   [ None; Some (N.P (Ops.reduce_sum gradient)) ]
 
+let concat_gradient ~self ~gradient =
+  match self.N.inputs with
+  | [] | [ _ ] -> failwith "Concat nodes have multiple inputs."
+  | [ _; _ ] -> [ None; Some (N.P gradient) ]
+  | concat_dim :: concat_inputs ->
+    let concat_dim =
+      match N.extract concat_dim Int32 with
+      | None -> failwith "The first parameter of concat should have type int32."
+      | Some concat_dim -> concat_dim
+    in
+    let concat_inputs =
+      List.map concat_inputs ~f:(fun concat_input ->
+        match N.extract concat_input self.output_type with
+        | None -> failwith "All the concatenated inputs should have the same type."
+        | Some concat_input -> concat_input)
+    in
+    (* Hacky implementation for now as the ops code generator does not support
+       node with list outputs properly. *)
+    let size_node = Ops.shapeN concat_inputs in
+    let sizes =
+      List.init (List.length concat_inputs) ~f:(fun idx ->
+        { size_node with output_idx = Some idx })
+    in
+    let offset_node = Ops.concatOffset concat_dim sizes in
+    let concat_grads =
+      List.mapi sizes ~f:(fun idx size ->
+        let offset = { offset_node with output_idx = Some idx } in
+        N.P (Ops.slice gradient size offset))
+    in
+    None :: all concat_grads
+
 let register_all () =
   let module O = Ops.Op_names in
   List.iter ~f:(fun (name, f) -> Registered_gradients.add name f)
     [ O.abs,     { Registered_gradients.f = abs_gradient }
     ; O.add,     { f = add_gradient }
     ; O.addN,    { f = addn_gradient }
+    ; O.concat,  { f = concat_gradient }
     ; O.cos,     { f = cos_gradient }
     ; O.conv2D,  { f = conv2d_gradient }
     ; O.div,     { f = div_gradient }
