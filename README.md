@@ -7,7 +7,7 @@ These bindings are in an early stage of their development. Some operators are no
 The easiest way is probably to use opam.
 
 ```bash
-opam install tensorflow-ocaml
+opam install tensorflow
 ```
 
 After that you have to get/build the TensorFlow library `libtensorflow.so` for release 0.7, there are three possibilities to do so:
