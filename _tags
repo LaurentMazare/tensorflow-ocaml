@@ -1,5 +1,5 @@
 true: package(ctypes), package(ctypes.foreign)
-<examples/*/*_gnuplot.*>: package(gnuplot)
+<examples/*/*_gnuplot.*> or <examples/basics/rnn.*>: package(gnuplot)
 <examples/*/*.native>: use_tensorflow
 
 not <src/piqi/*>: warn(A-4-29-40-41-42-44-45-48)

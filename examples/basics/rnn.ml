@@ -4,9 +4,10 @@
 open Core_kernel.Std
 open Tensorflow
 
+let train_size = 1000
+
 let lstm ~size_c ~size_x ~size_y x_and_ys =
   let create_vars () = Var.f [ size_c+size_x; size_c ] 0., Var.f [ size_c ] 0. in
-  let zero = Ops.f ~shape:[ 1; size_c ] 0. in
   let wf, bf = create_vars () in
   let wi, bi = create_vars () in
   let wC, bC = create_vars () in
@@ -24,6 +25,7 @@ let lstm ~size_c ~size_x ~size_y x_and_ys =
     y_bar, h, c
   in
   let err =
+    let zero = Ops.f ~shape:[ train_size; size_c ] 0. in
     List.fold x_and_ys ~init:([], zero, zero) ~f:(fun (errs, h, c) (x, y) ->
       let y_bar, h, c = one_lstm ~h ~x ~c in
       let err = Ops.(y_bar - y) in
@@ -39,7 +41,7 @@ let lstm ~size_c ~size_x ~size_y x_and_ys =
   in
   err, one_lstm
 
-let epochs = 200
+let epochs = 1000
 let size_c = 20
 let steps = 100
 let step_size = 0.05
@@ -48,8 +50,10 @@ let fit_1d fn =
   let x_and_ys =
     List.init steps ~f:(fun x ->
       let x = float x *. step_size in
-      let xs = Ops.const_float ~type_:Float ~shape:[ 1; 1 ] [ fn x ] in
-      let ys = Ops.const_float ~type_:Float ~shape:[ 1; 1 ] [ fn (x +. step_size) ] in
+      let xs = List.init train_size ~f:(fun i -> fn (x +. float i)) in
+      let ys = List.init train_size ~f:(fun i -> fn (x +. step_size +. float i)) in
+      let xs = Ops.const_float ~type_:Float ~shape:[ train_size; 1 ] xs in
+      let ys = Ops.const_float ~type_:Float ~shape:[ train_size; 1 ] ys in
       xs, ys
     )
   in
@@ -82,9 +86,12 @@ let fit_1d fn =
       let y = Bigarray.Genarray.get y_res [| 0; 0 |] in
       y :: acc_y, y_res, h_res, c_res)
   in
-  let ys = List.rev ys in
-  List.iter ys ~f:(fun y ->
-    printf "%f\n" y)
+  List.rev ys
 
 let () =
-  fit_1d sin
+  let open Gnuplot in
+  let ys = fit_1d sin in
+  let xys = List.mapi ys ~f:(fun i y -> float i, y) in
+  let gp = Gp.create () in
+  Gp.plot_many gp ~output:(Output.create `Qt) [ Series.points_xy xys ];
+  Gp.close gp
