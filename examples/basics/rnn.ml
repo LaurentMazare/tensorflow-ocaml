@@ -20,12 +20,13 @@ let lstm ~size_c ~size_x ~size_y x_and_ys =
       + sigmoid (h_and_x *^ wi + bi) * tanh (sigmoid (h_and_x *^ wC + bC))
     in
     let h = sigmoid (h_and_x *^ wo + bo) * tanh c in
-    h, c
+    let y_bar = Ops.(h *^ wy + by) in
+    y_bar, h, c
   in
   let err =
     List.fold x_and_ys ~init:([], zero, zero) ~f:(fun (errs, h, c) (x, y) ->
-      let h, c = one_lstm ~h ~x ~c in
-      let err = Ops.(h *^ wy + by - y) in
+      let y_bar, h, c = one_lstm ~h ~x ~c in
+      let err = Ops.(y_bar - y) in
       err :: errs, h, c)
     |> fun (errs, _, _) ->
     let errs =
@@ -38,7 +39,7 @@ let lstm ~size_c ~size_x ~size_y x_and_ys =
   in
   err, one_lstm
 
-let epochs = 100
+let epochs = 200
 let size_c = 20
 let steps = 100
 let step_size = 0.05
@@ -53,7 +54,7 @@ let fit_1d fn =
     )
   in
   let err, one_lstm = lstm ~size_c ~size_x:1 ~size_y:1 x_and_ys in
-  let gd = Optimizers.gradient_descent_minimizer err ~alpha:(Ops.f 0.4) in
+  let gd = Optimizers.adam_minimizer err ~alpha:(Ops.f 0.004) in
   for i = 1 to epochs do
     let err =
       Session.run
@@ -63,7 +64,27 @@ let fit_1d fn =
     in
     printf "%d %f\n%!" i err;
   done;
-  ignore (one_lstm, ())
+  let h = Ops.placeholder [] ~type_:Float in
+  let x = Ops.placeholder [] ~type_:Float in
+  let c = Ops.placeholder [] ~type_:Float in
+  let y_bar, h_out, c_out = one_lstm ~h ~x ~c in
+  let tensor size =
+    Bigarray.Genarray.create Bigarray.float32 Bigarray.c_layout [| 1; size |]
+  in
+  let init = [], tensor 1, tensor size_c, tensor size_c in
+  let ys, _, _, _ =
+    List.fold (List.range 0 100) ~init ~f:(fun (acc_y, prev_y, prev_h, prev_c) _ ->
+      let y_res, h_res, c_res =
+        Session.run
+          ~inputs:Session.Input.[ float x prev_y; float h prev_h; float c prev_c ]
+          Session.Output.(three (float y_bar) (float h_out) (float c_out))
+      in
+      let y = Bigarray.Genarray.get y_res [| 0; 0 |] in
+      y :: acc_y, y_res, h_res, c_res)
+  in
+  let ys = List.rev ys in
+  List.iter ys ~f:(fun y ->
+    printf "%f\n" y)
 
 let () =
   fit_1d sin
