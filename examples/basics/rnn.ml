@@ -6,7 +6,7 @@ open Tensorflow
 
 let lstm ~size_c ~size_x ~size_y x_and_ys =
   let create_vars () = Var.f [ size_c+size_x; size_c ] 0., Var.f [ size_c ] 0. in
-  let zero = Ops.f ~shape:[ size_c ] 0. in
+  let zero = Ops.f ~shape:[ 1; size_c ] 0. in
   let wf, bf = create_vars () in
   let wi, bi = create_vars () in
   let wC, bC = create_vars () in
@@ -14,7 +14,7 @@ let lstm ~size_c ~size_x ~size_y x_and_ys =
   let wy, by = Var.f [ size_c; size_y ] 0., Var.f [ size_y ] 0. in
   let one_lstm ~h ~x ~c =
     let open Ops in
-    let h_and_x = concat zero32 [ h; x ] in
+    let h_and_x = concat one32 [ h; x ] in
     let c =
       sigmoid (h_and_x *^ wf + bf) * c
       + sigmoid (h_and_x *^ wi + bi) * tanh (sigmoid (h_and_x *^ wC + bC))
@@ -27,7 +27,7 @@ let lstm ~size_c ~size_x ~size_y x_and_ys =
       let h, c = one_lstm ~h ~x ~c in
       let err = Ops.(h *^ wy + by - y) in
       err :: errs, h, c)
-    |> fun (errs, _, _) -> Ops.concat Ops.zero32 errs
+    |> fun (errs, _, _) -> Ops.concat Ops.one32 errs
     |> Ops.square
     |> Ops.reduce_mean
   in
@@ -53,7 +53,7 @@ let fit_1d fn =
     let err =
       Session.run
         ~inputs:[]
-        ~targets:gd
+        ~targets:(ignore gd; [])
         (Session.Output.scalar_float err);
     in
     printf "%d %f\n%!" i err;
