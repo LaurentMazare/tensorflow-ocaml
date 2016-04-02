@@ -1,6 +1,5 @@
 open Core_kernel.Std
 open Tensorflow
-module H = Helper
 module O = Ops
 
 let one_layer ~samples ~size_xs ~size_ys ~xs ~ys ~hidden_nodes ~epochs =
@@ -22,7 +21,7 @@ let one_layer ~samples ~size_xs ~size_ys ~xs ~ys ~hidden_nodes ~epochs =
     let err, y_ =
       Session.run Session.Output.(both (float err) (float y_))
     in
-    H.print_tensors [ Tensor.P err ] ~names:[ sprintf "err %d" n ];
+    Tensor.print (Tensor.P err);
     results := (n, Tensor.to_float_list (Tensor.P y_)) :: !results
   in
   for i = 0 to epochs do

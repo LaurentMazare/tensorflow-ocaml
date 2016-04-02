@@ -1,6 +1,5 @@
 open Core_kernel.Std
 open Tensorflow
-module H = Helper
 module O = Ops
 
 let run ~samples ~size_xs ~size_ys ~xs ~ys =
@@ -18,7 +17,7 @@ let run ~samples ~size_xs ~size_ys ~xs ~ys =
   let results = ref [] in
   let print_err n =
     let err, y_ = Session.run Session.Output.(both (float err) (float y_)) in
-    H.print_tensors [ Tensor.P err ] ~names:[ sprintf "err %d" n ];
+    Tensor.print (Tensor.P err);
     results := (n, Tensor.to_float_list (Tensor.P y_)) :: !results
   in
   for i = 0 to 2000 do

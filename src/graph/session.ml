@@ -121,7 +121,8 @@ let prepare_graph t ~inputs ~targets ~outputs =
   let protobuf =
     Node_protobuf.of_nodes' ~already_exported_nodes:t.exported_nodes all_nodes_to_export
   in
-  Wrapper.Session.(extend_graph t.session protobuf |> ok_exn);
+  Option.iter protobuf ~f:(fun protobuf ->
+    Wrapper.Session.(extend_graph t.session protobuf |> ok_exn));
   let node_names = List.map ~f:(fun x -> Node.packed_name x |> Node.Name.to_string) in
   { inputs = node_names inputs
   ; targets = node_names targets

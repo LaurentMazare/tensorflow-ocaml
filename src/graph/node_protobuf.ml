@@ -184,8 +184,10 @@ let of_nodes' ?verbose ~already_exported_nodes ts =
     end
   in
   List.iter ts ~f:walk;
-  let graph_def =
-    { Graph_def.node = !output
+  match !output with
+  | [] -> None
+  | node ->
+    { Graph_def.node
     ; versions =
       Some
         { Version_def.producer = Some (Int32.of_int_exn 8)
@@ -195,10 +197,10 @@ let of_nodes' ?verbose ~already_exported_nodes ts =
     ; version = None
     ; library = None
     }
-  in
-  gen_graph_def graph_def
-  |> Piqirun.to_string
-  |> Protobuf.of_string
+    |> gen_graph_def
+    |> Piqirun.to_string
+    |> Protobuf.of_string
+    |> Option.some
 
 let of_nodes ?verbose ts =
   of_nodes' ?verbose ~already_exported_nodes:(Node.Id.Table.create ()) ts

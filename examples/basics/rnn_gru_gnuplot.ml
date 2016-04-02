@@ -88,7 +88,8 @@ let fit_1d fn =
   in
   let init = [], tensor 1, tensor size_h in
   let ys, _, h_res =
-    List.fold (List.range 0 500) ~init ~f:(fun (acc_y, prev_y, prev_h) _ ->
+    List.foldi (List.range 0 500) ~init ~f:(fun idx (acc_y, prev_y, prev_h) _ ->
+      if idx < 5 then Bigarray.Genarray.set prev_y [| 0; 0 |] (sin (float idx *. step_size));
       let y_res, h_res =
         Session.run
           ~inputs:Session.Input.[ float x prev_y; float h prev_h ]
