@@ -30,7 +30,7 @@ let gru ~size_h ~size_x ~size_y x_and_ys =
     (* the new value of h *)
     let nh = tanh (rh_and_x *^ wH + bH) in
     (* How do we mix th new h and the old h *)
-    let z = sigmoid (wz *^ h_and_x + bz) in
+    let z = sigmoid (h_and_x *^ wz + bz) in
     (* we mix the old h and the new h *)
     let h = z * nh + (f 1.0 - z) * h in
     let y_bar = Ops.(h *^ wy + by) in
