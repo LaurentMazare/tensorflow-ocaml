@@ -141,10 +141,15 @@ module Attribute = struct
 end
 
 module Op = struct
+  type output_type =
+    { name : string option
+    ; type_ : Type.t
+    }
+
   type t =
     { name : string
     ; inputs : Input.t list 
-    ; output_types : (string option * Type.t) list
+    ; output_types : output_type list
     ; attributes : Attribute.t list
     ; summary : string option
     ; description : string option
@@ -231,8 +236,13 @@ module Op = struct
           })
       in
       let output_types =
-        match List.map op.output_arg ~f:(read_type types) with
-        | [] -> [ None, Type.Fixed (P Unit) ]
+        let output_types =
+          List.map op.output_arg ~f:(fun output_arg ->
+            let name, type_ = read_type types output_arg in
+            { name; type_ })
+        in
+        match output_types with
+        | [] -> [ { name = None; type_ = Type.Fixed (P Unit) } ]
         | output_types -> output_types
       in
       Ok
@@ -294,9 +304,9 @@ let gen_mli ops =
     Option.iter op.description ~f:(fun description -> p "(* %s *)" description);
     p "val %s" (Op.caml_name op);
     p "  :  ?name:string";
-    List.iteri op.output_types ~f:(fun idx (_, output_type) ->
-      if needs_variable_for_output_type op output_type
-      then p "  -> %s:%s Type.t" (type_variable ~idx) (Type.to_string output_type));
+    List.iteri op.output_types ~f:(fun idx output_type ->
+      if needs_variable_for_output_type op output_type.type_
+      then p "  -> %s:%s Type.t" (type_variable ~idx) (Type.to_string output_type.type_));
     List.iter op.attributes ~f:(fun attribute ->
       Attribute.mli attribute p);
     List.iter op.inputs ~f:(fun input ->
@@ -304,8 +314,8 @@ let gen_mli ops =
       p "  -> %s t%s" (Type.to_string input.type_) maybe_list);
     if List.is_empty op.inputs
     then p "  -> unit";
-    p "  -> %s" (List.map op.output_types ~f:(fun (_, output_type) ->
-      sprintf "%s t" (Type.to_string output_type)) |> String.concat ~sep:" * ");
+    p "  -> %s" (List.map op.output_types ~f:(fun output_type ->
+      sprintf "%s t" (Type.to_string output_type.type_)) |> String.concat ~sep:" * ");
     p "";
   in
   p "%s" automatically_generated_file;
@@ -322,8 +332,8 @@ let handle_one_op (op : Op.t) out_channel =
   let p s = p out_channel s in
   p "let %s" (Op.caml_name op);
   p "    ?(name = \"%s\")" op.name;
-  List.iteri op.output_types ~f:(fun idx (_, output_type) ->
-    if needs_variable_for_output_type op output_type
+  List.iteri op.output_types ~f:(fun idx output_type ->
+    if needs_variable_for_output_type op output_type.type_
     then p "    ~%s" (type_variable ~idx));
   List.iter op.attributes ~f:(fun attribute ->
     Attribute.ml_def attribute p);
@@ -335,9 +345,9 @@ let handle_one_op (op : Op.t) out_channel =
   then p "    ()";
   p "  =";
   let type_attr =
-    List.filter_mapi op.output_types ~f:(fun idx (output_type_name, output_type) ->
-      Option.map output_type_name ~f:(fun output_type_name ->
-        output_type_name, output_type_string op output_type ~idx))
+    List.filter_mapi op.output_types ~f:(fun idx output_type ->
+      Option.map output_type.name ~f:(fun output_type_name ->
+        output_type_name, output_type_string op output_type.type_ ~idx))
   in
   let type_attr =
     List.fold op.inputs ~init:type_attr ~f:(fun acc (input : Input.t) ->
@@ -376,8 +386,8 @@ let handle_one_op (op : Op.t) out_channel =
   in
   p "  let inputs = %s in" inputs;
   let multiple_outputs = 1 < List.length op.output_types in
-  List.iteri op.output_types ~f:(fun idx (_, output_type) ->
-    let output_type_string = output_type_string op output_type ~idx in
+  List.iteri op.output_types ~f:(fun idx output_type ->
+    let output_type_string = output_type_string op output_type.type_ ~idx in
     if 0 < idx then p "  ,";
     p "  { name";
     p "  ; op_name";
