@@ -87,7 +87,7 @@ let fit_1d fn =
     Bigarray.Genarray.create Bigarray.float32 Bigarray.c_layout [| 1; size |]
   in
   let init = [], tensor 1, tensor size_h in
-  let ys, _, _ =
+  let ys, _, h_res =
     List.fold (List.range 0 500) ~init ~f:(fun (acc_y, prev_y, prev_h) _ ->
       let y_res, h_res =
         Session.run
@@ -97,12 +97,26 @@ let fit_1d fn =
       let y = Bigarray.Genarray.get y_res [| 0; 0 |] in
       y :: acc_y, y_res, h_res)
   in
-  List.rev ys
+  let init = [], tensor 1, h_res in
+  let ys', _, _ =
+    List.fold (List.range 0 500) ~init ~f:(fun (acc_y, prev_y, prev_h) _ ->
+      let y_res, h_res =
+        Session.run
+          ~inputs:Session.Input.[ float x prev_y; float h prev_h ]
+          Session.Output.(both (float y_bar) (float h_out))
+      in
+      let y = Bigarray.Genarray.get y_res [| 0; 0 |] in
+      y :: acc_y, y_res, h_res)
+  in
+  List.rev ys, List.rev ys'
 
 let () =
   let open Gnuplot in
-  let ys = fit_1d sin in
+  let ys, ys' = fit_1d sin in
   let xys = List.mapi ys ~f:(fun i y -> float i *. step_size, y) in
+  let xys' = List.mapi ys' ~f:(fun i y -> float i *. step_size, y) in
   let gp = Gp.create () in
-  Gp.plot_many gp ~output:(Output.create `Qt) [ Series.points_xy xys ];
+  Gp.plot_many gp ~output:(Output.create `Qt)
+    [ Series.points_xy xys ~title:"original"
+    ; Series.points_xy xys'~title:"replay" ];
   Gp.close gp
