@@ -7,12 +7,12 @@ open Tensorflow
 let train_size = 1000
 
 let lstm ~size_c ~size_x ~size_y x_and_ys =
-  let create_vars () = Var.f [ size_c+size_x; size_c ] 0., Var.f [ size_c ] 0. in
+  let create_vars () = Var.normalf [ size_c+size_x; size_c ] ~stddev:0.1, Var.f [ size_c ] 0. in
   let wf, bf = create_vars () in
   let wi, bi = create_vars () in
   let wC, bC = create_vars () in
   let wo, bo = create_vars () in
-  let wy, by = Var.f [ size_c; size_y ] 0., Var.f [ size_y ] 0. in
+  let wy, by = Var.normalf [ size_c; size_y ] ~stddev:0.1, Var.f [ size_y ] 0. in
   let one_lstm ~h ~x ~c =
     let open Ops in
     let h_and_x = concat one32 [ h; x ] in
@@ -41,10 +41,10 @@ let lstm ~size_c ~size_x ~size_y x_and_ys =
   in
   err, one_lstm
 
-let epochs = 1000
+let epochs = 400
 let size_c = 20
-let steps = 100
-let step_size = 0.05
+let steps = 50
+let step_size = 0.1
 
 let fit_1d fn =
   let x_and_ys =
@@ -77,7 +77,7 @@ let fit_1d fn =
   in
   let init = [], tensor 1, tensor size_c, tensor size_c in
   let ys, _, _, _ =
-    List.fold (List.range 0 100) ~init ~f:(fun (acc_y, prev_y, prev_h, prev_c) _ ->
+    List.fold (List.range 0 500) ~init ~f:(fun (acc_y, prev_y, prev_h, prev_c) _ ->
       let y_res, h_res, c_res =
         Session.run
           ~inputs:Session.Input.[ float x prev_y; float h prev_h; float c prev_c ]
@@ -91,7 +91,7 @@ let fit_1d fn =
 let () =
   let open Gnuplot in
   let ys = fit_1d sin in
-  let xys = List.mapi ys ~f:(fun i y -> float i, y) in
+  let xys = List.mapi ys ~f:(fun i y -> float i *. step_size, y) in
   let gp = Gp.create () in
   Gp.plot_many gp ~output:(Output.create `Qt) [ Series.points_xy xys ];
   Gp.close gp
