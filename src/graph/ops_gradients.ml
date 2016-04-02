@@ -364,7 +364,7 @@ let concat_gradient ~self ~gradient =
     let concat_grads =
       List.mapi sizes ~f:(fun idx size ->
         let offset = { offset_node with output_idx = Some idx } in
-        N.P (Ops.slice gradient size offset))
+        N.P (Ops.slice gradient offset size))
     in
     None :: all concat_grads
 

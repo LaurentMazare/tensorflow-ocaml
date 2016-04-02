@@ -27,9 +27,14 @@ let lstm ~size_c ~size_x ~size_y x_and_ys =
       let h, c = one_lstm ~h ~x ~c in
       let err = Ops.(h *^ wy + by - y) in
       err :: errs, h, c)
-    |> fun (errs, _, _) -> Ops.concat Ops.one32 errs
-    |> Ops.square
-    |> Ops.reduce_mean
+    |> fun (errs, _, _) ->
+    let errs =
+      match errs with
+      | [] -> failwith "Empty input list"
+      | [ err ] -> err
+      | errs -> Ops.concat Ops.one32 errs
+    in
+    Ops.square errs |> Ops.reduce_mean
   in
   err, one_lstm
 
@@ -53,7 +58,7 @@ let fit_1d fn =
     let err =
       Session.run
         ~inputs:[]
-        ~targets:(ignore gd; [])
+        ~targets:gd
         (Session.Output.scalar_float err);
     in
     printf "%d %f\n%!" i err;
