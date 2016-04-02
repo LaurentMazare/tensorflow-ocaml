@@ -1,4 +1,5 @@
 (* THIS FILE HAS BEEN AUTOMATICALLY GENERATED, DO NOT EDIT BY HAND! *)
+open Core_kernel.Std
 open Node
 
 module Op_names = struct
@@ -231,7 +232,6 @@ module Op_names = struct
   let sparseSegmentSqrtNGrad = Op_name.of_string "SparseSegmentSqrtNGrad"
   let sparseSegmentSum = Op_name.of_string "SparseSegmentSum"
   let sparseSoftmaxCrossEntropyWithLogits = Op_name.of_string "SparseSoftmaxCrossEntropyWithLogits"
-  let sparseSplit = Op_name.of_string "SparseSplit"
   let sparseToDense = Op_name.of_string "SparseToDense"
   let split = Op_name.of_string "Split"
   let sqrt = Op_name.of_string "Sqrt"
@@ -314,16 +314,16 @@ let addN
     ?(name = "AddN")
     (inputs__ : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t list)
   =
-  let attributes = [ "T", Type (P (List.hd inputs__).output_type) ] in
+  let attributes = [ "T", Type (P (List.hd_exn inputs__).output_type) ] in
   let attributes =
     ("N", Int (List.length inputs__)) :: attributes
   in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.addN in
-  let inputs = List.map (fun n -> P n) inputs__ in
+  let inputs = List.map ~f:(fun n -> P n) inputs__ in
   { name
   ; op_name
-  ; output_type = (List.hd inputs__).output_type
+  ; output_type = (List.hd_exn inputs__).output_type
   ; inputs
   ; attributes
   ; output_idx = None
@@ -1173,16 +1173,16 @@ let concat
     (concat_dim : [ `int32 ] t)
     (values : 't t list)
   =
-  let attributes = [ "T", Type (P (List.hd values).output_type) ] in
+  let attributes = [ "T", Type (P (List.hd_exn values).output_type) ] in
   let attributes =
     ("N", Int (List.length values)) :: attributes
   in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.concat in
-  let inputs = [ P concat_dim ] @ List.map (fun n -> P n) values in
+  let inputs = [ P concat_dim ] @ List.map ~f:(fun n -> P n) values in
   { name
   ; op_name
-  ; output_type = (List.hd values).output_type
+  ; output_type = (List.hd_exn values).output_type
   ; inputs
   ; attributes
   ; output_idx = None
@@ -1199,14 +1199,15 @@ let concatOffset
   in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.concatOffset in
-  let inputs = [ P concat_dim ] @ List.map (fun n -> P n) shape in
-  { name
-  ; op_name
-  ; output_type = Type.Int32
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  let inputs = [ P concat_dim ] @ List.map ~f:(fun n -> P n) shape in
+  List.init (List.length shape) ~f:(fun output_idx ->
+    { name
+    ; op_name
+    ; output_type = Type.Int32
+    ; inputs
+    ; attributes
+    ; output_idx = Some output_idx
+    })
 
 let conj
     ?(name = "Conj")
@@ -1576,29 +1577,30 @@ let dynamicPartition
   let name = Name.make_fresh ~name in
   let op_name = Op_names.dynamicPartition in
   let inputs = [ P data; P partitions ] in
-  { name
-  ; op_name
-  ; output_type = data.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  List.init num_partitions ~f:(fun output_idx ->
+    { name
+    ; op_name
+    ; output_type = data.output_type
+    ; inputs
+    ; attributes
+    ; output_idx = Some output_idx
+    })
 
 let dynamicStitch
     ?(name = "DynamicStitch")
     (indices : [ `int32 ] t list)
     (data : 't t list)
   =
-  let attributes = [ "T", Type (P (List.hd data).output_type) ] in
+  let attributes = [ "T", Type (P (List.hd_exn data).output_type) ] in
   let attributes =
     ("N", Int (List.length indices)) :: attributes
   in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.dynamicStitch in
-  let inputs = List.map (fun n -> P n) indices @ List.map (fun n -> P n) data in
+  let inputs = List.map ~f:(fun n -> P n) indices @ List.map ~f:(fun n -> P n) data in
   { name
   ; op_name
-  ; output_type = (List.hd data).output_type
+  ; output_type = (List.hd_exn data).output_type
   ; inputs
   ; attributes
   ; output_idx = None
@@ -3103,16 +3105,16 @@ let merge
     ?(name = "Merge")
     (inputs__ : 't t list)
   =
-  let attributes = [ "T", Type (P (List.hd inputs__).output_type) ] in
+  let attributes = [ "T", Type (P (List.hd_exn inputs__).output_type) ] in
   let attributes =
     ("N", Int (List.length inputs__)) :: attributes
   in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.merge in
-  let inputs = List.map (fun n -> P n) inputs__ in
+  let inputs = List.map ~f:(fun n -> P n) inputs__ in
   { name
   ; op_name
-  ; output_type = (List.hd inputs__).output_type
+  ; output_type = (List.hd_exn inputs__).output_type
   ; inputs
   ; attributes
   ; output_idx = Some 0
@@ -3136,7 +3138,7 @@ let mergeSummary
   in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.mergeSummary in
-  let inputs = List.map (fun n -> P n) inputs__ in
+  let inputs = List.map ~f:(fun n -> P n) inputs__ in
   { name
   ; op_name
   ; output_type = Type.String
@@ -3314,16 +3316,16 @@ let pack
     ?(name = "Pack")
     (values : 't t list)
   =
-  let attributes = [ "T", Type (P (List.hd values).output_type) ] in
+  let attributes = [ "T", Type (P (List.hd_exn values).output_type) ] in
   let attributes =
     ("N", Int (List.length values)) :: attributes
   in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.pack in
-  let inputs = List.map (fun n -> P n) values in
+  let inputs = List.map ~f:(fun n -> P n) values in
   { name
   ; op_name
-  ; output_type = (List.hd values).output_type
+  ; output_type = (List.hd_exn values).output_type
   ; inputs
   ; attributes
   ; output_idx = None
@@ -3902,16 +3904,16 @@ let refMerge
     ?(name = "RefMerge")
     (inputs__ : 't t list)
   =
-  let attributes = [ "T", Type (P (List.hd inputs__).output_type) ] in
+  let attributes = [ "T", Type (P (List.hd_exn inputs__).output_type) ] in
   let attributes =
     ("N", Int (List.length inputs__)) :: attributes
   in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.refMerge in
-  let inputs = List.map (fun n -> P n) inputs__ in
+  let inputs = List.map ~f:(fun n -> P n) inputs__ in
   { name
   ; op_name
-  ; output_type = (List.hd inputs__).output_type
+  ; output_type = (List.hd_exn inputs__).output_type
   ; inputs
   ; attributes
   ; output_idx = Some 0
@@ -3946,16 +3948,16 @@ let refSelect
     (index : [ `int32 ] t)
     (inputs__ : 't t list)
   =
-  let attributes = [ "T", Type (P (List.hd inputs__).output_type) ] in
+  let attributes = [ "T", Type (P (List.hd_exn inputs__).output_type) ] in
   let attributes =
     ("N", Int (List.length inputs__)) :: attributes
   in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.refSelect in
-  let inputs = [ P index ] @ List.map (fun n -> P n) inputs__ in
+  let inputs = [ P index ] @ List.map ~f:(fun n -> P n) inputs__ in
   { name
   ; op_name
-  ; output_type = (List.hd inputs__).output_type
+  ; output_type = (List.hd_exn inputs__).output_type
   ; inputs
   ; attributes
   ; output_idx = None
@@ -4617,20 +4619,21 @@ let shapeN
     ?(name = "ShapeN")
     (input : 't t list)
   =
-  let attributes = [ "T", Type (P (List.hd input).output_type) ] in
+  let attributes = [ "T", Type (P (List.hd_exn input).output_type) ] in
   let attributes =
     ("N", Int (List.length input)) :: attributes
   in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.shapeN in
-  let inputs = List.map (fun n -> P n) input in
-  { name
-  ; op_name
-  ; output_type = Type.Int32
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  let inputs = List.map ~f:(fun n -> P n) input in
+  List.init (List.length input) ~f:(fun output_idx ->
+    { name
+    ; op_name
+    ; output_type = Type.Int32
+    ; inputs
+    ; attributes
+    ; output_idx = Some output_idx
+    })
 
 let shardedFilename
     ?(name = "ShardedFilename")
@@ -5016,7 +5019,7 @@ let sparseConcat
     (values : 't t list)
     (shapes : [ `int64 ] t list)
   =
-  let attributes = [ "T", Type (P (List.hd values).output_type) ] in
+  let attributes = [ "T", Type (P (List.hd_exn values).output_type) ] in
   let attributes =
     ("concat_dim", Int concat_dim) :: attributes
   in
@@ -5025,7 +5028,7 @@ let sparseConcat
   in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.sparseConcat in
-  let inputs = List.map (fun n -> P n) indices @ List.map (fun n -> P n) values @ List.map (fun n -> P n) shapes in
+  let inputs = List.map ~f:(fun n -> P n) indices @ List.map ~f:(fun n -> P n) values @ List.map ~f:(fun n -> P n) shapes in
   { name
   ; op_name
   ; output_type = Type.Int64
@@ -5036,7 +5039,7 @@ let sparseConcat
   ,
   { name
   ; op_name
-  ; output_type = (List.hd values).output_type
+  ; output_type = (List.hd_exn values).output_type
   ; inputs
   ; attributes
   ; output_idx = Some 1
@@ -5226,45 +5229,6 @@ let sparseSoftmaxCrossEntropyWithLogits
   ; output_idx = Some 1
   }
 
-let sparseSplit
-    ?(name = "SparseSplit")
-    ~num_split
-    (split_dim : [ `int64 ] t)
-    (indices : [ `int64 ] t)
-    (values : 't t)
-    (shape : [ `int64 ] t)
-  =
-  let attributes = [ "T", Type (P values.output_type) ] in
-  let attributes =
-    ("num_split", Int num_split) :: attributes
-  in
-  let name = Name.make_fresh ~name in
-  let op_name = Op_names.sparseSplit in
-  let inputs = [ P split_dim; P indices; P values; P shape ] in
-  { name
-  ; op_name
-  ; output_type = Type.Int64
-  ; inputs
-  ; attributes
-  ; output_idx = Some 0
-  }
-  ,
-  { name
-  ; op_name
-  ; output_type = values.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = Some 1
-  }
-  ,
-  { name
-  ; op_name
-  ; output_type = Type.Int64
-  ; inputs
-  ; attributes
-  ; output_idx = Some 2
-  }
-
 let sparseToDense
     ?(name = "SparseToDense")
     ?validate_indices
@@ -5301,13 +5265,14 @@ let split
   let name = Name.make_fresh ~name in
   let op_name = Op_names.split in
   let inputs = [ P split_dim; P value ] in
-  { name
-  ; op_name
-  ; output_type = value.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  List.init num_split ~f:(fun output_idx ->
+    { name
+    ; op_name
+    ; output_type = value.output_type
+    ; inputs
+    ; attributes
+    ; output_idx = Some output_idx
+    })
 
 let sqrt
     ?(name = "Sqrt")
@@ -6109,13 +6074,14 @@ let unpack
   let name = Name.make_fresh ~name in
   let op_name = Op_names.unpack in
   let inputs = [ P value ] in
-  { name
-  ; op_name
-  ; output_type = value.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  List.init num ~f:(fun output_idx ->
+    { name
+    ; op_name
+    ; output_type = value.output_type
+    ; inputs
+    ; attributes
+    ; output_idx = Some output_idx
+    })
 
 let unsortedSegmentSum
     ?(name = "UnsortedSegmentSum")

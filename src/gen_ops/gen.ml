@@ -44,7 +44,7 @@ module Input = struct
   let caml_comp_name t =
     let name = caml_name t in
     if t.number_attr = None then name
-    else sprintf "(List.hd %s)" name
+    else sprintf "(List.hd_exn %s)" name
 end
 
 module Attribute = struct
@@ -144,6 +144,7 @@ module Op = struct
   type output_type =
     { name : string option
     ; type_ : Type.t
+    ; number_attr : string option
     }
 
   type t =
@@ -239,12 +240,18 @@ module Op = struct
         let output_types =
           List.map op.output_arg ~f:(fun output_arg ->
             let name, type_ = read_type types output_arg in
-            { name; type_ })
+            { name; type_; number_attr = output_arg.number_attr })
         in
         match output_types with
-        | [] -> [ { name = None; type_ = Type.Fixed (P Unit) } ]
+        | [] -> [ { name = None; type_ = Type.Fixed (P Unit); number_attr = None } ]
         | output_types -> output_types
       in
+      let has_output_list =
+        List.exists output_types ~f:(fun output_type ->
+          Option.is_some output_type.number_attr)
+      in
+      if has_output_list && 1 < List.length output_types
+      then raise (Not_supported "output list are only supported for a single output");
       Ok
         { name
         ; inputs
@@ -315,7 +322,10 @@ let gen_mli ops =
     if List.is_empty op.inputs
     then p "  -> unit";
     p "  -> %s" (List.map op.output_types ~f:(fun output_type ->
-      sprintf "%s t" (Type.to_string output_type.type_)) |> String.concat ~sep:" * ");
+      sprintf "%s t%s"
+        (Type.to_string output_type.type_)
+        (if Option.is_some output_type.number_attr then " list" else "")
+      ) |> String.concat ~sep:" * ");
     p "";
   in
   p "%s" automatically_generated_file;
@@ -380,28 +390,51 @@ let handle_one_op (op : Op.t) out_channel =
       List.map op.inputs ~f:(fun input ->
         if input.number_attr = None
         then sprintf "[ P %s ]" (Input.caml_name input)
-        else sprintf "List.map (fun n -> P n) %s" (Input.caml_name input)
+        else sprintf "List.map ~f:(fun n -> P n) %s" (Input.caml_name input)
       )
       |> String.concat ~sep:" @ "
   in
   p "  let inputs = %s in" inputs;
   let multiple_outputs = 1 < List.length op.output_types in
-  List.iteri op.output_types ~f:(fun idx output_type ->
-    let output_type_string = output_type_string op output_type.type_ ~idx in
-    if 0 < idx then p "  ,";
-    p "  { name";
-    p "  ; op_name";
-    p "  ; output_type = %s" output_type_string;
-    p "  ; inputs";
-    p "  ; attributes";
-    p "  ; output_idx = %s" (if multiple_outputs then sprintf "Some %d" idx else "None");
-    p "  }");
+  begin
+    match op.output_types with
+    | [ { number_attr = Some number_attr; _ } as output_type ] ->
+      let output_type_string = output_type_string op output_type.type_ ~idx:0 in
+      let number_attr =
+        List.find_exn op.attributes ~f:(fun attr -> attr.name = number_attr)
+      in
+      let number_value =
+        match number_attr.match_input_length with
+        | Some input -> sprintf "(List.length %s)" input.name
+        | None -> number_attr.name
+      in
+      p "  List.init %s ~f:(fun output_idx ->" number_value;
+      p "    { name";
+      p "    ; op_name";
+      p "    ; output_type = %s" output_type_string;
+      p "    ; inputs";
+      p "    ; attributes";
+      p "    ; output_idx = Some output_idx";
+      p "    })";
+    | output_types ->
+      List.iteri output_types ~f:(fun idx output_type ->
+        let output_type_string = output_type_string op output_type.type_ ~idx in
+        if 0 < idx then p "  ,";
+        p "  { name";
+        p "  ; op_name";
+        p "  ; output_type = %s" output_type_string;
+        p "  ; inputs";
+        p "  ; attributes";
+        p "  ; output_idx = %s" (if multiple_outputs then sprintf "Some %d" idx else "None");
+        p "  }");
+  end;
   p ""
 
 let gen_ml ops =
   let out_channel = Out_channel.create (sprintf "%s.ml" output_file) in
   let p s = p out_channel s in
   p "%s" automatically_generated_file;
+  p "open Core_kernel.Std";
   p "open Node";
   p "";
   p "module Op_names = struct";

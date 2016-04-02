@@ -353,17 +353,10 @@ let concat_gradient ~self ~gradient =
         | None -> failwith "All the concatenated inputs should have the same type."
         | Some concat_input -> concat_input)
     in
-    (* Hacky implementation for now as the ops code generator does not support
-       node with list outputs properly. *)
-    let size_node = Ops.shapeN concat_inputs in
-    let sizes =
-      List.init (List.length concat_inputs) ~f:(fun idx ->
-        { size_node with output_idx = Some idx })
-    in
-    let offset_node = Ops.concatOffset concat_dim sizes in
+    let sizes = Ops.shapeN concat_inputs in
+    let offsets = Ops.concatOffset concat_dim sizes in
     let concat_grads =
-      List.mapi sizes ~f:(fun idx size ->
-        let offset = { offset_node with output_idx = Some idx } in
+      List.map2_exn sizes offsets ~f:(fun size offset ->
         N.P (Ops.slice gradient offset size))
     in
     None :: all concat_grads

@@ -231,7 +231,6 @@ module Op_names : sig
   val sparseSegmentSqrtNGrad : Op_name.t
   val sparseSegmentSum : Op_name.t
   val sparseSoftmaxCrossEntropyWithLogits : Op_name.t
-  val sparseSplit : Op_name.t
   val sparseToDense : Op_name.t
   val split : Op_name.t
   val sqrt : Op_name.t
@@ -804,7 +803,7 @@ val concatOffset
   :  ?name:string
   -> [ `int32 ] t
   -> [ `int32 ] t list
-  -> [ `int32 ] t
+  -> [ `int32 ] t list
 
 (* Returns the complex conjugate of a complex number. *)
 (* Given a tensor `in` of complex numbers, this operation returns a tensor of
@@ -1182,7 +1181,7 @@ val dynamicPartition
   -> num_partitions:int
   -> 't t
   -> [ `int32 ] t
-  -> 't t
+  -> 't t list
 
 (* Interleave the values from the `data` tensors into a single tensor. *)
 (* Builds a merged tensor such that
@@ -3170,7 +3169,7 @@ val shape
 val shapeN
   :  ?name:string
   -> 't t list
-  -> [ `int32 ] t
+  -> [ `int32 ] t list
 
 (* Generate a sharded filename. The filename is printf formatted as *)
 (*    %s-%05d-of-%05d, basename, shard, num_shards. *)
@@ -3579,33 +3578,6 @@ val sparseSoftmaxCrossEntropyWithLogits
   -> [ `int64 ] t
   -> ([< `float | `double ] as 't) t * ([< `float | `double ] as 't) t
 
-(* Split a `SparseTensor` into `num_split` tensors along one dimension. *)
-(* If the `shape[split_dim]` is not an integer multiple of `num_split`. Slices
-`[0 : shape[split_dim] % num_split]` gets one extra dimension.
-For example, if `split_dim = 1` and `num_split = 2` and the input is
-
-    input_tensor = shape = [2, 7]
-    [    a   d e  ]
-    [b c          ]
-
-Graphically the output tensors are:
-
-    output_tensor[0] = shape = [2, 4]
-    [    a  ]
-    [b c    ]
-
-    output_tensor[1] = shape = [2, 3]
-    [ d e  ]
-    [      ] *)
-val sparseSplit
-  :  ?name:string
-  -> num_split:int
-  -> [ `int64 ] t
-  -> [ `int64 ] t
-  -> 't t
-  -> [ `int64 ] t
-  -> [ `int64 ] t * 't t * [ `int64 ] t
-
 (* Converts a sparse representation into a dense tensor. *)
 (* Builds an array `dense` with shape `output_shape` such that
 
@@ -3641,7 +3613,7 @@ val split
   -> num_split:int
   -> [ `int32 ] t
   -> 't t
-  -> 't t
+  -> 't t list
 
 (* Computes square root of x element-wise. *)
 (* I.e., \\(y = \sqrt{x} = x^{1/2}\\). *)
@@ -4091,7 +4063,7 @@ val unpack
   :  ?name:string
   -> num:int
   -> 't t
-  -> 't t
+  -> 't t list
 
 (* Computes the sum along segments of a tensor. *)
 (* Read [the section on
