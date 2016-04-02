@@ -23,6 +23,9 @@ lr_gnuplot: examples/basics/linear_regression_gnuplot.native
 nn_gnuplot: examples/basics/nn_gnuplot.native
 	LD_LIBRARY_PATH=./lib:$(LD_LIBRARY_PATH) ./nn_gnuplot.native
 
+rnn_gru: examples/basics/rnn_gru.native
+	LD_LIBRARY_PATH=./lib:$(LD_LIBRARY_PATH) ./nn_gru.native
+
 mnist_nn: examples/mnist/mnist_nn.native
 	LD_LIBRARY_PATH=./lib:$(LD_LIBRARY_PATH) ./mnist_nn.native
 
