@@ -27,12 +27,38 @@ let lstm ~size_c ~size_x ~size_y x_and_ys =
       let h, c = one_lstm ~h ~x ~c in
       let err = Ops.(h *^ wy + by - y) in
       err :: errs, h, c)
-    |> fun (errs, _, _) -> List.rev errs
-    |> Ops.concat Ops.zero32
+    |> fun (errs, _, _) -> Ops.concat Ops.zero32 errs
     |> Ops.square
     |> Ops.reduce_mean
   in
   err, one_lstm
 
+let epochs = 100
+let size_c = 20
+let steps = 100
+let step_size = 0.05
+
+let fit_1d fn =
+  let x_and_ys =
+    List.init steps ~f:(fun x ->
+      let x = float x *. step_size in
+      let xs = Ops.const_float ~type_:Float ~shape:[ 1; 1 ] [ fn x ] in
+      let ys = Ops.const_float ~type_:Float ~shape:[ 1; 1 ] [ fn (x +. step_size) ] in
+      xs, ys
+    )
+  in
+  let err, one_lstm = lstm ~size_c ~size_x:1 ~size_y:1 x_and_ys in
+  let gd = Optimizers.gradient_descent_minimizer err ~alpha:(Ops.f 0.4) in
+  for i = 1 to epochs do
+    let err =
+      Session.run
+        ~inputs:[]
+        ~targets:gd
+        (Session.Output.scalar_float err);
+    in
+    printf "%d %f\n%!" i err;
+  done;
+  ignore (one_lstm, ())
+
 let () =
-  ignore (lstm, ())
+  fit_1d sin
