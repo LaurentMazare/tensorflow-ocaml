@@ -12,9 +12,9 @@ let create shape ~type_ ~init =
   Node.Weak_table.set init_table ~key:(Node.P node) ~data:assign;
   node
 
-let load ~type_ shape ~filename ~tensor_name =
+let load ~type_ shape ~file ~tensor_name =
   let init =
-    Ops.restore ~type_ (Ops.const_string [ filename ]) (Ops.const_string [ tensor_name ])
+    Ops.restore ~type_ (Ops.const_string [ file ]) (Ops.const_string [ tensor_name ])
   in
   create shape ~type_ ~init
 let load_f = load ~type_:Float
