@@ -70,6 +70,16 @@ val reduce_prod : 'a reduce_fn
 val reduce_all : ?dims:int list -> [ `bool ] Node.t -> [ `bool ] Node.t
 val reduce_any : ?dims:int list -> [ `bool ] Node.t -> [ `bool ] Node.t
 
+(* ==== Saving Tensors to disk ==== *)
+val save_
+  :  ?name:string
+  -> [ `string ] Node.t (* Filename *)
+  -> [ `string ] Node.t (* Tensor names *)
+  -> Node.p list (* Tensor to save. *)
+  -> [ `unit ] Node.t
+
+val save : filename:string -> (string * Node.p) list -> [ `unit ] Node.t
+
 (* ==== Misc ==== *)
 
 (* [range n] where [n] is a scalar tensor returns tensor [ 0; 1; ...; n-1 ]. *)

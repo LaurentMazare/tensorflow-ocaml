@@ -129,3 +129,28 @@ let dropout node ~keep_prob =
   |> Ops_generated.floor
   |> fun binary_tensor -> node * (Ops_generated.inv keep_prob) * binary_tensor
 
+
+let save_
+    ?(name = "Save")
+    filename
+    tensor_names
+    tensors
+  =
+  let inputs = Node.P filename :: Node.P tensor_names :: tensors in
+  let type_list =
+    List.map tensors ~f:(fun (Node.P tensor) -> Node.Type.P tensor.output_type)
+  in
+  { name = Name.make_fresh ~name
+  ; op_name = Op_name.of_string "Save"
+  ; output_type = Node.Type.Unit
+  ; inputs
+  ; attributes = [ "T", List (Type type_list) ]
+  ; output_idx = None
+  }
+
+let save ~filename named_tensors =
+  let tensor_names, tensors = List.unzip named_tensors in
+  save_
+    (const_string [ filename ])
+    (const_string tensor_names)
+    tensors
