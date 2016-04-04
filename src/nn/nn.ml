@@ -19,18 +19,18 @@ let input ~shape =
 module Shared_var = struct
 
   let with_shape ~f g =
-    let shape = ref None in
-    let set_shape s =
-      match !shape with
-      | None -> shape := Some s
-      | Some shape ->
+    let shape_a = ref None in
+    let f t =
+      let s = t.shape in
+      match !shape_a with
+      | None ->
+        let a = f ~shape:s in
+        shape_a := Some (s, a);
+        a
+      | Some (shape, a) ->
         if s <> shape
         then failwith "Dimensions do not match"
-    in
-    let v = lazy (f ~shape:(Option.value_exn !shape)) in
-    let f t =
-      set_shape (t.shape);
-      Lazy.force v
+        else a
     in
     Staged.stage (g f)
 
