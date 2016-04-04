@@ -19,15 +19,15 @@ let input ~shape =
 module Shared_var = struct
 
   let with_shape ~f g =
-    let shape_a = ref None in
+    let shape_a = ref (`F f) in
     let f t =
       let s = t.shape in
       match !shape_a with
-      | None ->
+      | `F f ->
         let a = f ~shape:s in
-        shape_a := Some (s, a);
+        shape_a := `Computed (s, a);
         a
-      | Some (shape, a) ->
+      | `Computed (shape, a) ->
         if s <> shape
         then failwith "Dimensions do not match"
         else a
