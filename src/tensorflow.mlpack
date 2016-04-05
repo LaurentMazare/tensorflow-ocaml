@@ -3,6 +3,7 @@ Graph_piqi
 Mnist_helper
 Piqirun
 Protobuf
+Nn
 Node
 Node_protobuf
 Ops
@@ -11,6 +12,7 @@ Ops_gradients
 Ops_manual
 Optimizers
 Registered_gradients
+Rnn
 Session
 Tensor
 Var

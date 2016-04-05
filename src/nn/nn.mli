@@ -52,8 +52,8 @@ module Model : sig
 
   val evaluate
     :  t
-    -> (float, [ `float ]) Tensor.t
-    -> (float, [ `float ]) Tensor.t
+    -> (float, Bigarray.float32_elt) Tensor.t
+    -> (float, Bigarray.float32_elt) Tensor.t
 
   type optimizer =
     | Gradient_descent of float
@@ -66,7 +66,7 @@ module Model : sig
     -> loss:loss
     -> optimizer:optimizer
     -> epochs:int
-    -> xs:(float, [ `float ]) Tensor.t
-    -> ys:(float, [ `float ]) Tensor.t
+    -> xs:(float, Bigarray.float32_elt) Tensor.t
+    -> ys:(float, Bigarray.float32_elt) Tensor.t
     -> unit
 end
