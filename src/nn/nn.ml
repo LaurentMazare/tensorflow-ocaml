@@ -1,4 +1,5 @@
 open Core_kernel.Std
+exception Shape_mismatch of int list * int list * string
 
 type t =
   { shape : int list (* output shape *)
@@ -57,15 +58,11 @@ module Shared_var = struct
          })
 end
 
-let sigmoid t =
-  { t with node = Ops.sigmoid t.node }
+let unary op t = { t with node = op t.node }
 
-let relu t =
-  { t with node = Ops.relu t.node }
-
-let tanh t =
-  { t with node = Ops.tanh t.node }
-
+let sigmoid = unary Ops.sigmoid
+let relu = unary Ops.relu
+let tanh = unary Ops.tanh
 
 let dense t ~shape =
   Staged.unstage (Shared_var.dense ~shape) t
@@ -75,25 +72,21 @@ let concat t1 t2 =
     shape = List.zip_exn t1.shape t2.shape |> List.map ~f:(fun (i,j) -> i + j);
     node = Ops.(concat one32 [ t1.node; t2.node ])}
 
-let ( * ) t1 t2 =
-  {t1 with
-   node = Ops.( * ) t1.node t2.node;
-   variables = t1.variables @ t2.variables
+let binary ~op_name op t1 t2 =
+  if t1.shape <> t2.shape
+  then raise (Shape_mismatch (t1.shape, t2.shape, op_name));
+  { node = op t1.node t2.node
+  ; shape = t1.shape
+  ; variables = t1.variables @ t2.variables
   }
 
-let ( + ) t1 t2 =
-  {t1 with
-   node = Ops.( + ) t1.node t2.node;
-   variables = t1.variables @ t2.variables
-  }
+let ( * ) = binary ~op_name:"Mul" Ops.( * )
 
-let ( - ) t1 t2 =
-  {t1 with
-   node = Ops.( - ) t1.node t2.node;
-   variables = t1.variables @ t2.variables
-  }
+let (+) = binary ~op_name:"Add" Ops.(+)
+let (-) = binary ~op_name:"Add" Ops.(-)
 
 let f c =
-  {shape = [];
-   node = Ops.f c;
-   variables = []}
+  { shape = []
+  ; node = Ops.f c
+  ; variables = []
+  }
