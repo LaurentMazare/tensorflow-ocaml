@@ -17,5 +17,5 @@ let gru ~shape =
        (* CR noury: check if it is nh_and_x *)
        let z = sigmoid (denseZ h_and_x) in
        (* we mix the old h and the new h *)
-       let h = z * nh + (f 1.0 - z) * h in
+       let h = z * nh + (f 1.0 ~shape:(Nn.shape z) - z) * h in
        h)

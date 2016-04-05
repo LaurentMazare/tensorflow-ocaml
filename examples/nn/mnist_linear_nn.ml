@@ -12,9 +12,9 @@ let () =
     Mnist_helper.read_files ()
   in
   let model =
-    Nn.input ~shape:[ image_dim ]
+    Nn.input ~shape:(D1 image_dim)
     |> snd (* TODO: remove this *)
-    |> Nn.dense ~shape:[ label_count ]
+    |> Nn.dense ~shape:label_count
     |> Nn.softmax
     |> Nn.Model.create
   in
