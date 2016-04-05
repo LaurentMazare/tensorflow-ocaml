@@ -85,8 +85,6 @@ module Shared_var = struct
         match input_shape with
         | D1 input_shape -> input_shape
       in
-      if shape <> input_shape
-      then shape_mismatch (D1 shape) (D1 input_shape) ~op_name:"dense";
       let w = Var.f [ input_shape; shape ] 0. in
       let b = Var.f [ shape ] 0. in
       w, b)
@@ -145,20 +143,66 @@ let (-) t t' = binary ~op_name:"Add" Ops.(-) t t'
 
 module Model = struct
   type 'a net = 'a t
-  type t
+
+  type 'a t =
+    { session : Session.t
+    ; net : 'a net
+    ; placeholder : [ `float ] Node.t
+    }
+
+  (* TODO: stochastic gradient descent. *)
   type optimizer =
     | Gradient_descent of float
 
   type loss =
     | Cross_entropy
 
-  let create _net = failwith "TODO"
+  let create net =
+    let session = Session.create () in
+    let placeholder = Ops.placeholder ~type_:Float (dim_list net.shape) in
+    { session
+    ; net
+    ; placeholder
+    }
 
-  let fit t ~loss ~optimizer ~epochs ~xs ~ys =
-    ignore (t, loss, optimizer, epochs, xs, ys);
-    failwith "TODO"
+  let all_inputs ?(named_inputs=[]) t xs =
+    let inputs =
+      List.map named_inputs ~f:(fun (node, value) ->
+        Session.Input.float node value)
+    in
+    match t.net.default_input with
+    | None -> inputs
+    | Some node -> Session.Input.float node xs :: inputs
 
-  let evaluate t xs =
-    ignore (t, xs);
-    failwith "TODO"
+  let fit ?named_inputs ~loss ~optimizer ~epochs ~xs ~ys t =
+    let loss =
+      match loss with
+      | Cross_entropy ->
+        Ops.(neg (reduce_mean (t.placeholder * log t.net.node)))
+    in
+    let optimizer =
+      match optimizer with
+      | Gradient_descent alpha ->
+        Optimizers.gradient_descent_minimizer ~alpha:(Ops.f alpha) loss
+    in
+    let inputs =
+      (Session.Input.float t.placeholder ys)
+      :: all_inputs ?named_inputs t xs
+    in
+    for epoch = 1 to epochs do
+      let err =
+        Session.run
+          ~inputs
+          ~targets:optimizer
+          (Session.Output.scalar_float loss)
+      in
+      printf "%3d %.2f\n%!" epoch err
+    done
+
+  let evaluate ?named_inputs t xs =
+    let inputs = all_inputs ?named_inputs t xs in
+    Session.run
+      ~inputs
+      ~session:t.session
+      (Session.Output.float t.net.node)
 end

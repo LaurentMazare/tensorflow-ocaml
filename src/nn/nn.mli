@@ -66,12 +66,13 @@ end
 
 module Model : sig
   type 'a net = 'a t
-  type t
+  type 'a t
 
-  val create : 'a net -> t
+  val create : 'a net -> 'a t
 
   val evaluate
-    :  t
+    :  ?named_inputs:(Input_name.t * (float, Bigarray.float32_elt) Tensor.t) list
+    -> 'a t
     -> (float, Bigarray.float32_elt) Tensor.t
     -> (float, Bigarray.float32_elt) Tensor.t
 
@@ -82,11 +83,12 @@ module Model : sig
     | Cross_entropy
 
   val fit
-    :  t
+    :  ?named_inputs: (Input_name.t * (float, Bigarray.float32_elt) Tensor.t) list
     -> loss:loss
     -> optimizer:optimizer
     -> epochs:int
     -> xs:(float, Bigarray.float32_elt) Tensor.t
     -> ys:(float, Bigarray.float32_elt) Tensor.t
+    -> 'a t
     -> unit
 end
