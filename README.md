@@ -17,6 +17,7 @@ After that you have to get/build the TensorFlow library `libtensorflow.so` for r
     1. [Install the Bazel build system](http://bazel.io/docs/install.html)
     1. Clone the TensorFlow repo `git clone --recurse-submodules -b r0.7 https://github.com/tensorflow/tensorflow`
     1. In `tensorflow` run `./configure` then `bazel build -c opt tensorflow:libtensorflow.so`
+       - In order to build with GPU support, CUDA needs to be installed and specified during `./configure`, and use `bazel build -c opt --config=cuda tensorflow:libtensorflow.so` to build.
 * An alternative is to [install TensorFlow using pip](https://www.tensorflow.org/versions/r0.7/get_started/os_setup.html#pip-installation) then copy the `.so` file in `libtensorflow.so`. You may have to tweak the following command depending on where TensorFlow was installed by pip.
 ```bash
 cp ~/.local/lib/python2.7/site-packages/tensorflow/python/_pywrap_tensorflow.so libtensorflow.so
