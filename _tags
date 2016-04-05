@@ -6,5 +6,5 @@ not <src/piqi/*>: warn(A-4-29-40-41-42-44-45-48)
 not <src/piqi/*>: warn_error(A-4-29-40-41-42-44-45-48)
 <src/gen_ops/*> or <src/graph/*> or <src/nn/*> or <examples/*> or <examples/*/*> or <tests/*>: package(core_kernel), thread
 <lib>: -traverse
-<src/piqi> or <src/wrapper> or <src/graph> or <src>: include
+<src/piqi> or <src/wrapper> or <src/graph> or <src> or <src/nn>: include
 <src/*/*>: for-pack(Tensorflow)

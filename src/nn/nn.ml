@@ -1,6 +1,7 @@
 open Core_kernel.Std
 exception Shape_mismatch of int list * int list * string
 
+(* TODO: handle double ? *)
 type t =
   { shape : int list (* output shape *)
   ; node : [ `float ] Node.t
@@ -63,6 +64,7 @@ let unary op t = { t with node = op t.node }
 let sigmoid = unary Ops.sigmoid
 let relu = unary Ops.relu
 let tanh = unary Ops.tanh
+let softmax = unary Ops.softmax
 
 let dense t ~shape =
   Staged.unstage (Shared_var.dense ~shape) t
@@ -90,3 +92,23 @@ let f c =
   ; node = Ops.f c
   ; variables = []
   }
+
+module Model = struct
+  type net = t
+  type t
+  type optimizer =
+    | Gradient_descent of float
+
+  type loss =
+    | Cross_entropy
+
+  let create _net = failwith "TODO"
+
+  let fit t ~loss ~optimizer ~epochs ~xs ~ys =
+    ignore (t, loss, optimizer, epochs, xs, ys);
+    failwith "TODO"
+
+  let evaluate t xs =
+    ignore (t, xs);
+    failwith "TODO"
+end
