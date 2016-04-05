@@ -23,4 +23,5 @@ let () =
     ~epochs
     ~xs:train_images
     ~ys:train_labels;
-  ignore (test_images, test_labels)
+  let test_results = Nn.Model.evaluate model test_images in
+  ignore (test_results, test_labels)

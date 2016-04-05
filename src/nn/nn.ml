@@ -1,5 +1,12 @@
 open Core_kernel.Std
 exception Shape_mismatch of int list * int list * string
+let () =
+  Caml.Printexc.register_printer (function
+    | Shape_mismatch (dims, dims', str) ->
+      let dims = List.map dims ~f:Int.to_string |> String.concat ~sep:", " in
+      let dims' = List.map dims' ~f:Int.to_string |> String.concat ~sep:", " in
+      Some (sprintf "Shape mismatch %s: %s <> %s" str dims dims')
+    | _ -> None)
 
 module Input_name = struct
   type t = [ `float ] Node.t
