@@ -22,6 +22,6 @@ let () =
     ~loss:Cross_entropy
     ~optimizer:(Gradient_descent 0.8)
     ~epochs
-    ~xs:(P train_images)
-    ~ys:(P train_labels);
+    ~xs:train_images
+    ~ys:train_labels;
   ignore (test_images, test_labels)

@@ -52,8 +52,8 @@ module Model : sig
 
   val evaluate
     :  t
-    -> Tensor.p
-    -> Tensor.p
+    -> (float, [ `float ]) Tensor.t
+    -> (float, [ `float ]) Tensor.t
 
   type optimizer =
     | Gradient_descent of float
@@ -66,7 +66,7 @@ module Model : sig
     -> loss:loss
     -> optimizer:optimizer
     -> epochs:int
-    -> xs:Tensor.p
-    -> ys:Tensor.p
+    -> xs:(float, [ `float ]) Tensor.t
+    -> ys:(float, [ `float ]) Tensor.t
     -> unit
 end
