@@ -1,5 +1,9 @@
 open Core_kernel.Std
 
+module Input_name : sig
+  type t
+end
+
 type _1d
 type _2d
 type _3d
@@ -15,7 +19,11 @@ val shape : 'a t -> 'a shape
 
 val input
   :  shape:'a shape
-  -> [ `float ] Node.t * 'a t
+  -> 'a t
+
+val named_input
+  :  shape:'a shape
+  -> Input_name.t * 'a t
 
 val dense
   (* TODO: add init *)

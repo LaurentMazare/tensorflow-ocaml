@@ -1,6 +1,17 @@
 open Core_kernel.Std
 exception Shape_mismatch of int list * int list * string
 
+module Input_name = struct
+  type t = [ `float ] Node.t
+
+  let merge t_option t_option' =
+    match t_option, t_option' with
+    | None, None -> None
+    | (Some _ as s), None | None, (Some _ as s) -> s
+    | Some t as s, Some t' when Node.(Id.(=) (id t) (id t')) -> s
+    | Some _, Some _ -> failwith "Different inputs"
+end
+
 (* TODO: handle double ? *)
 type _1d
 type _2d
@@ -21,19 +32,29 @@ type 'a t =
   { shape : 'a shape
   ; node : [ `float ] Node.t
   ; variables : [ `float ] Node.t list
+  ; default_input : Input_name.t option
   }
 
 let shape t = t.shape
 
-let input ~shape =
+let named_input ~shape =
   let placeholder = Ops.placeholder ~type_:Float (dim_list shape) in
   let t =
     { shape
     ; node = placeholder
     ; variables = []
+    ; default_input = None
     }
   in
   placeholder, t
+
+let input ~shape =
+  let placeholder = Ops.placeholder ~type_:Float (dim_list shape) in
+  { shape
+  ; node = placeholder
+  ; variables = []
+  ; default_input = Some placeholder
+  }
 
 let shape_mismatch shape1 shape2 ~op_name =
   let shape1 = dim_list shape1 in
@@ -75,6 +96,7 @@ module Shared_var = struct
       { shape = D1 shape
       ; node
       ; variables = [ w; b ]
+      ; default_input = t.default_input
       })
 end
 
@@ -82,6 +104,7 @@ let f v ~shape =
   { node = Ops.f v ~shape:(dim_list shape)
   ; shape
   ; variables = []
+  ; default_input = None
   }
 
 let unary op t = { t with node = op t.node }
@@ -103,6 +126,7 @@ let concat t1 t2 =
   ; shape
   (* We use one32 as the concat dim as the batch-size dimension is 0. *)
   ; node = Ops.(concat one32 [ t1.node; t2.node ])
+  ; default_input = Input_name.merge t1.default_input t2.default_input
   }
 
 let binary ~op_name op t1 t2 =
@@ -111,6 +135,7 @@ let binary ~op_name op t1 t2 =
   { node = op t1.node t2.node
   ; shape = t1.shape
   ; variables = t1.variables @ t2.variables
+  ; default_input = Input_name.merge t1.default_input t2.default_input
   }
 
 let ( * ) t t' = binary ~op_name:"Mul" Ops.( * ) t t'
