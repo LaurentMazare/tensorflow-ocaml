@@ -12,7 +12,7 @@ val normalf : int list -> stddev:float -> [ `float ] Node.t
 val normald : int list -> stddev:float -> [ `double ] Node.t
 val truncated_normalf : int list -> stddev:float -> [ `float ] Node.t
 val truncated_normald : int list -> stddev:float -> [ `double ] Node.t
-val load_f : int list -> file:string -> tensor_name:string -> [ `float ] Node.t
-val load_d : int list -> file:string -> tensor_name:string -> [ `double ] Node.t
+val load_f : int list -> filename:string -> tensor:string -> [ `float ] Node.t
+val load_d : int list -> filename:string -> tensor:string -> [ `double ] Node.t
 
 val get_init : Node.p -> Node.p option

@@ -30,7 +30,7 @@ val f : float -> t
 module Shared_var :
 sig
 
-  (* Allows to build variables of type 'a with the shpae without knowing
+  (* Allows to build variables of type 'a with the shape without knowing
      where it is going to be applied yet.
      It needs to be applied only to input of the same Shape *)
   val with_shape
