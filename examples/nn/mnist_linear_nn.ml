@@ -24,4 +24,4 @@ let () =
     ~xs:train_images
     ~ys:train_labels;
   let test_results = Nn.Model.evaluate model test_images in
-  ignore (test_results, test_labels)
+  printf "Accuracy: %.2f\n%!" (100. *. Mnist_helper.accuracy test_results test_labels)

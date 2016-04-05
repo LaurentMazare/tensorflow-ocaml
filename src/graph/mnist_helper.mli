@@ -29,3 +29,7 @@ val slice2
   :  ('a, 'b, 'c) Bigarray.Genarray.t
   -> int -> int -> ('a, 'b, Bigarray.c_layout) Bigarray.Genarray.t
 
+val accuracy
+  :  float32_genarray
+  -> float32_genarray
+  -> float
