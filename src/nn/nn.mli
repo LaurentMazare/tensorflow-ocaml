@@ -76,16 +76,22 @@ module Model : sig
     -> (float, Bigarray.float32_elt) Tensor.t
     -> (float, Bigarray.float32_elt) Tensor.t
 
-  type optimizer =
-    | Gradient_descent of float
+  module Optimizer : sig
+    type t
+    val gradient_descent : alpha:float -> t
+    val adam : alpha:float -> ?beta1:float -> ?beta2:float -> ?epsilon:float -> unit -> t
+  end
 
-  type loss =
-    | Cross_entropy
+  module Loss : sig
+    type t
+    val cross_entropy : t
+    val l2_mean : t
+  end
 
   val fit
     :  ?named_inputs: (Input_name.t * (float, Bigarray.float32_elt) Tensor.t) list
-    -> loss:loss
-    -> optimizer:optimizer
+    -> loss:Loss.t
+    -> optimizer:Optimizer.t
     -> epochs:int
     -> xs:(float, Bigarray.float32_elt) Tensor.t
     -> ys:(float, Bigarray.float32_elt) Tensor.t

@@ -18,8 +18,8 @@ let () =
     |> Nn.Model.create
   in
   Nn.Model.fit model
-    ~loss:Cross_entropy
-    ~optimizer:(Gradient_descent 8.)
+    ~loss:Nn.Model.Loss.cross_entropy
+    ~optimizer:(Nn.Model.Optimizer.gradient_descent ~alpha:8.)
     ~epochs
     ~xs:train_images
     ~ys:train_labels;
