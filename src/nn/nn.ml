@@ -119,6 +119,19 @@ let relu t = unary Ops.relu t
 let tanh t = unary Ops.tanh t
 let softmax t = unary Ops.softmax t
 
+let padding_str = function
+  | `same -> "SAME"
+  | `valid -> "VALID"
+let tuple4_to_list (a, b, c, d) = [ a; b; c; d ]
+
+let max_pool t ~ksize ~strides ~padding =
+  unary
+    (Ops.maxPool
+      ~ksize:(tuple4_to_list ksize)
+      ~strides:(tuple4_to_list strides)
+      ~padding:(padding_str padding))
+    t
+
 let dense t ~shape =
   Staged.unstage (Shared_var.dense ~shape) t
 
@@ -163,11 +176,15 @@ module Model = struct
     type t =
       | Gradient_descent of float
       | Adam of float * float option * float option * float option
+      | Momentum of float * float
 
     let gradient_descent ~alpha = Gradient_descent alpha
 
     let adam ~alpha ?beta1 ?beta2 ?epsilon () =
       Adam (alpha, beta1, beta2, epsilon)
+
+    let momentum ~alpha ~momentum =
+      Momentum (alpha, momentum)
 
     let get t ~loss =
       match t with
@@ -179,6 +196,10 @@ module Model = struct
           ?beta1:(Option.map beta1 ~f:Ops.f)
           ?beta2:(Option.map beta2 ~f:Ops.f)
           ?epsilon:(Option.map epsilon ~f:Ops.f)
+      | Momentum (alpha, momentum) ->
+        Optimizers.momentum_minimizer loss
+          ~alpha:(Ops.f alpha)
+          ~momentum:(Ops.f momentum)
   end
 
   module Loss = struct

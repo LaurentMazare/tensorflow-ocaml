@@ -39,6 +39,13 @@ val relu : 'a t -> 'a t
 
 val softmax : 'a t -> 'a t
 
+val max_pool
+  :  _3d t
+  -> ksize:(int * int * int * int)
+  -> strides:(int * int * int * int)
+  -> padding:[ `same | `valid ]
+  -> _3d t
+
 val concat : _1d t -> _1d t -> _1d t
 
 val ( + ) : 'a t -> 'a t -> 'a t
@@ -79,6 +86,7 @@ module Model : sig
   module Optimizer : sig
     type t
     val gradient_descent : alpha:float -> t
+    val momentum : alpha:float -> momentum:float -> t
     val adam : alpha:float -> ?beta1:float -> ?beta2:float -> ?epsilon:float -> unit -> t
   end
 
