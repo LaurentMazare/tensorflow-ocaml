@@ -201,6 +201,7 @@ module Model = struct
         Session.run
           ~inputs
           ~targets:optimizer
+          ~session:t.session
           (Session.Output.scalar_float loss)
       in
       printf "%3d %.2f\n%!" epoch err
