@@ -35,6 +35,12 @@ let dim_list (type a) (shape : a shape) =
   | D2 (d, d') -> [ d; d' ]
   | D3 (d, d', d'') -> [ d; d'; d'' ]
 
+let total_dim (type a) (shape : a shape) =
+  match shape with
+  | D1 d -> d
+  | D2 (d, d') -> d * d'
+  | D3 (d, d', d'') -> d * d' * d''
+
 type 'a t =
   { shape : 'a shape
   ; node : [ `float ] Node.t
@@ -196,6 +202,22 @@ let ( * ) t t' = binary ~op_name:"Mul" Ops.( * ) t t'
 
 let (+) t t' = binary ~op_name:"Add" Ops.(+) t t'
 let (-) t t' = binary ~op_name:"Add" Ops.(-) t t'
+
+let reshape t ~shape =
+  let dim_list = dim_list shape in
+  let total_dim_output = total_dim shape in
+  let total_dim_input = total_dim t.shape in
+  if total_dim_output <> total_dim_input
+  then shape_mismatch shape t.shape ~op_name:"reshape";
+  let node = Ops.reshape t.node (Ops.const_int ~type_:Int32 (-1 :: dim_list)) in
+  { node
+  ; shape
+  ; variables = t.variables
+  ; default_input = t.default_input
+  }
+
+let flatten t =
+  reshape t ~shape:(D1 (total_dim t.shape))
 
 module Model = struct
   type 'a net = 'a t

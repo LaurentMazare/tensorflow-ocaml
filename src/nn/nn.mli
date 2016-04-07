@@ -64,6 +64,13 @@ val ( * ) : 'a t -> 'a t -> 'a t
 
 val f : float -> shape:'a shape -> 'a t
 
+val reshape
+  : 'a t
+  -> shape:'b shape
+  -> 'b t
+
+val flatten : 'a t -> _1d t
+
 module Shared_var : sig
   (* Allows to build variables of type 'a with the shape without knowing
      where it is going to be applied yet.
