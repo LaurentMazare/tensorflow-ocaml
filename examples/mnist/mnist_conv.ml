@@ -52,8 +52,8 @@ let () =
   let gd = Optimizers.adam_minimizer ~alpha:(O.f 1e-5) cross_entropy in
   let validation_inputs =
     let one = scalar_tensor 1. in
-    let validation_images = Mnist_helper.slice2 mnist.test_images 0 1024 in
-    let validation_labels = Mnist_helper.slice2 mnist.test_labels 0 1024 in
+    let validation_images = Bigarray.Genarray.sub_left mnist.test_images 0 1024 in
+    let validation_labels = Bigarray.Genarray.sub_left mnist.test_labels 0 1024 in
     Session.Input.
       [ float xs validation_images; float ys validation_labels; float keep_prob one ]
   in

@@ -4,19 +4,6 @@ open Core_kernel.Std
 let image_dim = 28 * 28
 let label_count = 10
 
-let slice2 data start_idx n =
-  let data = Bigarray.array2_of_genarray data in
-  let dim2 = Bigarray.Array2.dim2 data in
-  let slice =
-    Bigarray.Array2.create (Bigarray.Array2.kind data) Bigarray.c_layout n dim2
-  in
-  for i = 0 to n - 1 do
-    for j = 0 to dim2 - 1 do
-      Bigarray.Array2.set slice i j (Bigarray.Array2.get data (start_idx + i) j)
-    done;
-  done;
-  Bigarray.genarray_of_array2 slice
-
 let one_hot labels =
   let nsamples = Bigarray.Array1.dim labels in
   let one_hot =
@@ -105,8 +92,8 @@ let read_files
 let train_batch { train_images; train_labels; _ } ~batch_size ~batch_idx =
   let train_size = (Bigarray.Genarray.dims train_images).(0) in
   let start_batch = (batch_size * batch_idx) mod (train_size - batch_size) in
-  let batch_images = slice2 train_images start_batch batch_size in
-  let batch_labels = slice2 train_labels start_batch batch_size in
+  let batch_images = Bigarray.Genarray.sub_left train_images start_batch batch_size in
+  let batch_labels = Bigarray.Genarray.sub_left train_labels start_batch batch_size in
   batch_images, batch_labels
 
 let accuracy ys ys' =
