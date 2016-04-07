@@ -76,6 +76,10 @@ val reshape
 
 val flatten : 'a t -> _1d t
 
+val split : _2d t -> _1d t list
+
+val concatN : _1d t list -> _2d t
+
 module Shared_var : sig
   (* Allows to build variables of type 'a with the shape without knowing
      where it is going to be applied yet.

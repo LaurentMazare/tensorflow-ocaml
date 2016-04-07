@@ -223,3 +223,44 @@ let reshape t ~shape =
 let flatten t =
   reshape t ~shape:(D1 (total_dim t.shape))
 
+let split (t : _2d t) =
+  let D2 (n, d) = t.shape in
+  Ops.(split ~num_split:n one32 t.node)
+  |> List.map
+      ~f:(fun node ->
+      { variables = t.variables
+      ; node
+      ; shape = D1 d
+      ; default_input = t.default_input })
+  |> List.map ~f:flatten
+
+let concatN (l : _1d t list) =
+  match l with
+  | [] -> failwith "concat called on an empty list"
+  | t::l ->
+    let s t =
+      let D1 shape = t.shape in
+      shape
+    in
+    let shape = s t in
+    let default_input =
+       List.fold ~init:t.default_input l
+         ~f:(fun default_input t ->
+             Input_name.merge default_input t.default_input)
+    in
+    List.iter l
+      ~f:(fun t ->
+          if shape <> s t
+          then failwithf "concat: shape mismatch between %i and %i" shape (s t) ());
+    let l =
+      List.map (t::l)
+        ~f:(reshape ~shape:(D2 (1,shape)))
+    in
+    let node = Ops.(concat one32 (List.map l ~f:(fun t -> t.node))) in
+    {variables = List.map l ~f:(fun t -> t.variables) |> List.concat;
+     shape = D2 (List.length l, shape);
+     node;
+     default_input }
+
+
+
