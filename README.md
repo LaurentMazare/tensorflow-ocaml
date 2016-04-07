@@ -25,7 +25,7 @@ cp ~/.local/lib/python2.7/site-packages/tensorflow/python/_pywrap_tensorflow.so 
 
 Adjust your LD_LIBRARY_PATH to include the directory in which you've put `libtensorflow.so` and finally download a [very simple example](https://github.com/LaurentMazare/tensorflow-ocaml/tree/master/examples/basics/forty_two.ml) and compile it with the following command:
 ```bash
-ocamlbuild forty_two.native -package ctypes -package ctypes.foreign -package core_kernel -package tensorflow-ocaml -cflags -w,-40
+ocamlbuild forty_two.native -package ctypes -package ctypes.foreign -package core_kernel -package tensorflow -cflags -w,-40
 ```
 
 Enjoy!
