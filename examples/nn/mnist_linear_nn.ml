@@ -17,7 +17,7 @@ let () =
     |> Model.create
   in
   Model.fit model
-    ~loss:Model.Loss.cross_entropy
+    ~loss:(Model.Loss.cross_entropy `mean)
     ~optimizer:(Model.Optimizer.gradient_descent ~alpha:8.)
     ~epochs
     ~xs:train_images

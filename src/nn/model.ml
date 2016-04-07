@@ -40,18 +40,22 @@ end
 
 module Loss = struct
   type t =
-    | Cross_entropy
-    | L2_mean
+    | Cross_entropy of [ `sum | `mean ]
+    | L2 of [ `sum | `mean ]
 
-  let cross_entropy = Cross_entropy
-  let l2_mean = L2_mean
+  let cross_entropy sum_mean = Cross_entropy sum_mean
+  let l2 sum_mean = L2 sum_mean
 
   let get t ~sample_ys ~model_ys =
+    let reduce = function
+      | `sum -> Ops.reduce_sum
+      | `mean -> Ops.reduce_mean
+    in
     match t with
-    | Cross_entropy ->
-      Ops.(neg (reduce_mean (sample_ys * log model_ys)))
-    | L2_mean ->
-      Ops.(reduce_mean (square (sample_ys - model_ys)))
+    | Cross_entropy sum_mean ->
+      Ops.(neg (reduce sum_mean (sample_ys * log model_ys)))
+    | L2 sum_mean ->
+      Ops.(reduce sum_mean (square (sample_ys - model_ys)))
 end
 
 let create net =

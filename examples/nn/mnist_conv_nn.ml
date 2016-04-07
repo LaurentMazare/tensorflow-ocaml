@@ -23,7 +23,7 @@ let () =
     |> Model.create
   in
   Model.fit model
-    ~loss:Model.Loss.cross_entropy
+    ~loss:(Model.Loss.cross_entropy `sum)
     ~optimizer:(Model.Optimizer.adam ~alpha:1e-5 ())
     ~epochs
     ~xs:train_images

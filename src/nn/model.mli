@@ -17,8 +17,8 @@ end
 
 module Loss : sig
   type t
-  val cross_entropy : t
-  val l2_mean : t
+  val cross_entropy : [ `sum | `mean ] -> t
+  val l2 : [ `sum | `mean ] -> t
 end
 
 val fit
