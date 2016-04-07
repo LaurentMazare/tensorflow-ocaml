@@ -13,9 +13,9 @@ let () =
     Nn.input ~shape:(D1 (28*28))
     |> Nn.reshape ~shape:(D3 (28, 28, 1))
     |> Nn.conv2d ~filter:(5, 5) ~out_channels:32 ~strides:(1, 1) ~padding:`same
-    |> Nn.max_pool ~ksize:(1, 2, 2, 1) ~strides:(1, 2, 2, 1) ~padding:`same
+    |> Nn.max_pool ~filter:(2, 2) ~strides:(2, 2) ~padding:`same
     |> Nn.conv2d ~filter:(5, 5) ~out_channels:64 ~strides:(1, 1) ~padding:`same
-    |> Nn.max_pool ~ksize:(1, 2, 2, 1) ~strides:(1, 2, 2, 1) ~padding:`same
+    |> Nn.max_pool ~filter:(2, 2) ~strides:(2, 2) ~padding:`same
     |> Nn.flatten
     |> Nn.dense ~shape:1024
     |> Nn.relu

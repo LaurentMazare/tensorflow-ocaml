@@ -55,7 +55,7 @@ let default_input t = t.default_input
 let node t = t.node
 
 let named_input ~shape =
-  let placeholder = Ops.placeholder ~type_:Float (dim_list shape) in
+  let placeholder = Ops.placeholder ~type_:Float (-1 :: dim_list shape) in
   let t =
     { shape
     ; node = placeholder
@@ -66,7 +66,7 @@ let named_input ~shape =
   placeholder, t
 
 let input ~shape =
-  let placeholder = Ops.placeholder ~type_:Float (dim_list shape) in
+  let placeholder = Ops.placeholder ~type_:Float (-1 :: dim_list shape) in
   { shape
   ; node = placeholder
   ; variables = []
@@ -81,6 +81,22 @@ let shape_mismatch shape1 shape2 ~op_name =
 let padding_str = function
   | `same -> "SAME"
   | `valid -> "VALID"
+
+let conv_sizes
+      ~input_height
+      ~input_width
+      ~filter_height
+      ~filter_width
+      ~stride_height
+      ~stride_width
+      ~padding
+  =
+  let input_height, input_width =
+    match padding with
+    | `same -> input_height, input_width
+    | `valid -> input_height - filter_height + 1, input_width - filter_width + 1
+  in
+  (input_height - 1) / stride_height + 1, (input_width - 1) / stride_width + 1
 
 module Shared_var = struct
   let with_shape ~f g =
@@ -131,14 +147,15 @@ module Shared_var = struct
       image_height, image_width, w, b)
       (fun f t ->
         let input_height, input_width, w, b = f t in
-        let input_height, input_width =
-          match padding with
-          | `same -> input_height, input_width
-          | `valid -> input_height - filter_height + 1, input_width - filter_width + 1
-        in
         let output_height, output_width =
-          (input_height - 1) / stride_height + 1,
-          (input_width - 1) / stride_width + 1
+          conv_sizes
+            ~input_height
+            ~input_width
+            ~filter_height
+            ~filter_width
+            ~stride_height
+            ~stride_width
+            ~padding
         in
         let padding = padding_str padding in
         let node = Ops.(conv2D ~strides ~padding t.node w + b) in
@@ -163,15 +180,34 @@ let relu t = unary Ops.relu t
 let tanh t = unary Ops.tanh t
 let softmax t = unary Ops.softmax t
 
-let tuple4_to_list (a, b, c, d) = [ a; b; c; d ]
-
-let max_pool t ~ksize ~strides ~padding =
-  unary
-    (Ops.maxPool
-      ~ksize:(tuple4_to_list ksize)
-      ~strides:(tuple4_to_list strides)
-      ~padding:(padding_str padding))
-    t
+let max_pool t ~filter ~strides ~padding =
+  let input_height, input_width, input_channels =
+    match t.shape with
+    | D3 (d, d', d'') -> d, d', d''
+  in
+  let filter_height, filter_width = filter in
+  let stride_height, stride_width = strides in
+  let output_height, output_width =
+    conv_sizes
+      ~input_height
+      ~input_width
+      ~filter_height
+      ~filter_width
+      ~stride_height
+      ~stride_width
+      ~padding
+  in
+  let node =
+    Ops.maxPool t.node
+      ~ksize:[ 1; filter_height; filter_width; 1 ]
+      ~strides:[ 1; stride_height; stride_width; 1 ]
+      ~padding:(padding_str padding)
+  in
+  { node
+  ; shape = D3 (output_height, output_width, input_channels)
+  ; variables = t.variables
+  ; default_input = t.default_input
+  }
 
 let dense t ~shape =
   Staged.unstage (Shared_var.dense ~shape) t

@@ -54,8 +54,8 @@ val softmax : 'a t -> 'a t
 
 val max_pool
   :  _3d t
-  -> ksize:(int * int * int * int)
-  -> strides:(int * int * int * int)
+  -> filter:int*int
+  -> strides:int*int
   -> padding:[ `same | `valid ]
   -> _3d t
 
