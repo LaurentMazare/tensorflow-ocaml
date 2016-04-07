@@ -3,6 +3,7 @@ open Tensorflow
 
 let label_count = Mnist_helper.label_count
 let epochs = 300
+let batch_size = 512
 
 let () =
   let { Mnist_helper.train_images; train_labels; test_images; test_labels } =
@@ -26,6 +27,7 @@ let () =
     ~loss:(Model.Loss.cross_entropy `sum)
     ~optimizer:(Model.Optimizer.adam ~alpha:1e-5 ())
     ~epochs
+    ~batch_size
     ~xs:train_images
     ~ys:train_labels;
   let test_results = Model.evaluate model test_images in
