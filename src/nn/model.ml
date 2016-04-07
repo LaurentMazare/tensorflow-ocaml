@@ -6,7 +6,6 @@ type t =
   ; placeholder : [ `float ] Node.t
   }
 
-(* TODO: stochastic gradient descent. *)
 module Optimizer = struct
   (* We should use some inline records here when they will be available. *)
   type t =
@@ -78,14 +77,30 @@ let all_inputs ?(named_inputs=[]) t xs =
     let node = Nn.Input_name.to_node input_name in
     Session.Input.float node xs :: inputs
 
-let fit ?named_inputs ~loss ~optimizer ~epochs ~xs ~ys t =
+let fit ?named_inputs ?batch_size ~loss ~optimizer ~epochs ~xs ~ys t =
   let loss = Loss.get loss ~sample_ys:t.placeholder ~model_ys:(Nn.node t.net) in
   let optimizer = Optimizer.get optimizer ~loss in
-  let inputs =
+  let samples = (Bigarray.Genarray.dims xs).(0) in
+  let batch_size =
+    match batch_size with
+    | None -> None
+    | Some batch_size when batch_size > samples -> None
+    | Some _ as s -> s
+  in
+  let inputs ~xs ~ys =
     (Session.Input.float t.placeholder ys)
     :: all_inputs ?named_inputs t xs
   in
   for epoch = 1 to epochs do
+    let inputs =
+      match batch_size with
+      | None -> inputs ~xs ~ys
+      | Some batch_size ->
+        let offset = ((epoch-1) * batch_size) mod (samples - batch_size) in
+        let xs = Bigarray.Genarray.sub_left xs offset batch_size in
+        let ys = Bigarray.Genarray.sub_left ys offset batch_size in
+        inputs ~xs ~ys
+    in
     let err =
       Session.run
         ~inputs

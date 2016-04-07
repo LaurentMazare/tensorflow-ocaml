@@ -22,7 +22,8 @@ module Loss : sig
 end
 
 val fit
-  :  ?named_inputs: (Nn.Input_name.t * (float, Bigarray.float32_elt) Tensor.t) list
+  :  ?named_inputs:(Nn.Input_name.t * (float, Bigarray.float32_elt) Tensor.t) list
+  -> ?batch_size:int
   -> loss:Loss.t
   -> optimizer:Optimizer.t
   -> epochs:int
