@@ -280,43 +280,36 @@ let flatten t =
   reshape t ~shape:(D1 (Shape.total_dim t.shape))
 
 let split (t : _2d t) =
-  let Shape.D2 (n, d) = t.shape in
-  Ops.(split ~num_split:n one32 t.node)
-  |> List.map
-      ~f:(fun node ->
+  let Shape.D2 (num_split, d) = t.shape in
+  Ops.(split ~num_split one32 t.node)
+  |> List.map ~f:(fun node ->
       { variables = t.variables
       ; node
       ; shape = D1 d
-      ; default_input = t.default_input })
-  |> List.map ~f:flatten
+      ; default_input = t.default_input
+      }
+      |> flatten
+    )
 
 let concatN (l : _1d t list) =
   match l with
   | [] -> failwith "concat called on an empty list"
-  | t::l ->
-    let s t =
-      let Shape.D1 shape = t.shape in
-      shape
-    in
-    let shape = s t in
+  | hd :: _ as full_list ->
+    let shape { shape = Shape.D1 shape; _ } = shape in
+    let hd_shape = shape hd in
     let default_input =
-       List.fold ~init:t.default_input l
-         ~f:(fun default_input t ->
-             Input_name.merge default_input t.default_input)
+      List.map full_list ~f:(fun t -> t.default_input)
+      |> List.reduce_exn ~f:Input_name.merge
     in
-    List.iter l
-      ~f:(fun t ->
-          if shape <> s t
-          then failwithf "concat: shape mismatch between %i and %i" shape (s t) ());
-    let l =
-      List.map (t::l)
-        ~f:(reshape ~shape:(D2 (1,shape)))
+    List.iter full_list ~f:(fun t ->
+      if hd_shape <> shape t
+      then raise (Shape_mismatch ([ hd_shape ], [ shape t ], "concatN")));
+    let node =
+      List.map full_list ~f:(fun t -> (reshape t ~shape:(D2 (1, hd_shape))).node)
+      |> Ops.(concat one32)
     in
-    let node = Ops.(concat one32 (List.map l ~f:(fun t -> t.node))) in
-    {variables = List.map l ~f:(fun t -> t.variables) |> List.concat;
-     shape = D2 (List.length l, shape);
-     node;
-     default_input }
-
-
-
+    { variables = List.concat_map full_list ~f:(fun t -> t.variables)
+    ; shape = D2 (List.length full_list, hd_shape)
+    ; node
+    ; default_input
+    }
