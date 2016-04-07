@@ -107,7 +107,8 @@ module Shared_var = struct
         ; default_input = t.default_input
         })
 
-  let conv2d ~filter_height ~filter_width ~out_channels ~strides ~padding =
+  let conv2d ~filter ~out_channels ~strides ~padding =
+    let filter_height, filter_width = filter in
     let stride_height, stride_width = strides in
     let strides = [ 1; stride_height; stride_width; 1 ] in
     with_shape ~f:(fun ~shape:input_shape ->
@@ -165,9 +166,9 @@ let max_pool t ~ksize ~strides ~padding =
 let dense t ~shape =
   Staged.unstage (Shared_var.dense ~shape) t
 
-let conv2d t ~filter_height ~filter_width ~out_channels ~strides ~padding =
+let conv2d t ~filter ~out_channels ~strides ~padding =
   Staged.unstage
-    (Shared_var.conv2d ~filter_height ~filter_width ~out_channels ~strides ~padding)
+    (Shared_var.conv2d ~filter ~out_channels ~strides ~padding)
     t
 
 let concat t1 t2 =

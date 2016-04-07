@@ -33,8 +33,7 @@ val dense
 
 val conv2d
   :  _3d t
-  -> filter_height:int
-  -> filter_width:int
+  -> filter:int*int
   -> out_channels:int
   -> strides:int*int
   -> padding:[ `same | `valid ]
@@ -77,15 +76,13 @@ module Shared_var : sig
   val dense
     :  shape:int
     -> (_1d t -> _1d t) Staged.t
-val conv2d
-  :  filter_height:int
-  -> filter_width:int
-  -> out_channels:int
-  -> strides:int*int
-  -> padding:[ `same | `valid ]
-  -> (_3d t -> _3d t) Staged.t
 
-
+  val conv2d
+    :  filter:int*int
+    -> out_channels:int
+    -> strides:int*int
+    -> padding:[ `same | `valid ]
+    -> (_3d t -> _3d t) Staged.t
 end
 
 module Model : sig
