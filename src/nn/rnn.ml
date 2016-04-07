@@ -2,9 +2,9 @@ open Core_kernel.Std
 
 let gru ~shape =
   let open Nn.Shared_var in
-  let denseR = Staged.unstage (dense ~shape) in
-  let denseZ = Staged.unstage (dense ~shape) in
-  let denseH = Staged.unstage (dense ~shape) in
+  let denseR = Staged.unstage (dense ~shape ()) in
+  let denseZ = Staged.unstage (dense ~shape ()) in
+  let denseH = Staged.unstage (dense ~shape ()) in
   Staged.stage
     (fun ~h ~x ->
        let open Nn in

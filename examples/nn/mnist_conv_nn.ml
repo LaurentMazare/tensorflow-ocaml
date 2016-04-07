@@ -5,6 +5,10 @@ let label_count = Mnist_helper.label_count
 let epochs = 300
 let batch_size = 512
 
+let conv2d =
+  Nn.conv2d ~w_init:(`normal 0.1) ~filter:(5, 5) ~strides:(1, 1) ~padding:`same
+let max_pool = Nn.max_pool ~filter:(2, 2) ~strides:(2, 2) ~padding:`same
+
 let () =
   let { Mnist_helper.train_images; train_labels; test_images; test_labels } =
     Mnist_helper.read_files ()
@@ -12,14 +16,14 @@ let () =
   let model =
     Nn.input ~shape:(D1 (28*28))
     |> Nn.reshape ~shape:(D3 (28, 28, 1))
-    |> Nn.conv2d ~filter:(5, 5) ~out_channels:32 ~strides:(1, 1) ~padding:`same
-    |> Nn.max_pool ~filter:(2, 2) ~strides:(2, 2) ~padding:`same
-    |> Nn.conv2d ~filter:(5, 5) ~out_channels:64 ~strides:(1, 1) ~padding:`same
-    |> Nn.max_pool ~filter:(2, 2) ~strides:(2, 2) ~padding:`same
+    |> conv2d ~out_channels:32
+    |> max_pool
+    |> conv2d ~out_channels:64
+    |> max_pool
     |> Nn.flatten
-    |> Nn.dense ~shape:1024
+    |> Nn.dense ~w_init:(`normal 0.1) ~shape:1024
     |> Nn.relu
-    |> Nn.dense ~shape:label_count
+    |> Nn.dense ~w_init:(`normal 0.1) ~shape:label_count
     |> Nn.softmax
     |> Model.create
   in

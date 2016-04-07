@@ -17,6 +17,7 @@ type 'a shape =
 val dim_list : 'a shape -> int list
 
 type 'a t
+type init = [ `const of float | `normal of float ]
 
 val shape : 'a t -> 'a shape
 val default_input : 'a t -> Input_name.t option
@@ -31,13 +32,16 @@ val named_input
   -> Input_name.t * 'a t
 
 val dense
-  (* TODO: add init *)
-  :  _1d t
+  :  ?w_init:init
+  -> ?b_init:init
+  -> _1d t
   -> shape:int
   -> _1d t
 
 val conv2d
-  :  _3d t
+  :  ?w_init:init
+  -> ?b_init:init
+  -> _3d t
   -> filter:int*int
   -> out_channels:int
   -> strides:int*int
@@ -90,13 +94,19 @@ module Shared_var : sig
     -> 'b Staged.t
 
   val dense
-    :  shape:int
+    :  ?w_init:init
+    -> ?b_init:init
+    -> shape:int
+    -> unit
     -> (_1d t -> _1d t) Staged.t
 
   val conv2d
-    :  filter:int*int
+    :  ?w_init:init
+    -> ?b_init:init
+    -> filter:int*int
     -> out_channels:int
     -> strides:int*int
     -> padding:[ `same | `valid ]
+    -> unit
     -> (_3d t -> _3d t) Staged.t
 end

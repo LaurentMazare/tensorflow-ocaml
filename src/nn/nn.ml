@@ -50,6 +50,8 @@ type 'a t =
   ; default_input : Input_name.t option
   }
 
+type init = [ `const of float | `normal of float ]
+
 let shape t = t.shape
 let default_input t = t.default_input
 let node t = t.node
@@ -115,14 +117,19 @@ module Shared_var = struct
     in
     Staged.stage (g f)
 
-  let dense ~shape =
+  let var ~init dims =
+    match init with
+    | `const f -> Var.f dims f
+    | `normal stddev -> Var.normalf dims ~stddev
+
+  let dense ?(w_init = `const 0.) ?(b_init = `const 0.) ~shape () =
     with_shape ~f:(fun ~shape:input_shape ->
       let input_shape =
         match input_shape with
         | D1 input_shape -> input_shape
       in
-      let w = Var.f [ input_shape; shape ] 0. in
-      let b = Var.f [ shape ] 0. in
+      let w = var ~init:w_init [ input_shape; shape ] in
+      let b = var ~init:b_init [ shape ] in
       w, b)
       (fun f t ->
         let w, b = f t in
@@ -133,7 +140,15 @@ module Shared_var = struct
         ; default_input = t.default_input
         })
 
-  let conv2d ~filter ~out_channels ~strides ~padding =
+  let conv2d
+        ?(w_init = `const 0.)
+        ?(b_init = `const 0.)
+        ~filter
+        ~out_channels
+        ~strides
+        ~padding
+        ()
+    =
     let filter_height, filter_width = filter in
     let stride_height, stride_width = strides in
     let strides = [ 1; stride_height; stride_width; 1 ] in
@@ -142,8 +157,10 @@ module Shared_var = struct
         match input_shape with
         | D3 (d1, d2, d3) -> d1, d2, d3
       in
-      let w = Var.f [ filter_height; filter_width; in_channels; out_channels ] 0. in
-      let b = Var.f [ out_channels ] 0. in
+      let w =
+        var ~init:w_init [ filter_height; filter_width; in_channels; out_channels ]
+      in
+      let b = var ~init:b_init [ out_channels ] in
       image_height, image_width, w, b)
       (fun f t ->
         let input_height, input_width, w, b = f t in
@@ -209,12 +226,12 @@ let max_pool t ~filter ~strides ~padding =
   ; default_input = t.default_input
   }
 
-let dense t ~shape =
-  Staged.unstage (Shared_var.dense ~shape) t
+let dense ?w_init ?b_init t ~shape =
+  Staged.unstage (Shared_var.dense ?w_init ?b_init ~shape ()) t
 
-let conv2d t ~filter ~out_channels ~strides ~padding =
+let conv2d ?w_init ?b_init t ~filter ~out_channels ~strides ~padding =
   Staged.unstage
-    (Shared_var.conv2d ~filter ~out_channels ~strides ~padding)
+    (Shared_var.conv2d ?w_init ?b_init ~filter ~out_channels ~strides ~padding ())
     t
 
 let concat t1 t2 =
