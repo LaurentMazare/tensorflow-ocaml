@@ -59,7 +59,7 @@ end
 
 let create net =
   let session = Session.create () in
-  let placeholder = Ops.placeholder ~type_:Float (Nn.shape net |> Nn.dim_list) in
+  let placeholder = Ops.placeholder ~type_:Float (Nn.shape net |> Nn.Shape.dim_list) in
   { session
   ; net
   ; placeholder

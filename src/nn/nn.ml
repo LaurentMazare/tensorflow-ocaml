@@ -1,3 +1,5 @@
+(* TODO: handle double ? *)
+
 open Core_kernel.Std
 exception Shape_mismatch of int list * int list * string
 let () =
@@ -21,30 +23,31 @@ module Input_name = struct
   let to_node = Fn.id
 end
 
-(* TODO: handle double ? *)
 type _1d
 type _2d
 type _3d
 
-type 'a shape =
-  | D1 : int -> _1d shape
-  | D2 : int * int -> _2d shape
-  | D3 : int * int * int -> _3d shape
+module Shape = struct
+  type 'a t =
+    | D1 : int -> _1d t
+    | D2 : int * int -> _2d t
+    | D3 : int * int * int -> _3d t
 
-let dim_list (type a) (shape : a shape) =
-  match shape with
-  | D1 d -> [ d ]
-  | D2 (d, d') -> [ d; d' ]
-  | D3 (d, d', d'') -> [ d; d'; d'' ]
+  let dim_list (type a) (t : a t) =
+    match t with
+    | D1 d -> [ d ]
+    | D2 (d, d') -> [ d; d' ]
+    | D3 (d, d', d'') -> [ d; d'; d'' ]
 
-let total_dim (type a) (shape : a shape) =
-  match shape with
-  | D1 d -> d
-  | D2 (d, d') -> d * d'
-  | D3 (d, d', d'') -> d * d' * d''
+  let total_dim (type a) (t : a t) =
+    match t with
+    | D1 d -> d
+    | D2 (d, d') -> d * d'
+    | D3 (d, d', d'') -> d * d' * d''
+end
 
 type 'a t =
-  { shape : 'a shape
+  { shape : 'a Shape.t
   ; node : [ `float ] Node.t
   ; variables : [ `float ] Node.t list
   ; default_input : Input_name.t option
@@ -57,7 +60,7 @@ let default_input t = t.default_input
 let node t = t.node
 
 let named_input ~shape =
-  let placeholder = Ops.placeholder ~type_:Float (-1 :: dim_list shape) in
+  let placeholder = Ops.placeholder ~type_:Float (-1 :: Shape.dim_list shape) in
   let t =
     { shape
     ; node = placeholder
@@ -68,7 +71,7 @@ let named_input ~shape =
   placeholder, t
 
 let input ~shape =
-  let placeholder = Ops.placeholder ~type_:Float (-1 :: dim_list shape) in
+  let placeholder = Ops.placeholder ~type_:Float (-1 :: Shape.dim_list shape) in
   { shape
   ; node = placeholder
   ; variables = []
@@ -76,8 +79,8 @@ let input ~shape =
   }
 
 let shape_mismatch shape1 shape2 ~op_name =
-  let shape1 = dim_list shape1 in
-  let shape2 = dim_list shape2 in
+  let shape1 = Shape.dim_list shape1 in
+  let shape2 = Shape.dim_list shape2 in
   raise (Shape_mismatch (shape1, shape2, op_name))
 
 let padding_str = function
@@ -126,7 +129,7 @@ module Shared_var = struct
     with_shape ~f:(fun ~shape:input_shape ->
       let input_shape =
         match input_shape with
-        | D1 input_shape -> input_shape
+        | Shape.D1 input_shape -> input_shape
       in
       let w = var ~init:w_init [ input_shape; shape ] in
       let b = var ~init:b_init [ shape ] in
@@ -155,7 +158,7 @@ module Shared_var = struct
     with_shape ~f:(fun ~shape:input_shape ->
       let image_height, image_width, in_channels =
         match input_shape with
-        | D3 (d1, d2, d3) -> d1, d2, d3
+        | Shape.D3 (d1, d2, d3) -> d1, d2, d3
       in
       let w =
         var ~init:w_init [ filter_height; filter_width; in_channels; out_channels ]
@@ -184,7 +187,7 @@ module Shared_var = struct
 end
 
 let f v ~shape =
-  { node = Ops.f v ~shape:(dim_list shape)
+  { node = Ops.f v ~shape:(Shape.dim_list shape)
   ; shape
   ; variables = []
   ; default_input = None
@@ -200,7 +203,7 @@ let softmax t = unary Ops.softmax t
 let max_pool t ~filter ~strides ~padding =
   let input_height, input_width, input_channels =
     match t.shape with
-    | D3 (d, d', d'') -> d, d', d''
+    | Shape.D3 (d, d', d'') -> d, d', d''
   in
   let filter_height, filter_width = filter in
   let stride_height, stride_width = strides in
@@ -237,7 +240,7 @@ let conv2d ?w_init ?b_init t ~filter ~out_channels ~strides ~padding =
 let concat t1 t2 =
   let shape =
     match t1.shape, t2.shape with
-    | D1 shape, D1 shape' -> D1 (shape + shape')
+    | Shape.D1 shape, Shape.D1 shape' -> Shape.D1 (shape + shape')
   in
   { variables = t1.variables @ t2.variables
   ; shape
@@ -261,9 +264,9 @@ let (+) t t' = binary ~op_name:"Add" Ops.(+) t t'
 let (-) t t' = binary ~op_name:"Add" Ops.(-) t t'
 
 let reshape t ~shape =
-  let dim_list = dim_list shape in
-  let total_dim_output = total_dim shape in
-  let total_dim_input = total_dim t.shape in
+  let dim_list = Shape.dim_list shape in
+  let total_dim_output = Shape.total_dim shape in
+  let total_dim_input = Shape.total_dim t.shape in
   if total_dim_output <> total_dim_input
   then shape_mismatch shape t.shape ~op_name:"reshape";
   let node = Ops.reshape t.node (Ops.const_int ~type_:Int32 (-1 :: dim_list)) in
@@ -274,10 +277,10 @@ let reshape t ~shape =
   }
 
 let flatten t =
-  reshape t ~shape:(D1 (total_dim t.shape))
+  reshape t ~shape:(D1 (Shape.total_dim t.shape))
 
 let split (t : _2d t) =
-  let D2 (n, d) = t.shape in
+  let Shape.D2 (n, d) = t.shape in
   Ops.(split ~num_split:n one32 t.node)
   |> List.map
       ~f:(fun node ->
@@ -292,7 +295,7 @@ let concatN (l : _1d t list) =
   | [] -> failwith "concat called on an empty list"
   | t::l ->
     let s t =
-      let D1 shape = t.shape in
+      let Shape.D1 shape = t.shape in
       shape
     in
     let shape = s t in
