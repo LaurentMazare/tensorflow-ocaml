@@ -2,6 +2,7 @@ open Core_kernel.Std
 
 module Input_name : sig
   type t
+  val to_node : t -> [ `float ] Node.t
 end
 
 type _1d
@@ -13,9 +14,13 @@ type 'a shape =
   | D2 : int * int -> _2d shape
   | D3 : int * int * int -> _3d shape
 
+val dim_list : 'a shape -> int list
+
 type 'a t
 
 val shape : 'a t -> 'a shape
+val default_input : 'a t -> Input_name.t option
+val node : 'a t -> [ `float ] Node.t
 
 val input
   :  shape:'a shape
@@ -90,40 +95,4 @@ module Shared_var : sig
     -> strides:int*int
     -> padding:[ `same | `valid ]
     -> (_3d t -> _3d t) Staged.t
-end
-
-module Model : sig
-  type 'a net = 'a t
-  type 'a t
-
-  val create : 'a net -> 'a t
-
-  val evaluate
-    :  ?named_inputs:(Input_name.t * (float, Bigarray.float32_elt) Tensor.t) list
-    -> 'a t
-    -> (float, Bigarray.float32_elt) Tensor.t
-    -> (float, Bigarray.float32_elt) Tensor.t
-
-  module Optimizer : sig
-    type t
-    val gradient_descent : alpha:float -> t
-    val momentum : alpha:float -> momentum:float -> t
-    val adam : alpha:float -> ?beta1:float -> ?beta2:float -> ?epsilon:float -> unit -> t
-  end
-
-  module Loss : sig
-    type t
-    val cross_entropy : t
-    val l2_mean : t
-  end
-
-  val fit
-    :  ?named_inputs: (Input_name.t * (float, Bigarray.float32_elt) Tensor.t) list
-    -> loss:Loss.t
-    -> optimizer:Optimizer.t
-    -> epochs:int
-    -> xs:(float, Bigarray.float32_elt) Tensor.t
-    -> ys:(float, Bigarray.float32_elt) Tensor.t
-    -> 'a t
-    -> unit
 end

@@ -1,6 +1,5 @@
 open Core_kernel.Std
 open Tensorflow
-module O = Ops
 
 let label_count = Mnist_helper.label_count
 let epochs = 300
@@ -21,13 +20,13 @@ let () =
     |> Nn.relu
     |> Nn.dense ~shape:label_count
     |> Nn.softmax
-    |> Nn.Model.create
+    |> Model.create
   in
-  Nn.Model.fit model
-    ~loss:Nn.Model.Loss.cross_entropy
-    ~optimizer:(Nn.Model.Optimizer.adam ~alpha:1e-5 ())
+  Model.fit model
+    ~loss:Model.Loss.cross_entropy
+    ~optimizer:(Model.Optimizer.adam ~alpha:1e-5 ())
     ~epochs
     ~xs:train_images
     ~ys:train_labels;
-  let test_results = Nn.Model.evaluate model test_images in
+  let test_results = Model.evaluate model test_images in
   printf "Accuracy: %.2f%%\n%!" (100. *. Mnist_helper.accuracy test_results test_labels)

@@ -1,6 +1,5 @@
 open Core_kernel.Std
 open Tensorflow
-module O = Ops
 
 (* This should reach ~92% accuracy. *)
 let image_dim = Mnist_helper.image_dim
@@ -15,13 +14,13 @@ let () =
     Nn.input ~shape:(D1 image_dim)
     |> Nn.dense ~shape:label_count
     |> Nn.softmax
-    |> Nn.Model.create
+    |> Model.create
   in
-  Nn.Model.fit model
-    ~loss:Nn.Model.Loss.cross_entropy
-    ~optimizer:(Nn.Model.Optimizer.gradient_descent ~alpha:8.)
+  Model.fit model
+    ~loss:Model.Loss.cross_entropy
+    ~optimizer:(Model.Optimizer.gradient_descent ~alpha:8.)
     ~epochs
     ~xs:train_images
     ~ys:train_labels;
-  let test_results = Nn.Model.evaluate model test_images in
+  let test_results = Model.evaluate model test_images in
   printf "Accuracy: %.2f%%\n%!" (100. *. Mnist_helper.accuracy test_results test_labels)
