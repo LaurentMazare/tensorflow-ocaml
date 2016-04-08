@@ -69,9 +69,7 @@ let fit_1d fn =
   let x = Ops.placeholder [] ~type_:Float in
   let c = Ops.placeholder [] ~type_:Float in
   let y_bar, h_out, c_out = one_lstm ~h ~x ~c in
-  let tensor size =
-    Bigarray.Genarray.create Bigarray.float32 Bigarray.c_layout [| 1; size |]
-  in
+  let tensor size = Tensor.create2 Float32 1 size in
   let init = [], tensor 1, tensor size_c, tensor size_c in
   let ys, _, _, _ =
     List.fold (List.range 0 500) ~init ~f:(fun (acc_y, prev_y, prev_h, prev_c) _ ->
@@ -92,9 +90,7 @@ let get_samples ?(filename = "data/input.txt") ~sample_size n =
       String.to_list str)
     |> Array.of_list
   in
-  let create_vec () =
-    Bigarray.Genarray.create Bigarray.float32 Bigarray.c_layout [| n; sample_size; 256 |]
-  in
+  let create_vec () = Tensor.create3 Float32 n sample_size 256 in
   let one_hot vec x y c =
     let c = Char.to_int c in
     for z = 0 to 255 do

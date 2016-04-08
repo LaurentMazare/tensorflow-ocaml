@@ -45,3 +45,10 @@ let to_float_list (P tensor) =
   | Bigarray.Float32 -> to_elt_list tensor
   | Bigarray.Float64 -> to_elt_list tensor
   | _ -> failwith "Not a float tensor"
+
+let create kind dims =
+  Bigarray.Genarray.create kind Bigarray.c_layout dims
+
+let create1 kind d = create kind [| d |]
+let create2 kind d d' = create kind [| d; d' |]
+let create3 kind d d' d'' = create kind [| d; d'; d'' |]

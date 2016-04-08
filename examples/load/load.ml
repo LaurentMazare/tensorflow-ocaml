@@ -9,7 +9,7 @@ let ok_exn (result : 'a Session.result) ~context =
     |> failwith
 
 let () =
-  let data = Bigarray.Genarray.create Bigarray.float32 Bigarray.c_layout [| 3 |] in
+  let data = Tensor.create1 Float32 3 in
   Bigarray.Genarray.set data [| 0 |] 1.;
   Bigarray.Genarray.set data [| 1 |] 2.;
   Bigarray.Genarray.set data [| 2 |] 6.;

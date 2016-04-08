@@ -83,9 +83,7 @@ let fit_1d fn =
   let h = Ops.placeholder [] ~type_:Float in
   let x = Ops.placeholder [] ~type_:Float in
   let y_bar, h_out = one_gru ~h ~x in
-  let tensor size =
-    Bigarray.Genarray.create Bigarray.float32 Bigarray.c_layout [| 1; size |]
-  in
+  let tensor size = Tensor.create2 Float32 1 size in
   let init = [], tensor 1, tensor size_h in
   let ys, _, h_res =
     List.foldi (List.range 0 500) ~init ~f:(fun idx (acc_y, prev_y, prev_h) _ ->

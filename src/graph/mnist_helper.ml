@@ -6,12 +6,7 @@ let label_count = 10
 
 let one_hot labels =
   let nsamples = Bigarray.Array1.dim labels in
-  let one_hot =
-    Bigarray.Genarray.create
-      Bigarray.float32
-      Bigarray.c_layout
-      [| nsamples; label_count |]
-  in
+  let one_hot = Tensor.create2 Float32 nsamples label_count in
   for idx = 0 to nsamples - 1 do
     for lbl = 0 to 9 do
       Bigarray.Genarray.set one_hot [| idx; lbl |] 0.
