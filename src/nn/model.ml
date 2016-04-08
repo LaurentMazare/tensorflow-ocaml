@@ -77,7 +77,7 @@ let all_inputs ?(named_inputs=[]) t xs =
     let node = Nn.Input_name.to_node input_name in
     Session.Input.float node xs :: inputs
 
-let fit ?named_inputs ?batch_size ~loss ~optimizer ~epochs ~xs ~ys t =
+let fit ?named_inputs ?batch_size ?on_epoch ~loss ~optimizer ~epochs ~xs ~ys t =
   let loss = Loss.get loss ~sample_ys:t.placeholder ~model_ys:(Nn.node t.net) in
   let optimizer = Optimizer.get optimizer ~loss in
   let samples = (Bigarray.Genarray.dims xs).(0) in
@@ -90,6 +90,10 @@ let fit ?named_inputs ?batch_size ~loss ~optimizer ~epochs ~xs ~ys t =
   let inputs ~xs ~ys =
     (Session.Input.float t.placeholder ys)
     :: all_inputs ?named_inputs t xs
+  in
+  let on_epoch =
+    Option.value on_epoch
+      ~default:(fun (_:int) ~err:_ ~loss:_ -> `print_err)
   in
   for epoch = 1 to epochs do
     let inputs =
@@ -108,12 +112,45 @@ let fit ?named_inputs ?batch_size ~loss ~optimizer ~epochs ~xs ~ys t =
         ~session:t.session
         (Session.Output.scalar_float loss)
     in
-    printf "Epoch: %6d/%-6d   Loss: %.2f\n%!" epoch epochs err
+    match on_epoch epoch ~err ~loss with
+    | `print_err -> printf "Epoch: %6d/%-6d   Loss: %.2f\n%!" epoch epochs err
+    | `do_nothing -> ()
   done
 
-let evaluate ?named_inputs t xs =
-  let inputs = all_inputs ?named_inputs t xs in
-  Session.run
-    ~inputs
-    ~session:t.session
-    (Session.Output.float (Nn.node t.net))
+let evaluate ?named_inputs ?batch_size ?node t xs =
+  let nsamples = Bigarray.Genarray.nth_dim xs 0 in
+  let nbatchs, batch_size =
+    match batch_size with
+    | None -> 1, nsamples
+    | Some batch_size -> 1 + (nsamples - 1) / batch_size, batch_size
+  in
+  let node =
+    match node with
+    | None -> Nn.node t.net
+    | Some node -> node
+  in
+  if nbatchs = 1
+  then
+    Session.run
+      ~inputs:(all_inputs ?named_inputs t xs)
+      ~session:t.session
+      (Session.Output.float node)
+  else begin
+    let dims = Nn.shape t.net |> Nn.Shape.dim_list in
+    let ys = Tensor.create Float32 (Array.of_list (nsamples :: dims)) in
+    for batch_idx = 0 to nbatchs - 1 do
+      let samples_idx = batch_idx * batch_size in
+      let samples_count = min batch_size (nsamples - samples_idx) in
+      let xs = Bigarray.Genarray.sub_left xs samples_idx samples_count in
+      let batch_results =
+        Session.run
+          ~inputs:(all_inputs ?named_inputs t xs)
+          ~session:t.session
+          (Session.Output.float node)
+      in
+      Bigarray.Genarray.blit
+        batch_results
+        (Bigarray.Genarray.sub_left ys samples_idx samples_count)
+    done;
+    ys
+  end

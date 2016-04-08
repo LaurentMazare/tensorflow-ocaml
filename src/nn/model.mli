@@ -4,6 +4,8 @@ val create : Nn._1d Nn.t -> t
 
 val evaluate
   :  ?named_inputs:(Nn.Input_name.t * (float, Bigarray.float32_elt) Tensor.t) list
+  -> ?batch_size:int
+  -> ?node:[ `float ] Node.t
   -> t
   -> (float, Bigarray.float32_elt) Tensor.t
   -> (float, Bigarray.float32_elt) Tensor.t
@@ -24,6 +26,7 @@ end
 val fit
   :  ?named_inputs:(Nn.Input_name.t * (float, Bigarray.float32_elt) Tensor.t) list
   -> ?batch_size:int
+  -> ?on_epoch:(int -> err:float -> loss:[ `float ] Node.t -> [ `print_err | `do_nothing ])
   -> loss:Loss.t
   -> optimizer:Optimizer.t
   -> epochs:int
