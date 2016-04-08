@@ -19,3 +19,23 @@ let gru ~shape =
        (* we mix the old h and the new h *)
        let h = z * nh + (f 1.0 ~shape:(Nn.shape z) - z) * h in
        h)
+
+let fold t ~init ~f =
+  Nn.split t
+  |> List.fold ~init ~f
+
+let scan' t ~init ~f =
+  let l, h =
+    fold t ~init:([], init)
+      ~f:(fun (l, h) x ->
+          let y, h = f h x in
+          (y::l, h))
+  in
+  List.rev l |> Nn.concatN, h
+
+let scan t ~init ~f =
+  scan' t ~init
+    ~f:(fun h x ->
+        let h = f h x in
+        h, h)
+
