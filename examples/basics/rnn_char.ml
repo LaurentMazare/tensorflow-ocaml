@@ -4,13 +4,13 @@
 open Core_kernel.Std
 open Tensorflow
 
-let train_size = 1000
+let train_size = 10000
+let batch_size = 256
 let alphabet_size = 27
-let epochs = 100
-let size_c = 20
-let steps = 50
-let gen_len = 10
-let sample_size = 100
+let epochs = 100000
+let size_c = 100
+let gen_len = 220
+let sample_size = 20
 
 let lstm ~size_c ~size_x ~size_y x_and_ys =
   let create_vars () = Var.normalf [ size_c+size_x; size_c ] ~stddev:0.1, Var.f [ size_c ] 0. in
@@ -31,10 +31,10 @@ let lstm ~size_c ~size_x ~size_y x_and_ys =
     y_bar, h, c
   in
   let err =
-    let zero = Ops.f ~shape:[ train_size; size_c ] 0. in
+    let zero = Ops.f ~shape:[ batch_size; size_c ] 0. in
     List.fold x_and_ys ~init:([], zero, zero) ~f:(fun (errs, h, c) (x, y) ->
       let y_bar, h, c = one_lstm ~h ~x ~c in
-      let err = Ops.(neg (log y_bar * y)) in
+      let err = Ops.(square (y - y_bar)) in
       err :: errs, h, c)
     |> fun (errs, _, _) ->
     match errs with
@@ -50,45 +50,59 @@ let fit_and_evaluate x_data y_data =
   let split node =
     Ops.split Ops.one32 node ~num_split:sample_size
     |> List.map ~f:(fun n ->
-      Ops.reshape n (Ops.const_int ~type_:Int32 [ train_size; alphabet_size ]))
+      Ops.reshape n (Ops.const_int ~type_:Int32 [ batch_size; alphabet_size ]))
   in
   let xs = split placeholder_x in
   let ys = split placeholder_y in
   let x_and_ys = List.zip_exn xs ys in
   let err, one_lstm = lstm ~size_c ~size_x:alphabet_size ~size_y:alphabet_size x_and_ys in
   let gd = Optimizers.adam_minimizer err ~alpha:(Ops.f 0.004) in
+  let print_sample =
+    let h = Ops.placeholder [] ~type_:Float in
+    let x = Ops.placeholder [] ~type_:Float in
+    let c = Ops.placeholder [] ~type_:Float in
+    let y_bar, h_out, c_out = one_lstm ~h ~x ~c in
+    let y_char = Ops.argMax y_bar Ops.one32 in
+    fun () ->
+      let tensor size =
+        let tensor = Tensor.create2 Float32 1 size in
+        Bigarray.Genarray.fill tensor 0.;
+        tensor
+      in
+      let init = [], tensor alphabet_size, tensor size_c, tensor size_c in
+      let ys, _, _, _ =
+        List.fold (List.range 0 gen_len) ~init ~f:(fun (acc_y, prev_y, prev_h, prev_c) _ ->
+          let y_char, y_res, h_res, c_res =
+            Session.run
+              ~inputs:Session.Input.[ float x prev_y; float h prev_h; float c prev_c ]
+              Session.Output.(four (int64 y_char) (float y_bar) (float h_out) (float c_out))
+          in
+          let y = Bigarray.Genarray.get y_char [| 0 |] |> Int64.to_int_exn in
+          y :: acc_y, y_res, h_res, c_res)
+      in
+      List.rev ys
+      |> List.map ~f:(fun c ->
+        if 0 <= c && c < 26 then Char.of_int_exn (c + Char.to_int 'a')
+        else ' ')
+      |> String.of_char_list
+      |> printf "%s\n%!"
+  in
   for i = 1 to epochs do
+    let start_idx = (i * batch_size) % (train_size - batch_size) in
+    let x_data = Bigarray.Genarray.sub_left x_data start_idx batch_size in
+    let y_data = Bigarray.Genarray.sub_left y_data start_idx batch_size in
     let err =
       Session.run
         ~inputs:Session.Input.[ float placeholder_x x_data; float placeholder_y y_data ]
         ~targets:gd
         (Session.Output.scalar_float err);
     in
-    printf "%d %f\n%!" i err;
+    if i % 20 = 0 then begin
+      printf "%d %f\n%!" i err;
+      print_sample ()
+    end
   done;
-  let h = Ops.placeholder [] ~type_:Float in
-  let x = Ops.placeholder [] ~type_:Float in
-  let c = Ops.placeholder [] ~type_:Float in
-  let y_bar, h_out, c_out = one_lstm ~h ~x ~c in
-  let y_char = Ops.argMax y_bar Ops.one32 in
-  let tensor size =
-    let tensor = Tensor.create2 Float32 1 size in
-    Bigarray.Genarray.fill tensor 0.;
-    tensor
-  in
-  let init = [], tensor alphabet_size, tensor size_c, tensor size_c in
-  let ys, _, _, _ =
-    List.fold (List.range 0 gen_len) ~init ~f:(fun (acc_y, prev_y, prev_h, prev_c) _ ->
-      let y_char, y_res, h_res, c_res =
-        Session.run
-          ~inputs:Session.Input.[ float x prev_y; float h prev_h; float c prev_c ]
-          Session.Output.(four (int64 y_char) (float y_bar) (float h_out) (float c_out))
-      in
-      Tensor.print (Tensor.P y_res);
-      let y = Bigarray.Genarray.get y_char [| 0 |] |> Int64.to_int_exn in
-      y :: acc_y, y_res, h_res, c_res)
-  in
-  List.rev ys
+  print_sample ()
 
 let get_samples ?(filename = "data/input.txt") ~sample_size n =
   let input =
@@ -123,8 +137,3 @@ let () =
   Random.init 42;
   let xs, ys = get_samples ~sample_size train_size in
   fit_and_evaluate xs ys
-  |> List.map ~f:(fun c ->
-    if 0 <= c && c < 26 then Char.of_int_exn (c + Char.to_int 'a')
-    else ' ')
-  |> String.of_char_list
-  |> printf "%s\n%!"
