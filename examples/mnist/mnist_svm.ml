@@ -33,7 +33,7 @@ let () =
     Ops.(f lambda * reduce_sum (w * w))
   in
   let gd =
-    Optimizers.gradient_descent_minimizer ~alpha:(Ops.f 0.1) ~varsf:[ w; b ]
+    Optimizers.gradient_descent_minimizer ~learning_rate:(Ops.f 0.1) ~varsf:[ w; b ]
       Ops.(square_norm + hinge_loss)
   in
   let train_inputs = Session.Input.[ float xs train_images; float ys train_labels ] in

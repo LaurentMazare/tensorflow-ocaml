@@ -12,7 +12,7 @@ let run ~samples ~size_xs ~size_ys ~xs ~ys =
   let y_ = O.(xs *^ w + b) in
   let err = O.(square (y_ - y) |> reduce_mean) in
   let gd =
-    Optimizers.gradient_descent_minimizer ~alpha:(O.f 0.04) ~varsf:[ w; b ] err
+    Optimizers.gradient_descent_minimizer ~learning_rate:(O.f 0.04) ~varsf:[ w; b ] err
   in
   let results = ref [] in
   let print_err n =

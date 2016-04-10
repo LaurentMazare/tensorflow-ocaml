@@ -38,7 +38,7 @@ let () =
   in
   Model.fit model
     ~loss:(Model.Loss.cross_entropy `sum)
-    ~optimizer:(Model.Optimizer.adam ~alpha:1e-4 ())
+    ~optimizer:(Model.Optimizer.adam ~learning_rate:1e-4 ())
     ~epochs
     ~on_epoch
     ~batch_size

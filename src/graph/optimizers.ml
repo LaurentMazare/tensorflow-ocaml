@@ -1,7 +1,7 @@
 open Core_kernel.Std
 
 type 'a optimizer
-  =  alpha:[ `float ] Node.t
+  =  learning_rate:[ `float ] Node.t
   -> ?varsf:[ `float ] Node.t list (* Have to be variables. *)
   -> ?varsd:[ `double ] Node.t list (* Have to be variables. *)
   -> 'a Node.t
@@ -84,18 +84,18 @@ let maybe_cast node ~type_ =
   | Some node -> node
   | None -> Ops.cast node ~type_
 
-let gradient_descent_minimizer ~alpha ?varsf ?varsd target =
+let gradient_descent_minimizer ~learning_rate ?varsf ?varsd target =
   let apply ~gradient ~var ~type_ =
-    Ops.applyGradientDescent var (maybe_cast alpha ~type_) gradient
+    Ops.applyGradientDescent var (maybe_cast learning_rate ~type_) gradient
   in
   general_minimizer { apply } ?varsf ?varsd target
 
-let momentum_minimizer ~momentum ~alpha ?varsf ?varsd target =
+let momentum_minimizer ~momentum ~learning_rate ?varsf ?varsd target =
   let apply ~gradient ~var ~type_ =
     let accum =
       Var.create (get_shape var) ~type_ ~init:(Ops.zerosLike var)
     in
-    Ops.applyMomentum var accum (maybe_cast alpha ~type_) gradient (maybe_cast momentum ~type_)
+    Ops.applyMomentum var accum (maybe_cast learning_rate ~type_) gradient (maybe_cast momentum ~type_)
   in
   general_minimizer { apply } ?varsf ?varsd target
 
@@ -103,7 +103,7 @@ let adam_minimizer
     ?(beta1 = Ops.f 0.9)
     ?(beta2 = Ops.f 0.999)
     ?(epsilon = Ops.f 1e-8)
-    ~alpha
+    ~learning_rate
     ?varsf
     ?varsd
     target
@@ -122,7 +122,7 @@ let adam_minimizer
       (create_var ()) (* v *)
       (create_scalar_var ()) (* beta1_power *)
       (create_scalar_var ()) (* beta2_power *)
-      (maybe_cast alpha ~type_)
+      (maybe_cast learning_rate ~type_)
       (maybe_cast beta1 ~type_)
       (maybe_cast beta2 ~type_)
       (maybe_cast epsilon ~type_)
@@ -130,12 +130,12 @@ let adam_minimizer
   in
   general_minimizer { apply } ?varsf ?varsd target
 
-let adagrad_minimizer ?(init = Ops.f 0.1) ~alpha ?varsf ?varsd target =
+let adagrad_minimizer ?(init = Ops.f 0.1) ~learning_rate ?varsf ?varsd target =
   let apply ~gradient ~var ~type_ =
     let var_shape = Ops.shape var in
     let init = Ops.fill var_shape (maybe_cast init ~type_) in
     let accum = Var.create (get_shape var) ~type_ ~init in
-    Ops.applyAdagrad var accum (maybe_cast alpha ~type_) gradient
+    Ops.applyAdagrad var accum (maybe_cast learning_rate ~type_) gradient
   in
   general_minimizer { apply } ?varsf ?varsd target
 
@@ -143,7 +143,7 @@ let rmsprop_minimizer
       ?(decay = Ops.f 0.9)
       ?(momentum = Ops.f 0.)
       ?(epsilon = Ops.f 1e-10)
-      ~alpha
+      ~learning_rate
       ?varsf
       ?varsd
       target
@@ -157,7 +157,7 @@ let rmsprop_minimizer
       var
       rms_var
       momentum_var
-      (maybe_cast alpha ~type_)
+      (maybe_cast learning_rate ~type_)
       (maybe_cast decay ~type_)
       (maybe_cast momentum ~type_)
       (maybe_cast epsilon ~type_)

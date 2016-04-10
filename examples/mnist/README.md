@@ -54,7 +54,7 @@ Finally we use gradient descent to minimize cross-entropy with respect to variab
 w and b and iterate this a couple hundred times.
 
 ```ocaml
-  let gd = Optimizers.gradient_descent_minimizer ~alpha:(O.f 8.) cross_entropy in
+  let gd = Optimizers.gradient_descent_minimizer ~learning_rate:(O.f 8.) cross_entropy in
   let print_err n =
     let accuracy =
       Session.run

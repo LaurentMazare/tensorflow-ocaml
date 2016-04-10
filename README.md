@@ -54,7 +54,7 @@ The NN API is a layer based API to easily build neural-networks. A linear classi
   in
   Model.fit model
     ~loss:(Model.Loss.cross_entropy `sum)
-    ~optimizer:(Model.Optimizer.gradient_descent ~alpha:0.4)
+    ~optimizer:(Model.Optimizer.gradient_descent ~learning_rate:0.4)
     ~epochs:500
     ~xs:train_images
     ~ys:train_labels;

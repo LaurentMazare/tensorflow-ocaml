@@ -49,7 +49,7 @@ let () =
     |> O.cast ~type_:Float
     |> O.reduce_mean
   in
-  let gd = Optimizers.adam_minimizer ~alpha:(O.f 1e-5) cross_entropy in
+  let gd = Optimizers.adam_minimizer ~learning_rate:(O.f 1e-5) cross_entropy in
   let validation_inputs =
     let one = scalar_tensor 1. in
     let validation_images = Bigarray.Genarray.sub_left mnist.test_images 0 1024 in

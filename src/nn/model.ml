@@ -13,27 +13,27 @@ module Optimizer = struct
     | Adam of float * float option * float option * float option
     | Momentum of float * float
 
-  let gradient_descent ~alpha = Gradient_descent alpha
+  let gradient_descent ~learning_rate = Gradient_descent learning_rate
 
-  let adam ~alpha ?beta1 ?beta2 ?epsilon () =
-    Adam (alpha, beta1, beta2, epsilon)
+  let adam ~learning_rate ?beta1 ?beta2 ?epsilon () =
+    Adam (learning_rate, beta1, beta2, epsilon)
 
-  let momentum ~alpha ~momentum =
-    Momentum (alpha, momentum)
+  let momentum ~learning_rate ~momentum =
+    Momentum (learning_rate, momentum)
 
   let get t ~loss =
     match t with
-    | Gradient_descent alpha ->
-      Optimizers.gradient_descent_minimizer ~alpha:(Ops.f alpha) loss
-    | Adam (alpha, beta1, beta2, epsilon) ->
+    | Gradient_descent learning_rate ->
+      Optimizers.gradient_descent_minimizer ~learning_rate:(Ops.f learning_rate) loss
+    | Adam (learning_rate, beta1, beta2, epsilon) ->
       Optimizers.adam_minimizer loss
-        ~alpha:(Ops.f alpha)
+        ~learning_rate:(Ops.f learning_rate)
         ?beta1:(Option.map beta1 ~f:Ops.f)
         ?beta2:(Option.map beta2 ~f:Ops.f)
         ?epsilon:(Option.map epsilon ~f:Ops.f)
-    | Momentum (alpha, momentum) ->
+    | Momentum (learning_rate, momentum) ->
       Optimizers.momentum_minimizer loss
-        ~alpha:(Ops.f alpha)
+        ~learning_rate:(Ops.f learning_rate)
         ~momentum:(Ops.f momentum)
 end
 

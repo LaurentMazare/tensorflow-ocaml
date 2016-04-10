@@ -58,7 +58,7 @@ let fit_1d fn =
     )
   in
   let err, one_lstm = lstm ~size_c ~size_x:1 ~size_y:1 x_and_ys in
-  let gd = Optimizers.adam_minimizer err ~alpha:(Ops.f 0.004) in
+  let gd = Optimizers.adam_minimizer err ~learning_rate:(Ops.f 0.004) in
   for i = 1 to epochs do
     let err =
       Session.run

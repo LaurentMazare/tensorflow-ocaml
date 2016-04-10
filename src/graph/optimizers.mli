@@ -1,5 +1,5 @@
 type 'a optimizer
-  =  alpha:[ `float ] Node.t
+  =  learning_rate:[ `float ] Node.t
   -> ?varsf:[ `float ] Node.t list (* Have to be variables. *)
   -> ?varsd:[ `double ] Node.t list (* Have to be variables. *)
   -> 'a Node.t

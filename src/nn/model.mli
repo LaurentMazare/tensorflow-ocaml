@@ -12,9 +12,9 @@ val evaluate
 
 module Optimizer : sig
   type t
-  val gradient_descent : alpha:float -> t
-  val momentum : alpha:float -> momentum:float -> t
-  val adam : alpha:float -> ?beta1:float -> ?beta2:float -> ?epsilon:float -> unit -> t
+  val gradient_descent : learning_rate:float -> t
+  val momentum : learning_rate:float -> momentum:float -> t
+  val adam : learning_rate:float -> ?beta1:float -> ?beta2:float -> ?epsilon:float -> unit -> t
 end
 
 module Loss : sig

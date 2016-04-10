@@ -18,7 +18,7 @@ let () =
   in
   Model.fit model
     ~loss:(Model.Loss.cross_entropy `mean)
-    ~optimizer:(Model.Optimizer.gradient_descent ~alpha:8.)
+    ~optimizer:(Model.Optimizer.gradient_descent ~learning_rate:8.)
     ~epochs
     ~xs:train_images
     ~ys:train_labels;

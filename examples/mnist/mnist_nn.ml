@@ -26,7 +26,7 @@ let () =
     |> O.reduce_mean
   in
   let gd =
-    Optimizers.momentum_minimizer cross_entropy ~alpha:(O.f 0.6) ~momentum:(O.f 0.9)
+    Optimizers.momentum_minimizer cross_entropy ~learning_rate:(O.f 0.6) ~momentum:(O.f 0.9)
   in
   let train_inputs = Session.Input.[ float xs train_images; float ys train_labels ] in
   let validation_inputs =
