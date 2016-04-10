@@ -4,6 +4,7 @@ type t =
   { session : Session.t
   ; net : Nn._1d Nn.t
   ; placeholder : [ `float ] Node.t
+  ; save_nodes : [ `unit ] Node.t String.Table.t
   }
 
 module Optimizer = struct
@@ -63,6 +64,7 @@ let create net =
   { session
   ; net
   ; placeholder
+  ; save_nodes = String.Table.create ()
   }
 
 let all_inputs ?(named_inputs=[]) t xs =
@@ -154,3 +156,34 @@ let evaluate ?named_inputs ?batch_size ?node t xs =
     done;
     ys
   end
+
+(* Collect all variables in a net. The order of the created list is important as it
+   will serve to name the variable.
+   This does not seem very robust but will do for now. *)
+let get_all_vars t =
+  let processed_nodes = Node.Name.Hash_set.create () in
+  (* Using references here make the following code quite consise. *)
+  let all_vars = ref [] in
+  let rec vars (Node.P node) =
+    if not (Hash_set.mem processed_nodes node.name)
+    then begin
+      Hash_set.add processed_nodes node.name;
+      if Node.Op_name.(=) node.op_name Ops.Op_names.variable
+      then all_vars := (Node.P node) :: !all_vars
+      else List.iter node.inputs ~f:vars
+    end
+  in
+  vars (Node.P (Nn.node t.net));
+  !all_vars
+
+let save t ~filename =
+  let save_node =
+    Hashtbl.find_or_add t.save_nodes filename ~default:(fun () ->
+      get_all_vars t
+      |> List.mapi ~f:(fun i var -> sprintf "V%d" i, var)
+      |> Ops.save ~filename)
+  in
+  Session.run
+    ~session:t.session
+    ~targets:[ Node.P save_node ]
+    Session.Output.empty

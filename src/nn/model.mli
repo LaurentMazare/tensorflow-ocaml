@@ -34,3 +34,8 @@ val fit
   -> ys:(float, Bigarray.float32_elt) Tensor.t
   -> t
   -> unit
+
+val save
+  :  t
+  -> filename:string
+  -> unit
