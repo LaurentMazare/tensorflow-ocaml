@@ -39,3 +39,8 @@ val save
   :  t
   -> filename:string
   -> unit
+
+val load
+  :  t
+  -> filename:string
+  -> unit

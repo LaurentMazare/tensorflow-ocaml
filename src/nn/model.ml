@@ -5,6 +5,7 @@ type t =
   ; net : Nn._1d Nn.t
   ; placeholder : [ `float ] Node.t
   ; save_nodes : [ `unit ] Node.t String.Table.t
+  ; load_and_assign_nodes : Node.p list String.Table.t
   }
 
 module Optimizer = struct
@@ -65,6 +66,7 @@ let create net =
   ; net
   ; placeholder
   ; save_nodes = String.Table.create ()
+  ; load_and_assign_nodes = String.Table.create ()
   }
 
 let all_inputs ?(named_inputs=[]) t xs =
@@ -176,14 +178,33 @@ let get_all_vars t =
   vars (Node.P (Nn.node t.net));
   !all_vars
 
+let all_vars_with_names t =
+  get_all_vars t
+  |> List.mapi ~f:(fun i var -> sprintf "V%d" i, var)
+
 let save t ~filename =
   let save_node =
     Hashtbl.find_or_add t.save_nodes filename ~default:(fun () ->
-      get_all_vars t
-      |> List.mapi ~f:(fun i var -> sprintf "V%d" i, var)
-      |> Ops.save ~filename)
+      Ops.save ~filename (all_vars_with_names t))
   in
   Session.run
     ~session:t.session
     ~targets:[ Node.P save_node ]
+    Session.Output.empty
+
+let load t ~filename =
+  let load_and_assign_nodes =
+    Hashtbl.find_or_add t.load_and_assign_nodes filename ~default:(fun () ->
+      let filename = Ops.const_string [ filename ] in
+      List.map (all_vars_with_names t) ~f:(fun (var_name, (Node.P var)) ->
+        Ops.restore
+          ~type_:var.output_type
+          filename
+          (Ops.const_string [ var_name ])
+        |> Ops.assign var
+        |> fun node -> Node.P node))
+  in
+  Session.run
+    ~session:t.session
+    ~targets:load_and_assign_nodes
     Session.Output.empty
