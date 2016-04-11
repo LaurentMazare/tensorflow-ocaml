@@ -1,9 +1,9 @@
 open Core_kernel.Std
 
-type t =
+type 'a t =
   { session : Session.t
-  ; net : (Nn._1d, [ `float ]) Nn.t
-  ; placeholder : [ `float ] Node.t
+  ; net : (Nn._1d, 'a) Nn.t
+  ; placeholder : 'a Node.t
   ; save_nodes : [ `unit ] Node.t String.Table.t
   ; load_and_assign_nodes : Node.p list String.Table.t
   }
@@ -61,7 +61,8 @@ end
 
 let create net =
   let session = Session.create () in
-  let placeholder = Ops.placeholder ~type_:Float (Nn.shape net |> Nn.Shape.dim_list) in
+  let type_ = Nn.type_ net in
+  let placeholder = Ops.placeholder ~type_ (Nn.shape net |> Nn.Shape.dim_list) in
   { session
   ; net
   ; placeholder

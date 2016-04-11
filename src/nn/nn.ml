@@ -58,6 +58,7 @@ type init = [ `const of float | `normal of float | `truncated_normal of float ]
 let shape t = t.shape
 let default_input t = t.default_input
 let node t = t.node
+let type_ t = t.type_
 
 let named_input ~shape ~type_ =
   let placeholder = Ops.placeholder ~type_ (-1 :: Shape.dim_list shape) in

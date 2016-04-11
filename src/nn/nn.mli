@@ -24,6 +24,7 @@ type init = [ `const of float | `normal of float | `truncated_normal of float ]
 val shape : ('a, 'b) t -> 'a Shape.t
 val default_input : ('a, 'b) t -> 'b Input_name.t option
 val node : ('a, 'b) t -> 'b Node.t
+val type_ : ('a, 'b) t -> 'b Node.Type.t
 
 val input
   :  shape:'a Shape.t

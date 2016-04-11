@@ -1,12 +1,12 @@
-type t
+type 'a t
 
-val create : (Nn._1d, [ `float ]) Nn.t -> t
+val create : (Nn._1d, 'a) Nn.t -> 'a t
 
 val evaluate
-  :  ?named_inputs:([ `float ] Nn.Input_name.t * (float, Bigarray.float32_elt) Tensor.t) list
+  :  ?named_inputs:(([ `float ] as 'a) Nn.Input_name.t * (float, Bigarray.float32_elt) Tensor.t) list
   -> ?batch_size:int
-  -> ?node:[ `float ] Node.t
-  -> t
+  -> ?node:'a Node.t
+  -> 'a t
   -> (float, Bigarray.float32_elt) Tensor.t
   -> (float, Bigarray.float32_elt) Tensor.t
 
@@ -24,23 +24,23 @@ module Loss : sig
 end
 
 val fit
-  :  ?named_inputs:([ `float ] Nn.Input_name.t * (float, Bigarray.float32_elt) Tensor.t) list
+  :  ?named_inputs:(([ `float ] as 'a) Nn.Input_name.t * (float, Bigarray.float32_elt) Tensor.t) list
   -> ?batch_size:int
-  -> ?on_epoch:(int -> err:float -> loss:[ `float ] Node.t -> [ `print_err | `do_nothing ])
+  -> ?on_epoch:(int -> err:float -> loss:'a Node.t -> [ `print_err | `do_nothing ])
   -> loss:Loss.t
   -> optimizer:Optimizer.t
   -> epochs:int
   -> xs:(float, Bigarray.float32_elt) Tensor.t
   -> ys:(float, Bigarray.float32_elt) Tensor.t
-  -> t
+  -> 'a t
   -> unit
 
 val save
-  :  t
+  :  'a t
   -> filename:string
   -> unit
 
 val load
-  :  t
+  :  'a t
   -> filename:string
   -> unit
