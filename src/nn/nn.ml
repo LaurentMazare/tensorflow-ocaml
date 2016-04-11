@@ -261,7 +261,7 @@ let binary ~op_name op t1 t2 =
 let ( * ) t t' = binary ~op_name:"Mul" Ops.( * ) t t'
 
 let (+) t t' = binary ~op_name:"Add" Ops.(+) t t'
-let (-) t t' = binary ~op_name:"Add" Ops.(-) t t'
+let (-) t t' = binary ~op_name:"Sub" Ops.(-) t t'
 
 let reshape t ~shape =
   let dim_list = Shape.dim_list shape in
