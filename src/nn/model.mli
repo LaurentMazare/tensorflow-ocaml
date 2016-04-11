@@ -1,6 +1,6 @@
 type t
 
-val create : Nn._1d Nn.t -> t
+val create : (Nn._1d, [ `float ]) Nn.t -> t
 
 val evaluate
   :  ?named_inputs:([ `float ] Nn.Input_name.t * (float, Bigarray.float32_elt) Tensor.t) list

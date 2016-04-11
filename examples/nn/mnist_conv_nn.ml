@@ -14,7 +14,7 @@ let () =
     Mnist_helper.read_files ()
   in
   let model =
-    Nn.input ~shape:(D1 (28*28))
+    Nn.input ~shape:(D1 (28*28)) ~type_:Float
     |> Nn.reshape ~shape:(D3 (28, 28, 1))
     |> conv2d ~out_channels:32
     |> max_pool

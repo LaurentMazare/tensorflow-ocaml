@@ -32,9 +32,6 @@ module Shape = struct
     | D3 (d, d', d'') -> d * d' * d''
 end
 
-(* TODO: handle double ? *)
-let type_ = Node.Type.Float
-
 module Input_name = struct
   type 'a t = 'a Node.t
 
@@ -48,14 +45,13 @@ module Input_name = struct
   let to_node = Fn.id
 end
 
-type ('a, 'b) t_ =
+type ('a, 'b) t =
   { shape : 'a Shape.t
   ; node : 'b Node.t
   ; variables : 'b Node.t list
   ; default_input : 'b Input_name.t option
+  ; type_ : 'b Node.Type.t
   }
-
-type 'a t = ('a, [ `float ]) t_
 
 type init = [ `const of float | `normal of float | `truncated_normal of float ]
 
@@ -63,23 +59,25 @@ let shape t = t.shape
 let default_input t = t.default_input
 let node t = t.node
 
-let named_input ~shape =
+let named_input ~shape ~type_ =
   let placeholder = Ops.placeholder ~type_ (-1 :: Shape.dim_list shape) in
   let t =
     { shape
     ; node = placeholder
     ; variables = []
     ; default_input = None
+    ; type_
     }
   in
   placeholder, t
 
-let input ~shape =
+let input ~shape ~type_ =
   let placeholder = Ops.placeholder ~type_ (-1 :: Shape.dim_list shape) in
   { shape
   ; node = placeholder
   ; variables = []
   ; default_input = Some placeholder
+  ; type_
   }
 
 let shape_mismatch shape1 shape2 ~op_name =
@@ -114,7 +112,7 @@ module Shared_var = struct
       let s = t.shape in
       match !shape_a with
       | `F f ->
-        let a = f ~shape:s in
+        let a = f ~shape:s ~type_:t.type_ in
         shape_a := `Computed (s, a);
         a
       | `Computed (shape, a) ->
@@ -124,20 +122,20 @@ module Shared_var = struct
     in
     Staged.stage (g f)
 
-  let var ~init dims =
+  let var dims ~init ~type_ =
     match init with
     | `const f -> Var.f_or_d dims f ~type_
     | `normal stddev -> Var.normal dims ~stddev ~type_
     | `truncated_normal stddev -> Var.truncated_normal dims ~stddev ~type_
 
   let dense ?(w_init = `const 0.) ?(b_init = `const 0.) ~shape () =
-    with_shape ~f:(fun ~shape:input_shape ->
+    with_shape ~f:(fun ~shape:input_shape ~type_ ->
       let input_shape =
         match input_shape with
         | Shape.D1 input_shape -> input_shape
       in
-      let w = var ~init:w_init [ input_shape; shape ] in
-      let b = var ~init:b_init [ shape ] in
+      let w = var ~type_ ~init:w_init [ input_shape; shape ] in
+      let b = var ~type_ ~init:b_init [ shape ] in
       w, b)
       (fun f t ->
         let w, b = f t in
@@ -146,6 +144,7 @@ module Shared_var = struct
         ; node
         ; variables = [ w; b ]
         ; default_input = t.default_input
+        ; type_ = t.type_
         })
 
   let conv2d
@@ -160,15 +159,15 @@ module Shared_var = struct
     let filter_height, filter_width = filter in
     let stride_height, stride_width = strides in
     let strides = [ 1; stride_height; stride_width; 1 ] in
-    with_shape ~f:(fun ~shape:input_shape ->
+    with_shape ~f:(fun ~shape:input_shape ~type_ ->
       let image_height, image_width, in_channels =
         match input_shape with
         | Shape.D3 (d1, d2, d3) -> d1, d2, d3
       in
       let w =
-        var ~init:w_init [ filter_height; filter_width; in_channels; out_channels ]
+        var ~type_ ~init:w_init [ filter_height; filter_width; in_channels; out_channels ]
       in
-      let b = var ~init:b_init [ out_channels ] in
+      let b = var ~type_ ~init:b_init [ out_channels ] in
       image_height, image_width, w, b)
       (fun f t ->
         let input_height, input_width, w, b = f t in
@@ -188,6 +187,7 @@ module Shared_var = struct
         ; node
         ; variables = [ w; b ]
         ; default_input = t.default_input
+        ; type_ = t.type_
         })
 end
 
@@ -196,6 +196,7 @@ let f v ~shape =
   ; shape
   ; variables = []
   ; default_input = None
+  ; type_ = Float
   }
 
 let unary op t = { t with node = op t.node }
@@ -232,6 +233,7 @@ let max_pool t ~filter ~strides ~padding =
   ; shape = D3 (output_height, output_width, input_channels)
   ; variables = t.variables
   ; default_input = t.default_input
+  ; type_ = t.type_
   }
 
 let dense ?w_init ?b_init t ~shape =
@@ -252,6 +254,7 @@ let concat t1 t2 =
   (* We use one32 as the concat dim as the batch-size dimension is 0. *)
   ; node = Ops.(concat one32 [ t1.node; t2.node ])
   ; default_input = Input_name.merge t1.default_input t2.default_input
+  ; type_ = t1.type_
   }
 
 let binary ~op_name op t1 t2 =
@@ -261,6 +264,7 @@ let binary ~op_name op t1 t2 =
   ; shape = t1.shape
   ; variables = t1.variables @ t2.variables
   ; default_input = Input_name.merge t1.default_input t2.default_input
+  ; type_ = t1.type_
   }
 
 let ( * ) t t' = binary ~op_name:"Mul" Ops.( * ) t t'
@@ -279,12 +283,13 @@ let reshape t ~shape =
   ; shape
   ; variables = t.variables
   ; default_input = t.default_input
+  ; type_ = t.type_
   }
 
 let flatten t =
   reshape t ~shape:(D1 (Shape.total_dim t.shape))
 
-let split (t : _2d t) =
+let split (t : (_2d, _) t) =
   let Shape.D2 (num_split, d) = t.shape in
   Ops.(split ~num_split one32 t.node)
   |> List.map ~f:(fun node ->
@@ -292,11 +297,12 @@ let split (t : _2d t) =
       ; node
       ; shape = D1 d
       ; default_input = t.default_input
+      ; type_ = t.type_
       }
       |> flatten
     )
 
-let concatN (l : _1d t list) =
+let concatN (l : (_1d, _) t list) =
   match l with
   | [] -> failwith "concat called on an empty list"
   | hd :: _ as full_list ->
@@ -317,4 +323,5 @@ let concatN (l : _1d t list) =
     ; shape = D2 (List.length full_list, hd_shape)
     ; node
     ; default_input
+    ; type_ = hd.type_
     }

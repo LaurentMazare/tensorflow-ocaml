@@ -2,7 +2,7 @@ open Core_kernel.Std
 
 type t =
   { session : Session.t
-  ; net : Nn._1d Nn.t
+  ; net : (Nn._1d, [ `float ]) Nn.t
   ; placeholder : [ `float ] Node.t
   ; save_nodes : [ `unit ] Node.t String.Table.t
   ; load_and_assign_nodes : Node.p list String.Table.t
