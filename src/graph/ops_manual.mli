@@ -15,6 +15,12 @@ val ( *^) : [< `float | `double | `int32 | `complex64 ] b
 (* ==== Constant Tensors ==== *)
 
 (* Constant tensors using a single value. *)
+val f_or_d
+  :  ?shape:int list
+  -> type_:([< `float | `double ] as 'a) Node.Type.t
+  -> float
+  -> 'a Node.t
+
 val f : ?shape:int list -> float -> [ `float ] Node.t
 val d : ?shape:int list -> float -> [ `double ] Node.t
 
