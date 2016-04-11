@@ -1,6 +1,8 @@
-(* TODO: handle double ? *)
-
 open Core_kernel.Std
+
+(* TODO: handle double ? *)
+let type_ = Node.Type.Float
+
 exception Shape_mismatch of int list * int list * string
 let () =
   Caml.Printexc.register_printer (function
@@ -53,14 +55,14 @@ type 'a t =
   ; default_input : Input_name.t option
   }
 
-type init = [ `const of float | `normal of float ]
+type init = [ `const of float | `normal of float | `truncated_normal of float ]
 
 let shape t = t.shape
 let default_input t = t.default_input
 let node t = t.node
 
 let named_input ~shape =
-  let placeholder = Ops.placeholder ~type_:Float (-1 :: Shape.dim_list shape) in
+  let placeholder = Ops.placeholder ~type_ (-1 :: Shape.dim_list shape) in
   let t =
     { shape
     ; node = placeholder
@@ -71,7 +73,7 @@ let named_input ~shape =
   placeholder, t
 
 let input ~shape =
-  let placeholder = Ops.placeholder ~type_:Float (-1 :: Shape.dim_list shape) in
+  let placeholder = Ops.placeholder ~type_ (-1 :: Shape.dim_list shape) in
   { shape
   ; node = placeholder
   ; variables = []
@@ -122,8 +124,9 @@ module Shared_var = struct
 
   let var ~init dims =
     match init with
-    | `const f -> Var.f dims f
-    | `normal stddev -> Var.normalf dims ~stddev
+    | `const f -> Var.f_or_d dims f ~type_
+    | `normal stddev -> Var.normal dims ~stddev ~type_
+    | `truncated_normal stddev -> Var.truncated_normal dims ~stddev ~type_
 
   let dense ?(w_init = `const 0.) ?(b_init = `const 0.) ~shape () =
     with_shape ~f:(fun ~shape:input_shape ->

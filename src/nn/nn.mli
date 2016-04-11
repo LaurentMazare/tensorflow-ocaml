@@ -19,7 +19,7 @@ module Shape : sig
 end
 
 type 'a t
-type init = [ `const of float | `normal of float ]
+type init = [ `const of float | `normal of float | `truncated_normal of float ]
 
 val shape : 'a t -> 'a Shape.t
 val default_input : 'a t -> Input_name.t option
