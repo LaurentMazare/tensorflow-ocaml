@@ -1,8 +1,5 @@
 open Core_kernel.Std
 
-(* TODO: handle double ? *)
-let type_ = Node.Type.Float
-
 exception Shape_mismatch of int list * int list * string
 let () =
   Caml.Printexc.register_printer (function
@@ -11,19 +8,6 @@ let () =
       let dims' = List.map dims' ~f:Int.to_string |> String.concat ~sep:", " in
       Some (sprintf "Shape mismatch %s: %s <> %s" str dims dims')
     | _ -> None)
-
-module Input_name = struct
-  type t = [ `float ] Node.t
-
-  let merge t_option t_option' =
-    match t_option, t_option' with
-    | None, None -> None
-    | (Some _ as s), None | None, (Some _ as s) -> s
-    | Some t as s, Some t' when Node.(Id.(=) (id t) (id t')) -> s
-    | Some _, Some _ -> failwith "Different inputs"
-
-  let to_node = Fn.id
-end
 
 type _1d
 type _2d
@@ -48,12 +32,30 @@ module Shape = struct
     | D3 (d, d', d'') -> d * d' * d''
 end
 
-type 'a t =
+(* TODO: handle double ? *)
+let type_ = Node.Type.Float
+
+module Input_name = struct
+  type 'a t = 'a Node.t
+
+  let merge t_option t_option' =
+    match t_option, t_option' with
+    | None, None -> None
+    | (Some _ as s), None | None, (Some _ as s) -> s
+    | Some t as s, Some t' when Node.(Id.(=) (id t) (id t')) -> s
+    | Some _, Some _ -> failwith "Different inputs"
+
+  let to_node = Fn.id
+end
+
+type ('a, 'b) t_ =
   { shape : 'a Shape.t
-  ; node : [ `float ] Node.t
-  ; variables : [ `float ] Node.t list
-  ; default_input : Input_name.t option
+  ; node : 'b Node.t
+  ; variables : 'b Node.t list
+  ; default_input : 'b Input_name.t option
   }
+
+type 'a t = ('a, [ `float ]) t_
 
 type init = [ `const of float | `normal of float | `truncated_normal of float ]
 

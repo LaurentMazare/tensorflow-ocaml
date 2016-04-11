@@ -1,8 +1,8 @@
 open Core_kernel.Std
 
 module Input_name : sig
-  type t
-  val to_node : t -> [ `float ] Node.t
+  type 'a t
+  val to_node : 'a t -> 'a Node.t
 end
 
 type _1d
@@ -22,7 +22,7 @@ type 'a t
 type init = [ `const of float | `normal of float | `truncated_normal of float ]
 
 val shape : 'a t -> 'a Shape.t
-val default_input : 'a t -> Input_name.t option
+val default_input : 'a t -> [ `float ] Input_name.t option
 val node : 'a t -> [ `float ] Node.t
 
 val input
@@ -31,7 +31,7 @@ val input
 
 val named_input
   :  shape:'a Shape.t
-  -> Input_name.t * 'a t
+  -> [ `float ] Input_name.t * 'a t
 
 val dense
   :  ?w_init:init

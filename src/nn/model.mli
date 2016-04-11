@@ -3,7 +3,7 @@ type t
 val create : Nn._1d Nn.t -> t
 
 val evaluate
-  :  ?named_inputs:(Nn.Input_name.t * (float, Bigarray.float32_elt) Tensor.t) list
+  :  ?named_inputs:([ `float ] Nn.Input_name.t * (float, Bigarray.float32_elt) Tensor.t) list
   -> ?batch_size:int
   -> ?node:[ `float ] Node.t
   -> t
@@ -24,7 +24,7 @@ module Loss : sig
 end
 
 val fit
-  :  ?named_inputs:(Nn.Input_name.t * (float, Bigarray.float32_elt) Tensor.t) list
+  :  ?named_inputs:([ `float ] Nn.Input_name.t * (float, Bigarray.float32_elt) Tensor.t) list
   -> ?batch_size:int
   -> ?on_epoch:(int -> err:float -> loss:[ `float ] Node.t -> [ `print_err | `do_nothing ])
   -> loss:Loss.t
