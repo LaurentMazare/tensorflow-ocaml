@@ -12,7 +12,7 @@ type t =
   ; exported_nodes : Node.p Node.Id.Table.t
   (* The names already present on the server, with the number of times
      it has been used *)
-  ; names : int Node.Name.Table.t
+  ; already_used_names : int Node.Name.Table.t
   (* To manage variable initialisation, each unitialised variable has a height.
      If a variable init depends of no initialised variable,
      its height is 0.
@@ -29,55 +29,58 @@ let create () =
   | Ok session ->
     { session
     ; exported_nodes = Node.Id.Table.create ()
-    ; names = Node.Name.Table.create ()
+    ; already_used_names = Node.Name.Table.create ()
     ; uninitialised_variables = Int.Table.create ()
     ; current_table = Node.Id.Table.create ()
     }
 
 let default_session = lazy (create ())
 
-let rec choose_name t node =
-  let node_name = Node.packed_name node in
-  match Hashtbl.find t.names node_name with
-  | None ->
-    Hashtbl.set t.names ~key:node_name ~data:1;
-    node_name
-  | Some i ->
-    Hashtbl.set t.names ~key:node_name ~data:(i + 1);
-    let name = Node.Name.(sprintf "%s-%i" (to_string node_name) i |> of_string) in
-    if Hashtbl.mem t.names name
-    (* Our new name conflict with a base name, so we try again with another number *)
-    then choose_name t node
-    else name
+let choose_name t node =
+  let base_name = Node.packed_name node in
+  let node_name =
+    match Hashtbl.find t.already_used_names base_name with
+    | None -> base_name
+    | Some last_used_index ->
+      let rec loop last_used_index =
+        let name = Node.Name.(sprintf "%s-%i" (to_string base_name) last_used_index |> of_string) in
+        if Hashtbl.mem t.already_used_names name
+        (* Our new name conflicts so we try again with another number *)
+        then loop (last_used_index + 1)
+        else name, last_used_index
+      in
+      let name, last_used_index = loop (last_used_index + 1) in
+      Hashtbl.set t.already_used_names ~key:base_name ~data:last_used_index;
+      name
+  in
+  Hashtbl.set t.already_used_names ~key:node_name ~data:0;
+  node_name
 
-(* returns a graph with nodes freshly renamed.
-   computes the unitialised variable.
-   returns what would be the height of a variable just above.
-*)
+(* [prepare_node t node] returns a graph with node renamed to some fresh values.
+   Unitialised variables are returned as well as their height. *)
 let rec prepare_node t node =
   let choose_correct_output (Node.P n) =
     Node.P { n with output_idx = Node.packed_output_idx node }
   in
   let id = Node.packed_id node in
   match Hashtbl.find t.exported_nodes id with
-  | Some h -> (choose_correct_output h, 0) (* already exported before starting this run *)
+  | Some h -> choose_correct_output h, 0 (* already exported before starting this run *)
   | None ->
     match Hashtbl.find t.current_table id with
     | Some (node, h) -> choose_correct_output node, h (* already exported this round *)
     | None ->
       let Node.P u_node = node in
       let rev_inputs, height =
-        List.fold u_node.inputs ~init:([], 0)
-          ~f:(fun (rev_inputs, height) input ->
-              let input, h = prepare_node t input in
-              input::rev_inputs, max h height)
+        List.fold u_node.inputs ~init:([], 0) ~f:(fun (rev_inputs, height) input ->
+          let input, h = prepare_node t input in
+          input :: rev_inputs, max h height)
       in
       let res =
         Node.P
-        { u_node with
-          name = choose_name t node
-        ; inputs = List.rev rev_inputs
-        }
+          { u_node with
+            name = choose_name t node
+          ; inputs = List.rev rev_inputs
+          }
       in
       let h =
        match Var.get_init node with
@@ -89,8 +92,7 @@ let rec prepare_node t node =
          h + 1
       in
       Hashtbl.set t.current_table ~key:id ~data:(res, h);
-      (res, h)
-;;
+      res, h
 
 type node_names =
   { inputs : string list
