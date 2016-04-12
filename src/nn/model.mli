@@ -10,6 +10,14 @@ val evaluate
   -> (float, Bigarray.float32_elt) Tensor.t
   -> (float, Bigarray.float32_elt) Tensor.t
 
+val evaluate_d
+  :  ?named_inputs:(([ `double ] as 'a) Nn.Input_name.t * (float, Bigarray.float64_elt) Tensor.t) list
+  -> ?batch_size:int
+  -> ?node:'a Node.t
+  -> 'a t
+  -> (float, Bigarray.float64_elt) Tensor.t
+  -> (float, Bigarray.float64_elt) Tensor.t
+
 module Optimizer : sig
   type t
   val gradient_descent : learning_rate:float -> t
@@ -32,6 +40,18 @@ val fit
   -> epochs:int
   -> xs:(float, Bigarray.float32_elt) Tensor.t
   -> ys:(float, Bigarray.float32_elt) Tensor.t
+  -> 'a t
+  -> unit
+
+val fit_d
+  :  ?named_inputs:(([ `double ] as 'a) Nn.Input_name.t * (float, Bigarray.float64_elt) Tensor.t) list
+  -> ?batch_size:int
+  -> ?on_epoch:(int -> err:float -> loss:'a Node.t -> [ `print_err | `do_nothing ])
+  -> loss:Loss.t
+  -> optimizer:Optimizer.t
+  -> epochs:int
+  -> xs:(float, Bigarray.float64_elt) Tensor.t
+  -> ys:(float, Bigarray.float64_elt) Tensor.t
   -> 'a t
   -> unit
 
