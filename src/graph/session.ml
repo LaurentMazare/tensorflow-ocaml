@@ -7,20 +7,19 @@ open Core_kernel.Std
 (* There is no uninitialised variables because I think we can initialize
 them last minute when someone call run, as there is no extend graph *)
 type t =
-{ session : Wrapper.Session.t;
-  (* The nodes already in the graph of the session,
-     with their name there *)
-  exported_nodes : Node.p Node.Id.Table.t;
+  { session : Wrapper.Session.t
+  (* The nodes already in the graph of the session, with their name there *)
+  ; exported_nodes : Node.p Node.Id.Table.t
   (* The names already present on the server, with the number of times
      it has been used *)
-  names : int String.Table.t;
+  ; names : int Node.Name.Table.t
   (* To manage variable initialisation, each unitialised variable has a height.
      If a variable init depends of no initialised variable,
      its height is 0.
      If it depends of unitialised variable v1 ... vn, its height is max(height(vi)) + 1
      Initialisation can be done one level after one level *)
-  uninitialised_variables : Node.p list Int.Table.t;
-  current_table : (Node.p * int) Node.Id.Table.t
+  ; uninitialised_variables : Node.p list Int.Table.t
+  ; current_table : (Node.p * int) Node.Id.Table.t
 }
 
 let create () =
@@ -28,28 +27,28 @@ let create () =
   | Error status ->
     failwithf "Unable to generate session: %s" (Wrapper.Status.message status) ()
   | Ok session ->
-    { session;
-      exported_nodes = Node.Id.Table.create ();
-      names = String.Table.create ();
-      uninitialised_variables = Int.Table.create ();
-      current_table = Node.Id.Table.create()
+    { session
+    ; exported_nodes = Node.Id.Table.create ()
+    ; names = Node.Name.Table.create ()
+    ; uninitialised_variables = Int.Table.create ()
+    ; current_table = Node.Id.Table.create ()
     }
 
 let default_session = lazy (create ())
 
 let rec choose_name t node =
-  let base_name = Node.Name.to_string (Node.packed_name node) in
-  match Hashtbl.find t.names  base_name with
+  let node_name = Node.packed_name node in
+  match Hashtbl.find t.names node_name with
   | None ->
-    Hashtbl.set t.names ~key:base_name ~data:1;
-    Node.Name.of_string base_name
+    Hashtbl.set t.names ~key:node_name ~data:1;
+    node_name
   | Some i ->
-    Hashtbl.set t.names ~key:base_name ~data:(i + 1);
-    let name = sprintf "%s-%i" base_name i in
+    Hashtbl.set t.names ~key:node_name ~data:(i + 1);
+    let name = Node.Name.(sprintf "%s-%i" (to_string node_name) i |> of_string) in
     if Hashtbl.mem t.names name
     (* Our new name conflict with a base name, so we try again with another number *)
     then choose_name t node
-    else Node.Name.of_string name
+    else name
 
 (* returns a graph with nodes freshly renamed.
    computes the unitialised variable.
@@ -234,13 +233,13 @@ struct
       let l1, k1 = build_output o1 in
       let l2, k2 = build_output o2 in
       (fun l -> l1 (l2 l)),
-        (fun l ->
+      (fun l ->
         let a, l = k1 l in
         let b, l = k2 l in
         (a, b), l)
     | Map (o, f) ->
       let l, k = build_output o in
-      l, (fun l -> let a, l = (k l) in f a, l)
+      l, (fun l -> let a, l = k l in f a, l)
     | Empty -> Fn.id, fun l -> (), l
     | Compute node ->
      (fun l -> (P node) :: l),
