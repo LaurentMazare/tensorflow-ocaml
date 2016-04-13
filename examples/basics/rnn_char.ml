@@ -34,7 +34,7 @@ let lstm ~size_c ~size_x ~size_y x_and_ys =
     let zero = Ops.f ~shape:[ batch_size; size_c ] 0. in
     List.fold x_and_ys ~init:([], zero, zero) ~f:(fun (errs, h, c) (x, y) ->
       let y_bar, h, c = one_lstm ~h ~x ~c in
-      let err = Ops.(square (y - y_bar)) in
+      let err = Ops.(neg (y * log y_bar)) in
       err :: errs, h, c)
     |> fun (errs, _, _) ->
     match errs with
