@@ -2,9 +2,8 @@ open Core_kernel.Std
 
 module Op_name : Identifiable
 
-module Name : sig
-  include Identifiable
-end
+module Name : Identifiable
+
 module Id : Identifiable
 
 module Type : sig
