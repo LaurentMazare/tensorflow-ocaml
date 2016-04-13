@@ -18,16 +18,16 @@ let const_float
     values
   =
   let shape = get_shape ?shape values in
-  { name = Name.make_fresh ~name
-  ; op_name = Op_name.of_string "Const"
-  ; output_type = type_
-  ; inputs = []
-  ; attributes = [
+  Node.create
+    ~name:(Name.make_fresh ~name)
+    ~op_name:(Op_name.of_string "Const")
+    ~output_type:type_
+    ~inputs:[]
+    ~attributes:[
       "dtype", Type (P type_);
       "value", Tensor_float { type_ = P type_; shape; values };
     ]
-  ; output_idx = None
-  }
+    ~output_idx = None
 
 let const_int
     ?(name = "Const")
