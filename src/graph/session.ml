@@ -60,7 +60,7 @@ let choose_name t node =
    Unitialised variables are returned as well as their height. *)
 let rec prepare_node t node =
   let choose_correct_output (Node.P n) =
-    Node.P { n with output_idx = Node.packed_output_idx node }
+    Node.P (Node.set_output_idx n (Node.packed_output_idx node))
   in
   let id = Node.packed_id node in
   match Hashtbl.find t.exported_nodes id with
@@ -71,16 +71,12 @@ let rec prepare_node t node =
     | None ->
       let Node.P u_node = node in
       let rev_inputs, height =
-        List.fold u_node.inputs ~init:([], 0) ~f:(fun (rev_inputs, height) input ->
+        List.fold (Node.inputs u_node) ~init:([], 0) ~f:(fun (rev_inputs, height) input ->
           let input, h = prepare_node t input in
           input :: rev_inputs, max h height)
       in
       let res =
-        Node.P
-          { u_node with
-            name = choose_name t node
-          ; inputs = List.rev rev_inputs
-          }
+        Node.P (Node.set_name_and_inputs u_node (choose_name t node) (List.rev rev_inputs))
       in
       let h =
        match Var.get_init node with

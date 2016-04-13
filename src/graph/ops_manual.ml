@@ -27,7 +27,7 @@ let const_float
       "dtype", Type (P type_);
       "value", Tensor_float { type_ = P type_; shape; values };
     ]
-    ~output_idx = None
+    ~output_idx:None
 
 let const_int
     ?(name = "Const")
@@ -36,16 +36,16 @@ let const_int
     values
   =
   let shape = get_shape ?shape values in
-  { name = Name.make_fresh ~name
-  ; op_name = Op_name.of_string "Const"
-  ; output_type = type_
-  ; inputs = []
-  ; attributes = [
+  Node.create
+    ~name:(Name.make_fresh ~name)
+    ~op_name:(Op_name.of_string "Const")
+    ~output_type:type_
+    ~inputs:[]
+    ~attributes:[
       "dtype", Type (P type_);
       "value", Tensor_int { type_ = P type_; shape; values };
     ]
-  ; output_idx = None
-  }
+    ~output_idx:None
 
 let const_string
     ?(name = "Const")
@@ -53,16 +53,16 @@ let const_string
     values
   =
   let shape = get_shape ?shape values in
-  { name = Name.make_fresh ~name
-  ; op_name = Op_name.of_string "Const"
-  ; output_type = String
-  ; inputs = []
-  ; attributes = [
+  Node.create
+    ~name:(Name.make_fresh ~name)
+    ~op_name:(Op_name.of_string "Const")
+    ~output_type:String
+    ~inputs:[]
+    ~attributes:[
       "dtype", Type (P String);
       "value", Tensor_string { type_ = P String; shape; values };
     ]
-  ; output_idx = None
-  }
+    ~output_idx:None
 
 let scalar ?empty_shape ~type_ f =
   const_float
@@ -124,7 +124,7 @@ let placeholder ?name ~type_ shape =
     ()
 
 let dropout node ~keep_prob =
-  let type_ = node.Node.output_type in
+  let type_ = Node.output_type node in
   (keep_prob + Ops_generated.randomUniform ~type_ (Ops_generated.shape node))
   |> Ops_generated.floor
   |> fun binary_tensor -> node * (Ops_generated.inv keep_prob) * binary_tensor
@@ -138,15 +138,15 @@ let save_
   =
   let inputs = Node.P filename :: Node.P tensor_names :: tensors in
   let type_list =
-    List.map tensors ~f:(fun (Node.P tensor) -> Node.Type.P tensor.output_type)
+    List.map tensors ~f:(fun (Node.P tensor) -> Node.Type.P (Node.output_type tensor))
   in
-  { name = Name.make_fresh ~name
-  ; op_name = Op_name.of_string "Save"
-  ; output_type = Node.Type.Unit
-  ; inputs
-  ; attributes = [ "T", List (Type type_list) ]
-  ; output_idx = None
-  }
+  Node.create
+    ~name:(Name.make_fresh ~name)
+    ~op_name:(Op_name.of_string "Save")
+    ~output_type:Unit
+    ~inputs
+    ~attributes:[ "T", List (Type type_list) ]
+    ~output_idx:None
 
 let save ~filename named_tensors =
   let tensor_names, tensors = List.unzip named_tensors in

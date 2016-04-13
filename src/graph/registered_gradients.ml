@@ -11,7 +11,7 @@ type t =
 
 let add op t =
   let f ~self:(Node.P self) ~gradient:(Node.P gradient) =
-    match self.output_type, gradient.output_type with
+    match Node.output_type self, Node.output_type gradient with
     | Node.Type.Double, Node.Type.Double -> t.f ~self ~gradient
     | Node.Type.Float, Node.Type.Float -> t.f ~self ~gradient
     | _, _ ->

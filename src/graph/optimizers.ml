@@ -11,30 +11,30 @@ type 'a optimizer
    Using this is an overapproximation as we would only need the variables that
    can be reached from the node via a 'derivable' path. *)
 let get_all_vars node =
-  let processed_nodes = Node.Name.Hash_set.create () in
+  let processed_nodes = Node.Id.Hash_set.create () in
   (* Using references here make the following code quite consise. *)
   let varsf = ref ([] : [ `float ] Node.t list) in
   let varsd = ref ([] : [ `double ] Node.t list) in
   let rec vars (Node.P node) =
-    if not (Hash_set.mem processed_nodes node.name)
+    if not (Hash_set.mem processed_nodes (Node.id node))
     then begin
-      Hash_set.add processed_nodes node.name;
-      if Node.Op_name.(=) node.op_name Ops.Op_names.variable
+      Hash_set.add processed_nodes (Node.id node);
+      if Node.Op_name.(=) (Node.op_name node) Ops.Op_names.variable
       then
-        match node.output_type with
+        match Node.output_type node with
         | Node.Type.Float -> varsf := node :: !varsf
         | Node.Type.Double -> varsd := node :: !varsd
         | _ -> ()
-      else List.iter node.inputs ~f:vars
+      else List.iter (Node.inputs node) ~f:vars
     end
   in
   vars (Node.P node);
   !varsf, !varsd
 
 let check_var (type a) (node : a Node.t) =
-  if Node.Op_name.(<>) node.Node.op_name Ops.Op_names.variable
+  if Node.Op_name.(<>) (Node.op_name node) Ops.Op_names.variable
   then
-    failwithf "Node %s is not a variable." (Node.Name.to_string node.name) ()
+    failwithf "Node %s is not a variable." (Node.Name.to_string (Node.name node)) ()
 
 let get_shape var =
   Option.value_exn (Node.get_shape var)
@@ -65,7 +65,7 @@ let general_minimizer t ?varsf ?varsd target =
     List.map2_exn gradients vars ~f:(fun gradient var ->
       check_var var;
       let gradient = Ops.reshape gradient (Ops.shape var) in
-      Node.P (t.apply ~gradient ~var ~type_:var.output_type))
+      Node.P (t.apply ~gradient ~var ~type_:(Node.output_type var)))
   in
   let gdf =
     if not (List.is_empty varsf)
