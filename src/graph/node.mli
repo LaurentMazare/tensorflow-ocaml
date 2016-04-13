@@ -103,6 +103,7 @@ val output_type : 'a t -> 'a Type.t
 val inputs : _ t -> p list
 val attributes : _ t -> (string * attr) list
 val output_idx : _ t -> int option
+val unique_name : _ t -> string
 
 val set_output_idx : 'a t -> int option -> 'a t
 val set_name_and_inputs

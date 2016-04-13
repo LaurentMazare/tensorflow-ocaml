@@ -169,10 +169,10 @@ let of_nodes' ?verbose ~already_exported_nodes ts =
       let input =
         List.map (Node.inputs t) ~f:(fun (P input) ->
           let idx = Option.value_map (Node.output_idx input) ~default:"" ~f:(sprintf ":%d") in
-          Node.Name.to_string (Node.name input) ^ idx)
+          Node.unique_name input ^ idx)
       in
       let node =
-        { Node_def.name = Some (Node.Name.to_string (Node.name t))
+        { Node_def.name = Some (Node.unique_name t)
         ; op = Some (Node.Op_name.to_string (Node.op_name t))
         ; input
         ; device = None

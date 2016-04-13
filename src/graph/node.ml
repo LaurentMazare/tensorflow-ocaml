@@ -149,6 +149,8 @@ let output_type t = t.output_type
 let inputs t = t.inputs
 let attributes t = t.attributes
 let output_idx t = t.output_idx
+let unique_name t =
+  sprintf "%s-%s" (Name.to_string t.name) (Id.to_string t.id)
 
 let packed_name (P t) = t.name
 let packed_inputs (P t) = t.inputs

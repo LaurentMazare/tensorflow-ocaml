@@ -120,7 +120,7 @@ let prepare_graph t ~inputs ~targets ~outputs =
   in
   Option.iter protobuf ~f:(fun protobuf ->
     Wrapper.Session.(extend_graph t.session protobuf |> ok_exn));
-  let node_names = List.map ~f:(fun x -> Node.packed_name x |> Node.Name.to_string) in
+  let node_names = List.map ~f:(fun (Node.P x) -> Node.unique_name x) in
   { inputs = node_names inputs
   ; targets = node_names targets
   ; outputs = node_names outputs
