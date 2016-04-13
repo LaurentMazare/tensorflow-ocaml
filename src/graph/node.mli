@@ -4,7 +4,6 @@ module Op_name : Identifiable
 
 module Name : sig
   include Identifiable
-  val make_fresh : name:string -> t
 end
 module Id : Identifiable
 

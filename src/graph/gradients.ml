@@ -47,7 +47,7 @@ let aggregate_contributions = function
     in
     Node.P
       (Node.create
-        ~name:(Node.Name.make_fresh ~name:"gradient/addN")
+        ~name:(Node.Name.of_string "gradient/addN")
         ~op_name:(Node.Op_name.of_string "AddN")
         ~output_type
         ~inputs

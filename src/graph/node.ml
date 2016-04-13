@@ -2,16 +2,7 @@ open Core_kernel.Std
 
 module Op_name : Identifiable = String_id
 
-module Name : sig
-  include Identifiable
-  val make_fresh : name:string -> t
-end = struct
-  include String_id
-  let cnt = ref 0
-  let make_fresh ~name =
-    incr cnt;
-    sprintf "%s-%d" name !cnt |> of_string
-end
+module Name : Identifiable = String_id
 
 module Id : sig
   include Identifiable

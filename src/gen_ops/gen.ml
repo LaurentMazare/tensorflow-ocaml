@@ -377,7 +377,7 @@ let handle_one_op (op : Op.t) out_channel =
     p "    %s" (Attribute.ml_apply attribute "attributes");
     p "  in";
   );
-  p "  let name = Name.make_fresh ~name in";
+  p "  let name = Name.of_string name in";
   p "  let op_name = Op_names.%s in" (Op.caml_name op);
   let inputs =
     if List.for_all op.inputs ~f:(fun input -> input.number_attr = None)

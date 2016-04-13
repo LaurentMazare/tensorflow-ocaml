@@ -19,7 +19,7 @@ let const_float
   =
   let shape = get_shape ?shape values in
   Node.create
-    ~name:(Name.make_fresh ~name)
+    ~name:(Name.of_string name)
     ~op_name:(Op_name.of_string "Const")
     ~output_type:type_
     ~inputs:[]
@@ -37,7 +37,7 @@ let const_int
   =
   let shape = get_shape ?shape values in
   Node.create
-    ~name:(Name.make_fresh ~name)
+    ~name:(Name.of_string name)
     ~op_name:(Op_name.of_string "Const")
     ~output_type:type_
     ~inputs:[]
@@ -54,7 +54,7 @@ let const_string
   =
   let shape = get_shape ?shape values in
   Node.create
-    ~name:(Name.make_fresh ~name)
+    ~name:(Name.of_string name)
     ~op_name:(Op_name.of_string "Const")
     ~output_type:String
     ~inputs:[]
@@ -141,7 +141,7 @@ let save_
     List.map tensors ~f:(fun (Node.P tensor) -> Node.Type.P (Node.output_type tensor))
   in
   Node.create
-    ~name:(Name.make_fresh ~name)
+    ~name:(Name.of_string name)
     ~op_name:(Op_name.of_string "Save")
     ~output_type:Unit
     ~inputs
