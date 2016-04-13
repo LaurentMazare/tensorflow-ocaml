@@ -149,7 +149,7 @@ module Op = struct
 
   type t =
     { name : string
-    ; inputs : Input.t list 
+    ; inputs : Input.t list
     ; output_types : output_type list
     ; attributes : Attribute.t list
     ; summary : string option
@@ -286,7 +286,7 @@ let output_type_string op output_type ~idx =
   | Fixed p -> "Type." ^ Node.Type.to_string p
   | Polymorphic (alpha, _) ->
     match same_input_and_output_type op ~alpha with
-    | Some input -> sprintf "%s.output_type" (Input.caml_comp_name input)
+    | Some input -> sprintf "(Node.output_type %s)" (Input.caml_comp_name input)
     | None -> type_variable ~idx
 
 let needs_variable_for_output_type op output_type =
@@ -366,7 +366,7 @@ let handle_one_op (op : Op.t) out_channel =
       | Some type_name when List.Assoc.mem acc type_name -> acc
       | Some type_name ->
         let name = Input.caml_comp_name input in
-        (type_name, sprintf "%s.output_type" name) :: acc)
+        (type_name, sprintf "(Node.output_type %s)" name) :: acc)
     |> List.map ~f:(fun (type_name, type_string) ->
       sprintf " \"%s\", Type (P %s) " type_name type_string)
     |> String.concat ~sep:"; "
@@ -409,24 +409,26 @@ let handle_one_op (op : Op.t) out_channel =
         | None -> number_attr.name
       in
       p "  List.init %s ~f:(fun output_idx ->" number_value;
-      p "    { name";
-      p "    ; op_name";
-      p "    ; output_type = %s" output_type_string;
-      p "    ; inputs";
-      p "    ; attributes";
-      p "    ; output_idx = Some output_idx";
-      p "    })";
+      p "    Node.create";
+      p "      ~name";
+      p "      ~op_name";
+      p "      ~output_type:%s" output_type_string;
+      p "      ~inputs";
+      p "      ~attributes";
+      p "      ~output_idx:(Some output_idx)";
+      p "    )";
     | output_types ->
       List.iteri output_types ~f:(fun idx output_type ->
         let output_type_string = output_type_string op output_type.type_ ~idx in
         if 0 < idx then p "  ,";
-        p "  { name";
-        p "  ; op_name";
-        p "  ; output_type = %s" output_type_string;
-        p "  ; inputs";
-        p "  ; attributes";
-        p "  ; output_idx = %s" (if multiple_outputs then sprintf "Some %d" idx else "None");
-        p "  }");
+        p "  Node.create";
+        p "    ~name";
+        p "    ~op_name";
+        p "    ~output_type:%s" output_type_string;
+        p "    ~inputs";
+        p "    ~attributes";
+        p "    ~output_idx:%s" (if multiple_outputs then sprintf "(Some %d)" idx else "None");
+      );
   end;
   p ""
 

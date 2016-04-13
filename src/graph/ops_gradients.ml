@@ -13,12 +13,12 @@ let all = List.map ~f:Option.some
 
 let unary_wrapper_exn (type a) ~self ~(gradient : a N.t) ~t =
   let N.P x =
-    match self.N.inputs with
+    match N.inputs self with
     | [] | _ :: _ :: _ -> failwith "Not a unary function"
     | [ node ] -> node
   in
   let output =
-    match x.output_type, gradient.N.output_type with
+    match N.output_type x, N.output_type gradient with
     | T.Double, T.Double ->
       N.P (t.f1 ~x ~y:self ~gradient)
     | T.Float, T.Float ->
@@ -29,18 +29,18 @@ let unary_wrapper_exn (type a) ~self ~(gradient : a N.t) ~t =
 
 let binary_extract_exn : type a . a N.t -> (a N.t * a N.t) = fun node ->
   let N.P lhs, N.P rhs =
-    match node.inputs with
+    match N.inputs node with
     | [ lhs; rhs ] -> lhs, rhs
     | _ -> failwith "Not a binary function"
   in
-  match lhs.output_type, rhs.output_type, node.output_type with
+  match N.output_type lhs, N.output_type rhs, N.output_type node with
   | T.Double, T.Double, T.Double -> lhs, rhs
   | T.Float, T.Float, T.Float -> lhs, rhs
   | _ -> failwith "Inconsistent types"
 
 let add_gradient_ ~self ~gradient =
   let slhs, srhs =
-    match self.N.inputs with
+    match N.inputs self with
     | [ N.P lhs; N.P rhs ] -> Ops.shape lhs, Ops.shape rhs
     | _ -> failwith "Not a binary function"
   in
@@ -82,7 +82,7 @@ let pow_gradient ~self ~gradient =
   let shape_lhs = Ops.shape lhs in
   let shape_rhs = Ops.shape rhs in
   let rlhs, rrhs = Ops.broadcastGradientArgs shape_lhs shape_rhs in
-  let one = Ops.const_float ~type_:self.N.output_type [ 1. ] in
+  let one = Ops.const_float ~type_:(N.output_type self) [ 1. ] in
   let lhs_gradient =
     Ops.reshape (Ops.sum Ops.(gradient * rhs * Ops.pow lhs (rhs - one)) rlhs) shape_lhs
   in
@@ -101,7 +101,7 @@ let abs_gradient (type a) ~self ~(gradient : a N.t) =
 let square_gradient (type a) ~self ~(gradient : a N.t) =
   let t =
     { f1 = fun ~x ~y:_ ~gradient ->
-        Ops.mul x (Ops.scalar ~type_:x.output_type 2.)
+        Ops.mul x (Ops.scalar ~type_:(N.output_type x) 2.)
         |> Ops.mul gradient
     }
   in
@@ -115,12 +115,12 @@ let relu_gradient ~self ~gradient =
   all [ N.P (Ops.reluGrad gradient self) ]
 
 let sigmoid_gradient ~self ~gradient =
-  let one = Ops.const_float ~type_:self.N.output_type [ 1. ] in
+  let one = Ops.const_float ~type_:(N.output_type self) [ 1. ] in
   all [ N.P Ops.(gradient * self * (one - self)) ]
 
 let matmul_gradient ~self ~gradient =
   let get_transpose str =
-    List.Assoc.find self.N.attributes str
+    List.Assoc.find (N.attributes self) str
     |> Option.value_map
         ~default:false
         ~f:(function
@@ -151,7 +151,7 @@ let matmul_gradient ~self ~gradient =
 (* Direct adaptation of math_grad.py from the tensorflow source code. *)
 let reduce_gradient ~self =
   let N.P input, N.P indices =
-    match self.N.inputs with
+    match N.inputs self with
     | [ input; indices ] -> input, indices
     | _ -> failwith "Incorrect number of inputs"
   in
@@ -178,24 +178,24 @@ let sum_gradient ~self ~gradient =
 
 let mean_gradient ~self ~gradient =
   let sum_gradient = sum_gradient_ ~self ~gradient in
-  let N.P input = List.hd_exn self.inputs in
+  let N.P input = List.hd_exn (N.inputs self) in
   let input_shape = Ops.shape input in
   let output_shape = Ops.shape self in
   let factor = Ops.div (Ops.reduce_prod input_shape) (Ops.reduce_prod output_shape) in
-  let gradient = Ops.div sum_gradient (Ops.cast factor ~type_:sum_gradient.output_type) in
+  let gradient = Ops.div sum_gradient (Ops.cast factor ~type_:(N.output_type sum_gradient)) in
   [ Some (N.P gradient); None ]
 
 let minmax_gradient ~self ~gradient =
   let input =
-    match self.N.inputs with
-    | [ input; _ ] -> Option.value_exn (N.extract input self.output_type)
+    match N.inputs self with
+    | [ input; _ ] -> Option.value_exn (N.extract input (N.output_type self))
     | _ -> failwith "Not a binary function"
   in
   let new_output_shape, _ = reduce_gradient ~self in
   let self = Ops.reshape self new_output_shape in
   let gradient = Ops.reshape gradient new_output_shape in
   let gradient =
-    Ops.cast (Ops.equal self input) ~type_:self.N.output_type
+    Ops.cast (Ops.equal self input) ~type_:(N.output_type self)
     |> Ops.mul gradient
   in
   [ Some (N.P gradient); None ]
@@ -216,13 +216,13 @@ let exp_gradient ~self ~gradient =
 
 let sqrt_gradient ~self ~gradient =
   let gradient =
-    Ops.(gradient * const_float ~type_:self.N.output_type [ 0.5 ] * Ops.inv self)
+    Ops.(gradient * const_float ~type_:(N.output_type self) [ 0.5 ] * Ops.inv self)
   in
   all [ N.P gradient ]
 
 let tanh_gradient ~self ~gradient =
   let gradient =
-    Ops.(gradient * (const_float ~type_:self.N.output_type [ 1. ] - Ops.square self))
+    Ops.(gradient * (const_float ~type_:(N.output_type self) [ 1. ] - Ops.square self))
   in
   all [ N.P gradient ]
 
@@ -238,7 +238,7 @@ let cos_gradient (type a) ~self ~(gradient : a N.t) =
   unary_wrapper_exn ~self ~gradient ~t
 
 let addn_gradient ~self ~gradient =
-  List.map self.N.inputs ~f:(fun _ -> Some (N.P gradient))
+  List.map (N.inputs self) ~f:(fun _ -> Some (N.P gradient))
 
 let inv_gradient ~self ~gradient =
   [ Some (N.P (Ops.mul gradient (Ops.neg (Ops.square self)))) ]
@@ -246,7 +246,7 @@ let inv_gradient ~self ~gradient =
 let rsqrt_gradient (type a) ~self ~(gradient : a N.t) =
   let t =
     { f1 = fun ~x ~y ~gradient ->
-        Ops.(gradient * const_float ~type_:y.N.output_type [ -0.5 ] * Ops.inv x * y)
+        Ops.(gradient * const_float ~type_:(N.output_type y) [ -0.5 ] * Ops.inv x * y)
     }
   in
   unary_wrapper_exn ~self ~gradient ~t
@@ -256,7 +256,7 @@ let two_over_pi = 2. /. 3.1415926535897932384626434
 let erf_gradient (type a) ~self ~(gradient : a N.t) =
   let t =
     { f1 = fun ~x ~y ~gradient ->
-        Ops.(gradient * const_float ~type_:y.N.output_type [ two_over_pi ]
+        Ops.(gradient * const_float ~type_:(N.output_type y) [ two_over_pi ]
           * Ops.exp (Ops.neg (Ops.square x)))
     }
   in
@@ -265,7 +265,7 @@ let erf_gradient (type a) ~self ~(gradient : a N.t) =
 let erfc_gradient (type a) ~self ~(gradient : a N.t) =
   let t =
     { f1 = fun ~x ~y ~gradient ->
-        Ops.(gradient * const_float ~type_:y.N.output_type [ -. two_over_pi ]
+        Ops.(gradient * const_float ~type_:(N.output_type y) [ -. two_over_pi ]
           * Ops.exp (Ops.neg (Ops.square x)))
     }
   in
@@ -298,16 +298,16 @@ let conv2d_gradient ~self ~gradient =
 
 let maxpool_gradient : type a. self:a N.t -> gradient:a N.t -> N.p option list
   = fun ~self ~gradient ->
-  match self.N.output_type, gradient.N.output_type with
+  match N.output_type self, N.output_type gradient with
   | N.Type.Float, N.Type.Float ->
     let ksize = Option.value_exn (N.get_attr_int_list self "ksize") in
     let strides = Option.value_exn (N.get_attr_int_list self "strides") in
     let padding = Option.value_exn (N.get_attr_string self "padding") in
     let input =
-      match self.N.inputs with
+      match N.inputs self with
       | [] | _ :: _ :: _ -> failwith "Not a unary function"
       | [ N.P input ] ->
-        match input.output_type with
+        match N.output_type input with
         | T.Float -> (input : [ `float ] N.t)
         | _ -> failwith "Inconsistent types"
     in
@@ -325,20 +325,20 @@ let maxpool_gradient : type a. self:a N.t -> gradient:a N.t -> N.p option list
 
 let reshape_gradient ~self ~gradient =
   let input_shape =
-    match self.N.inputs with
+    match N.inputs self with
     | [ N.P input; _ ] -> Ops.shape input
     | _ -> failwith "Not a binary function"
   in
   [ Some (N.P (Ops.reshape gradient input_shape)); None ]
 
 let none ~self ~gradient:_ =
-  List.map self.N.inputs ~f:(fun _ -> None)
+  List.map (N.inputs self) ~f:(fun _ -> None)
 
 let fill_gradient ~self:_ ~gradient =
   [ None; Some (N.P (Ops.reduce_sum gradient)) ]
 
 let concat_gradient ~self ~gradient =
-  match self.N.inputs with
+  match N.inputs self with
   | [] | [ _ ] -> failwith "Concat nodes have multiple inputs."
   | [ _; _ ] -> [ None; Some (N.P gradient) ]
   | concat_dim :: concat_inputs ->
@@ -349,7 +349,7 @@ let concat_gradient ~self ~gradient =
     in
     let concat_inputs =
       List.map concat_inputs ~f:(fun concat_input ->
-        match N.extract concat_input self.output_type with
+        match N.extract concat_input (N.output_type self) with
         | None -> failwith "All the concatenated inputs should have the same type."
         | Some concat_input -> concat_input)
     in

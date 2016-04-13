@@ -281,53 +281,53 @@ let abs
     ?(name = "Abs")
     (x : ([< `float | `double | `int32 | `int64 ] as 't) t)
   =
-  let attributes = [ "T", Type (P x.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type x)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.abs in
   let inputs = [ P x ] in
-  { name
-  ; op_name
-  ; output_type = x.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type x)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let add
     ?(name = "Add")
     (x : ([< `float | `double | `int32 | `int64 | `complex64 | `string ] as 't) t)
     (y : ([< `float | `double | `int32 | `int64 | `complex64 | `string ] as 't) t)
   =
-  let attributes = [ "T", Type (P x.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type x)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.add in
   let inputs = [ P x; P y ] in
-  { name
-  ; op_name
-  ; output_type = x.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type x)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let addN
     ?(name = "AddN")
     (inputs__ : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t list)
   =
-  let attributes = [ "T", Type (P (List.hd_exn inputs__).output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type (List.hd_exn inputs__))) ] in
   let attributes =
     ("N", Int (List.length inputs__)) :: attributes
   in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.addN in
   let inputs = List.map ~f:(fun n -> P n) inputs__ in
-  { name
-  ; op_name
-  ; output_type = (List.hd_exn inputs__).output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type (List.hd_exn inputs__))
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let adjustContrast
     ?(name = "AdjustContrast")
@@ -336,17 +336,17 @@ let adjustContrast
     (min_value : [ `float ] t)
     (max_value : [ `float ] t)
   =
-  let attributes = [ "T", Type (P images.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type images)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.adjustContrast in
   let inputs = [ P images; P contrast_factor; P min_value; P max_value ] in
-  { name
-  ; op_name
-  ; output_type = Type.Float
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Float
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let adjustContrastv2
     ?(name = "AdjustContrastv2")
@@ -357,13 +357,13 @@ let adjustContrastv2
   let name = Name.make_fresh ~name in
   let op_name = Op_names.adjustContrastv2 in
   let inputs = [ P images; P contrast_factor ] in
-  { name
-  ; op_name
-  ; output_type = Type.Float
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Float
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let all
     ?(name = "All")
@@ -378,13 +378,13 @@ let all
   let name = Name.make_fresh ~name in
   let op_name = Op_names.all in
   let inputs = [ P input; P reduction_indices ] in
-  { name
-  ; op_name
-  ; output_type = Type.Bool
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Bool
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let allCandidateSampler
     ?(name = "AllCandidateSampler")
@@ -414,29 +414,29 @@ let allCandidateSampler
   let name = Name.make_fresh ~name in
   let op_name = Op_names.allCandidateSampler in
   let inputs = [ P true_classes ] in
-  { name
-  ; op_name
-  ; output_type = Type.Int64
-  ; inputs
-  ; attributes
-  ; output_idx = Some 0
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Int64
+    ~inputs
+    ~attributes
+    ~output_idx:(Some 0)
   ,
-  { name
-  ; op_name
-  ; output_type = Type.Float
-  ; inputs
-  ; attributes
-  ; output_idx = Some 1
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Float
+    ~inputs
+    ~attributes
+    ~output_idx:(Some 1)
   ,
-  { name
-  ; op_name
-  ; output_type = Type.Float
-  ; inputs
-  ; attributes
-  ; output_idx = Some 2
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Float
+    ~inputs
+    ~attributes
+    ~output_idx:(Some 2)
 
 let any
     ?(name = "Any")
@@ -451,13 +451,13 @@ let any
   let name = Name.make_fresh ~name in
   let op_name = Op_names.any in
   let inputs = [ P input; P reduction_indices ] in
-  { name
-  ; op_name
-  ; output_type = Type.Bool
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Bool
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let applyAdagrad
     ?(name = "ApplyAdagrad")
@@ -467,20 +467,20 @@ let applyAdagrad
     (lr : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (grad : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
   =
-  let attributes = [ "T", Type (P var.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type var)) ] in
   let attributes =
     match use_locking with | None -> attributes | Some use_locking -> ("use_locking", Bool use_locking) :: attributes
   in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.applyAdagrad in
   let inputs = [ P var; P accum; P lr; P grad ] in
-  { name
-  ; op_name
-  ; output_type = var.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type var)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let applyAdam
     ?(name = "ApplyAdam")
@@ -496,20 +496,20 @@ let applyAdam
     (epsilon : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (grad : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
   =
-  let attributes = [ "T", Type (P var.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type var)) ] in
   let attributes =
     match use_locking with | None -> attributes | Some use_locking -> ("use_locking", Bool use_locking) :: attributes
   in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.applyAdam in
   let inputs = [ P var; P m; P v; P beta1_power; P beta2_power; P lr; P beta1; P beta2; P epsilon; P grad ] in
-  { name
-  ; op_name
-  ; output_type = var.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type var)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let applyGradientDescent
     ?(name = "ApplyGradientDescent")
@@ -518,20 +518,20 @@ let applyGradientDescent
     (alpha : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (delta : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
   =
-  let attributes = [ "T", Type (P var.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type var)) ] in
   let attributes =
     match use_locking with | None -> attributes | Some use_locking -> ("use_locking", Bool use_locking) :: attributes
   in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.applyGradientDescent in
   let inputs = [ P var; P alpha; P delta ] in
-  { name
-  ; op_name
-  ; output_type = var.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type var)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let applyMomentum
     ?(name = "ApplyMomentum")
@@ -542,20 +542,20 @@ let applyMomentum
     (grad : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (momentum : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
   =
-  let attributes = [ "T", Type (P var.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type var)) ] in
   let attributes =
     match use_locking with | None -> attributes | Some use_locking -> ("use_locking", Bool use_locking) :: attributes
   in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.applyMomentum in
   let inputs = [ P var; P accum; P lr; P grad; P momentum ] in
-  { name
-  ; op_name
-  ; output_type = var.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type var)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let applyRMSProp
     ?(name = "ApplyRMSProp")
@@ -569,54 +569,54 @@ let applyRMSProp
     (epsilon : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (grad : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
   =
-  let attributes = [ "T", Type (P var.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type var)) ] in
   let attributes =
     match use_locking with | None -> attributes | Some use_locking -> ("use_locking", Bool use_locking) :: attributes
   in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.applyRMSProp in
   let inputs = [ P var; P ms; P mom; P lr; P rho; P momentum; P epsilon; P grad ] in
-  { name
-  ; op_name
-  ; output_type = var.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type var)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let argMax
     ?(name = "ArgMax")
     (input : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (dimension : [ `int32 ] t)
   =
-  let attributes = [ "T", Type (P input.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type input)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.argMax in
   let inputs = [ P input; P dimension ] in
-  { name
-  ; op_name
-  ; output_type = Type.Int64
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Int64
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let argMin
     ?(name = "ArgMin")
     (input : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (dimension : [ `int32 ] t)
   =
-  let attributes = [ "T", Type (P input.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type input)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.argMin in
   let inputs = [ P input; P dimension ] in
-  { name
-  ; op_name
-  ; output_type = Type.Int64
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Int64
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let assign
     ?(name = "Assign")
@@ -625,7 +625,7 @@ let assign
     (ref : 't t)
     (value : 't t)
   =
-  let attributes = [ "T", Type (P ref.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type ref)) ] in
   let attributes =
     match validate_shape with | None -> attributes | Some validate_shape -> ("validate_shape", Bool validate_shape) :: attributes
   in
@@ -635,13 +635,13 @@ let assign
   let name = Name.make_fresh ~name in
   let op_name = Op_names.assign in
   let inputs = [ P ref; P value ] in
-  { name
-  ; op_name
-  ; output_type = ref.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type ref)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let assignAdd
     ?(name = "AssignAdd")
@@ -649,20 +649,20 @@ let assignAdd
     (ref : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (value : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
   =
-  let attributes = [ "T", Type (P ref.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type ref)) ] in
   let attributes =
     match use_locking with | None -> attributes | Some use_locking -> ("use_locking", Bool use_locking) :: attributes
   in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.assignAdd in
   let inputs = [ P ref; P value ] in
-  { name
-  ; op_name
-  ; output_type = ref.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type ref)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let assignSub
     ?(name = "AssignSub")
@@ -670,20 +670,20 @@ let assignSub
     (ref : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (value : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
   =
-  let attributes = [ "T", Type (P ref.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type ref)) ] in
   let attributes =
     match use_locking with | None -> attributes | Some use_locking -> ("use_locking", Bool use_locking) :: attributes
   in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.assignSub in
   let inputs = [ P ref; P value ] in
-  { name
-  ; op_name
-  ; output_type = ref.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type ref)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let avgPool
     ?(name = "AvgPool")
@@ -692,7 +692,7 @@ let avgPool
     ~padding
     (value : ([< `float | `double ] as 't) t)
   =
-  let attributes = [ "T", Type (P value.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type value)) ] in
   let attributes =
     ("ksize", List (Int ksize)) :: attributes
   in
@@ -705,13 +705,13 @@ let avgPool
   let name = Name.make_fresh ~name in
   let op_name = Op_names.avgPool in
   let inputs = [ P value ] in
-  { name
-  ; op_name
-  ; output_type = value.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type value)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let avgPoolGrad
     ?(name = "AvgPoolGrad")
@@ -721,7 +721,7 @@ let avgPoolGrad
     (orig_input_shape : [ `int32 ] t)
     (grad : ([< `float | `double ] as 't) t)
   =
-  let attributes = [ "T", Type (P grad.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type grad)) ] in
   let attributes =
     ("ksize", List (Int ksize)) :: attributes
   in
@@ -734,29 +734,29 @@ let avgPoolGrad
   let name = Name.make_fresh ~name in
   let op_name = Op_names.avgPoolGrad in
   let inputs = [ P orig_input_shape; P grad ] in
-  { name
-  ; op_name
-  ; output_type = grad.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type grad)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let batchCholesky
     ?(name = "BatchCholesky")
     (input : ([< `double | `float ] as 't) t)
   =
-  let attributes = [ "T", Type (P input.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type input)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.batchCholesky in
   let inputs = [ P input ] in
-  { name
-  ; op_name
-  ; output_type = input.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type input)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let batchMatMul
     ?(name = "BatchMatMul")
@@ -765,7 +765,7 @@ let batchMatMul
     (x : ([< `float | `double | `int32 | `complex64 ] as 't) t)
     (y : ([< `float | `double | `int32 | `complex64 ] as 't) t)
   =
-  let attributes = [ "T", Type (P x.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type x)) ] in
   let attributes =
     match adj_x with | None -> attributes | Some adj_x -> ("adj_x", Bool adj_x) :: attributes
   in
@@ -775,62 +775,62 @@ let batchMatMul
   let name = Name.make_fresh ~name in
   let op_name = Op_names.batchMatMul in
   let inputs = [ P x; P y ] in
-  { name
-  ; op_name
-  ; output_type = x.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type x)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let batchMatrixDeterminant
     ?(name = "BatchMatrixDeterminant")
     (input : ([< `float | `double ] as 't) t)
   =
-  let attributes = [ "T", Type (P input.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type input)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.batchMatrixDeterminant in
   let inputs = [ P input ] in
-  { name
-  ; op_name
-  ; output_type = input.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type input)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let batchMatrixInverse
     ?(name = "BatchMatrixInverse")
     (input : ([< `float | `double ] as 't) t)
   =
-  let attributes = [ "T", Type (P input.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type input)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.batchMatrixInverse in
   let inputs = [ P input ] in
-  { name
-  ; op_name
-  ; output_type = input.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type input)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let batchMatrixSolve
     ?(name = "BatchMatrixSolve")
     (matrix : ([< `float | `double ] as 't) t)
     (rhs : ([< `float | `double ] as 't) t)
   =
-  let attributes = [ "T", Type (P matrix.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type matrix)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.batchMatrixSolve in
   let inputs = [ P matrix; P rhs ] in
-  { name
-  ; op_name
-  ; output_type = matrix.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type matrix)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let batchMatrixSolveLs
     ?(name = "BatchMatrixSolveLs")
@@ -839,20 +839,20 @@ let batchMatrixSolveLs
     (rhs : ([< `float | `double ] as 't) t)
     (l2_regularizer : [ `double ] t)
   =
-  let attributes = [ "T", Type (P matrix.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type matrix)) ] in
   let attributes =
     match fast with | None -> attributes | Some fast -> ("fast", Bool fast) :: attributes
   in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.batchMatrixSolveLs in
   let inputs = [ P matrix; P rhs; P l2_regularizer ] in
-  { name
-  ; op_name
-  ; output_type = matrix.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type matrix)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let batchMatrixTriangularSolve
     ?(name = "BatchMatrixTriangularSolve")
@@ -860,20 +860,20 @@ let batchMatrixTriangularSolve
     (matrix : ([< `float | `double ] as 't) t)
     (rhs : ([< `float | `double ] as 't) t)
   =
-  let attributes = [ "T", Type (P matrix.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type matrix)) ] in
   let attributes =
     match lower with | None -> attributes | Some lower -> ("lower", Bool lower) :: attributes
   in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.batchMatrixTriangularSolve in
   let inputs = [ P matrix; P rhs ] in
-  { name
-  ; op_name
-  ; output_type = matrix.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type matrix)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let batchNormWithGlobalNormalization
     ?(name = "BatchNormWithGlobalNormalization")
@@ -885,7 +885,7 @@ let batchNormWithGlobalNormalization
     (beta : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (gamma : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
   =
-  let attributes = [ "T", Type (P t.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type t)) ] in
   let attributes =
     ("variance_epsilon", Float variance_epsilon) :: attributes
   in
@@ -895,13 +895,13 @@ let batchNormWithGlobalNormalization
   let name = Name.make_fresh ~name in
   let op_name = Op_names.batchNormWithGlobalNormalization in
   let inputs = [ P t; P m; P v; P beta; P gamma ] in
-  { name
-  ; op_name
-  ; output_type = t.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type t)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let batchNormWithGlobalNormalizationGrad
     ?(name = "BatchNormWithGlobalNormalizationGrad")
@@ -913,7 +913,7 @@ let batchNormWithGlobalNormalizationGrad
     (gamma : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (backprop : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
   =
-  let attributes = [ "T", Type (P t.output_type) ;  "T", Type (P t.output_type) ;  "T", Type (P t.output_type) ;  "T", Type (P t.output_type) ;  "T", Type (P t.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type t)) ;  "T", Type (P (Node.output_type t)) ;  "T", Type (P (Node.output_type t)) ;  "T", Type (P (Node.output_type t)) ;  "T", Type (P (Node.output_type t)) ] in
   let attributes =
     ("variance_epsilon", Float variance_epsilon) :: attributes
   in
@@ -923,78 +923,78 @@ let batchNormWithGlobalNormalizationGrad
   let name = Name.make_fresh ~name in
   let op_name = Op_names.batchNormWithGlobalNormalizationGrad in
   let inputs = [ P t; P m; P v; P gamma; P backprop ] in
-  { name
-  ; op_name
-  ; output_type = t.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = Some 0
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type t)
+    ~inputs
+    ~attributes
+    ~output_idx:(Some 0)
   ,
-  { name
-  ; op_name
-  ; output_type = t.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = Some 1
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type t)
+    ~inputs
+    ~attributes
+    ~output_idx:(Some 1)
   ,
-  { name
-  ; op_name
-  ; output_type = t.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = Some 2
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type t)
+    ~inputs
+    ~attributes
+    ~output_idx:(Some 2)
   ,
-  { name
-  ; op_name
-  ; output_type = t.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = Some 3
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type t)
+    ~inputs
+    ~attributes
+    ~output_idx:(Some 3)
   ,
-  { name
-  ; op_name
-  ; output_type = t.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = Some 4
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type t)
+    ~inputs
+    ~attributes
+    ~output_idx:(Some 4)
 
 let batchSelfAdjointEig
     ?(name = "BatchSelfAdjointEig")
     (input : ([< `double | `float ] as 't) t)
   =
-  let attributes = [ "T", Type (P input.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type input)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.batchSelfAdjointEig in
   let inputs = [ P input ] in
-  { name
-  ; op_name
-  ; output_type = input.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type input)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let biasAdd
     ?(name = "BiasAdd")
     (value : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (bias : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
   =
-  let attributes = [ "T", Type (P value.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type value)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.biasAdd in
   let inputs = [ P value; P bias ] in
-  { name
-  ; op_name
-  ; output_type = value.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type value)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let broadcastGradientArgs
     ?(name = "BroadcastGradientArgs")
@@ -1005,90 +1005,90 @@ let broadcastGradientArgs
   let name = Name.make_fresh ~name in
   let op_name = Op_names.broadcastGradientArgs in
   let inputs = [ P s0; P s1 ] in
-  { name
-  ; op_name
-  ; output_type = Type.Int32
-  ; inputs
-  ; attributes
-  ; output_idx = Some 0
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Int32
+    ~inputs
+    ~attributes
+    ~output_idx:(Some 0)
   ,
-  { name
-  ; op_name
-  ; output_type = Type.Int32
-  ; inputs
-  ; attributes
-  ; output_idx = Some 1
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Int32
+    ~inputs
+    ~attributes
+    ~output_idx:(Some 1)
 
 let cast
     ?(name = "Cast")
     ~type_
     (x : 'srcT t)
   =
-  let attributes = [ "SrcT", Type (P x.output_type) ;  "DstT", Type (P type_) ] in
+  let attributes = [ "SrcT", Type (P (Node.output_type x)) ;  "DstT", Type (P type_) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.cast in
   let inputs = [ P x ] in
-  { name
-  ; op_name
-  ; output_type = type_
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:type_
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let ceil
     ?(name = "Ceil")
     (x : ([< `float | `double ] as 't) t)
   =
-  let attributes = [ "T", Type (P x.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type x)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.ceil in
   let inputs = [ P x ] in
-  { name
-  ; op_name
-  ; output_type = x.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type x)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let checkNumerics
     ?(name = "CheckNumerics")
     ~message
     (tensor : ([< `float | `double ] as 't) t)
   =
-  let attributes = [ "T", Type (P tensor.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type tensor)) ] in
   let attributes =
     ("message", String message) :: attributes
   in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.checkNumerics in
   let inputs = [ P tensor ] in
-  { name
-  ; op_name
-  ; output_type = tensor.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type tensor)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let cholesky
     ?(name = "Cholesky")
     (input : ([< `double | `float ] as 't) t)
   =
-  let attributes = [ "T", Type (P input.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type input)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.cholesky in
   let inputs = [ P input ] in
-  { name
-  ; op_name
-  ; output_type = input.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type input)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let complex
     ?(name = "Complex")
@@ -1099,13 +1099,13 @@ let complex
   let name = Name.make_fresh ~name in
   let op_name = Op_names.complex in
   let inputs = [ P real; P imag ] in
-  { name
-  ; op_name
-  ; output_type = Type.Complex64
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Complex64
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let complexAbs
     ?(name = "ComplexAbs")
@@ -1115,13 +1115,13 @@ let complexAbs
   let name = Name.make_fresh ~name in
   let op_name = Op_names.complexAbs in
   let inputs = [ P x ] in
-  { name
-  ; op_name
-  ; output_type = Type.Float
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Float
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let computeAccidentalHits
     ?(name = "ComputeAccidentalHits")
@@ -1144,49 +1144,49 @@ let computeAccidentalHits
   let name = Name.make_fresh ~name in
   let op_name = Op_names.computeAccidentalHits in
   let inputs = [ P true_classes; P sampled_candidates ] in
-  { name
-  ; op_name
-  ; output_type = Type.Int32
-  ; inputs
-  ; attributes
-  ; output_idx = Some 0
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Int32
+    ~inputs
+    ~attributes
+    ~output_idx:(Some 0)
   ,
-  { name
-  ; op_name
-  ; output_type = Type.Int64
-  ; inputs
-  ; attributes
-  ; output_idx = Some 1
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Int64
+    ~inputs
+    ~attributes
+    ~output_idx:(Some 1)
   ,
-  { name
-  ; op_name
-  ; output_type = Type.Float
-  ; inputs
-  ; attributes
-  ; output_idx = Some 2
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Float
+    ~inputs
+    ~attributes
+    ~output_idx:(Some 2)
 
 let concat
     ?(name = "Concat")
     (concat_dim : [ `int32 ] t)
     (values : 't t list)
   =
-  let attributes = [ "T", Type (P (List.hd_exn values).output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type (List.hd_exn values))) ] in
   let attributes =
     ("N", Int (List.length values)) :: attributes
   in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.concat in
   let inputs = [ P concat_dim ] @ List.map ~f:(fun n -> P n) values in
-  { name
-  ; op_name
-  ; output_type = (List.hd_exn values).output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type (List.hd_exn values))
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let concatOffset
     ?(name = "ConcatOffset")
@@ -1201,13 +1201,14 @@ let concatOffset
   let op_name = Op_names.concatOffset in
   let inputs = [ P concat_dim ] @ List.map ~f:(fun n -> P n) shape in
   List.init (List.length shape) ~f:(fun output_idx ->
-    { name
-    ; op_name
-    ; output_type = Type.Int32
-    ; inputs
-    ; attributes
-    ; output_idx = Some output_idx
-    })
+    Node.create
+      ~name
+      ~op_name
+      ~output_type:Type.Int32
+      ~inputs
+      ~attributes
+      ~output_idx:(Some output_idx)
+    )
 
 let conj
     ?(name = "Conj")
@@ -1217,13 +1218,13 @@ let conj
   let name = Name.make_fresh ~name in
   let op_name = Op_names.conj in
   let inputs = [ P in__ ] in
-  { name
-  ; op_name
-  ; output_type = Type.Complex64
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Complex64
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let controlTrigger
     ?(name = "ControlTrigger")
@@ -1233,13 +1234,13 @@ let controlTrigger
   let name = Name.make_fresh ~name in
   let op_name = Op_names.controlTrigger in
   let inputs = [  ] in
-  { name
-  ; op_name
-  ; output_type = Type.Unit
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Unit
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let conv2D
     ?(name = "Conv2D")
@@ -1249,7 +1250,7 @@ let conv2D
     (input : ([< `float | `double ] as 't) t)
     (filter : ([< `float | `double ] as 't) t)
   =
-  let attributes = [ "T", Type (P input.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type input)) ] in
   let attributes =
     ("strides", List (Int strides)) :: attributes
   in
@@ -1262,13 +1263,13 @@ let conv2D
   let name = Name.make_fresh ~name in
   let op_name = Op_names.conv2D in
   let inputs = [ P input; P filter ] in
-  { name
-  ; op_name
-  ; output_type = input.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type input)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let conv2DBackpropFilter
     ?(name = "Conv2DBackpropFilter")
@@ -1279,7 +1280,7 @@ let conv2DBackpropFilter
     (filter_sizes : [ `int32 ] t)
     (out_backprop : ([< `float | `double ] as 't) t)
   =
-  let attributes = [ "T", Type (P input.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type input)) ] in
   let attributes =
     ("strides", List (Int strides)) :: attributes
   in
@@ -1292,13 +1293,13 @@ let conv2DBackpropFilter
   let name = Name.make_fresh ~name in
   let op_name = Op_names.conv2DBackpropFilter in
   let inputs = [ P input; P filter_sizes; P out_backprop ] in
-  { name
-  ; op_name
-  ; output_type = input.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type input)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let conv2DBackpropInput
     ?(name = "Conv2DBackpropInput")
@@ -1309,7 +1310,7 @@ let conv2DBackpropInput
     (filter : ([< `float | `double ] as 't) t)
     (out_backprop : ([< `float | `double ] as 't) t)
   =
-  let attributes = [ "T", Type (P filter.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type filter)) ] in
   let attributes =
     ("strides", List (Int strides)) :: attributes
   in
@@ -1322,66 +1323,66 @@ let conv2DBackpropInput
   let name = Name.make_fresh ~name in
   let op_name = Op_names.conv2DBackpropInput in
   let inputs = [ P input_sizes; P filter; P out_backprop ] in
-  { name
-  ; op_name
-  ; output_type = filter.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type filter)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let cos
     ?(name = "Cos")
     (x : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
   =
-  let attributes = [ "T", Type (P x.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type x)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.cos in
   let inputs = [ P x ] in
-  { name
-  ; op_name
-  ; output_type = x.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type x)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let countUpTo
     ?(name = "CountUpTo")
     ~limit
     (ref : ([< `int32 | `int64 ] as 't) t)
   =
-  let attributes = [ "T", Type (P ref.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type ref)) ] in
   let attributes =
     ("limit", Int limit) :: attributes
   in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.countUpTo in
   let inputs = [ P ref ] in
-  { name
-  ; op_name
-  ; output_type = ref.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type ref)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let cross
     ?(name = "Cross")
     (a : ([< `float | `double | `int32 | `int64 ] as 't) t)
     (b : ([< `float | `double | `int32 | `int64 ] as 't) t)
   =
-  let attributes = [ "T", Type (P a.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type a)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.cross in
   let inputs = [ P a; P b ] in
-  { name
-  ; op_name
-  ; output_type = a.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type a)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let decodeJSONExample
     ?(name = "DecodeJSONExample")
@@ -1391,13 +1392,13 @@ let decodeJSONExample
   let name = Name.make_fresh ~name in
   let op_name = Op_names.decodeJSONExample in
   let inputs = [ P json_examples ] in
-  { name
-  ; op_name
-  ; output_type = Type.String
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.String
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let decodePng
     ?(name = "DecodePng")
@@ -1412,13 +1413,13 @@ let decodePng
   let name = Name.make_fresh ~name in
   let op_name = Op_names.decodePng in
   let inputs = [ P contents ] in
-  { name
-  ; op_name
-  ; output_type = type_
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:type_
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let decodeRaw
     ?(name = "DecodeRaw")
@@ -1433,33 +1434,33 @@ let decodeRaw
   let name = Name.make_fresh ~name in
   let op_name = Op_names.decodeRaw in
   let inputs = [ P bytes ] in
-  { name
-  ; op_name
-  ; output_type = type_
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:type_
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let depthToSpace
     ?(name = "DepthToSpace")
     ~block_size
     (input : 't t)
   =
-  let attributes = [ "T", Type (P input.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type input)) ] in
   let attributes =
     ("block_size", Int block_size) :: attributes
   in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.depthToSpace in
   let inputs = [ P input ] in
-  { name
-  ; op_name
-  ; output_type = input.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type input)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let deserializeManySparse
     ?(name = "DeserializeManySparse")
@@ -1470,82 +1471,82 @@ let deserializeManySparse
   let name = Name.make_fresh ~name in
   let op_name = Op_names.deserializeManySparse in
   let inputs = [ P serialized_sparse ] in
-  { name
-  ; op_name
-  ; output_type = Type.Int64
-  ; inputs
-  ; attributes
-  ; output_idx = Some 0
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Int64
+    ~inputs
+    ~attributes
+    ~output_idx:(Some 0)
   ,
-  { name
-  ; op_name
-  ; output_type = type_1
-  ; inputs
-  ; attributes
-  ; output_idx = Some 1
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:type_1
+    ~inputs
+    ~attributes
+    ~output_idx:(Some 1)
   ,
-  { name
-  ; op_name
-  ; output_type = Type.Int64
-  ; inputs
-  ; attributes
-  ; output_idx = Some 2
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Int64
+    ~inputs
+    ~attributes
+    ~output_idx:(Some 2)
 
 let destroyTemporaryVariable
     ?(name = "DestroyTemporaryVariable")
     ~var_name
     (ref : 't t)
   =
-  let attributes = [ "T", Type (P ref.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type ref)) ] in
   let attributes =
     ("var_name", String var_name) :: attributes
   in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.destroyTemporaryVariable in
   let inputs = [ P ref ] in
-  { name
-  ; op_name
-  ; output_type = ref.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type ref)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let diag
     ?(name = "Diag")
     (diagonal : ([< `float | `double | `int32 | `int64 ] as 't) t)
   =
-  let attributes = [ "T", Type (P diagonal.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type diagonal)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.diag in
   let inputs = [ P diagonal ] in
-  { name
-  ; op_name
-  ; output_type = diagonal.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type diagonal)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let div
     ?(name = "Div")
     (x : ([< `float | `double | `int32 | `int64 | `complex64 ] as 't) t)
     (y : ([< `float | `double | `int32 | `int64 | `complex64 ] as 't) t)
   =
-  let attributes = [ "T", Type (P x.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type x)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.div in
   let inputs = [ P x; P y ] in
-  { name
-  ; op_name
-  ; output_type = x.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type x)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let drawBoundingBoxes
     ?(name = "DrawBoundingBoxes")
@@ -1556,13 +1557,13 @@ let drawBoundingBoxes
   let name = Name.make_fresh ~name in
   let op_name = Op_names.drawBoundingBoxes in
   let inputs = [ P images; P boxes ] in
-  { name
-  ; op_name
-  ; output_type = Type.Float
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Float
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let dynamicPartition
     ?(name = "DynamicPartition")
@@ -1570,7 +1571,7 @@ let dynamicPartition
     (data : 't t)
     (partitions : [ `int32 ] t)
   =
-  let attributes = [ "T", Type (P data.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type data)) ] in
   let attributes =
     ("num_partitions", Int num_partitions) :: attributes
   in
@@ -1578,33 +1579,34 @@ let dynamicPartition
   let op_name = Op_names.dynamicPartition in
   let inputs = [ P data; P partitions ] in
   List.init num_partitions ~f:(fun output_idx ->
-    { name
-    ; op_name
-    ; output_type = data.output_type
-    ; inputs
-    ; attributes
-    ; output_idx = Some output_idx
-    })
+    Node.create
+      ~name
+      ~op_name
+      ~output_type:(Node.output_type data)
+      ~inputs
+      ~attributes
+      ~output_idx:(Some output_idx)
+    )
 
 let dynamicStitch
     ?(name = "DynamicStitch")
     (indices : [ `int32 ] t list)
     (data : 't t list)
   =
-  let attributes = [ "T", Type (P (List.hd_exn data).output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type (List.hd_exn data))) ] in
   let attributes =
     ("N", Int (List.length indices)) :: attributes
   in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.dynamicStitch in
   let inputs = List.map ~f:(fun n -> P n) indices @ List.map ~f:(fun n -> P n) data in
-  { name
-  ; op_name
-  ; output_type = (List.hd_exn data).output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type (List.hd_exn data))
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let editDistance
     ?(name = "EditDistance")
@@ -1616,73 +1618,73 @@ let editDistance
     (truth_values : 't t)
     (truth_shape : [ `int64 ] t)
   =
-  let attributes = [ "T", Type (P hypothesis_values.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type hypothesis_values)) ] in
   let attributes =
     match normalize with | None -> attributes | Some normalize -> ("normalize", Bool normalize) :: attributes
   in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.editDistance in
   let inputs = [ P hypothesis_indices; P hypothesis_values; P hypothesis_shape; P truth_indices; P truth_values; P truth_shape ] in
-  { name
-  ; op_name
-  ; output_type = Type.Float
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Float
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let elu
     ?(name = "Elu")
     (features : ([< `float | `double ] as 't) t)
   =
-  let attributes = [ "T", Type (P features.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type features)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.elu in
   let inputs = [ P features ] in
-  { name
-  ; op_name
-  ; output_type = features.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type features)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let eluGrad
     ?(name = "EluGrad")
     (gradients : ([< `float | `double ] as 't) t)
     (outputs : ([< `float | `double ] as 't) t)
   =
-  let attributes = [ "T", Type (P gradients.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type gradients)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.eluGrad in
   let inputs = [ P gradients; P outputs ] in
-  { name
-  ; op_name
-  ; output_type = gradients.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type gradients)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let encodePng
     ?(name = "EncodePng")
     ?compression
     (image : 't t)
   =
-  let attributes = [ "T", Type (P image.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type image)) ] in
   let attributes =
     match compression with | None -> attributes | Some compression -> ("compression", Int compression) :: attributes
   in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.encodePng in
   let inputs = [ P image ] in
-  { name
-  ; op_name
-  ; output_type = Type.String
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.String
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let enter
     ?(name = "Enter")
@@ -1691,7 +1693,7 @@ let enter
     ?parallel_iterations
     (data : 't t)
   =
-  let attributes = [ "T", Type (P data.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type data)) ] in
   let attributes =
     ("frame_name", String frame_name) :: attributes
   in
@@ -1704,111 +1706,111 @@ let enter
   let name = Name.make_fresh ~name in
   let op_name = Op_names.enter in
   let inputs = [ P data ] in
-  { name
-  ; op_name
-  ; output_type = data.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type data)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let equal
     ?(name = "Equal")
     (x : ([< `float | `double | `int32 | `int64 | `complex64 | `string ] as 't) t)
     (y : ([< `float | `double | `int32 | `int64 | `complex64 | `string ] as 't) t)
   =
-  let attributes = [ "T", Type (P x.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type x)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.equal in
   let inputs = [ P x; P y ] in
-  { name
-  ; op_name
-  ; output_type = Type.Bool
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Bool
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let erf
     ?(name = "Erf")
     (x : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
   =
-  let attributes = [ "T", Type (P x.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type x)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.erf in
   let inputs = [ P x ] in
-  { name
-  ; op_name
-  ; output_type = x.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type x)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let erfc
     ?(name = "Erfc")
     (x : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
   =
-  let attributes = [ "T", Type (P x.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type x)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.erfc in
   let inputs = [ P x ] in
-  { name
-  ; op_name
-  ; output_type = x.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type x)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let exit
     ?(name = "Exit")
     (data : 't t)
   =
-  let attributes = [ "T", Type (P data.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type data)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.exit in
   let inputs = [ P data ] in
-  { name
-  ; op_name
-  ; output_type = data.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type data)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let exp
     ?(name = "Exp")
     (x : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
   =
-  let attributes = [ "T", Type (P x.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type x)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.exp in
   let inputs = [ P x ] in
-  { name
-  ; op_name
-  ; output_type = x.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type x)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let expandDims
     ?(name = "ExpandDims")
     (input : 't t)
     (dim : [ `int32 ] t)
   =
-  let attributes = [ "T", Type (P input.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type input)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.expandDims in
   let inputs = [ P input; P dim ] in
-  { name
-  ; op_name
-  ; output_type = input.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type input)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let extractGlimpse
     ?(name = "ExtractGlimpse")
@@ -1832,13 +1834,13 @@ let extractGlimpse
   let name = Name.make_fresh ~name in
   let op_name = Op_names.extractGlimpse in
   let inputs = [ P input; P size; P offsets ] in
-  { name
-  ; op_name
-  ; output_type = Type.Float
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Float
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let fFT2D
     ?(name = "FFT2D")
@@ -1848,13 +1850,13 @@ let fFT2D
   let name = Name.make_fresh ~name in
   let op_name = Op_names.fFT2D in
   let inputs = [ P in__ ] in
-  { name
-  ; op_name
-  ; output_type = Type.Complex64
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Complex64
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let fIFOQueue
     ?(name = "FIFOQueue")
@@ -1884,13 +1886,13 @@ let fIFOQueue
   let name = Name.make_fresh ~name in
   let op_name = Op_names.fIFOQueue in
   let inputs = [  ] in
-  { name
-  ; op_name
-  ; output_type = Type.String
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.String
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let fact
     ?(name = "Fact")
@@ -1900,30 +1902,30 @@ let fact
   let name = Name.make_fresh ~name in
   let op_name = Op_names.fact in
   let inputs = [  ] in
-  { name
-  ; op_name
-  ; output_type = Type.String
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.String
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let fill
     ?(name = "Fill")
     (dims : [ `int32 ] t)
     (value : 't t)
   =
-  let attributes = [ "T", Type (P value.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type value)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.fill in
   let inputs = [ P dims; P value ] in
-  { name
-  ; op_name
-  ; output_type = value.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type value)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let fixedLengthRecordReader
     ?(name = "FixedLengthRecordReader")
@@ -1953,13 +1955,13 @@ let fixedLengthRecordReader
   let name = Name.make_fresh ~name in
   let op_name = Op_names.fixedLengthRecordReader in
   let inputs = [  ] in
-  { name
-  ; op_name
-  ; output_type = Type.String
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.String
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let fixedUnigramCandidateSampler
     ?(name = "FixedUnigramCandidateSampler")
@@ -2017,45 +2019,45 @@ let fixedUnigramCandidateSampler
   let name = Name.make_fresh ~name in
   let op_name = Op_names.fixedUnigramCandidateSampler in
   let inputs = [ P true_classes ] in
-  { name
-  ; op_name
-  ; output_type = Type.Int64
-  ; inputs
-  ; attributes
-  ; output_idx = Some 0
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Int64
+    ~inputs
+    ~attributes
+    ~output_idx:(Some 0)
   ,
-  { name
-  ; op_name
-  ; output_type = Type.Float
-  ; inputs
-  ; attributes
-  ; output_idx = Some 1
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Float
+    ~inputs
+    ~attributes
+    ~output_idx:(Some 1)
   ,
-  { name
-  ; op_name
-  ; output_type = Type.Float
-  ; inputs
-  ; attributes
-  ; output_idx = Some 2
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Float
+    ~inputs
+    ~attributes
+    ~output_idx:(Some 2)
 
 let floor
     ?(name = "Floor")
     (x : ([< `float | `double ] as 't) t)
   =
-  let attributes = [ "T", Type (P x.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type x)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.floor in
   let inputs = [ P x ] in
-  { name
-  ; op_name
-  ; output_type = x.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type x)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let gather
     ?(name = "Gather")
@@ -2063,54 +2065,54 @@ let gather
     (params : 'tparams t)
     (indices : ([< `int32 | `int64 ] as 'tindices) t)
   =
-  let attributes = [ "Tindices", Type (P indices.output_type) ;  "Tparams", Type (P params.output_type) ] in
+  let attributes = [ "Tindices", Type (P (Node.output_type indices)) ;  "Tparams", Type (P (Node.output_type params)) ] in
   let attributes =
     match validate_indices with | None -> attributes | Some validate_indices -> ("validate_indices", Bool validate_indices) :: attributes
   in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.gather in
   let inputs = [ P params; P indices ] in
-  { name
-  ; op_name
-  ; output_type = params.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type params)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let greater
     ?(name = "Greater")
     (x : ([< `float | `double | `int32 | `int64 ] as 't) t)
     (y : ([< `float | `double | `int32 | `int64 ] as 't) t)
   =
-  let attributes = [ "T", Type (P x.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type x)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.greater in
   let inputs = [ P x; P y ] in
-  { name
-  ; op_name
-  ; output_type = Type.Bool
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Bool
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let greaterEqual
     ?(name = "GreaterEqual")
     (x : ([< `float | `double | `int32 | `int64 ] as 't) t)
     (y : ([< `float | `double | `int32 | `int64 ] as 't) t)
   =
-  let attributes = [ "T", Type (P x.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type x)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.greaterEqual in
   let inputs = [ P x; P y ] in
-  { name
-  ; op_name
-  ; output_type = Type.Bool
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Bool
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let hSVToRGB
     ?(name = "HSVToRGB")
@@ -2120,13 +2122,13 @@ let hSVToRGB
   let name = Name.make_fresh ~name in
   let op_name = Op_names.hSVToRGB in
   let inputs = [ P images ] in
-  { name
-  ; op_name
-  ; output_type = Type.Float
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Float
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let hashTable
     ?(name = "HashTable")
@@ -2144,30 +2146,30 @@ let hashTable
   let name = Name.make_fresh ~name in
   let op_name = Op_names.hashTable in
   let inputs = [  ] in
-  { name
-  ; op_name
-  ; output_type = Type.String
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.String
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let histogramSummary
     ?(name = "HistogramSummary")
     (tag : [ `string ] t)
     (values : ([< `float | `double | `int32 | `int64 ] as 't) t)
   =
-  let attributes = [ "T", Type (P values.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type values)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.histogramSummary in
   let inputs = [ P tag; P values ] in
-  { name
-  ; op_name
-  ; output_type = Type.String
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.String
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let iFFT2D
     ?(name = "IFFT2D")
@@ -2177,29 +2179,29 @@ let iFFT2D
   let name = Name.make_fresh ~name in
   let op_name = Op_names.iFFT2D in
   let inputs = [ P in__ ] in
-  { name
-  ; op_name
-  ; output_type = Type.Complex64
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Complex64
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let identity
     ?(name = "Identity")
     (input : 't t)
   =
-  let attributes = [ "T", Type (P input.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type input)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.identity in
   let inputs = [ P input ] in
-  { name
-  ; op_name
-  ; output_type = input.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type input)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let identityReader
     ?(name = "IdentityReader")
@@ -2217,13 +2219,13 @@ let identityReader
   let name = Name.make_fresh ~name in
   let op_name = Op_names.identityReader in
   let inputs = [  ] in
-  { name
-  ; op_name
-  ; output_type = Type.String
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.String
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let imag
     ?(name = "Imag")
@@ -2233,13 +2235,13 @@ let imag
   let name = Name.make_fresh ~name in
   let op_name = Op_names.imag in
   let inputs = [ P in__ ] in
-  { name
-  ; op_name
-  ; output_type = Type.Float
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Float
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let imageSummary
     ?(name = "ImageSummary")
@@ -2247,20 +2249,20 @@ let imageSummary
     (tag : [ `string ] t)
     (tensor : ([< `float ] as 't) t)
   =
-  let attributes = [ "T", Type (P tensor.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type tensor)) ] in
   let attributes =
     match max_images with | None -> attributes | Some max_images -> ("max_images", Int max_images) :: attributes
   in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.imageSummary in
   let inputs = [ P tag; P tensor ] in
-  { name
-  ; op_name
-  ; output_type = Type.String
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.String
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let inTopK
     ?(name = "InTopK")
@@ -2268,20 +2270,20 @@ let inTopK
     (predictions : [ `float ] t)
     (targets : ([< `int32 | `int64 ] as 't) t)
   =
-  let attributes = [ "T", Type (P targets.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type targets)) ] in
   let attributes =
     ("k", Int k) :: attributes
   in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.inTopK in
   let inputs = [ P predictions; P targets ] in
-  { name
-  ; op_name
-  ; output_type = Type.Bool
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Bool
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let initializeTable
     ?(name = "InitializeTable")
@@ -2289,33 +2291,33 @@ let initializeTable
     (keys : 'tkey t)
     (values : 'tval t)
   =
-  let attributes = [ "Tval", Type (P values.output_type) ;  "Tkey", Type (P keys.output_type) ] in
+  let attributes = [ "Tval", Type (P (Node.output_type values)) ;  "Tkey", Type (P (Node.output_type keys)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.initializeTable in
   let inputs = [ P table_handle; P keys; P values ] in
-  { name
-  ; op_name
-  ; output_type = Type.Unit
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Unit
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let inv
     ?(name = "Inv")
     (x : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
   =
-  let attributes = [ "T", Type (P x.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type x)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.inv in
   let inputs = [ P x ] in
-  { name
-  ; op_name
-  ; output_type = x.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type x)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let invertPermutation
     ?(name = "InvertPermutation")
@@ -2325,77 +2327,77 @@ let invertPermutation
   let name = Name.make_fresh ~name in
   let op_name = Op_names.invertPermutation in
   let inputs = [ P x ] in
-  { name
-  ; op_name
-  ; output_type = Type.Int32
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Int32
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let isFinite
     ?(name = "IsFinite")
     (x : ([< `float | `double ] as 't) t)
   =
-  let attributes = [ "T", Type (P x.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type x)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.isFinite in
   let inputs = [ P x ] in
-  { name
-  ; op_name
-  ; output_type = Type.Bool
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Bool
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let isInf
     ?(name = "IsInf")
     (x : ([< `float | `double ] as 't) t)
   =
-  let attributes = [ "T", Type (P x.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type x)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.isInf in
   let inputs = [ P x ] in
-  { name
-  ; op_name
-  ; output_type = Type.Bool
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Bool
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let isNan
     ?(name = "IsNan")
     (x : ([< `float | `double ] as 't) t)
   =
-  let attributes = [ "T", Type (P x.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type x)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.isNan in
   let inputs = [ P x ] in
-  { name
-  ; op_name
-  ; output_type = Type.Bool
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Bool
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let l2Loss
     ?(name = "L2Loss")
     (t : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
   =
-  let attributes = [ "T", Type (P t.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type t)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.l2Loss in
   let inputs = [ P t ] in
-  { name
-  ; op_name
-  ; output_type = t.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type t)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let lRN
     ?(name = "LRN")
@@ -2421,13 +2423,13 @@ let lRN
   let name = Name.make_fresh ~name in
   let op_name = Op_names.lRN in
   let inputs = [ P input ] in
-  { name
-  ; op_name
-  ; output_type = Type.Float
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Float
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let lRNGrad
     ?(name = "LRNGrad")
@@ -2455,13 +2457,13 @@ let lRNGrad
   let name = Name.make_fresh ~name in
   let op_name = Op_names.lRNGrad in
   let inputs = [ P input_grads; P input_image; P output_image ] in
-  { name
-  ; op_name
-  ; output_type = Type.Float
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Float
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let learnedUnigramCandidateSampler
     ?(name = "LearnedUnigramCandidateSampler")
@@ -2495,79 +2497,79 @@ let learnedUnigramCandidateSampler
   let name = Name.make_fresh ~name in
   let op_name = Op_names.learnedUnigramCandidateSampler in
   let inputs = [ P true_classes ] in
-  { name
-  ; op_name
-  ; output_type = Type.Int64
-  ; inputs
-  ; attributes
-  ; output_idx = Some 0
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Int64
+    ~inputs
+    ~attributes
+    ~output_idx:(Some 0)
   ,
-  { name
-  ; op_name
-  ; output_type = Type.Float
-  ; inputs
-  ; attributes
-  ; output_idx = Some 1
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Float
+    ~inputs
+    ~attributes
+    ~output_idx:(Some 1)
   ,
-  { name
-  ; op_name
-  ; output_type = Type.Float
-  ; inputs
-  ; attributes
-  ; output_idx = Some 2
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Float
+    ~inputs
+    ~attributes
+    ~output_idx:(Some 2)
 
 let less
     ?(name = "Less")
     (x : ([< `float | `double | `int32 | `int64 ] as 't) t)
     (y : ([< `float | `double | `int32 | `int64 ] as 't) t)
   =
-  let attributes = [ "T", Type (P x.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type x)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.less in
   let inputs = [ P x; P y ] in
-  { name
-  ; op_name
-  ; output_type = Type.Bool
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Bool
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let lessEqual
     ?(name = "LessEqual")
     (x : ([< `float | `double | `int32 | `int64 ] as 't) t)
     (y : ([< `float | `double | `int32 | `int64 ] as 't) t)
   =
-  let attributes = [ "T", Type (P x.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type x)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.lessEqual in
   let inputs = [ P x; P y ] in
-  { name
-  ; op_name
-  ; output_type = Type.Bool
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Bool
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let lgamma
     ?(name = "Lgamma")
     (x : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
   =
-  let attributes = [ "T", Type (P x.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type x)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.lgamma in
   let inputs = [ P x ] in
-  { name
-  ; op_name
-  ; output_type = x.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type x)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let linSpace
     ?(name = "LinSpace")
@@ -2575,58 +2577,58 @@ let linSpace
     (stop : ([< `float | `double ] as 't) t)
     (num : [ `int32 ] t)
   =
-  let attributes = [ "T", Type (P start.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type start)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.linSpace in
   let inputs = [ P start; P stop; P num ] in
-  { name
-  ; op_name
-  ; output_type = start.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type start)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let listDiff
     ?(name = "ListDiff")
     (x : 't t)
     (y : 't t)
   =
-  let attributes = [ "T", Type (P x.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type x)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.listDiff in
   let inputs = [ P x; P y ] in
-  { name
-  ; op_name
-  ; output_type = x.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = Some 0
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type x)
+    ~inputs
+    ~attributes
+    ~output_idx:(Some 0)
   ,
-  { name
-  ; op_name
-  ; output_type = Type.Int32
-  ; inputs
-  ; attributes
-  ; output_idx = Some 1
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Int32
+    ~inputs
+    ~attributes
+    ~output_idx:(Some 1)
 
 let log
     ?(name = "Log")
     (x : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
   =
-  let attributes = [ "T", Type (P x.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type x)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.log in
   let inputs = [ P x ] in
-  { name
-  ; op_name
-  ; output_type = x.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type x)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let logUniformCandidateSampler
     ?(name = "LogUniformCandidateSampler")
@@ -2660,29 +2662,29 @@ let logUniformCandidateSampler
   let name = Name.make_fresh ~name in
   let op_name = Op_names.logUniformCandidateSampler in
   let inputs = [ P true_classes ] in
-  { name
-  ; op_name
-  ; output_type = Type.Int64
-  ; inputs
-  ; attributes
-  ; output_idx = Some 0
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Int64
+    ~inputs
+    ~attributes
+    ~output_idx:(Some 0)
   ,
-  { name
-  ; op_name
-  ; output_type = Type.Float
-  ; inputs
-  ; attributes
-  ; output_idx = Some 1
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Float
+    ~inputs
+    ~attributes
+    ~output_idx:(Some 1)
   ,
-  { name
-  ; op_name
-  ; output_type = Type.Float
-  ; inputs
-  ; attributes
-  ; output_idx = Some 2
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Float
+    ~inputs
+    ~attributes
+    ~output_idx:(Some 2)
 
 let logicalAnd
     ?(name = "LogicalAnd")
@@ -2693,13 +2695,13 @@ let logicalAnd
   let name = Name.make_fresh ~name in
   let op_name = Op_names.logicalAnd in
   let inputs = [ P x; P y ] in
-  { name
-  ; op_name
-  ; output_type = Type.Bool
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Bool
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let logicalNot
     ?(name = "LogicalNot")
@@ -2709,13 +2711,13 @@ let logicalNot
   let name = Name.make_fresh ~name in
   let op_name = Op_names.logicalNot in
   let inputs = [ P x ] in
-  { name
-  ; op_name
-  ; output_type = Type.Bool
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Bool
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let logicalOr
     ?(name = "LogicalOr")
@@ -2726,13 +2728,13 @@ let logicalOr
   let name = Name.make_fresh ~name in
   let op_name = Op_names.logicalOr in
   let inputs = [ P x; P y ] in
-  { name
-  ; op_name
-  ; output_type = Type.Bool
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Bool
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let lookupTableFind
     ?(name = "LookupTableFind")
@@ -2740,17 +2742,17 @@ let lookupTableFind
     (keys : 'tin t)
     (default_value : 'tout t)
   =
-  let attributes = [ "Tin", Type (P keys.output_type) ;  "Tout", Type (P default_value.output_type) ] in
+  let attributes = [ "Tin", Type (P (Node.output_type keys)) ;  "Tout", Type (P (Node.output_type default_value)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.lookupTableFind in
   let inputs = [ P table_handle; P keys; P default_value ] in
-  { name
-  ; op_name
-  ; output_type = default_value.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type default_value)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let lookupTableSize
     ?(name = "LookupTableSize")
@@ -2760,13 +2762,13 @@ let lookupTableSize
   let name = Name.make_fresh ~name in
   let op_name = Op_names.lookupTableSize in
   let inputs = [ P table_handle ] in
-  { name
-  ; op_name
-  ; output_type = Type.Int64
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Int64
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let loopCond
     ?(name = "LoopCond")
@@ -2776,13 +2778,13 @@ let loopCond
   let name = Name.make_fresh ~name in
   let op_name = Op_names.loopCond in
   let inputs = [ P input ] in
-  { name
-  ; op_name
-  ; output_type = Type.Bool
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Bool
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let matMul
     ?(name = "MatMul")
@@ -2791,7 +2793,7 @@ let matMul
     (a : ([< `float | `double | `int32 | `complex64 ] as 't) t)
     (b : ([< `float | `double | `int32 | `complex64 ] as 't) t)
   =
-  let attributes = [ "T", Type (P a.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type a)) ] in
   let attributes =
     match transpose_a with | None -> attributes | Some transpose_a -> ("transpose_a", Bool transpose_a) :: attributes
   in
@@ -2801,13 +2803,13 @@ let matMul
   let name = Name.make_fresh ~name in
   let op_name = Op_names.matMul in
   let inputs = [ P a; P b ] in
-  { name
-  ; op_name
-  ; output_type = a.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type a)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let matchingFiles
     ?(name = "MatchingFiles")
@@ -2817,62 +2819,62 @@ let matchingFiles
   let name = Name.make_fresh ~name in
   let op_name = Op_names.matchingFiles in
   let inputs = [ P pattern ] in
-  { name
-  ; op_name
-  ; output_type = Type.String
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.String
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let matrixDeterminant
     ?(name = "MatrixDeterminant")
     (input : ([< `float | `double ] as 't) t)
   =
-  let attributes = [ "T", Type (P input.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type input)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.matrixDeterminant in
   let inputs = [ P input ] in
-  { name
-  ; op_name
-  ; output_type = input.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type input)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let matrixInverse
     ?(name = "MatrixInverse")
     (input : ([< `float | `double ] as 't) t)
   =
-  let attributes = [ "T", Type (P input.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type input)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.matrixInverse in
   let inputs = [ P input ] in
-  { name
-  ; op_name
-  ; output_type = input.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type input)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let matrixSolve
     ?(name = "MatrixSolve")
     (matrix : ([< `float | `double ] as 't) t)
     (rhs : ([< `float | `double ] as 't) t)
   =
-  let attributes = [ "T", Type (P matrix.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type matrix)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.matrixSolve in
   let inputs = [ P matrix; P rhs ] in
-  { name
-  ; op_name
-  ; output_type = matrix.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type matrix)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let matrixSolveLs
     ?(name = "MatrixSolveLs")
@@ -2881,20 +2883,20 @@ let matrixSolveLs
     (rhs : ([< `float | `double ] as 't) t)
     (l2_regularizer : [ `double ] t)
   =
-  let attributes = [ "T", Type (P matrix.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type matrix)) ] in
   let attributes =
     match fast with | None -> attributes | Some fast -> ("fast", Bool fast) :: attributes
   in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.matrixSolveLs in
   let inputs = [ P matrix; P rhs; P l2_regularizer ] in
-  { name
-  ; op_name
-  ; output_type = matrix.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type matrix)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let matrixTriangularSolve
     ?(name = "MatrixTriangularSolve")
@@ -2902,20 +2904,20 @@ let matrixTriangularSolve
     (matrix : ([< `float | `double ] as 't) t)
     (rhs : ([< `float | `double ] as 't) t)
   =
-  let attributes = [ "T", Type (P matrix.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type matrix)) ] in
   let attributes =
     match lower with | None -> attributes | Some lower -> ("lower", Bool lower) :: attributes
   in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.matrixTriangularSolve in
   let inputs = [ P matrix; P rhs ] in
-  { name
-  ; op_name
-  ; output_type = matrix.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type matrix)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let max
     ?(name = "Max")
@@ -2923,20 +2925,20 @@ let max
     (input : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (reduction_indices : [ `int32 ] t)
   =
-  let attributes = [ "T", Type (P input.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type input)) ] in
   let attributes =
     match keep_dims with | None -> attributes | Some keep_dims -> ("keep_dims", Bool keep_dims) :: attributes
   in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.max in
   let inputs = [ P input; P reduction_indices ] in
-  { name
-  ; op_name
-  ; output_type = input.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type input)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let maxPool
     ?(name = "MaxPool")
@@ -2958,13 +2960,13 @@ let maxPool
   let name = Name.make_fresh ~name in
   let op_name = Op_names.maxPool in
   let inputs = [ P input ] in
-  { name
-  ; op_name
-  ; output_type = Type.Float
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Float
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let maxPoolGrad
     ?(name = "MaxPoolGrad")
@@ -2988,13 +2990,13 @@ let maxPoolGrad
   let name = Name.make_fresh ~name in
   let op_name = Op_names.maxPoolGrad in
   let inputs = [ P orig_input; P orig_output; P grad ] in
-  { name
-  ; op_name
-  ; output_type = Type.Float
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Float
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let maxPoolGradWithArgmax
     ?(name = "MaxPoolGradWithArgmax")
@@ -3005,7 +3007,7 @@ let maxPoolGradWithArgmax
     (grad : [ `float ] t)
     (argmax : ([< `int32 | `int64 ] as 'targmax) t)
   =
-  let attributes = [ "Targmax", Type (P argmax.output_type) ] in
+  let attributes = [ "Targmax", Type (P (Node.output_type argmax)) ] in
   let attributes =
     ("ksize", List (Int ksize)) :: attributes
   in
@@ -3018,13 +3020,13 @@ let maxPoolGradWithArgmax
   let name = Name.make_fresh ~name in
   let op_name = Op_names.maxPoolGradWithArgmax in
   let inputs = [ P input; P grad; P argmax ] in
-  { name
-  ; op_name
-  ; output_type = Type.Float
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Float
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let maxPoolWithArgmax
     ?(name = "MaxPoolWithArgmax")
@@ -3047,38 +3049,38 @@ let maxPoolWithArgmax
   let name = Name.make_fresh ~name in
   let op_name = Op_names.maxPoolWithArgmax in
   let inputs = [ P input ] in
-  { name
-  ; op_name
-  ; output_type = Type.Float
-  ; inputs
-  ; attributes
-  ; output_idx = Some 0
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Float
+    ~inputs
+    ~attributes
+    ~output_idx:(Some 0)
   ,
-  { name
-  ; op_name
-  ; output_type = type_1
-  ; inputs
-  ; attributes
-  ; output_idx = Some 1
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:type_1
+    ~inputs
+    ~attributes
+    ~output_idx:(Some 1)
 
 let maximum
     ?(name = "Maximum")
     (x : ([< `float | `double | `int32 | `int64 ] as 't) t)
     (y : ([< `float | `double | `int32 | `int64 ] as 't) t)
   =
-  let attributes = [ "T", Type (P x.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type x)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.maximum in
   let inputs = [ P x; P y ] in
-  { name
-  ; op_name
-  ; output_type = x.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type x)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let mean
     ?(name = "Mean")
@@ -3086,47 +3088,47 @@ let mean
     (input : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (reduction_indices : [ `int32 ] t)
   =
-  let attributes = [ "T", Type (P input.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type input)) ] in
   let attributes =
     match keep_dims with | None -> attributes | Some keep_dims -> ("keep_dims", Bool keep_dims) :: attributes
   in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.mean in
   let inputs = [ P input; P reduction_indices ] in
-  { name
-  ; op_name
-  ; output_type = input.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type input)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let merge
     ?(name = "Merge")
     (inputs__ : 't t list)
   =
-  let attributes = [ "T", Type (P (List.hd_exn inputs__).output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type (List.hd_exn inputs__))) ] in
   let attributes =
     ("N", Int (List.length inputs__)) :: attributes
   in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.merge in
   let inputs = List.map ~f:(fun n -> P n) inputs__ in
-  { name
-  ; op_name
-  ; output_type = (List.hd_exn inputs__).output_type
-  ; inputs
-  ; attributes
-  ; output_idx = Some 0
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type (List.hd_exn inputs__))
+    ~inputs
+    ~attributes
+    ~output_idx:(Some 0)
   ,
-  { name
-  ; op_name
-  ; output_type = Type.Int32
-  ; inputs
-  ; attributes
-  ; output_idx = Some 1
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Int32
+    ~inputs
+    ~attributes
+    ~output_idx:(Some 1)
 
 let mergeSummary
     ?(name = "MergeSummary")
@@ -3139,13 +3141,13 @@ let mergeSummary
   let name = Name.make_fresh ~name in
   let op_name = Op_names.mergeSummary in
   let inputs = List.map ~f:(fun n -> P n) inputs__ in
-  { name
-  ; op_name
-  ; output_type = Type.String
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.String
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let min
     ?(name = "Min")
@@ -3153,87 +3155,87 @@ let min
     (input : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (reduction_indices : [ `int32 ] t)
   =
-  let attributes = [ "T", Type (P input.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type input)) ] in
   let attributes =
     match keep_dims with | None -> attributes | Some keep_dims -> ("keep_dims", Bool keep_dims) :: attributes
   in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.min in
   let inputs = [ P input; P reduction_indices ] in
-  { name
-  ; op_name
-  ; output_type = input.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type input)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let minimum
     ?(name = "Minimum")
     (x : ([< `float | `double | `int32 | `int64 ] as 't) t)
     (y : ([< `float | `double | `int32 | `int64 ] as 't) t)
   =
-  let attributes = [ "T", Type (P x.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type x)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.minimum in
   let inputs = [ P x; P y ] in
-  { name
-  ; op_name
-  ; output_type = x.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type x)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let mod_
     ?(name = "Mod")
     (x : ([< `int32 | `int64 | `float | `double ] as 't) t)
     (y : ([< `int32 | `int64 | `float | `double ] as 't) t)
   =
-  let attributes = [ "T", Type (P x.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type x)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.mod_ in
   let inputs = [ P x; P y ] in
-  { name
-  ; op_name
-  ; output_type = x.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type x)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let mul
     ?(name = "Mul")
     (x : ([< `float | `double | `int32 | `int64 | `complex64 ] as 't) t)
     (y : ([< `float | `double | `int32 | `int64 | `complex64 ] as 't) t)
   =
-  let attributes = [ "T", Type (P x.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type x)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.mul in
   let inputs = [ P x; P y ] in
-  { name
-  ; op_name
-  ; output_type = x.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type x)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let neg
     ?(name = "Neg")
     (x : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
   =
-  let attributes = [ "T", Type (P x.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type x)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.neg in
   let inputs = [ P x ] in
-  { name
-  ; op_name
-  ; output_type = x.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type x)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let negTrain
     ?(name = "NegTrain")
@@ -3255,29 +3257,29 @@ let negTrain
   let name = Name.make_fresh ~name in
   let op_name = Op_names.negTrain in
   let inputs = [ P w_in; P w_out; P examples; P labels; P lr ] in
-  { name
-  ; op_name
-  ; output_type = Type.Unit
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Unit
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let nextIteration
     ?(name = "NextIteration")
     (data : 't t)
   =
-  let attributes = [ "T", Type (P data.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type data)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.nextIteration in
   let inputs = [ P data ] in
-  { name
-  ; op_name
-  ; output_type = data.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type data)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let noOp
     ?(name = "NoOp")
@@ -3287,66 +3289,66 @@ let noOp
   let name = Name.make_fresh ~name in
   let op_name = Op_names.noOp in
   let inputs = [  ] in
-  { name
-  ; op_name
-  ; output_type = Type.Unit
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Unit
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let notEqual
     ?(name = "NotEqual")
     (x : ([< `float | `double | `int32 | `int64 | `complex64 | `string ] as 't) t)
     (y : ([< `float | `double | `int32 | `int64 | `complex64 | `string ] as 't) t)
   =
-  let attributes = [ "T", Type (P x.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type x)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.notEqual in
   let inputs = [ P x; P y ] in
-  { name
-  ; op_name
-  ; output_type = Type.Bool
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Bool
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let pack
     ?(name = "Pack")
     (values : 't t list)
   =
-  let attributes = [ "T", Type (P (List.hd_exn values).output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type (List.hd_exn values))) ] in
   let attributes =
     ("N", Int (List.length values)) :: attributes
   in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.pack in
   let inputs = List.map ~f:(fun n -> P n) values in
-  { name
-  ; op_name
-  ; output_type = (List.hd_exn values).output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type (List.hd_exn values))
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let pad
     ?(name = "Pad")
     (input : 't t)
     (paddings : [ `int32 ] t)
   =
-  let attributes = [ "T", Type (P input.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type input)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.pad in
   let inputs = [ P input; P paddings ] in
-  { name
-  ; op_name
-  ; output_type = input.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type input)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let paddingFIFOQueue
     ?(name = "PaddingFIFOQueue")
@@ -3376,13 +3378,13 @@ let paddingFIFOQueue
   let name = Name.make_fresh ~name in
   let op_name = Op_names.paddingFIFOQueue in
   let inputs = [  ] in
-  { name
-  ; op_name
-  ; output_type = Type.String
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.String
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let placeholder
     ?(name = "Placeholder")
@@ -3397,30 +3399,30 @@ let placeholder
   let name = Name.make_fresh ~name in
   let op_name = Op_names.placeholder in
   let inputs = [  ] in
-  { name
-  ; op_name
-  ; output_type = type_
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:type_
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let pow
     ?(name = "Pow")
     (x : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
     (y : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
   =
-  let attributes = [ "T", Type (P x.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type x)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.pow in
   let inputs = [ P x; P y ] in
-  { name
-  ; op_name
-  ; output_type = x.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type x)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let prod
     ?(name = "Prod")
@@ -3428,20 +3430,20 @@ let prod
     (input : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (reduction_indices : [ `int32 ] t)
   =
-  let attributes = [ "T", Type (P input.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type input)) ] in
   let attributes =
     match keep_dims with | None -> attributes | Some keep_dims -> ("keep_dims", Bool keep_dims) :: attributes
   in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.prod in
   let inputs = [ P input; P reduction_indices ] in
-  { name
-  ; op_name
-  ; output_type = input.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type input)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let queueClose
     ?(name = "QueueClose")
@@ -3455,13 +3457,13 @@ let queueClose
   let name = Name.make_fresh ~name in
   let op_name = Op_names.queueClose in
   let inputs = [ P handle ] in
-  { name
-  ; op_name
-  ; output_type = Type.Unit
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Unit
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let queueSize
     ?(name = "QueueSize")
@@ -3471,13 +3473,13 @@ let queueSize
   let name = Name.make_fresh ~name in
   let op_name = Op_names.queueSize in
   let inputs = [ P handle ] in
-  { name
-  ; op_name
-  ; output_type = Type.Int32
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Int32
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let rGBToHSV
     ?(name = "RGBToHSV")
@@ -3487,13 +3489,13 @@ let rGBToHSV
   let name = Name.make_fresh ~name in
   let op_name = Op_names.rGBToHSV in
   let inputs = [ P images ] in
-  { name
-  ; op_name
-  ; output_type = Type.Float
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Float
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let randomCrop
     ?(name = "RandomCrop")
@@ -3502,7 +3504,7 @@ let randomCrop
     (image : ([< `int32 | `int64 | `float | `double ] as 't) t)
     (size : [ `int64 ] t)
   =
-  let attributes = [ "T", Type (P image.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type image)) ] in
   let attributes =
     match seed with | None -> attributes | Some seed -> ("seed", Int seed) :: attributes
   in
@@ -3512,13 +3514,13 @@ let randomCrop
   let name = Name.make_fresh ~name in
   let op_name = Op_names.randomCrop in
   let inputs = [ P image; P size ] in
-  { name
-  ; op_name
-  ; output_type = image.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type image)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let randomShuffle
     ?(name = "RandomShuffle")
@@ -3526,7 +3528,7 @@ let randomShuffle
     ?seed2
     (value : 't t)
   =
-  let attributes = [ "T", Type (P value.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type value)) ] in
   let attributes =
     match seed with | None -> attributes | Some seed -> ("seed", Int seed) :: attributes
   in
@@ -3536,13 +3538,13 @@ let randomShuffle
   let name = Name.make_fresh ~name in
   let op_name = Op_names.randomShuffle in
   let inputs = [ P value ] in
-  { name
-  ; op_name
-  ; output_type = value.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type value)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let randomShuffleQueue
     ?(name = "RandomShuffleQueue")
@@ -3584,13 +3586,13 @@ let randomShuffleQueue
   let name = Name.make_fresh ~name in
   let op_name = Op_names.randomShuffleQueue in
   let inputs = [  ] in
-  { name
-  ; op_name
-  ; output_type = Type.String
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.String
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let randomStandardNormal
     ?(name = "RandomStandardNormal")
@@ -3599,7 +3601,7 @@ let randomStandardNormal
     ?seed2
     (shape : ([< `int32 | `int64 ] as 't) t)
   =
-  let attributes = [ "T", Type (P shape.output_type) ;  "dtype", Type (P type_) ] in
+  let attributes = [ "T", Type (P (Node.output_type shape)) ;  "dtype", Type (P type_) ] in
   let attributes =
     match seed with | None -> attributes | Some seed -> ("seed", Int seed) :: attributes
   in
@@ -3609,13 +3611,13 @@ let randomStandardNormal
   let name = Name.make_fresh ~name in
   let op_name = Op_names.randomStandardNormal in
   let inputs = [ P shape ] in
-  { name
-  ; op_name
-  ; output_type = type_
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:type_
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let randomUniform
     ?(name = "RandomUniform")
@@ -3624,7 +3626,7 @@ let randomUniform
     ?seed2
     (shape : ([< `int32 | `int64 ] as 't) t)
   =
-  let attributes = [ "T", Type (P shape.output_type) ;  "dtype", Type (P type_) ] in
+  let attributes = [ "T", Type (P (Node.output_type shape)) ;  "dtype", Type (P type_) ] in
   let attributes =
     match seed with | None -> attributes | Some seed -> ("seed", Int seed) :: attributes
   in
@@ -3634,13 +3636,13 @@ let randomUniform
   let name = Name.make_fresh ~name in
   let op_name = Op_names.randomUniform in
   let inputs = [ P shape ] in
-  { name
-  ; op_name
-  ; output_type = type_
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:type_
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let randomUniformInt
     ?(name = "RandomUniformInt")
@@ -3650,7 +3652,7 @@ let randomUniformInt
     (minval : ([< `int32 | `int64 ] as 'tout) t)
     (maxval : ([< `int32 | `int64 ] as 'tout) t)
   =
-  let attributes = [ "T", Type (P shape.output_type) ;  "Tout", Type (P minval.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type shape)) ;  "Tout", Type (P (Node.output_type minval)) ] in
   let attributes =
     match seed with | None -> attributes | Some seed -> ("seed", Int seed) :: attributes
   in
@@ -3660,13 +3662,13 @@ let randomUniformInt
   let name = Name.make_fresh ~name in
   let op_name = Op_names.randomUniformInt in
   let inputs = [ P shape; P minval; P maxval ] in
-  { name
-  ; op_name
-  ; output_type = minval.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type minval)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let range
     ?(name = "Range")
@@ -3678,29 +3680,29 @@ let range
   let name = Name.make_fresh ~name in
   let op_name = Op_names.range in
   let inputs = [ P start; P limit; P delta ] in
-  { name
-  ; op_name
-  ; output_type = Type.Int32
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Int32
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let rank
     ?(name = "Rank")
     (input : 't t)
   =
-  let attributes = [ "T", Type (P input.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type input)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.rank in
   let inputs = [ P input ] in
-  { name
-  ; op_name
-  ; output_type = Type.Int32
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Int32
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let readFile
     ?(name = "ReadFile")
@@ -3710,13 +3712,13 @@ let readFile
   let name = Name.make_fresh ~name in
   let op_name = Op_names.readFile in
   let inputs = [ P filename ] in
-  { name
-  ; op_name
-  ; output_type = Type.String
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.String
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let readerNumRecordsProduced
     ?(name = "ReaderNumRecordsProduced")
@@ -3726,13 +3728,13 @@ let readerNumRecordsProduced
   let name = Name.make_fresh ~name in
   let op_name = Op_names.readerNumRecordsProduced in
   let inputs = [ P reader_handle ] in
-  { name
-  ; op_name
-  ; output_type = Type.Int64
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Int64
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let readerNumWorkUnitsCompleted
     ?(name = "ReaderNumWorkUnitsCompleted")
@@ -3742,13 +3744,13 @@ let readerNumWorkUnitsCompleted
   let name = Name.make_fresh ~name in
   let op_name = Op_names.readerNumWorkUnitsCompleted in
   let inputs = [ P reader_handle ] in
-  { name
-  ; op_name
-  ; output_type = Type.Int64
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Int64
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let readerRead
     ?(name = "ReaderRead")
@@ -3759,21 +3761,21 @@ let readerRead
   let name = Name.make_fresh ~name in
   let op_name = Op_names.readerRead in
   let inputs = [ P reader_handle; P queue_handle ] in
-  { name
-  ; op_name
-  ; output_type = Type.String
-  ; inputs
-  ; attributes
-  ; output_idx = Some 0
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.String
+    ~inputs
+    ~attributes
+    ~output_idx:(Some 0)
   ,
-  { name
-  ; op_name
-  ; output_type = Type.String
-  ; inputs
-  ; attributes
-  ; output_idx = Some 1
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.String
+    ~inputs
+    ~attributes
+    ~output_idx:(Some 1)
 
 let readerReset
     ?(name = "ReaderReset")
@@ -3783,13 +3785,13 @@ let readerReset
   let name = Name.make_fresh ~name in
   let op_name = Op_names.readerReset in
   let inputs = [ P reader_handle ] in
-  { name
-  ; op_name
-  ; output_type = Type.Unit
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Unit
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let readerRestoreState
     ?(name = "ReaderRestoreState")
@@ -3800,13 +3802,13 @@ let readerRestoreState
   let name = Name.make_fresh ~name in
   let op_name = Op_names.readerRestoreState in
   let inputs = [ P reader_handle; P state ] in
-  { name
-  ; op_name
-  ; output_type = Type.Unit
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Unit
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let readerSerializeState
     ?(name = "ReaderSerializeState")
@@ -3816,13 +3818,13 @@ let readerSerializeState
   let name = Name.make_fresh ~name in
   let op_name = Op_names.readerSerializeState in
   let inputs = [ P reader_handle ] in
-  { name
-  ; op_name
-  ; output_type = Type.String
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.String
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let real
     ?(name = "Real")
@@ -3832,13 +3834,13 @@ let real
   let name = Name.make_fresh ~name in
   let op_name = Op_names.real in
   let inputs = [ P in__ ] in
-  { name
-  ; op_name
-  ; output_type = Type.Float
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Float
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let refEnter
     ?(name = "RefEnter")
@@ -3847,7 +3849,7 @@ let refEnter
     ?parallel_iterations
     (data : 't t)
   =
-  let attributes = [ "T", Type (P data.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type data)) ] in
   let attributes =
     ("frame_name", String frame_name) :: attributes
   in
@@ -3860,216 +3862,216 @@ let refEnter
   let name = Name.make_fresh ~name in
   let op_name = Op_names.refEnter in
   let inputs = [ P data ] in
-  { name
-  ; op_name
-  ; output_type = data.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type data)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let refExit
     ?(name = "RefExit")
     (data : 't t)
   =
-  let attributes = [ "T", Type (P data.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type data)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.refExit in
   let inputs = [ P data ] in
-  { name
-  ; op_name
-  ; output_type = data.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type data)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let refIdentity
     ?(name = "RefIdentity")
     (input : 't t)
   =
-  let attributes = [ "T", Type (P input.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type input)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.refIdentity in
   let inputs = [ P input ] in
-  { name
-  ; op_name
-  ; output_type = input.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type input)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let refMerge
     ?(name = "RefMerge")
     (inputs__ : 't t list)
   =
-  let attributes = [ "T", Type (P (List.hd_exn inputs__).output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type (List.hd_exn inputs__))) ] in
   let attributes =
     ("N", Int (List.length inputs__)) :: attributes
   in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.refMerge in
   let inputs = List.map ~f:(fun n -> P n) inputs__ in
-  { name
-  ; op_name
-  ; output_type = (List.hd_exn inputs__).output_type
-  ; inputs
-  ; attributes
-  ; output_idx = Some 0
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type (List.hd_exn inputs__))
+    ~inputs
+    ~attributes
+    ~output_idx:(Some 0)
   ,
-  { name
-  ; op_name
-  ; output_type = Type.Int32
-  ; inputs
-  ; attributes
-  ; output_idx = Some 1
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Int32
+    ~inputs
+    ~attributes
+    ~output_idx:(Some 1)
 
 let refNextIteration
     ?(name = "RefNextIteration")
     (data : 't t)
   =
-  let attributes = [ "T", Type (P data.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type data)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.refNextIteration in
   let inputs = [ P data ] in
-  { name
-  ; op_name
-  ; output_type = data.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type data)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let refSelect
     ?(name = "RefSelect")
     (index : [ `int32 ] t)
     (inputs__ : 't t list)
   =
-  let attributes = [ "T", Type (P (List.hd_exn inputs__).output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type (List.hd_exn inputs__))) ] in
   let attributes =
     ("N", Int (List.length inputs__)) :: attributes
   in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.refSelect in
   let inputs = [ P index ] @ List.map ~f:(fun n -> P n) inputs__ in
-  { name
-  ; op_name
-  ; output_type = (List.hd_exn inputs__).output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type (List.hd_exn inputs__))
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let refSwitch
     ?(name = "RefSwitch")
     (data : 't t)
     (pred : [ `bool ] t)
   =
-  let attributes = [ "T", Type (P data.output_type) ;  "T", Type (P data.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type data)) ;  "T", Type (P (Node.output_type data)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.refSwitch in
   let inputs = [ P data; P pred ] in
-  { name
-  ; op_name
-  ; output_type = data.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = Some 0
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type data)
+    ~inputs
+    ~attributes
+    ~output_idx:(Some 0)
   ,
-  { name
-  ; op_name
-  ; output_type = data.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = Some 1
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type data)
+    ~inputs
+    ~attributes
+    ~output_idx:(Some 1)
 
 let relu
     ?(name = "Relu")
     (features : ([< `float | `double | `int32 | `int64 ] as 't) t)
   =
-  let attributes = [ "T", Type (P features.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type features)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.relu in
   let inputs = [ P features ] in
-  { name
-  ; op_name
-  ; output_type = features.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type features)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let relu6
     ?(name = "Relu6")
     (features : ([< `float | `double | `int32 | `int64 ] as 't) t)
   =
-  let attributes = [ "T", Type (P features.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type features)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.relu6 in
   let inputs = [ P features ] in
-  { name
-  ; op_name
-  ; output_type = features.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type features)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let relu6Grad
     ?(name = "Relu6Grad")
     (gradients : ([< `float | `double | `int32 | `int64 ] as 't) t)
     (features : ([< `float | `double | `int32 | `int64 ] as 't) t)
   =
-  let attributes = [ "T", Type (P gradients.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type gradients)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.relu6Grad in
   let inputs = [ P gradients; P features ] in
-  { name
-  ; op_name
-  ; output_type = gradients.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type gradients)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let reluGrad
     ?(name = "ReluGrad")
     (gradients : ([< `float | `double | `int32 | `int64 ] as 't) t)
     (features : ([< `float | `double | `int32 | `int64 ] as 't) t)
   =
-  let attributes = [ "T", Type (P gradients.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type gradients)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.reluGrad in
   let inputs = [ P gradients; P features ] in
-  { name
-  ; op_name
-  ; output_type = gradients.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type gradients)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let reshape
     ?(name = "Reshape")
     (tensor : 't t)
     (shape : [ `int32 ] t)
   =
-  let attributes = [ "T", Type (P tensor.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type tensor)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.reshape in
   let inputs = [ P tensor; P shape ] in
-  { name
-  ; op_name
-  ; output_type = tensor.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type tensor)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let resizeArea
     ?(name = "ResizeArea")
@@ -4077,20 +4079,20 @@ let resizeArea
     (images : ([< `int32 | `int64 | `float | `double ] as 't) t)
     (size : [ `int32 ] t)
   =
-  let attributes = [ "T", Type (P images.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type images)) ] in
   let attributes =
     match align_corners with | None -> attributes | Some align_corners -> ("align_corners", Bool align_corners) :: attributes
   in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.resizeArea in
   let inputs = [ P images; P size ] in
-  { name
-  ; op_name
-  ; output_type = Type.Float
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Float
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let resizeBicubic
     ?(name = "ResizeBicubic")
@@ -4098,20 +4100,20 @@ let resizeBicubic
     (images : ([< `int32 | `int64 | `float | `double ] as 't) t)
     (size : [ `int32 ] t)
   =
-  let attributes = [ "T", Type (P images.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type images)) ] in
   let attributes =
     match align_corners with | None -> attributes | Some align_corners -> ("align_corners", Bool align_corners) :: attributes
   in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.resizeBicubic in
   let inputs = [ P images; P size ] in
-  { name
-  ; op_name
-  ; output_type = Type.Float
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Float
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let resizeBilinear
     ?(name = "ResizeBilinear")
@@ -4119,20 +4121,20 @@ let resizeBilinear
     (images : ([< `int32 | `int64 | `float | `double ] as 't) t)
     (size : [ `int32 ] t)
   =
-  let attributes = [ "T", Type (P images.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type images)) ] in
   let attributes =
     match align_corners with | None -> attributes | Some align_corners -> ("align_corners", Bool align_corners) :: attributes
   in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.resizeBilinear in
   let inputs = [ P images; P size ] in
-  { name
-  ; op_name
-  ; output_type = Type.Float
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Float
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let resizeBilinearGrad
     ?(name = "ResizeBilinearGrad")
@@ -4140,20 +4142,20 @@ let resizeBilinearGrad
     (grads : [ `float ] t)
     (original_image : ([< `float | `double ] as 't) t)
   =
-  let attributes = [ "T", Type (P original_image.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type original_image)) ] in
   let attributes =
     match align_corners with | None -> attributes | Some align_corners -> ("align_corners", Bool align_corners) :: attributes
   in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.resizeBilinearGrad in
   let inputs = [ P grads; P original_image ] in
-  { name
-  ; op_name
-  ; output_type = original_image.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type original_image)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let resizeNearestNeighbor
     ?(name = "ResizeNearestNeighbor")
@@ -4161,20 +4163,20 @@ let resizeNearestNeighbor
     (images : ([< `int32 | `int64 | `float | `double ] as 't) t)
     (size : [ `int32 ] t)
   =
-  let attributes = [ "T", Type (P images.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type images)) ] in
   let attributes =
     match align_corners with | None -> attributes | Some align_corners -> ("align_corners", Bool align_corners) :: attributes
   in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.resizeNearestNeighbor in
   let inputs = [ P images; P size ] in
-  { name
-  ; op_name
-  ; output_type = images.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type images)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let resizeNearestNeighborGrad
     ?(name = "ResizeNearestNeighborGrad")
@@ -4182,20 +4184,20 @@ let resizeNearestNeighborGrad
     (grads : ([< `int32 | `float | `double ] as 't) t)
     (size : [ `int32 ] t)
   =
-  let attributes = [ "T", Type (P grads.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type grads)) ] in
   let attributes =
     match align_corners with | None -> attributes | Some align_corners -> ("align_corners", Bool align_corners) :: attributes
   in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.resizeNearestNeighborGrad in
   let inputs = [ P grads; P size ] in
-  { name
-  ; op_name
-  ; output_type = grads.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type grads)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let restore
     ?(name = "Restore")
@@ -4211,13 +4213,13 @@ let restore
   let name = Name.make_fresh ~name in
   let op_name = Op_names.restore in
   let inputs = [ P file_pattern; P tensor_name ] in
-  { name
-  ; op_name
-  ; output_type = type_
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:type_
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let restoreSlice
     ?(name = "RestoreSlice")
@@ -4234,30 +4236,30 @@ let restoreSlice
   let name = Name.make_fresh ~name in
   let op_name = Op_names.restoreSlice in
   let inputs = [ P file_pattern; P tensor_name; P shape_and_slice ] in
-  { name
-  ; op_name
-  ; output_type = type_
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:type_
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let reverse
     ?(name = "Reverse")
     (tensor : ([< `int32 | `bool | `float | `double ] as 't) t)
     (dims : [ `bool ] t)
   =
-  let attributes = [ "T", Type (P tensor.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type tensor)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.reverse in
   let inputs = [ P tensor; P dims ] in
-  { name
-  ; op_name
-  ; output_type = tensor.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type tensor)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let reverseSequence
     ?(name = "ReverseSequence")
@@ -4266,7 +4268,7 @@ let reverseSequence
     (input : 't t)
     (seq_lengths : [ `int64 ] t)
   =
-  let attributes = [ "T", Type (P input.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type input)) ] in
   let attributes =
     ("seq_dim", Int seq_dim) :: attributes
   in
@@ -4276,29 +4278,29 @@ let reverseSequence
   let name = Name.make_fresh ~name in
   let op_name = Op_names.reverseSequence in
   let inputs = [ P input; P seq_lengths ] in
-  { name
-  ; op_name
-  ; output_type = input.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type input)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let rsqrt
     ?(name = "Rsqrt")
     (x : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
   =
-  let attributes = [ "T", Type (P x.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type x)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.rsqrt in
   let inputs = [ P x ] in
-  { name
-  ; op_name
-  ; output_type = x.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type x)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let sampleDistortedBoundingBox
     ?(name = "SampleDistortedBoundingBox")
@@ -4312,7 +4314,7 @@ let sampleDistortedBoundingBox
     (image_size : ([< `int32 | `int64 ] as 't) t)
     (bounding_boxes : [ `float ] t)
   =
-  let attributes = [ "T", Type (P image_size.output_type) ;  "T", Type (P image_size.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type image_size)) ;  "T", Type (P (Node.output_type image_size)) ] in
   let attributes =
     match seed with | None -> attributes | Some seed -> ("seed", Int seed) :: attributes
   in
@@ -4337,46 +4339,46 @@ let sampleDistortedBoundingBox
   let name = Name.make_fresh ~name in
   let op_name = Op_names.sampleDistortedBoundingBox in
   let inputs = [ P image_size; P bounding_boxes ] in
-  { name
-  ; op_name
-  ; output_type = image_size.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = Some 0
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type image_size)
+    ~inputs
+    ~attributes
+    ~output_idx:(Some 0)
   ,
-  { name
-  ; op_name
-  ; output_type = image_size.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = Some 1
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type image_size)
+    ~inputs
+    ~attributes
+    ~output_idx:(Some 1)
   ,
-  { name
-  ; op_name
-  ; output_type = Type.Float
-  ; inputs
-  ; attributes
-  ; output_idx = Some 2
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Float
+    ~inputs
+    ~attributes
+    ~output_idx:(Some 2)
 
 let scalarSummary
     ?(name = "ScalarSummary")
     (tags : [ `string ] t)
     (values : ([< `float | `double | `int32 | `int64 ] as 't) t)
   =
-  let attributes = [ "T", Type (P values.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type values)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.scalarSummary in
   let inputs = [ P tags; P values ] in
-  { name
-  ; op_name
-  ; output_type = Type.String
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.String
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let scatterAdd
     ?(name = "ScatterAdd")
@@ -4385,20 +4387,20 @@ let scatterAdd
     (indices : ([< `int32 | `int64 ] as 'tindices) t)
     (updates : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
   =
-  let attributes = [ "Tindices", Type (P indices.output_type) ;  "T", Type (P ref.output_type) ] in
+  let attributes = [ "Tindices", Type (P (Node.output_type indices)) ;  "T", Type (P (Node.output_type ref)) ] in
   let attributes =
     match use_locking with | None -> attributes | Some use_locking -> ("use_locking", Bool use_locking) :: attributes
   in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.scatterAdd in
   let inputs = [ P ref; P indices; P updates ] in
-  { name
-  ; op_name
-  ; output_type = ref.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type ref)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let scatterSub
     ?(name = "ScatterSub")
@@ -4407,20 +4409,20 @@ let scatterSub
     (indices : ([< `int32 | `int64 ] as 'tindices) t)
     (updates : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
   =
-  let attributes = [ "Tindices", Type (P indices.output_type) ;  "T", Type (P ref.output_type) ] in
+  let attributes = [ "Tindices", Type (P (Node.output_type indices)) ;  "T", Type (P (Node.output_type ref)) ] in
   let attributes =
     match use_locking with | None -> attributes | Some use_locking -> ("use_locking", Bool use_locking) :: attributes
   in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.scatterSub in
   let inputs = [ P ref; P indices; P updates ] in
-  { name
-  ; op_name
-  ; output_type = ref.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type ref)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let scatterUpdate
     ?(name = "ScatterUpdate")
@@ -4429,105 +4431,105 @@ let scatterUpdate
     (indices : ([< `int32 | `int64 ] as 'tindices) t)
     (updates : 't t)
   =
-  let attributes = [ "Tindices", Type (P indices.output_type) ;  "T", Type (P ref.output_type) ] in
+  let attributes = [ "Tindices", Type (P (Node.output_type indices)) ;  "T", Type (P (Node.output_type ref)) ] in
   let attributes =
     match use_locking with | None -> attributes | Some use_locking -> ("use_locking", Bool use_locking) :: attributes
   in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.scatterUpdate in
   let inputs = [ P ref; P indices; P updates ] in
-  { name
-  ; op_name
-  ; output_type = ref.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type ref)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let segmentMax
     ?(name = "SegmentMax")
     (data : ([< `float | `double | `int32 | `int64 ] as 't) t)
     (segment_ids : ([< `int32 | `int64 ] as 'tindices) t)
   =
-  let attributes = [ "Tindices", Type (P segment_ids.output_type) ;  "T", Type (P data.output_type) ] in
+  let attributes = [ "Tindices", Type (P (Node.output_type segment_ids)) ;  "T", Type (P (Node.output_type data)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.segmentMax in
   let inputs = [ P data; P segment_ids ] in
-  { name
-  ; op_name
-  ; output_type = data.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type data)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let segmentMean
     ?(name = "SegmentMean")
     (data : ([< `float | `double | `int32 | `int64 ] as 't) t)
     (segment_ids : ([< `int32 | `int64 ] as 'tindices) t)
   =
-  let attributes = [ "Tindices", Type (P segment_ids.output_type) ;  "T", Type (P data.output_type) ] in
+  let attributes = [ "Tindices", Type (P (Node.output_type segment_ids)) ;  "T", Type (P (Node.output_type data)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.segmentMean in
   let inputs = [ P data; P segment_ids ] in
-  { name
-  ; op_name
-  ; output_type = data.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type data)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let segmentMin
     ?(name = "SegmentMin")
     (data : ([< `float | `double | `int32 | `int64 ] as 't) t)
     (segment_ids : ([< `int32 | `int64 ] as 'tindices) t)
   =
-  let attributes = [ "Tindices", Type (P segment_ids.output_type) ;  "T", Type (P data.output_type) ] in
+  let attributes = [ "Tindices", Type (P (Node.output_type segment_ids)) ;  "T", Type (P (Node.output_type data)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.segmentMin in
   let inputs = [ P data; P segment_ids ] in
-  { name
-  ; op_name
-  ; output_type = data.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type data)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let segmentProd
     ?(name = "SegmentProd")
     (data : ([< `float | `double | `int32 | `int64 ] as 't) t)
     (segment_ids : ([< `int32 | `int64 ] as 'tindices) t)
   =
-  let attributes = [ "Tindices", Type (P segment_ids.output_type) ;  "T", Type (P data.output_type) ] in
+  let attributes = [ "Tindices", Type (P (Node.output_type segment_ids)) ;  "T", Type (P (Node.output_type data)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.segmentProd in
   let inputs = [ P data; P segment_ids ] in
-  { name
-  ; op_name
-  ; output_type = data.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type data)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let segmentSum
     ?(name = "SegmentSum")
     (data : ([< `float | `double | `int32 | `int64 ] as 't) t)
     (segment_ids : ([< `int32 | `int64 ] as 'tindices) t)
   =
-  let attributes = [ "Tindices", Type (P segment_ids.output_type) ;  "T", Type (P data.output_type) ] in
+  let attributes = [ "Tindices", Type (P (Node.output_type segment_ids)) ;  "T", Type (P (Node.output_type data)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.segmentSum in
   let inputs = [ P data; P segment_ids ] in
-  { name
-  ; op_name
-  ; output_type = data.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type data)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let select
     ?(name = "Select")
@@ -4535,33 +4537,33 @@ let select
     (t : 't t)
     (e : 't t)
   =
-  let attributes = [ "T", Type (P t.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type t)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.select in
   let inputs = [ P condition; P t; P e ] in
-  { name
-  ; op_name
-  ; output_type = t.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type t)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let selfAdjointEig
     ?(name = "SelfAdjointEig")
     (input : ([< `double | `float ] as 't) t)
   =
-  let attributes = [ "T", Type (P input.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type input)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.selfAdjointEig in
   let inputs = [ P input ] in
-  { name
-  ; op_name
-  ; output_type = input.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type input)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let serializeManySparse
     ?(name = "SerializeManySparse")
@@ -4569,17 +4571,17 @@ let serializeManySparse
     (sparse_values : 't t)
     (sparse_shape : [ `int64 ] t)
   =
-  let attributes = [ "T", Type (P sparse_values.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type sparse_values)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.serializeManySparse in
   let inputs = [ P sparse_indices; P sparse_values; P sparse_shape ] in
-  { name
-  ; op_name
-  ; output_type = Type.String
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.String
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let serializeSparse
     ?(name = "SerializeSparse")
@@ -4587,39 +4589,39 @@ let serializeSparse
     (sparse_values : 't t)
     (sparse_shape : [ `int64 ] t)
   =
-  let attributes = [ "T", Type (P sparse_values.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type sparse_values)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.serializeSparse in
   let inputs = [ P sparse_indices; P sparse_values; P sparse_shape ] in
-  { name
-  ; op_name
-  ; output_type = Type.String
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.String
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let shape
     ?(name = "Shape")
     (input : 't t)
   =
-  let attributes = [ "T", Type (P input.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type input)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.shape in
   let inputs = [ P input ] in
-  { name
-  ; op_name
-  ; output_type = Type.Int32
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Int32
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let shapeN
     ?(name = "ShapeN")
     (input : 't t list)
   =
-  let attributes = [ "T", Type (P (List.hd_exn input).output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type (List.hd_exn input))) ] in
   let attributes =
     ("N", Int (List.length input)) :: attributes
   in
@@ -4627,13 +4629,14 @@ let shapeN
   let op_name = Op_names.shapeN in
   let inputs = List.map ~f:(fun n -> P n) input in
   List.init (List.length input) ~f:(fun output_idx ->
-    { name
-    ; op_name
-    ; output_type = Type.Int32
-    ; inputs
-    ; attributes
-    ; output_idx = Some output_idx
-    })
+    Node.create
+      ~name
+      ~op_name
+      ~output_type:Type.Int32
+      ~inputs
+      ~attributes
+      ~output_idx:(Some output_idx)
+    )
 
 let shardedFilename
     ?(name = "ShardedFilename")
@@ -4645,13 +4648,13 @@ let shardedFilename
   let name = Name.make_fresh ~name in
   let op_name = Op_names.shardedFilename in
   let inputs = [ P basename; P shard; P num_shards ] in
-  { name
-  ; op_name
-  ; output_type = Type.String
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.String
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let shardedFilespec
     ?(name = "ShardedFilespec")
@@ -4662,77 +4665,77 @@ let shardedFilespec
   let name = Name.make_fresh ~name in
   let op_name = Op_names.shardedFilespec in
   let inputs = [ P basename; P num_shards ] in
-  { name
-  ; op_name
-  ; output_type = Type.String
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.String
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let sigmoid
     ?(name = "Sigmoid")
     (x : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
   =
-  let attributes = [ "T", Type (P x.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type x)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.sigmoid in
   let inputs = [ P x ] in
-  { name
-  ; op_name
-  ; output_type = x.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type x)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let sign
     ?(name = "Sign")
     (x : ([< `float | `double | `int32 | `int64 ] as 't) t)
   =
-  let attributes = [ "T", Type (P x.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type x)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.sign in
   let inputs = [ P x ] in
-  { name
-  ; op_name
-  ; output_type = x.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type x)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let sin
     ?(name = "Sin")
     (x : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
   =
-  let attributes = [ "T", Type (P x.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type x)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.sin in
   let inputs = [ P x ] in
-  { name
-  ; op_name
-  ; output_type = x.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type x)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let size
     ?(name = "Size")
     (input : 't t)
   =
-  let attributes = [ "T", Type (P input.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type input)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.size in
   let inputs = [ P input ] in
-  { name
-  ; op_name
-  ; output_type = Type.Int32
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Int32
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let skipgram
     ?(name = "Skipgram")
@@ -4762,61 +4765,61 @@ let skipgram
   let name = Name.make_fresh ~name in
   let op_name = Op_names.skipgram in
   let inputs = [  ] in
-  { name
-  ; op_name
-  ; output_type = Type.String
-  ; inputs
-  ; attributes
-  ; output_idx = Some 0
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.String
+    ~inputs
+    ~attributes
+    ~output_idx:(Some 0)
   ,
-  { name
-  ; op_name
-  ; output_type = Type.Int32
-  ; inputs
-  ; attributes
-  ; output_idx = Some 1
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Int32
+    ~inputs
+    ~attributes
+    ~output_idx:(Some 1)
   ,
-  { name
-  ; op_name
-  ; output_type = Type.Int64
-  ; inputs
-  ; attributes
-  ; output_idx = Some 2
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Int64
+    ~inputs
+    ~attributes
+    ~output_idx:(Some 2)
   ,
-  { name
-  ; op_name
-  ; output_type = Type.Int32
-  ; inputs
-  ; attributes
-  ; output_idx = Some 3
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Int32
+    ~inputs
+    ~attributes
+    ~output_idx:(Some 3)
   ,
-  { name
-  ; op_name
-  ; output_type = Type.Int64
-  ; inputs
-  ; attributes
-  ; output_idx = Some 4
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Int64
+    ~inputs
+    ~attributes
+    ~output_idx:(Some 4)
   ,
-  { name
-  ; op_name
-  ; output_type = Type.Int32
-  ; inputs
-  ; attributes
-  ; output_idx = Some 5
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Int32
+    ~inputs
+    ~attributes
+    ~output_idx:(Some 5)
   ,
-  { name
-  ; op_name
-  ; output_type = Type.Int32
-  ; inputs
-  ; attributes
-  ; output_idx = Some 6
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Int32
+    ~inputs
+    ~attributes
+    ~output_idx:(Some 6)
 
 let slice
     ?(name = "Slice")
@@ -4824,144 +4827,144 @@ let slice
     (begin__ : ([< `int32 | `int64 ] as 'index) t)
     (size : ([< `int32 | `int64 ] as 'index) t)
   =
-  let attributes = [ "Index", Type (P begin__.output_type) ;  "T", Type (P input.output_type) ] in
+  let attributes = [ "Index", Type (P (Node.output_type begin__)) ;  "T", Type (P (Node.output_type input)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.slice in
   let inputs = [ P input; P begin__; P size ] in
-  { name
-  ; op_name
-  ; output_type = input.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type input)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let softmax
     ?(name = "Softmax")
     (logits : ([< `float | `double ] as 't) t)
   =
-  let attributes = [ "T", Type (P logits.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type logits)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.softmax in
   let inputs = [ P logits ] in
-  { name
-  ; op_name
-  ; output_type = logits.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type logits)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let softmaxCrossEntropyWithLogits
     ?(name = "SoftmaxCrossEntropyWithLogits")
     (features : ([< `float | `double ] as 't) t)
     (labels : ([< `float | `double ] as 't) t)
   =
-  let attributes = [ "T", Type (P features.output_type) ;  "T", Type (P features.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type features)) ;  "T", Type (P (Node.output_type features)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.softmaxCrossEntropyWithLogits in
   let inputs = [ P features; P labels ] in
-  { name
-  ; op_name
-  ; output_type = features.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = Some 0
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type features)
+    ~inputs
+    ~attributes
+    ~output_idx:(Some 0)
   ,
-  { name
-  ; op_name
-  ; output_type = features.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = Some 1
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type features)
+    ~inputs
+    ~attributes
+    ~output_idx:(Some 1)
 
 let softplus
     ?(name = "Softplus")
     (features : ([< `float | `double | `int32 | `int64 ] as 't) t)
   =
-  let attributes = [ "T", Type (P features.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type features)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.softplus in
   let inputs = [ P features ] in
-  { name
-  ; op_name
-  ; output_type = features.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type features)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let softplusGrad
     ?(name = "SoftplusGrad")
     (gradients : ([< `float | `double | `int32 | `int64 ] as 't) t)
     (features : ([< `float | `double | `int32 | `int64 ] as 't) t)
   =
-  let attributes = [ "T", Type (P gradients.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type gradients)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.softplusGrad in
   let inputs = [ P gradients; P features ] in
-  { name
-  ; op_name
-  ; output_type = gradients.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type gradients)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let softsign
     ?(name = "Softsign")
     (features : ([< `float | `double | `int32 | `int64 ] as 't) t)
   =
-  let attributes = [ "T", Type (P features.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type features)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.softsign in
   let inputs = [ P features ] in
-  { name
-  ; op_name
-  ; output_type = features.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type features)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let softsignGrad
     ?(name = "SoftsignGrad")
     (gradients : ([< `float | `double | `int32 | `int64 ] as 't) t)
     (features : ([< `float | `double | `int32 | `int64 ] as 't) t)
   =
-  let attributes = [ "T", Type (P gradients.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type gradients)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.softsignGrad in
   let inputs = [ P gradients; P features ] in
-  { name
-  ; op_name
-  ; output_type = gradients.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type gradients)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let spaceToDepth
     ?(name = "SpaceToDepth")
     ~block_size
     (input : 't t)
   =
-  let attributes = [ "T", Type (P input.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type input)) ] in
   let attributes =
     ("block_size", Int block_size) :: attributes
   in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.spaceToDepth in
   let inputs = [ P input ] in
-  { name
-  ; op_name
-  ; output_type = input.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type input)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let sparseApplyAdagrad
     ?(name = "SparseApplyAdagrad")
@@ -4972,20 +4975,20 @@ let sparseApplyAdagrad
     (grad : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (indices : ([< `int32 | `int64 ] as 'tindices) t)
   =
-  let attributes = [ "Tindices", Type (P indices.output_type) ;  "T", Type (P var.output_type) ] in
+  let attributes = [ "Tindices", Type (P (Node.output_type indices)) ;  "T", Type (P (Node.output_type var)) ] in
   let attributes =
     match use_locking with | None -> attributes | Some use_locking -> ("use_locking", Bool use_locking) :: attributes
   in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.sparseApplyAdagrad in
   let inputs = [ P var; P accum; P lr; P grad; P indices ] in
-  { name
-  ; op_name
-  ; output_type = var.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type var)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let sparseApplyMomentum
     ?(name = "SparseApplyMomentum")
@@ -4997,20 +5000,20 @@ let sparseApplyMomentum
     (indices : ([< `int32 | `int64 ] as 'tindices) t)
     (momentum : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
   =
-  let attributes = [ "Tindices", Type (P indices.output_type) ;  "T", Type (P var.output_type) ] in
+  let attributes = [ "Tindices", Type (P (Node.output_type indices)) ;  "T", Type (P (Node.output_type var)) ] in
   let attributes =
     match use_locking with | None -> attributes | Some use_locking -> ("use_locking", Bool use_locking) :: attributes
   in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.sparseApplyMomentum in
   let inputs = [ P var; P accum; P lr; P grad; P indices; P momentum ] in
-  { name
-  ; op_name
-  ; output_type = var.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type var)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let sparseConcat
     ?(name = "SparseConcat")
@@ -5019,7 +5022,7 @@ let sparseConcat
     (values : 't t list)
     (shapes : [ `int64 ] t list)
   =
-  let attributes = [ "T", Type (P (List.hd_exn values).output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type (List.hd_exn values))) ] in
   let attributes =
     ("concat_dim", Int concat_dim) :: attributes
   in
@@ -5029,29 +5032,29 @@ let sparseConcat
   let name = Name.make_fresh ~name in
   let op_name = Op_names.sparseConcat in
   let inputs = List.map ~f:(fun n -> P n) indices @ List.map ~f:(fun n -> P n) values @ List.map ~f:(fun n -> P n) shapes in
-  { name
-  ; op_name
-  ; output_type = Type.Int64
-  ; inputs
-  ; attributes
-  ; output_idx = Some 0
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Int64
+    ~inputs
+    ~attributes
+    ~output_idx:(Some 0)
   ,
-  { name
-  ; op_name
-  ; output_type = (List.hd_exn values).output_type
-  ; inputs
-  ; attributes
-  ; output_idx = Some 1
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type (List.hd_exn values))
+    ~inputs
+    ~attributes
+    ~output_idx:(Some 1)
   ,
-  { name
-  ; op_name
-  ; output_type = Type.Int64
-  ; inputs
-  ; attributes
-  ; output_idx = Some 2
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Int64
+    ~inputs
+    ~attributes
+    ~output_idx:(Some 2)
 
 let sparseMatMul
     ?(name = "SparseMatMul")
@@ -5078,13 +5081,13 @@ let sparseMatMul
   let name = Name.make_fresh ~name in
   let op_name = Op_names.sparseMatMul in
   let inputs = [ P a; P b ] in
-  { name
-  ; op_name
-  ; output_type = Type.Float
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Float
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let sparseReorder
     ?(name = "SparseReorder")
@@ -5092,25 +5095,25 @@ let sparseReorder
     (input_values : 't t)
     (input_shape : [ `int64 ] t)
   =
-  let attributes = [ "T", Type (P input_values.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type input_values)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.sparseReorder in
   let inputs = [ P input_indices; P input_values; P input_shape ] in
-  { name
-  ; op_name
-  ; output_type = Type.Int64
-  ; inputs
-  ; attributes
-  ; output_idx = Some 0
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Int64
+    ~inputs
+    ~attributes
+    ~output_idx:(Some 0)
   ,
-  { name
-  ; op_name
-  ; output_type = input_values.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = Some 1
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type input_values)
+    ~inputs
+    ~attributes
+    ~output_idx:(Some 1)
 
 let sparseSegmentMean
     ?(name = "SparseSegmentMean")
@@ -5118,17 +5121,17 @@ let sparseSegmentMean
     (indices : [ `int32 ] t)
     (segment_ids : [ `int32 ] t)
   =
-  let attributes = [ "T", Type (P data.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type data)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.sparseSegmentMean in
   let inputs = [ P data; P indices; P segment_ids ] in
-  { name
-  ; op_name
-  ; output_type = data.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type data)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let sparseSegmentMeanGrad
     ?(name = "SparseSegmentMeanGrad")
@@ -5137,17 +5140,17 @@ let sparseSegmentMeanGrad
     (segment_ids : [ `int32 ] t)
     (output_dim0 : [ `int32 ] t)
   =
-  let attributes = [ "T", Type (P grad.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type grad)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.sparseSegmentMeanGrad in
   let inputs = [ P grad; P indices; P segment_ids; P output_dim0 ] in
-  { name
-  ; op_name
-  ; output_type = grad.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type grad)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let sparseSegmentSqrtN
     ?(name = "SparseSegmentSqrtN")
@@ -5155,17 +5158,17 @@ let sparseSegmentSqrtN
     (indices : [ `int32 ] t)
     (segment_ids : [ `int32 ] t)
   =
-  let attributes = [ "T", Type (P data.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type data)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.sparseSegmentSqrtN in
   let inputs = [ P data; P indices; P segment_ids ] in
-  { name
-  ; op_name
-  ; output_type = data.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type data)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let sparseSegmentSqrtNGrad
     ?(name = "SparseSegmentSqrtNGrad")
@@ -5174,17 +5177,17 @@ let sparseSegmentSqrtNGrad
     (segment_ids : [ `int32 ] t)
     (output_dim0 : [ `int32 ] t)
   =
-  let attributes = [ "T", Type (P grad.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type grad)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.sparseSegmentSqrtNGrad in
   let inputs = [ P grad; P indices; P segment_ids; P output_dim0 ] in
-  { name
-  ; op_name
-  ; output_type = grad.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type grad)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let sparseSegmentSum
     ?(name = "SparseSegmentSum")
@@ -5192,42 +5195,42 @@ let sparseSegmentSum
     (indices : [ `int32 ] t)
     (segment_ids : [ `int32 ] t)
   =
-  let attributes = [ "T", Type (P data.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type data)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.sparseSegmentSum in
   let inputs = [ P data; P indices; P segment_ids ] in
-  { name
-  ; op_name
-  ; output_type = data.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type data)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let sparseSoftmaxCrossEntropyWithLogits
     ?(name = "SparseSoftmaxCrossEntropyWithLogits")
     (features : ([< `float | `double ] as 't) t)
     (labels : [ `int64 ] t)
   =
-  let attributes = [ "T", Type (P features.output_type) ;  "T", Type (P features.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type features)) ;  "T", Type (P (Node.output_type features)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.sparseSoftmaxCrossEntropyWithLogits in
   let inputs = [ P features; P labels ] in
-  { name
-  ; op_name
-  ; output_type = features.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = Some 0
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type features)
+    ~inputs
+    ~attributes
+    ~output_idx:(Some 0)
   ,
-  { name
-  ; op_name
-  ; output_type = features.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = Some 1
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type features)
+    ~inputs
+    ~attributes
+    ~output_idx:(Some 1)
 
 let sparseToDense
     ?(name = "SparseToDense")
@@ -5237,20 +5240,20 @@ let sparseToDense
     (sparse_values : 't t)
     (default_value : 't t)
   =
-  let attributes = [ "Tindices", Type (P sparse_indices.output_type) ;  "T", Type (P sparse_values.output_type) ] in
+  let attributes = [ "Tindices", Type (P (Node.output_type sparse_indices)) ;  "T", Type (P (Node.output_type sparse_values)) ] in
   let attributes =
     match validate_indices with | None -> attributes | Some validate_indices -> ("validate_indices", Bool validate_indices) :: attributes
   in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.sparseToDense in
   let inputs = [ P sparse_indices; P output_shape; P sparse_values; P default_value ] in
-  { name
-  ; op_name
-  ; output_type = sparse_values.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type sparse_values)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let split
     ?(name = "Split")
@@ -5258,7 +5261,7 @@ let split
     (split_dim : [ `int32 ] t)
     (value : 't t)
   =
-  let attributes = [ "T", Type (P value.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type value)) ] in
   let attributes =
     ("num_split", Int num_split) :: attributes
   in
@@ -5266,65 +5269,66 @@ let split
   let op_name = Op_names.split in
   let inputs = [ P split_dim; P value ] in
   List.init num_split ~f:(fun output_idx ->
-    { name
-    ; op_name
-    ; output_type = value.output_type
-    ; inputs
-    ; attributes
-    ; output_idx = Some output_idx
-    })
+    Node.create
+      ~name
+      ~op_name
+      ~output_type:(Node.output_type value)
+      ~inputs
+      ~attributes
+      ~output_idx:(Some output_idx)
+    )
 
 let sqrt
     ?(name = "Sqrt")
     (x : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
   =
-  let attributes = [ "T", Type (P x.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type x)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.sqrt in
   let inputs = [ P x ] in
-  { name
-  ; op_name
-  ; output_type = x.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type x)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let square
     ?(name = "Square")
     (x : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
   =
-  let attributes = [ "T", Type (P x.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type x)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.square in
   let inputs = [ P x ] in
-  { name
-  ; op_name
-  ; output_type = x.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type x)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let squeeze
     ?(name = "Squeeze")
     ?squeeze_dims
     (input : 't t)
   =
-  let attributes = [ "T", Type (P input.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type input)) ] in
   let attributes =
     match squeeze_dims with | None -> attributes | Some squeeze_dims -> ("squeeze_dims", List (Int squeeze_dims)) :: attributes
   in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.squeeze in
   let inputs = [ P input ] in
-  { name
-  ; op_name
-  ; output_type = input.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type input)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let stack
     ?(name = "Stack")
@@ -5338,13 +5342,13 @@ let stack
   let name = Name.make_fresh ~name in
   let op_name = Op_names.stack in
   let inputs = [  ] in
-  { name
-  ; op_name
-  ; output_type = Type.String
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.String
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let stackClose
     ?(name = "StackClose")
@@ -5354,13 +5358,13 @@ let stackClose
   let name = Name.make_fresh ~name in
   let op_name = Op_names.stackClose in
   let inputs = [ P handle ] in
-  { name
-  ; op_name
-  ; output_type = Type.Unit
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Unit
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let stackPop
     ?(name = "StackPop")
@@ -5371,46 +5375,46 @@ let stackPop
   let name = Name.make_fresh ~name in
   let op_name = Op_names.stackPop in
   let inputs = [ P handle ] in
-  { name
-  ; op_name
-  ; output_type = type_
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:type_
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let stackPush
     ?(name = "StackPush")
     (handle : [ `string ] t)
     (elem : 't t)
   =
-  let attributes = [ "T", Type (P elem.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type elem)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.stackPush in
   let inputs = [ P handle; P elem ] in
-  { name
-  ; op_name
-  ; output_type = elem.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type elem)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let stopGradient
     ?(name = "StopGradient")
     (input : 't t)
   =
-  let attributes = [ "T", Type (P input.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type input)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.stopGradient in
   let inputs = [ P input ] in
-  { name
-  ; op_name
-  ; output_type = input.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type input)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let stringToHashBucket
     ?(name = "StringToHashBucket")
@@ -5424,13 +5428,13 @@ let stringToHashBucket
   let name = Name.make_fresh ~name in
   let op_name = Op_names.stringToHashBucket in
   let inputs = [ P string_tensor ] in
-  { name
-  ; op_name
-  ; output_type = Type.Int64
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Int64
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let stringToNumber
     ?(name = "StringToNumber")
@@ -5441,30 +5445,30 @@ let stringToNumber
   let name = Name.make_fresh ~name in
   let op_name = Op_names.stringToNumber in
   let inputs = [ P string_tensor ] in
-  { name
-  ; op_name
-  ; output_type = type_
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:type_
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let sub
     ?(name = "Sub")
     (x : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
     (y : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
   =
-  let attributes = [ "T", Type (P x.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type x)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.sub in
   let inputs = [ P x; P y ] in
-  { name
-  ; op_name
-  ; output_type = x.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type x)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let sum
     ?(name = "Sum")
@@ -5472,45 +5476,45 @@ let sum
     (input : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (reduction_indices : [ `int32 ] t)
   =
-  let attributes = [ "T", Type (P input.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type input)) ] in
   let attributes =
     match keep_dims with | None -> attributes | Some keep_dims -> ("keep_dims", Bool keep_dims) :: attributes
   in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.sum in
   let inputs = [ P input; P reduction_indices ] in
-  { name
-  ; op_name
-  ; output_type = input.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type input)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let switch
     ?(name = "Switch")
     (data : 't t)
     (pred : [ `bool ] t)
   =
-  let attributes = [ "T", Type (P data.output_type) ;  "T", Type (P data.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type data)) ;  "T", Type (P (Node.output_type data)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.switch in
   let inputs = [ P data; P pred ] in
-  { name
-  ; op_name
-  ; output_type = data.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = Some 0
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type data)
+    ~inputs
+    ~attributes
+    ~output_idx:(Some 0)
   ,
-  { name
-  ; op_name
-  ; output_type = data.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = Some 1
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type data)
+    ~inputs
+    ~attributes
+    ~output_idx:(Some 1)
 
 let tFRecordReader
     ?(name = "TFRecordReader")
@@ -5528,29 +5532,29 @@ let tFRecordReader
   let name = Name.make_fresh ~name in
   let op_name = Op_names.tFRecordReader in
   let inputs = [  ] in
-  { name
-  ; op_name
-  ; output_type = Type.String
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.String
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let tanh
     ?(name = "Tanh")
     (x : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
   =
-  let attributes = [ "T", Type (P x.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type x)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.tanh in
   let inputs = [ P x ] in
-  { name
-  ; op_name
-  ; output_type = x.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type x)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let temporaryVariable
     ?(name = "TemporaryVariable")
@@ -5569,13 +5573,13 @@ let temporaryVariable
   let name = Name.make_fresh ~name in
   let op_name = Op_names.temporaryVariable in
   let inputs = [  ] in
-  { name
-  ; op_name
-  ; output_type = type_
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:type_
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let tensorArray
     ?(name = "TensorArray")
@@ -5593,13 +5597,13 @@ let tensorArray
   let name = Name.make_fresh ~name in
   let op_name = Op_names.tensorArray in
   let inputs = [ P size ] in
-  { name
-  ; op_name
-  ; output_type = Type.String
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.String
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let tensorArrayClose
     ?(name = "TensorArrayClose")
@@ -5609,13 +5613,13 @@ let tensorArrayClose
   let name = Name.make_fresh ~name in
   let op_name = Op_names.tensorArrayClose in
   let inputs = [ P handle ] in
-  { name
-  ; op_name
-  ; output_type = Type.Unit
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Unit
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let tensorArrayGrad
     ?(name = "TensorArrayGrad")
@@ -5630,13 +5634,13 @@ let tensorArrayGrad
   let name = Name.make_fresh ~name in
   let op_name = Op_names.tensorArrayGrad in
   let inputs = [ P handle; P flow_in ] in
-  { name
-  ; op_name
-  ; output_type = Type.String
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.String
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let tensorArrayPack
     ?(name = "TensorArrayPack")
@@ -5648,13 +5652,13 @@ let tensorArrayPack
   let name = Name.make_fresh ~name in
   let op_name = Op_names.tensorArrayPack in
   let inputs = [ P handle; P flow_in ] in
-  { name
-  ; op_name
-  ; output_type = type_
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:type_
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let tensorArrayRead
     ?(name = "TensorArrayRead")
@@ -5667,13 +5671,13 @@ let tensorArrayRead
   let name = Name.make_fresh ~name in
   let op_name = Op_names.tensorArrayRead in
   let inputs = [ P handle; P index; P flow_in ] in
-  { name
-  ; op_name
-  ; output_type = type_
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:type_
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let tensorArraySize
     ?(name = "TensorArraySize")
@@ -5684,13 +5688,13 @@ let tensorArraySize
   let name = Name.make_fresh ~name in
   let op_name = Op_names.tensorArraySize in
   let inputs = [ P handle; P flow_in ] in
-  { name
-  ; op_name
-  ; output_type = Type.Int32
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Int32
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let tensorArrayUnpack
     ?(name = "TensorArrayUnpack")
@@ -5698,17 +5702,17 @@ let tensorArrayUnpack
     (value : 't t)
     (flow_in : [ `float ] t)
   =
-  let attributes = [ "T", Type (P value.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type value)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.tensorArrayUnpack in
   let inputs = [ P handle; P value; P flow_in ] in
-  { name
-  ; op_name
-  ; output_type = Type.Float
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Float
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let tensorArrayWrite
     ?(name = "TensorArrayWrite")
@@ -5717,17 +5721,17 @@ let tensorArrayWrite
     (value : 't t)
     (flow_in : [ `float ] t)
   =
-  let attributes = [ "T", Type (P value.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type value)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.tensorArrayWrite in
   let inputs = [ P handle; P index; P value; P flow_in ] in
-  { name
-  ; op_name
-  ; output_type = Type.Float
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Float
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let textLineReader
     ?(name = "TextLineReader")
@@ -5749,13 +5753,13 @@ let textLineReader
   let name = Name.make_fresh ~name in
   let op_name = Op_names.textLineReader in
   let inputs = [  ] in
-  { name
-  ; op_name
-  ; output_type = Type.String
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.String
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let threadUnsafeUnigramCandidateSampler
     ?(name = "ThreadUnsafeUnigramCandidateSampler")
@@ -5789,63 +5793,63 @@ let threadUnsafeUnigramCandidateSampler
   let name = Name.make_fresh ~name in
   let op_name = Op_names.threadUnsafeUnigramCandidateSampler in
   let inputs = [ P true_classes ] in
-  { name
-  ; op_name
-  ; output_type = Type.Int64
-  ; inputs
-  ; attributes
-  ; output_idx = Some 0
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Int64
+    ~inputs
+    ~attributes
+    ~output_idx:(Some 0)
   ,
-  { name
-  ; op_name
-  ; output_type = Type.Float
-  ; inputs
-  ; attributes
-  ; output_idx = Some 1
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Float
+    ~inputs
+    ~attributes
+    ~output_idx:(Some 1)
   ,
-  { name
-  ; op_name
-  ; output_type = Type.Float
-  ; inputs
-  ; attributes
-  ; output_idx = Some 2
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Float
+    ~inputs
+    ~attributes
+    ~output_idx:(Some 2)
 
 let tile
     ?(name = "Tile")
     (input : 't t)
     (multiples : [ `int32 ] t)
   =
-  let attributes = [ "T", Type (P input.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type input)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.tile in
   let inputs = [ P input; P multiples ] in
-  { name
-  ; op_name
-  ; output_type = input.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type input)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let tileGrad
     ?(name = "TileGrad")
     (input : 't t)
     (multiples : [ `int32 ] t)
   =
-  let attributes = [ "T", Type (P input.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type input)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.tileGrad in
   let inputs = [ P input; P multiples ] in
-  { name
-  ; op_name
-  ; output_type = input.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type input)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let topK
     ?(name = "TopK")
@@ -5853,7 +5857,7 @@ let topK
     ?sorted
     (input : ([< `float | `double | `int32 | `int64 ] as 't) t)
   =
-  let attributes = [ "T", Type (P input.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type input)) ] in
   let attributes =
     ("k", Int k) :: attributes
   in
@@ -5863,21 +5867,21 @@ let topK
   let name = Name.make_fresh ~name in
   let op_name = Op_names.topK in
   let inputs = [ P input ] in
-  { name
-  ; op_name
-  ; output_type = input.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = Some 0
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type input)
+    ~inputs
+    ~attributes
+    ~output_idx:(Some 0)
   ,
-  { name
-  ; op_name
-  ; output_type = Type.Int32
-  ; inputs
-  ; attributes
-  ; output_idx = Some 1
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Int32
+    ~inputs
+    ~attributes
+    ~output_idx:(Some 1)
 
 let topKV2
     ?(name = "TopKV2")
@@ -5885,45 +5889,45 @@ let topKV2
     (input : ([< `float | `double | `int32 | `int64 ] as 't) t)
     (k : [ `int32 ] t)
   =
-  let attributes = [ "T", Type (P input.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type input)) ] in
   let attributes =
     match sorted with | None -> attributes | Some sorted -> ("sorted", Bool sorted) :: attributes
   in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.topKV2 in
   let inputs = [ P input; P k ] in
-  { name
-  ; op_name
-  ; output_type = input.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = Some 0
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type input)
+    ~inputs
+    ~attributes
+    ~output_idx:(Some 0)
   ,
-  { name
-  ; op_name
-  ; output_type = Type.Int32
-  ; inputs
-  ; attributes
-  ; output_idx = Some 1
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Int32
+    ~inputs
+    ~attributes
+    ~output_idx:(Some 1)
 
 let transpose
     ?(name = "Transpose")
     (x : 't t)
     (perm : [ `int32 ] t)
   =
-  let attributes = [ "T", Type (P x.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type x)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.transpose in
   let inputs = [ P x; P perm ] in
-  { name
-  ; op_name
-  ; output_type = x.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type x)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let truncatedNormal
     ?(name = "TruncatedNormal")
@@ -5932,7 +5936,7 @@ let truncatedNormal
     ?seed2
     (shape : ([< `int32 | `int64 ] as 't) t)
   =
-  let attributes = [ "T", Type (P shape.output_type) ;  "dtype", Type (P type_) ] in
+  let attributes = [ "T", Type (P (Node.output_type shape)) ;  "dtype", Type (P type_) ] in
   let attributes =
     match seed with | None -> attributes | Some seed -> ("seed", Int seed) :: attributes
   in
@@ -5942,13 +5946,13 @@ let truncatedNormal
   let name = Name.make_fresh ~name in
   let op_name = Op_names.truncatedNormal in
   let inputs = [ P shape ] in
-  { name
-  ; op_name
-  ; output_type = type_
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:type_
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let uniformCandidateSampler
     ?(name = "UniformCandidateSampler")
@@ -5982,92 +5986,92 @@ let uniformCandidateSampler
   let name = Name.make_fresh ~name in
   let op_name = Op_names.uniformCandidateSampler in
   let inputs = [ P true_classes ] in
-  { name
-  ; op_name
-  ; output_type = Type.Int64
-  ; inputs
-  ; attributes
-  ; output_idx = Some 0
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Int64
+    ~inputs
+    ~attributes
+    ~output_idx:(Some 0)
   ,
-  { name
-  ; op_name
-  ; output_type = Type.Float
-  ; inputs
-  ; attributes
-  ; output_idx = Some 1
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Float
+    ~inputs
+    ~attributes
+    ~output_idx:(Some 1)
   ,
-  { name
-  ; op_name
-  ; output_type = Type.Float
-  ; inputs
-  ; attributes
-  ; output_idx = Some 2
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Float
+    ~inputs
+    ~attributes
+    ~output_idx:(Some 2)
 
 let unique
     ?(name = "Unique")
     (x : 't t)
   =
-  let attributes = [ "T", Type (P x.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type x)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.unique in
   let inputs = [ P x ] in
-  { name
-  ; op_name
-  ; output_type = x.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = Some 0
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type x)
+    ~inputs
+    ~attributes
+    ~output_idx:(Some 0)
   ,
-  { name
-  ; op_name
-  ; output_type = Type.Int32
-  ; inputs
-  ; attributes
-  ; output_idx = Some 1
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Int32
+    ~inputs
+    ~attributes
+    ~output_idx:(Some 1)
 
 let uniqueWithCounts
     ?(name = "UniqueWithCounts")
     (x : 't t)
   =
-  let attributes = [ "T", Type (P x.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type x)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.uniqueWithCounts in
   let inputs = [ P x ] in
-  { name
-  ; op_name
-  ; output_type = x.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = Some 0
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type x)
+    ~inputs
+    ~attributes
+    ~output_idx:(Some 0)
   ,
-  { name
-  ; op_name
-  ; output_type = Type.Int32
-  ; inputs
-  ; attributes
-  ; output_idx = Some 1
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Int32
+    ~inputs
+    ~attributes
+    ~output_idx:(Some 1)
   ,
-  { name
-  ; op_name
-  ; output_type = Type.Int32
-  ; inputs
-  ; attributes
-  ; output_idx = Some 2
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Int32
+    ~inputs
+    ~attributes
+    ~output_idx:(Some 2)
 
 let unpack
     ?(name = "Unpack")
     ~num
     (value : 't t)
   =
-  let attributes = [ "T", Type (P value.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type value)) ] in
   let attributes =
     ("num", Int num) :: attributes
   in
@@ -6075,13 +6079,14 @@ let unpack
   let op_name = Op_names.unpack in
   let inputs = [ P value ] in
   List.init num ~f:(fun output_idx ->
-    { name
-    ; op_name
-    ; output_type = value.output_type
-    ; inputs
-    ; attributes
-    ; output_idx = Some output_idx
-    })
+    Node.create
+      ~name
+      ~op_name
+      ~output_type:(Node.output_type value)
+      ~inputs
+      ~attributes
+      ~output_idx:(Some output_idx)
+    )
 
 let unsortedSegmentSum
     ?(name = "UnsortedSegmentSum")
@@ -6089,17 +6094,17 @@ let unsortedSegmentSum
     (segment_ids : ([< `int32 | `int64 ] as 'tindices) t)
     (num_segments : [ `int32 ] t)
   =
-  let attributes = [ "Tindices", Type (P segment_ids.output_type) ;  "T", Type (P data.output_type) ] in
+  let attributes = [ "Tindices", Type (P (Node.output_type segment_ids)) ;  "T", Type (P (Node.output_type data)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.unsortedSegmentSum in
   let inputs = [ P data; P segment_ids; P num_segments ] in
-  { name
-  ; op_name
-  ; output_type = data.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type data)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let variable
     ?(name = "Variable")
@@ -6122,13 +6127,13 @@ let variable
   let name = Name.make_fresh ~name in
   let op_name = Op_names.variable in
   let inputs = [  ] in
-  { name
-  ; op_name
-  ; output_type = type_
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:type_
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let where
     ?(name = "Where")
@@ -6138,13 +6143,13 @@ let where
   let name = Name.make_fresh ~name in
   let op_name = Op_names.where in
   let inputs = [ P input ] in
-  { name
-  ; op_name
-  ; output_type = Type.Int64
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Int64
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let wholeFileReader
     ?(name = "WholeFileReader")
@@ -6162,27 +6167,27 @@ let wholeFileReader
   let name = Name.make_fresh ~name in
   let op_name = Op_names.wholeFileReader in
   let inputs = [  ] in
-  { name
-  ; op_name
-  ; output_type = Type.String
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.String
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let zerosLike
     ?(name = "ZerosLike")
     (x : 't t)
   =
-  let attributes = [ "T", Type (P x.output_type) ] in
+  let attributes = [ "T", Type (P (Node.output_type x)) ] in
   let name = Name.make_fresh ~name in
   let op_name = Op_names.zerosLike in
   let inputs = [ P x ] in
-  { name
-  ; op_name
-  ; output_type = x.output_type
-  ; inputs
-  ; attributes
-  ; output_idx = None
-  }
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type x)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
