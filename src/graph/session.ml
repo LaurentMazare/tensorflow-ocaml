@@ -9,10 +9,7 @@ them last minute when someone call run, as there is no extend graph *)
 type t =
   { session : Wrapper.Session.t
   (* The nodes already in the graph of the session, with their name there *)
-  ; exported_nodes : Node.p Node.Id.Table.t
-  (* The names already present on the server, with the number of times
-     it has been used *)
-  ; already_used_names : int Node.Name.Table.t
+  ; exported_nodes : Node.Id.Hash_set.t
   (* To manage variable initialisation, each unitialised variable has a height.
      If a variable init depends of no initialised variable,
      its height is 0.
@@ -28,8 +25,7 @@ let create () =
     failwithf "Unable to generate session: %s" (Wrapper.Status.message status) ()
   | Ok session ->
     { session
-    ; exported_nodes = Node.Id.Table.create ()
-    ; already_used_names = Node.Name.Table.create ()
+    ; exported_nodes = Node.Id.Hash_set.create ()
     ; uninitialised_variables = Int.Table.create ()
     ; current_table = Node.Id.Table.create ()
     }
@@ -39,9 +35,9 @@ let default_session = lazy (create ())
 (* [walk t node] walks through the graph and store the unitialized variables. *)
 let rec walk t node =
   let id = Node.packed_id node in
-  match Hashtbl.find t.exported_nodes id with
-  | Some _ -> 0 (* already exported before starting this run *)
-  | None ->
+  if Hash_set.mem t.exported_nodes id
+  then 0 (* already exported before starting this run *)
+  else
     Hashtbl.find_or_add t.current_table id ~default:(fun () ->
       let Node.P u_node = node in
       match Var.get_init node with

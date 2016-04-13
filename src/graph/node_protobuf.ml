@@ -142,7 +142,7 @@ let of_nodes' ?verbose ~already_exported_nodes ts =
   let output = ref [] in
   let rec walk p =
     let P t = p in
-    if Hashtbl.mem already_exported_nodes (Node.id t)
+    if Hash_set.mem already_exported_nodes (Node.id t)
     then ()
     else begin
       if verbose
@@ -179,7 +179,7 @@ let of_nodes' ?verbose ~already_exported_nodes ts =
         ; attr
         }
       in
-      Hashtbl.add_exn already_exported_nodes ~key:(Node.id t) ~data:p;
+      Hash_set.add already_exported_nodes (Node.id t);
       output := node :: !output;
       List.iter (Node.inputs t) ~f:walk
     end
@@ -204,6 +204,6 @@ let of_nodes' ?verbose ~already_exported_nodes ts =
     |> Option.some
 
 let of_nodes ?verbose ts =
-  of_nodes' ?verbose ~already_exported_nodes:(Node.Id.Table.create ()) ts
+  of_nodes' ?verbose ~already_exported_nodes:(Node.Id.Hash_set.create ()) ts
 
 let of_node ?verbose t = of_nodes ?verbose [ P t ]

@@ -10,6 +10,6 @@ val of_nodes
 
 val of_nodes'
   :  ?verbose:unit
-  -> already_exported_nodes:Node.p Node.Id.Table.t
+  -> already_exported_nodes:Node.Id.Hash_set.t
   -> Node.p list
   -> Protobuf.t option
