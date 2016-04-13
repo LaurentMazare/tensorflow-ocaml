@@ -19,7 +19,7 @@ type t =
      If it depends of unitialised variable v1 ... vn, its height is max(height(vi)) + 1
      Initialisation can be done one level after one level *)
   ; uninitialised_variables : Node.p list Int.Table.t
-  ; current_table : (Node.p * int) Node.Id.Table.t
+  ; current_table : int Node.Id.Table.t
 }
 
 let create () =
@@ -36,59 +36,23 @@ let create () =
 
 let default_session = lazy (create ())
 
-let choose_name t node =
-  let base_name = Node.packed_name node in
-  let node_name =
-    match Hashtbl.find t.already_used_names base_name with
-    | None -> base_name
-    | Some last_used_index ->
-      let rec loop last_used_index =
-        let name = Node.Name.(sprintf "%s-%i" (to_string base_name) last_used_index |> of_string) in
-        if Hashtbl.mem t.already_used_names name
-        (* Our new name conflicts so we try again with another number *)
-        then loop (last_used_index + 1)
-        else name, last_used_index
-      in
-      let name, last_used_index = loop (last_used_index + 1) in
-      Hashtbl.set t.already_used_names ~key:base_name ~data:last_used_index;
-      name
-  in
-  Hashtbl.set t.already_used_names ~key:node_name ~data:0;
-  node_name
-
-(* [prepare_node t node] returns a graph with node renamed to some fresh values.
-   Unitialised variables are returned as well as their height. *)
-let rec prepare_node t node =
-  let choose_correct_output (Node.P n) =
-    Node.P (Node.set_output_idx n (Node.packed_output_idx node))
-  in
+(* [walk t node] walks through the graph and store the unitialized variables. *)
+let rec walk t node =
   let id = Node.packed_id node in
   match Hashtbl.find t.exported_nodes id with
-  | Some h -> choose_correct_output h, 0 (* already exported before starting this run *)
+  | Some _ -> 0 (* already exported before starting this run *)
   | None ->
-    match Hashtbl.find t.current_table id with
-    | Some (node, h) -> choose_correct_output node, h (* already exported this round *)
-    | None ->
+    Hashtbl.find_or_add t.current_table id ~default:(fun () ->
       let Node.P u_node = node in
-      let rev_inputs, height =
-        List.fold (Node.inputs u_node) ~init:([], 0) ~f:(fun (rev_inputs, height) input ->
-          let input, h = prepare_node t input in
-          input :: rev_inputs, max h height)
-      in
-      let res =
-        Node.P (Node.set_name_and_inputs u_node (choose_name t node) (List.rev rev_inputs))
-      in
-      let h =
-       match Var.get_init node with
-       | None -> height
-       | Some assign ->
-         Hashtbl.set t.current_table ~key:id ~data:(res, 0);
-         let assign, h = prepare_node t assign in
-         Hashtbl.add_multi t.uninitialised_variables ~key:h ~data:assign;
-         h + 1
-      in
-      Hashtbl.set t.current_table ~key:id ~data:(res, h);
-      res, h
+      match Var.get_init node with
+      | None ->
+        List.fold (Node.inputs u_node) ~init:0 ~f:(fun acc_height input ->
+          max acc_height (walk t input))
+      | Some assign ->
+        Hashtbl.set t.current_table ~key:id ~data:0;
+        let h = walk t assign in
+        Hashtbl.add_multi t.uninitialised_variables ~key:h ~data:assign;
+        h + 1)
 
 type node_names =
   { inputs : string list
@@ -98,12 +62,10 @@ type node_names =
   }
 
 let prepare_graph t ~inputs ~targets ~outputs =
-  let prep l =
-    List.map l ~f:(fun node -> fst (prepare_node t node))
-  in
-  let inputs  = prep inputs in
-  let targets = prep targets in
-  let outputs = prep outputs in
+  let prep = List.map ~f:(walk t) in
+  ignore (prep inputs : int list);
+  ignore (prep targets : int list);
+  ignore (prep outputs : int list);
   Hashtbl.clear t.current_table;
   let rec build_variables i =
     match Hashtbl.find t.uninitialised_variables i with
