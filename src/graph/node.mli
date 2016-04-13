@@ -85,15 +85,24 @@ type attr =
   | Tensor_string of string Tensor.t
   | Shape of Dim.t list
 
-type 'a t =
-  { name : Name.t
-  ; op_name : Op_name.t
-  ; output_type : 'a Type.t
-  ; inputs : p list
-  ; attributes : (string * attr) list
-  ; output_idx : int option (* Only used for multiple outputs. *)
-  }
-and p = P : _ t -> p
+type 'a t
+type p = P : _ t -> p
+
+val create
+  :  name:Name.t
+  -> op_name:Op_name.t
+  -> output_type:'a Type.t
+  -> inputs:p list
+  -> attributes:(string * attr) list
+  -> output_idx:int option (* Only used for multiple outputs. *)
+  -> 'a t
+
+val name : _ t -> Name.t
+val op_name : _ t -> Op_name.t
+val output_type : 'a t -> 'a Type.t
+val inputs : _ t -> p list
+val attributes : _ t -> (string * attr) list
+val output_idx : _ t -> int option
 
 val packed_name : p -> Name.t
 val packed_op_name : p -> Op_name.t

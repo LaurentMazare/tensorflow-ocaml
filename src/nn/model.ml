@@ -172,16 +172,16 @@ let evaluate_d = evaluate_gen Session.Input.double Session.Output.double Float64
    will serve to name the variable.
    This does not seem very robust but will do for now. *)
 let get_all_vars t =
-  let processed_nodes = Node.Name.Hash_set.create () in
+  let processed_nodes = Node.Id.Hash_set.create () in
   (* Using references here make the following code quite consise. *)
   let all_vars = ref [] in
   let rec vars (Node.P node) =
-    if not (Hash_set.mem processed_nodes node.name)
+    if not (Hash_set.mem processed_nodes (Node.id node))
     then begin
-      Hash_set.add processed_nodes node.name;
-      if Node.Op_name.(=) node.op_name Ops.Op_names.variable
+      Hash_set.add processed_nodes (Node.id node);
+      if Node.Op_name.(=) (Node.op_name node) Ops.Op_names.variable
       then all_vars := (Node.P node) :: !all_vars
-      else List.iter node.inputs ~f:vars
+      else List.iter (Node.inputs node) ~f:vars
     end
   in
   vars (Node.P (Nn.node t.net));
@@ -207,7 +207,7 @@ let load t ~filename =
       let filename = Ops.const_string [ filename ] in
       List.map (all_vars_with_names t) ~f:(fun (var_name, (Node.P var)) ->
         Ops.restore
-          ~type_:var.output_type
+          ~type_:(Node.output_type var)
           filename
           (Ops.const_string [ var_name ])
         |> Ops.assign var

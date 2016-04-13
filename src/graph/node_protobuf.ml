@@ -148,31 +148,32 @@ let of_nodes' ?verbose ~already_exported_nodes ts =
       if verbose
       then begin
         let inputs =
-          if List.is_empty t.inputs
+          if List.is_empty (Node.inputs t)
           then "No inputs"
           else
-            List.map t.inputs ~f:(fun input ->
+            List.map (Node.inputs t) ~f:(fun input ->
               Node.packed_name input |> Node.Name.to_string)
             |> String.concat ~sep:", "
             |> sprintf "Inputs: %s"
         in
-        printf "Node: %s Op: %s %s\n%!"
-          (Node.Name.to_string t.name)
-          (Node.Op_name.to_string t.op_name)
+        printf "Node: %s %s Op: %s %s\n%!"
+          (Node.Id.to_string (Node.id t))
+          (Node.Name.to_string (Node.name t))
+          (Node.Op_name.to_string (Node.op_name t))
           inputs
       end;
       let attr =
-        List.map t.attributes ~f:(fun (name, value) ->
-          of_attribute name value t.output_type)
+        List.map (Node.attributes t) ~f:(fun (name, value) ->
+          of_attribute name value (Node.output_type t))
       in
       let input =
-        List.map t.inputs ~f:(fun (P input) ->
-          let idx = Option.value_map input.output_idx ~default:"" ~f:(sprintf ":%d") in
-          Node.Name.to_string input.name ^ idx)
+        List.map (Node.inputs t) ~f:(fun (P input) ->
+          let idx = Option.value_map (Node.output_idx input) ~default:"" ~f:(sprintf ":%d") in
+          Node.Name.to_string (Node.name input) ^ idx)
       in
       let node =
-        { Node_def.name = Some (Node.Name.to_string t.name)
-        ; op = Some (Node.Op_name.to_string t.op_name)
+        { Node_def.name = Some (Node.Name.to_string (Node.name t))
+        ; op = Some (Node.Op_name.to_string (Node.op_name t))
         ; input
         ; device = None
         ; attr
@@ -180,7 +181,7 @@ let of_nodes' ?verbose ~already_exported_nodes ts =
       in
       Hashtbl.add_exn already_exported_nodes ~key:(Node.id t) ~data:p;
       output := node :: !output;
-      List.iter t.inputs ~f:walk
+      List.iter (Node.inputs t) ~f:walk
     end
   in
   List.iter ts ~f:walk;

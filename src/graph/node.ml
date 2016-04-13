@@ -13,8 +13,17 @@ end = struct
     sprintf "%s-%d" name !cnt |> of_string
 end
 
-(* CR noury: change that to a real Id in the node *)
-module Id = Name
+module Id : sig
+  include Identifiable
+  val create : unit -> t
+end = struct
+  include Int
+  let create =
+    let counter = ref 0 in
+    fun () ->
+      incr counter;
+      !counter
+end
 
 module Type = struct
   (* We rely on all variants to be of the form | Variant : [ `variant ] t. *)
@@ -103,7 +112,8 @@ type attr =
   | Shape of Dim.t list
 
 type 'a t =
-  { name : Name.t
+  { id : Id.t
+  ; name : Name.t
   ; op_name : Op_name.t
   ; output_type : 'a Type.t
   ; inputs : p list
@@ -111,6 +121,31 @@ type 'a t =
   ; output_idx : int option (* Only used for multiple outputs. *)
   }
 and p = P : _ t -> p
+
+let create
+      ~name
+      ~op_name
+      ~output_type
+      ~inputs
+      ~attributes
+      ~output_idx
+  =
+  { id = Id.create ()
+  ; name
+  ; op_name
+  ; output_type
+  ; inputs
+  ; attributes
+  ; output_idx
+  }
+
+let id t = t.id
+let name t = t.name
+let op_name t = t.op_name
+let output_type t = t.output_type
+let inputs t = t.inputs
+let attributes t = t.attributes
+let output_idx t = t.output_idx
 
 let packed_name (P t) = t.name
 let packed_inputs (P t) = t.inputs
@@ -126,10 +161,8 @@ let packed_is_real (P t) =
   | Type.Float -> true
   | Type.Double -> true
 
-let packed_id : p -> Id.t = packed_name
+let packed_id (P t) = t.id
 let packed_output_idx (P t) = t.output_idx
-
-let id t = t.name
 
 let get_attr t str =
   List.Assoc.find t.attributes str
