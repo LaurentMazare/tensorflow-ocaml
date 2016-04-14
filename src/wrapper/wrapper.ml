@@ -146,7 +146,7 @@ module Status = struct
     | TF_UNAVAILABLE
     | TF_DATA_LOSS
     | Unknown of int
-  
+
   (* CAUTION: this has to stay in sync with [tensor_c_api.h], maybe we should generate
      some stubs to assert this at compile time. *)
   let code_of_int = function
@@ -229,19 +229,22 @@ let tf_extendgraph =
   foreign "TF_ExtendGraph" ~from
     (tf_session @-> string @-> size_t @-> tf_status @-> returning void)
 
+(* We use [ptr (ptr char)] rather than [ptr string] as when using [CArray.of_list]
+   to build the [ptr string], the reference to the C (copied) version of the string can
+   get lost which will be problematic if the GC triggers just after. *)
 let tf_run =
   foreign "TF_Run" ~from
     (tf_session
     (* Input tensors *)
-    @-> ptr string
+    @-> ptr (ptr char)
     @-> ptr tf_tensor
     @-> int
     (* Output tensors *)
-    @-> ptr string
+    @-> ptr (ptr char)
     @-> ptr tf_tensor
     @-> int
     (* Target nodes *)
-    @-> ptr string
+    @-> ptr (ptr char)
     @-> int
     (* Output status *)
     @-> tf_status
@@ -350,7 +353,7 @@ module Session = struct
     let apply_kind kind =
       let data = tf_tensordata c_tensor |> from_voidp (typ_of_bigarray_kind kind) in
       let data = bigarray_of_ptr genarray dims kind data in
-      Gc.finalise (fun _ -> tf_deletetensor c_tensor) data;
+      Gc.finalise (fun _data -> tf_deletetensor c_tensor) data;
       Tensor.P data
     in
     match tf_tensortype c_tensor |> int_to_data_type with
@@ -360,6 +363,26 @@ module Session = struct
     | TF_INT64 -> apply_kind Bigarray.int64
     | _ -> failwith "Unsupported tensor type"
 
+  let char_list_of_string s =
+    let rec char_list_of_string idx acc =
+      if idx < 0
+      then acc
+      else char_list_of_string (idx - 1) (s.[idx] :: acc)
+    in
+    char_list_of_string (String.length s - 1) []
+
+  let ptr_ptr_char l =
+    let l =
+      List.map (fun s -> char_list_of_string s |> CArray.of_list char) l
+    in
+    let ptr =
+      CArray.of_list (ptr char) (List.map CArray.start l)
+      |> CArray.start
+    in
+    (* Keep a reference to l as it could be GCed otherwise. *)
+    Gc.finalise (fun _ -> ignore l; ()) ptr;
+    ptr
+
   let run ?(inputs = []) ?(outputs = []) ?(targets = []) t =
     let status = Status.create () in
     let input_names, input_tensors = List.split inputs in
@@ -368,13 +391,13 @@ module Session = struct
     let output_tensors = CArray.make tf_tensor output_len in
     tf_run
       t
-      CArray.(of_list string input_names |> start)
+      (ptr_ptr_char input_names)
       CArray.(of_list tf_tensor input_tensors |> start)
       (List.length inputs)
-      CArray.(of_list string outputs |> start)
+      (ptr_ptr_char outputs)
       (CArray.start output_tensors)
       output_len
-      CArray.(of_list string targets |> start)
+      (ptr_ptr_char targets)
       (List.length targets)
       status;
     match result_or_error status () with
