@@ -130,9 +130,6 @@ let create
   ; output_idx
   }
 
-let set_output_idx t output_idx = { t with output_idx }
-let set_name_and_inputs t name inputs = { t with name; inputs }
-
 let id t = t.id
 let name t = t.name
 let op_name t = t.op_name

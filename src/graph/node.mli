@@ -103,13 +103,6 @@ val attributes : _ t -> (string * attr) list
 val output_idx : _ t -> int option
 val unique_name : _ t -> string
 
-val set_output_idx : 'a t -> int option -> 'a t
-val set_name_and_inputs
-  :  'a t
-  -> Name.t
-  -> p list
-  -> 'a t
-
 val packed_name : p -> Name.t
 val packed_op_name : p -> Op_name.t
 val packed_inputs : p -> p list
