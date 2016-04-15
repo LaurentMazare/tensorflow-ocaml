@@ -369,7 +369,7 @@ module Session = struct
       then acc
       else char_list_of_string (idx - 1) (s.[idx] :: acc)
     in
-    char_list_of_string (String.length s - 1) []
+    char_list_of_string (String.length s - 1) [ Char.chr 0 ]
 
   let ptr_ptr_char l =
     let l =
