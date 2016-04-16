@@ -10,7 +10,7 @@ The easiest way is probably to use opam.
 opam install tensorflow
 ```
 
-After that you have to get/build the TensorFlow library `libtensorflow.so` for release 0.7, there are three possibilities to do so:
+After that you have to get/build the TensorFlow library `libtensorflow.so`. The current opam package uses TensorFlow release 0.7 whereas the current tip uses release 0.8. There are three possibilities to get release 0.7, they could be adapted for 0.8:
 
 * Download the [pre-built binary](https://github.com/LaurentMazare/tensorflow-ocaml/releases/download/v0.0.1/libtensorflow.so) for linux/x86_64 (cpu only).
 * Or you can build it from source by following these steps:
