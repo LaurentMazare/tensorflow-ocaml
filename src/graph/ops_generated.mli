@@ -2,6 +2,7 @@
 open Node
 
 module Op_names : sig
+  val abort : Op_name.t
   val abs : Op_name.t
   val add : Op_name.t
   val addN : Op_name.t
@@ -10,8 +11,10 @@ module Op_names : sig
   val all : Op_name.t
   val allCandidateSampler : Op_name.t
   val any : Op_name.t
+  val applyAdadelta : Op_name.t
   val applyAdagrad : Op_name.t
   val applyAdam : Op_name.t
+  val applyFtrl : Op_name.t
   val applyGradientDescent : Op_name.t
   val applyMomentum : Op_name.t
   val applyRMSProp : Op_name.t
@@ -23,8 +26,16 @@ module Op_names : sig
   val avgPool : Op_name.t
   val avgPoolGrad : Op_name.t
   val batchCholesky : Op_name.t
+  val batchFFT : Op_name.t
+  val batchFFT2D : Op_name.t
+  val batchFFT3D : Op_name.t
+  val batchIFFT : Op_name.t
+  val batchIFFT2D : Op_name.t
+  val batchIFFT3D : Op_name.t
   val batchMatMul : Op_name.t
   val batchMatrixDeterminant : Op_name.t
+  val batchMatrixDiag : Op_name.t
+  val batchMatrixDiagPart : Op_name.t
   val batchMatrixInverse : Op_name.t
   val batchMatrixSolve : Op_name.t
   val batchMatrixSolveLs : Op_name.t
@@ -33,7 +44,12 @@ module Op_names : sig
   val batchNormWithGlobalNormalizationGrad : Op_name.t
   val batchSelfAdjointEig : Op_name.t
   val biasAdd : Op_name.t
+  val biasAddGrad : Op_name.t
+  val biasAddV1 : Op_name.t
+  val bitcast : Op_name.t
   val broadcastGradientArgs : Op_name.t
+  val cTCGreedyDecoder : Op_name.t
+  val cTCLoss : Op_name.t
   val cast : Op_name.t
   val ceil : Op_name.t
   val checkNumerics : Op_name.t
@@ -54,10 +70,16 @@ module Op_names : sig
   val decodeJSONExample : Op_name.t
   val decodePng : Op_name.t
   val decodeRaw : Op_name.t
+  val deleteSessionTensor : Op_name.t
   val depthToSpace : Op_name.t
+  val depthwiseConv2dNative : Op_name.t
+  val depthwiseConv2dNativeBackpropFilter : Op_name.t
+  val depthwiseConv2dNativeBackpropInput : Op_name.t
   val deserializeManySparse : Op_name.t
   val destroyTemporaryVariable : Op_name.t
   val diag : Op_name.t
+  val diagPart : Op_name.t
+  val digamma : Op_name.t
   val div : Op_name.t
   val drawBoundingBoxes : Op_name.t
   val dynamicPartition : Op_name.t
@@ -74,7 +96,9 @@ module Op_names : sig
   val exp : Op_name.t
   val expandDims : Op_name.t
   val extractGlimpse : Op_name.t
+  val fFT : Op_name.t
   val fFT2D : Op_name.t
+  val fFT3D : Op_name.t
   val fIFOQueue : Op_name.t
   val fact : Op_name.t
   val fill : Op_name.t
@@ -82,16 +106,24 @@ module Op_names : sig
   val fixedUnigramCandidateSampler : Op_name.t
   val floor : Op_name.t
   val gather : Op_name.t
+  val gatherNd : Op_name.t
+  val getSessionHandle : Op_name.t
+  val getSessionTensor : Op_name.t
   val greater : Op_name.t
   val greaterEqual : Op_name.t
   val hSVToRGB : Op_name.t
   val hashTable : Op_name.t
   val histogramSummary : Op_name.t
+  val iFFT : Op_name.t
   val iFFT2D : Op_name.t
+  val iFFT3D : Op_name.t
   val identity : Op_name.t
   val identityReader : Op_name.t
+  val igamma : Op_name.t
+  val igammac : Op_name.t
   val imag : Op_name.t
   val imageSummary : Op_name.t
+  val immutableConst : Op_name.t
   val inTopK : Op_name.t
   val initializeTable : Op_name.t
   val inv : Op_name.t
@@ -99,6 +131,7 @@ module Op_names : sig
   val isFinite : Op_name.t
   val isInf : Op_name.t
   val isNan : Op_name.t
+  val isVariableInitialized : Op_name.t
   val l2Loss : Op_name.t
   val lRN : Op_name.t
   val lRNGrad : Op_name.t
@@ -109,6 +142,7 @@ module Op_names : sig
   val linSpace : Op_name.t
   val listDiff : Op_name.t
   val log : Op_name.t
+  val logSoftmax : Op_name.t
   val logUniformCandidateSampler : Op_name.t
   val logicalAnd : Op_name.t
   val logicalNot : Op_name.t
@@ -134,6 +168,8 @@ module Op_names : sig
   val mergeSummary : Op_name.t
   val min : Op_name.t
   val minimum : Op_name.t
+  val mirrorPad : Op_name.t
+  val mirrorPadGrad : Op_name.t
   val mod_ : Op_name.t
   val mul : Op_name.t
   val neg : Op_name.t
@@ -141,10 +177,12 @@ module Op_names : sig
   val nextIteration : Op_name.t
   val noOp : Op_name.t
   val notEqual : Op_name.t
+  val oneHot : Op_name.t
   val pack : Op_name.t
   val pad : Op_name.t
   val paddingFIFOQueue : Op_name.t
   val placeholder : Op_name.t
+  val placeholderWithDefault : Op_name.t
   val pow : Op_name.t
   val prod : Op_name.t
   val queueClose : Op_name.t
@@ -166,6 +204,7 @@ module Op_names : sig
   val readerRestoreState : Op_name.t
   val readerSerializeState : Op_name.t
   val real : Op_name.t
+  val reduceJoin : Op_name.t
   val refEnter : Op_name.t
   val refExit : Op_name.t
   val refIdentity : Op_name.t
@@ -220,7 +259,11 @@ module Op_names : sig
   val softsign : Op_name.t
   val softsignGrad : Op_name.t
   val spaceToDepth : Op_name.t
+  val sparseAdd : Op_name.t
+  val sparseAddGrad : Op_name.t
+  val sparseApplyAdadelta : Op_name.t
   val sparseApplyAdagrad : Op_name.t
+  val sparseApplyFtrl : Op_name.t
   val sparseApplyMomentum : Op_name.t
   val sparseConcat : Op_name.t
   val sparseMatMul : Op_name.t
@@ -231,10 +274,12 @@ module Op_names : sig
   val sparseSegmentSqrtNGrad : Op_name.t
   val sparseSegmentSum : Op_name.t
   val sparseSoftmaxCrossEntropyWithLogits : Op_name.t
+  val sparseTensorDenseMatMul : Op_name.t
   val sparseToDense : Op_name.t
   val split : Op_name.t
   val sqrt : Op_name.t
   val square : Op_name.t
+  val squaredDifference : Op_name.t
   val squeeze : Op_name.t
   val stack : Op_name.t
   val stackClose : Op_name.t
@@ -251,10 +296,12 @@ module Op_names : sig
   val temporaryVariable : Op_name.t
   val tensorArray : Op_name.t
   val tensorArrayClose : Op_name.t
+  val tensorArrayConcat : Op_name.t
   val tensorArrayGrad : Op_name.t
   val tensorArrayPack : Op_name.t
   val tensorArrayRead : Op_name.t
   val tensorArraySize : Op_name.t
+  val tensorArraySplit : Op_name.t
   val tensorArrayUnpack : Op_name.t
   val tensorArrayWrite : Op_name.t
   val textLineReader : Op_name.t
@@ -275,6 +322,14 @@ module Op_names : sig
   val wholeFileReader : Op_name.t
   val zerosLike : Op_name.t
 end
+
+(* Raise a exception to abort the process when called. *)
+(* Returns nothing but an exception. *)
+val abort
+  :  ?name:string
+  -> ?error_msg:string
+  -> unit
+  -> [ `unit ] t
 
 (* Computes the absolute value of a tensor. *)
 (* Given a tensor `x`, this operation returns a tensor containing the absolute
@@ -368,6 +423,23 @@ val any
   -> [ `int32 ] t
   -> [ `bool ] t
 
+(* Update '*var' according to the adadelta scheme. *)
+(* accum = rho() * accum + (1 - rho()) * grad.square();
+update = (update_accum + epsilon).sqrt() * (accum + epsilon()).rsqrt() * grad;
+update_accum = rho() * update_accum + (1 - rho()) * update.square();
+var -= update; *)
+val applyAdadelta
+  :  ?name:string
+  -> ?use_locking:bool
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
+
 (* Update '*var' according to the adagrad scheme. *)
 (* accum += grad * grad
 var -= lr * grad * (1 / sqrt(accum)) *)
@@ -390,6 +462,25 @@ val applyAdam
   -> ?use_locking:bool
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
+
+(* Update '*var' according to the Ftrl-proximal scheme. *)
+(* accum_new = accum + grad * grad
+linear += grad + (accum_new^(-lr_power) - accum^(-lr_power)) / lr * var
+quadratic = 1.0 / (accum_new^(lr_power) * lr) + 2 * l2
+var = (sign(linear) * l1 - linear) / quadratic if |linear| > l1 else 0.0
+accum = accum_new *)
+val applyFtrl
+  :  ?name:string
+  -> ?use_locking:bool
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
@@ -495,6 +586,7 @@ val avgPool
   -> ksize:int list
   -> strides:int list
   -> padding:string
+  -> ?data_format:string
   -> ([< `float | `double ] as 't) t
   -> ([< `float | `double ] as 't) t
 
@@ -504,6 +596,7 @@ val avgPoolGrad
   -> ksize:int list
   -> strides:int list
   -> padding:string
+  -> ?data_format:string
   -> [ `int32 ] t
   -> ([< `float | `double ] as 't) t
   -> ([< `float | `double ] as 't) t
@@ -517,6 +610,48 @@ val batchCholesky
   :  ?name:string
   -> ([< `double | `float ] as 't) t
   -> ([< `double | `float ] as 't) t
+
+(* Compute the 1-dimensional discrete Fourier Transform over the inner-most *)
+(* dimension of `in`. *)
+val batchFFT
+  :  ?name:string
+  -> [ `complex64 ] t
+  -> [ `complex64 ] t
+
+(* Compute the 2-dimensional discrete Fourier Transform over the inner-most *)
+(* 2 dimensions of `in`. *)
+val batchFFT2D
+  :  ?name:string
+  -> [ `complex64 ] t
+  -> [ `complex64 ] t
+
+(* Compute the 3-dimensional discrete Fourier Transform over the inner-most 3 *)
+(* dimensions of `in`. *)
+val batchFFT3D
+  :  ?name:string
+  -> [ `complex64 ] t
+  -> [ `complex64 ] t
+
+(* Compute the inverse 1-dimensional discrete Fourier Transform over the inner-most *)
+(* dimension of `in`. *)
+val batchIFFT
+  :  ?name:string
+  -> [ `complex64 ] t
+  -> [ `complex64 ] t
+
+(* Compute the inverse 2-dimensional discrete Fourier Transform over the inner-most *)
+(* 2 dimensions of `in`. *)
+val batchIFFT2D
+  :  ?name:string
+  -> [ `complex64 ] t
+  -> [ `complex64 ] t
+
+(* Compute the inverse 3-dimensional discrete Fourier Transform over the inner-most *)
+(* 3 dimensions of `in`. *)
+val batchIFFT3D
+  :  ?name:string
+  -> [ `complex64 ] t
+  -> [ `complex64 ] t
 
 (* Multiplies slices of two tensors in batches. *)
 (* Multiplies all slices of `Tensor` `x` and `y` (each slice can be
@@ -554,6 +689,72 @@ val batchMatrixDeterminant
   -> ([< `float | `double ] as 't) t
   -> ([< `float | `double ] as 't) t
 
+(* Returns a batched diagonal tensor with a given batched diagonal values. *)
+(* Given a `diagonal`, this operation returns a tensor with the `diagonal` and
+everything else padded with zeros. The diagonal is computed as follows:
+
+Assume `diagonal` has `k` dimensions `[I, J, K, ..., N]`, then the output is a
+tensor of rank `k+1` with dimensions [I, J, K, ..., N, N]` where:
+
+`output[i, j, k, ..., m, n] = 1{m=n} * diagonal[i, j, k, ..., n]`.
+
+For example:
+
+```prettyprint
+# 'diagonal' is [[1, 2, 3, 4], [5, 6, 7, 8]]
+
+and diagonal.shape = (2, 4)
+
+tf.batch_matrix_diag(diagonal) ==> [[[1, 0, 0, 0]
+                                     [0, 2, 0, 0]
+                                     [0, 0, 3, 0]
+                                     [0, 0, 0, 4]],
+                                    [[5, 0, 0, 0]
+                                     [0, 6, 0, 0]
+                                     [0, 0, 7, 0]
+                                     [0, 0, 0, 8]]]
+
+which has shape (2, 4, 4)
+``` *)
+val batchMatrixDiag
+  :  ?name:string
+  -> 't t
+  -> 't t
+
+(* Returns the batched diagonal part of a batched tensor. *)
+(* This operation returns a tensor with the `diagonal` part
+of the batched `input`. The `diagonal` part is computed as follows:
+
+Assume `input` has `k` dimensions `[I, J, K, ..., N, N]`, then the output is a
+tensor of rank `k - 1` with dimensions `[I, J, K, ..., N]` where:
+
+`diagonal[i, j, k, ..., n] = input[i, j, k, ..., n, n]`.
+
+The input must be at least a matrix.
+
+For example:
+
+```prettyprint
+# 'input' is [[[1, 0, 0, 0]
+               [0, 2, 0, 0]
+               [0, 0, 3, 0]
+               [0, 0, 0, 4]],
+              [[5, 0, 0, 0]
+               [0, 6, 0, 0]
+               [0, 0, 7, 0]
+               [0, 0, 0, 8]]]
+
+and input.shape = (2, 4, 4)
+
+tf.batch_matrix_diag_part(input) ==> [[1, 2, 3, 4], [5, 6, 7, 8]]
+
+which has shape (2, 4)
+``` *)
+val batchMatrixDiagPart
+  :  ?name:string
+  -> 't t
+  -> 't t
+
 (* Calculates the inverse of square invertible matrices. *)
 (* The input is a tensor of shape `[..., M, M]` whose inner-most 2 dimensions
 form square matrices. The output is a tensor of the same shape as the input
@@ -573,10 +774,13 @@ val batchMatrixInverse
 (* Solves systems of linear equations. Checks for invertibility. *)
 (* Matrix is a tensor of shape `[..., M, M]` whose inner-most 2 dimensions
 form square matrices. Rhs is a tensor of shape
-`[..., M, K]`. The output is a tensor shape `[..., M, K]` where each output
-matrix satisfies matrix[..., :, :] * output[..., :, :] = rhs[..., :, :]. *)
+`[..., M, K]`. The output is a tensor shape `[..., M, K]`.  If `adjoint` is `False` then each output
+matrix satisfies `matrix[..., :, :] * output[..., :, :] = rhs[..., :, :]`.
+If `adjoint` is `True` then each output
+matrix satisfies `adjoint(matrix[..., :, :]) * output[..., :, :] = rhs[..., :, :]`. *)
 val batchMatrixSolve
   :  ?name:string
+  -> ?adjoint:bool
   -> ([< `float | `double ] as 't) t
   -> ([< `float | `double ] as 't) t
   -> ([< `float | `double ] as 't) t
@@ -609,12 +813,11 @@ minimum-norm solution to the under-determined linear system, i.e.
 \\(\mathrm{cond}(A) \lt \frac{1}{\sqrt{\epsilon_{mach}}}\\) or\\(\lambda\\) is
 sufficiently large.
 
-If `fast` is `False` then the solution is computed using the rank revealing QR
-decomposition with column pivoting. This will always compute a least-squares
-solution that minimizes the residual norm \\(||A X - B||_F^2\\), even when
-\\(A\\) is rank deficient or ill-conditioned. Notice: The current version does
-not compute a minimum norm solution. If `fast` is `False` then `l2_regularizer`
-is ignored. *)
+If `fast` is `False` an algorithm based on the numerically robust complete
+orthogonal decomposition is used. This computes the minimum-norm
+least-squares solution, even when \\(A\\) is rank deficient. This path is
+typically 6-7 times slower than the fast path. If `fast` is `False` then
+`l2_regularizer` is ignored. *)
 val batchMatrixSolveLs
   :  ?name:string
   -> ?fast:bool
@@ -628,23 +831,27 @@ val batchMatrixSolveLs
 
 `matrix` is a tensor of shape `[..., M, M]` whose inner-most 2 dimensions form
 square matrices. If `lower` is `True` then the strictly upper triangular part
-of each inner-most matrix is ignored. If `lower` is False then the strictly
-lower triangular part of each inner-most matrix is ignored. `rhs` is a tensor
-of shape [..., M, K]`.
+of each inner-most matrix is assumed to be zero and not accessed.
+If `lower` is False then the strictly lower triangular part of each inner-most
+matrix is assumed to be zero and not accessed.
+`rhs` is a tensor of shape [..., M, K]`.
 
-The output is a tensor of shape `[..., M, K]`. If `lower` is `True` then the
-output satisfies
-\\(\sum_{k=0}^{i}\\) matrix[..., i, k] * output[..., k, j] = rhs[..., i, j].
-If `lower` is false then the strictly then the output satisfies
-\\(sum_{k=i}^{K-1}\\) matrix[..., i, k] * output[..., k, j] = rhs[..., i, j]. *)
+The output is a tensor of shape `[..., M, K]`. If `adjoint` is `True` then the
+innermost matrices in output` satisfy matrix equations
+`matrix[..., :, :] * output[..., :, :] = rhs[..., :, :]`.
+If `adjoint` is `False` then the strictly then the  innermost matrices in
+`output` satisfy matrix equations
+`adjoint(matrix[..., i, k]) * output[..., k, j] = rhs[..., i, j]`. *)
 val batchMatrixTriangularSolve
   :  ?name:string
   -> ?lower:bool
+  -> ?adjoint:bool
   -> ([< `float | `double ] as 't) t
   -> ([< `float | `double ] as 't) t
   -> ([< `float | `double ] as 't) t
 
 (* Batch normalization. *)
+(* This op is deprecated. Prefer `tf.nn.batch_normalization`. *)
 val batchNormWithGlobalNormalization
   :  ?name:string
   -> variance_epsilon:float
@@ -657,6 +864,7 @@ val batchNormWithGlobalNormalization
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
 
 (* Gradients for batch normalization. *)
+(* This op is deprecated. See `tf.nn.batch_normalization`. *)
 val batchNormWithGlobalNormalizationGrad
   :  ?name:string
   -> variance_epsilon:float
@@ -685,9 +893,47 @@ val batchSelfAdjointEig
 Broadcasting is supported, so `value` may have any number of dimensions. *)
 val biasAdd
   :  ?name:string
+  -> ?data_format:string
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
+
+(* The backward operation for "BiasAdd" on the "bias" tensor. *)
+(* It accumulates all the values from out_backprop into the feature dimension.
+For NHWC data format, the feature dimension is the last. For NCHW data format,
+the feature dimension is the third-to-last. *)
+val biasAddGrad
+  :  ?name:string
+  -> ?data_format:string
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
+
+(* Adds `bias` to `value`. *)
+(* This is a deprecated version of BiasAdd and will be soon removed.
+
+This is a special case of `tf.add` where `bias` is restricted to be 1-D.
+Broadcasting is supported, so `value` may have any number of dimensions. *)
+val biasAddV1
+  :  ?name:string
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
+
+(* Bitcasts a tensor from one type to another without copying data. *)
+(* Given a tensor `input`, this operation returns a tensor that has the same buffer
+data as `input` with datatype `type`.
+
+If the input datatype `T` is larger than the output datatype `type` then the
+shape changes from [...] to [..., sizeof(`T`)/sizeof(`type`)].
+
+If `T` is smaller than `type`, the operator requires that the rightmost
+dimension be equal to sizeof(`type`)/sizeof(`T`). The shape then goes from
+[..., sizeof(`type`)/sizeof(`T`)] to [...]. *)
+val bitcast
+  :  ?name:string
+  -> type_:([< `float | `double | `int64 | `int32 | `complex64 ] as 'type__) Type.t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 'type__) t
 
 (* Return the reduction indices for computing gradients of s0 op s1 with broadcast. *)
 (* This is typically used by gradient computations for a broadcasting operation. *)
@@ -696,6 +942,36 @@ val broadcastGradientArgs
   -> [ `int32 ] t
   -> [ `int32 ] t
   -> [ `int32 ] t * [ `int32 ] t
+
+(* Performs greedy decoding on the logits given in inputs. *)
+(* A note about the attribute merge_repeated: if enabled, when
+consecutive logits' maximum indices are the same, only the first of
+these is emitted.  Labeling the blank '*', the sequence "A B B * B B"
+becomes "A B" if merge_repeated = True and "A B B B B" if
+merge_repeated = False.
+
+Regardless of the value of merge_repeated, if the maximum index of a given
+time and batch corresponds to the blank, index `(num_classes - 1)`, no new
+element is emitted. *)
+val cTCGreedyDecoder
+  :  ?name:string
+  -> ?merge_repeated:bool
+  -> [ `float ] t
+  -> [ `int32 ] t
+  -> [ `int64 ] t * [ `int64 ] t * [ `int64 ] t * [ `float ] t
+
+(* Calculates the CTC Loss (log probability) for each batch entry.  Also calculates *)
+(* the gradient.  This class performs the softmax operation for you, so inputs
+should be e.g. linear projections of outputs by an LSTM. *)
+val cTCLoss
+  :  ?name:string
+  -> ?preprocess_collapse_repeated:bool
+  -> ?ctc_merge_repeated:bool
+  -> [ `float ] t
+  -> [ `int64 ] t
+  -> [ `int32 ] t
+  -> [ `int32 ] t
+  -> [ `float ] t * [ `float ] t
 
 (* Cast x of type SrcT to y of DstT. *)
 val cast
@@ -845,7 +1121,7 @@ performs the following:
 3. For each patch, right-multiplies the filter matrix and the image patch
    vector.
 
-In detail,
+In detail, with the default NHWC format,
 
     output[b, i, j, k] =
         sum_{di, dj, q} input[b, strides[1] * i + di, strides[2] * j + dj, q] *
@@ -858,6 +1134,7 @@ val conv2D
   -> strides:int list
   -> ?use_cudnn_on_gpu:bool
   -> padding:string
+  -> ?data_format:string
   -> ([< `float | `double ] as 't) t
   -> ([< `float | `double ] as 't) t
   -> ([< `float | `double ] as 't) t
@@ -868,6 +1145,7 @@ val conv2DBackpropFilter
   -> strides:int list
   -> ?use_cudnn_on_gpu:bool
   -> padding:string
+  -> ?data_format:string
   -> ([< `float | `double ] as 't) t
   -> [ `int32 ] t
   -> ([< `float | `double ] as 't) t
@@ -879,6 +1157,7 @@ val conv2DBackpropInput
   -> strides:int list
   -> ?use_cudnn_on_gpu:bool
   -> padding:string
+  -> ?data_format:string
   -> [ `int32 ] t
   -> ([< `float | `double ] as 't) t
   -> ([< `float | `double ] as 't) t
@@ -948,6 +1227,12 @@ val decodeRaw
   -> ?little_endian:bool
   -> [ `string ] t
   -> ([< `float | `double | `int32 | `int64 ] as 'out_type) t
+
+(* Delete the tensor specified by its handle in the session. *)
+val deleteSessionTensor
+  :  ?name:string
+  -> [ `string ] t
+  -> [ `unit ] t
 
 (* DepthToSpace for tensors of type T. *)
 (* Rearranges data from depth into blocks of spatial data.
@@ -1034,6 +1319,51 @@ val depthToSpace
   -> 't t
   -> 't t
 
+(* Computes a 2-D depthwise convolution given 4-D `input` and `filter` tensors. *)
+(* Given an input tensor of shape `[batch, in_height, in_width, in_channels]`
+and a filter / kernel tensor of shape
+`[filter_height, filter_width, in_channels, channel_multiplier]`, containing
+`in_channels` convolutional filters of depth 1, `depthwise_conv2d` applies
+a different filter to each input channel (expanding from 1 channel to
+`channel_multiplier` channels for each), then concatenates the results
+together. Thus, the output has `in_channels * channel_multiplier` channels.
+
+for k in 0..in_channels-1
+  for q in 0..channel_multiplier-1
+    output[b, i, j, k * channel_multiplier + q] =
+      sum_{di, dj} input[b, strides[1] * i + di, strides[2] * j + dj, k] *
+                        filter[di, dj, k, q]
+
+Must have `strides[0] = strides[3] = 1`.  For the most common case of the same
+horizontal and vertices strides, `strides = [1, stride, stride, 1]`. *)
+val depthwiseConv2dNative
+  :  ?name:string
+  -> strides:int list
+  -> padding:string
+  -> ([< `float | `double ] as 't) t
+  -> ([< `float | `double ] as 't) t
+  -> ([< `float | `double ] as 't) t
+
+(* Computes the gradients of depthwise convolution with respect to the filter. *)
+val depthwiseConv2dNativeBackpropFilter
+  :  ?name:string
+  -> strides:int list
+  -> padding:string
+  -> ([< `float | `double ] as 't) t
+  -> [ `int32 ] t
+  -> ([< `float | `double ] as 't) t
+  -> ([< `float | `double ] as 't) t
+
+(* Computes the gradients of depthwise convolution with respect to the input. *)
+val depthwiseConv2dNativeBackpropInput
+  :  ?name:string
+  -> strides:int list
+  -> padding:string
+  -> [ `int32 ] t
+  -> ([< `float | `double ] as 't) t
+  -> ([< `float | `double ] as 't) t
+  -> ([< `float | `double ] as 't) t
+
 (* Deserialize and concatenate `SparseTensors` from a serialized minibatch. *)
 (* The input `serialized_sparse` must be a string matrix of shape `[N x 3]` where
 `N` is the minibatch size and the rows correspond to packed outputs of
@@ -1118,6 +1448,37 @@ val diag
   :  ?name:string
   -> ([< `float | `double | `int32 | `int64 ] as 't) t
   -> ([< `float | `double | `int32 | `int64 ] as 't) t
+
+(* Returns the diagonal part of the tensor. *)
+(* This operation returns a tensor with the `diagonal` part
+of the `input`. The `diagonal` part is computed as follows:
+
+Assume `input` has dimensions `[D1,..., Dk, D1,..., Dk]`, then the output is a
+tensor of rank `k` with dimensions `[D1,..., Dk]` where:
+
+`diagonal[i1,..., ik] = input[i1, ..., ik, i1,..., ik]`.
+
+For example:
+
+```prettyprint
+# 'input' is [[1, 0, 0, 0]
+              [0, 2, 0, 0]
+              [0, 0, 3, 0]
+              [0, 0, 0, 4]]
+
+tf.diag_part(input) ==> [1, 2, 3, 4]
+``` *)
+val diagPart
+  :  ?name:string
+  -> ([< `float | `double | `int32 | `int64 ] as 't) t
+  -> ([< `float | `double | `int32 | `int64 ] as 't) t
+
+(* Computes Psi, the derivative of Lgamma (the log of the absolute value of *)
+(* `Gamma(x)`), element-wise. *)
+val digamma
+  :  ?name:string
+  -> ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t
+  -> ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t
 
 (* Returns x / y element-wise. *)
 val div
@@ -1265,6 +1626,7 @@ val eluGrad
 where `channels` is:
 
 *   1: for grayscale.
+*   2: for grayscale + alpha.
 *   3: for RGB.
 *   4: for RGBA.
 
@@ -1361,22 +1723,17 @@ val expandDims
   -> 't t
 
 (* Extracts a glimpse from the input tensor. *)
-(* Returns a set of windows called glimpses extracted at location `offsets`
-from the input tensor. If the windows only partially overlaps the inputs, the
-non overlapping areas will be filled with random noise.
+(* Returns a set of windows called glimpses extracted at location
+`offsets` from the input tensor. If the windows only partially
+overlaps the inputs, the non overlapping areas will be filled with
+random noise.
 
 The result is a 4-D tensor of shape `[batch_size, glimpse_height,
-glimpse_width, channels]`. The channels and batch dimensions are the same as that
-of the input tensor. The height and width of the output windows are
-specified in the `size` parameter.
+glimpse_width, channels]`. The channels and batch dimensions are the
+same as that of the input tensor. The height and width of the output
+windows are specified in the `size` parameter.
 
-The argument `normalized` and `centered` controls how the windows are built:
-* If the coordinates are normalized but not centered, 0.0 and 1.0
-  correspond to the minimum and maximum of each height and width dimension.
-* If the coordinates are both normalized and centered, they range from -1.0 to
-  1.0. The coordinates (-1.0, -1.0) correspond to the upper left corner, the
-  lower right corner is located at  (1.0, 1.0) and the center is at (0, 0).
-* If the coordinates are not normalized they are interpreted as numbers of pixels. *)
+The argument `normalized` and `centered` controls how the windows are *)
 val extractGlimpse
   :  ?name:string
   -> ?centered:bool
@@ -1387,8 +1744,20 @@ val extractGlimpse
   -> [ `float ] t
   -> [ `float ] t
 
+(* Compute the 1-dimensional discrete Fourier Transform. *)
+val fFT
+  :  ?name:string
+  -> [ `complex64 ] t
+  -> [ `complex64 ] t
+
 (* Compute the 2-dimensional discrete Fourier Transform. *)
 val fFT2D
+  :  ?name:string
+  -> [ `complex64 ] t
+  -> [ `complex64 ] t
+
+(* Compute the 3-dimensional discrete Fourier Transform. *)
+val fFT3D
   :  ?name:string
   -> [ `complex64 ] t
   -> [ `complex64 ] t
@@ -1501,6 +1870,38 @@ val gather
   -> ([< `int32 | `int64 ] as 'tindices) t
   -> 'tparams t
 
+(* Gather values from `params` according to `indices`. *)
+(* `indices` must be integer tensor, containing indices into `params`.
+It must be shape `[d_0, ..., d_N, R]` where `R` is the rank of `params`.
+The innermost dimension of `indices` (with length `R`) corresponds to the
+indices of `params`.
+
+Produces an output tensor with shape `[d_0, ..., d_{n-1}]` where:
+
+    output[i, j, k, ...] = params[indices[i, j, k, ..., :]]
+
+e.g. for `indices` a matrix:
+
+    output[i] = params[indices[i, :]] *)
+val gatherNd
+  :  ?name:string
+  -> 'tparams t
+  -> ([< `int32 | `int64 ] as 'tindices) t
+  -> 'tparams t
+
+(* Store the input tensor in the state of the current session. *)
+val getSessionHandle
+  :  ?name:string
+  -> 't t
+  -> [ `string ] t
+
+(* Get the value of the tensor specified by its handle. *)
+val getSessionTensor
+  :  ?name:string
+  -> type_:'dtype Type.t
+  -> [ `string ] t
+  -> 'dtype t
+
 (* Returns the truth value of (x > y) element-wise. *)
 val greater
   :  ?name:string
@@ -1542,15 +1943,27 @@ val hashTable
 [`Summary`](https://www.tensorflow.org/code/tensorflow/core/framework/summary.proto)
 has one summary value containing a histogram for `values`.
 
-This op reports an `OutOfRange` error if any value is not finite. *)
+This op reports an `InvalidArgument` error if any value is not finite. *)
 val histogramSummary
   :  ?name:string
   -> [ `string ] t
   -> ([< `float | `double | `int32 | `int64 ] as 't) t
   -> [ `string ] t
 
+(* Compute the inverse 1-dimensional discrete Fourier Transform. *)
+val iFFT
+  :  ?name:string
+  -> [ `complex64 ] t
+  -> [ `complex64 ] t
+
 (* Compute the inverse 2-dimensional discrete Fourier Transform. *)
 val iFFT2D
+  :  ?name:string
+  -> [ `complex64 ] t
+  -> [ `complex64 ] t
+
+(* Compute the inverse 3-dimensional discrete Fourier Transform. *)
+val iFFT3D
   :  ?name:string
   -> [ `complex64 ] t
   -> [ `complex64 ] t
@@ -1570,6 +1983,46 @@ val identityReader
   -> ?shared_name:string
   -> unit
   -> [ `string ] t
+
+(* Compute the lower regularized incomplete Gamma function `Q(a, x)`. *)
+(* The lower regularized incomplete Gamma function is defined as:
+
+```
+P(a, x) = gamma(a, x) / Gamma(x) = 1 - Q(a, x)
+```
+where
+```
+gamma(a, x) = int_{0}^{x} t^{a-1} exp(-t) dt
+```
+is the lower incomplete Gamma function.
+
+Note, above `Q(a, x)` (`Igammac`) is the upper regularized complete
+Gamma function. *)
+val igamma
+  :  ?name:string
+  -> ([< `float | `double ] as 't) t
+  -> ([< `float | `double ] as 't) t
+  -> ([< `float | `double ] as 't) t
+
+(* Compute the upper regularized incomplete Gamma function `Q(a, x)`. *)
+(* The upper regularized incomplete Gamma function is defined as:
+
+```
+Q(a, x) = Gamma(a, x) / Gamma(x) = 1 - P(a, x)
+```
+where
+```
+Gamma(a, x) = int_{x}^{\infty} t^{a-1} exp(-t) dt
+```
+is the upper incomplete Gama function.
+
+Note, above `P(a, x)` (`Igamma`) is the lower regularized complete
+Gamma function. *)
+val igammac
+  :  ?name:string
+  -> ([< `float | `double ] as 't) t
+  -> ([< `float | `double ] as 't) t
+  -> ([< `float | `double ] as 't) t
 
 (* Returns the imaginary part of a complex number. *)
 (* Given a tensor `in` of complex numbers, this operation returns a tensor of type
@@ -1628,6 +2081,16 @@ val imageSummary
   -> [ `string ] t
   -> ([< `float ] as 't) t
   -> [ `string ] t
+
+(* Returns immutable tensor from memory region. *)
+(* The current implementation memmaps the tensor from a file. *)
+val immutableConst
+  :  ?name:string
+  -> type_:'dtype Type.t
+  -> shape:Dim.t list
+  -> memory_region_name:string
+  -> unit
+  -> 'dtype t
 
 (* Says whether the targets are in the top `K` predictions. *)
 (* This outputs a `batch_size` bool array, an entry `out[i]` is `true` if the
@@ -1705,6 +2168,13 @@ val isNan
   -> ([< `float | `double ] as 't) t
   -> [ `bool ] t
 
+(* Checks whether a tensor has been initialized. *)
+(* Outputs boolean scalar indicating whether the tensor has been initialized. *)
+val isVariableInitialized
+  :  ?name:string
+  -> 'dtype t
+  -> [ `bool ] t
+
 (* L2 Loss. *)
 (* Computes half the L2 norm of a tensor without the `sqrt`:
 
@@ -1722,7 +2192,7 @@ each component is divided by the weighted, squared sum of inputs within
 
     sqr_sum[a, b, c, d] =
         sum(input[a, b, c, d - depth_radius : d + depth_radius + 1] ** 2)
-    output = input / (bias + alpha * sqr_sum ** beta)
+    output = input / (bias + alpha * sqr_sum) ** beta
 
 For details, see [Krizhevsky et al., ImageNet classification with deep
 convolutional neural networks (NIPS 2012)]
@@ -1783,7 +2253,7 @@ val lessEqual
   -> ([< `float | `double | `int32 | `int64 ] as 't) t
   -> [ `bool ] t
 
-(* Computes the log of the absolute value of Gamma of `x` element-wise. *)
+(* Computes the log of the absolute value of `Gamma(x)` element-wise. *)
 val lgamma
   :  ?name:string
   -> ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t
@@ -1840,6 +2310,15 @@ val log
   :  ?name:string
   -> ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t
   -> ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t
+
+(* Computes log softmax activations. *)
+(* For each batch `i` and class `j` we have
+
+    logsoftmax[i, j] = logits[i, j] - log(sum(exp(logits[i]))) *)
+val logSoftmax
+  :  ?name:string
+  -> ([< `float | `double ] as 't) t
+  -> ([< `float | `double ] as 't) t
 
 (* Generates labels for candidate sampling with a log-uniform distribution. *)
 (* See explanations of candidate sampling and the data formats at
@@ -1954,6 +2433,7 @@ val matrixInverse
 (* Solves a system of linear equations. Checks for invertibility. *)
 val matrixSolve
   :  ?name:string
+  -> ?adjoint:bool
   -> ([< `float | `double ] as 't) t
   -> ([< `float | `double ] as 't) t
   -> ([< `float | `double ] as 't) t
@@ -1980,11 +2460,10 @@ numerically full rank and has a condition number
 \\(\mathrm{cond}(A) \lt \frac{1}{\sqrt{\epsilon_{mach}}}\\)
 or \\(\lambda\\) is sufficiently large.
 
-If `fast` is `False` then the solution is computed using the rank revealing QR
-decomposition with column pivoting. This will always compute a least-squares
-solution that minimizes the residual norm \\(||A X - B||_F^2 \\), even when
-\\( A \\) is rank deficient or ill-conditioned. Notice: The current version
-does not compute a minimum norm solution. If `fast` is `False` then
+If `fast` is `False` an algorithm based on the numerically robust complete
+orthogonal decomposition is used. This computes the minimum-norm
+least-squares solution, even when \\(A\\) is rank deficient. This path is
+typically 6-7 times slower than the fast path. If `fast` is `False` then
 `l2_regularizer` is ignored. *)
 val matrixSolveLs
   :  ?name:string
@@ -1998,17 +2477,21 @@ val matrixSolveLs
 (* backsubstitution.
 
 `matrix` is a matrix of shape `[M, M]`. If `lower` is `True` then the strictly
-upper triangular part of `matrix` is ignored. If `lower` is False then the
-strictly lower triangular part of `matrix` is ignored. `rhs` is a matrix of
-shape [M, K]`.
+upper triangular part of `matrix` is assumed to be zero and not accessed.
+If `lower` is False then the strictly lower triangular part of `matrix` is
+assumed to be zero and not accessed.
+`rhs` is a matrix of shape [M, K]`.
 
-The output is a matrix of shape `[M, K]`. If `lower` is `True` then the output
-satisfies \\(\sum_{k=0}^{i}\\) matrix[i, k] * output[k, j] = rhs[i, j].
-If `lower` is false then output satisfies
-\\(\sum_{k=i}^{K-1}\\) matrix[i, k] * output[k, j] = rhs[i, j]. *)
+The output is a matrix of shape `[M, K]`. If `adjoint` is `False` the output
+satisfies the matrix equation `matrix` * `output` = `rhs`.
+If `adjoint` is `False` then `output` satisfies the matrix equation
+`matrix` * `output` = `rhs`.
+If `adjoint` is `True` then `output` satisfies the matrix equation
+`adjoint(matrix)` * `output` = `rhs`. *)
 val matrixTriangularSolve
   :  ?name:string
   -> ?lower:bool
+  -> ?adjoint:bool
   -> ([< `float | `double ] as 't) t
   -> ([< `float | `double ] as 't) t
   -> ([< `float | `double ] as 't) t
@@ -2031,6 +2514,7 @@ val maxPool
   -> ksize:int list
   -> strides:int list
   -> padding:string
+  -> ?data_format:string
   -> [ `float ] t
   -> [ `float ] t
 
@@ -2040,6 +2524,7 @@ val maxPoolGrad
   -> ksize:int list
   -> strides:int list
   -> padding:string
+  -> ?data_format:string
   -> [ `float ] t
   -> [ `float ] t
   -> [ `float ] t
@@ -2133,6 +2618,65 @@ val minimum
   -> ([< `float | `double | `int32 | `int64 ] as 't) t
   -> ([< `float | `double | `int32 | `int64 ] as 't) t
 
+(* Pads a tensor with mirrored values. *)
+(* This operation pads a `input` with mirrored values according to the `paddings`
+you specify. `paddings` is an integer tensor with shape `[n, 2]`, where n is
+the rank of `input`. For each dimension D of `input`, `paddings[D, 0]` indicates
+how many values to add before the contents of `input` in that dimension, and
+`paddings[D, 1]` indicates how many values to add after the contents of `input`
+in that dimension. Both `paddings[D, 0]` and `paddings[D, 1]` must be no greater
+than `input.dim_size(D)` (or `input.dim_size(D) - 1`) if `copy_border` is true
+(if false, respectively).
+
+The padded size of each dimension D of the output is:
+
+`paddings(D, 0) + input.dim_size(D) + paddings(D, 1)`
+
+For example:
+
+```prettyprint
+# 't' is [[1, 2, 3], [4, 5, 6]].
+# 'paddings' is [[1, 1]], [2, 2]].
+# 'mode' is SYMMETRIC.
+# rank of 't' is 2.
+pad(t, paddings) ==> [[2, 1, 1, 2, 3, 3, 2]
+                      [2, 1, 1, 2, 3, 3, 2]
+                      [5, 4, 4, 5, 6, 6, 5]
+                      [5, 4, 4, 5, 6, 6, 5]]
+``` *)
+val mirrorPad
+  :  ?name:string
+  -> mode:string
+  -> 't t
+  -> [ `int32 ] t
+  -> 't t
+
+(* Gradient op for `MirrorPad` op. This op folds a mirror-padded tensor. *)
+(* This operation folds the padded areas of `input` by `MirrorPad` according to the
+`paddings` you specify. `paddings` must be the same as `paddings` argument
+given to the corresponding `MirrorPad` op.
+
+The folded size of each dimension D of the output is:
+
+`input.dim_size(D) - paddings(D, 0) - paddings(D, 1)`
+
+For example:
+
+```prettyprint
+# 't' is [[1, 2, 3], [4, 5, 6], [7, 8, 9]].
+# 'paddings' is [[0, 1]], [0, 1]].
+# 'mode' is SYMMETRIC.
+# rank of 't' is 2.
+pad(t, paddings) ==> [[ 1,  5]
+                      [11, 28]]
+``` *)
+val mirrorPadGrad
+  :  ?name:string
+  -> mode:string
+  -> 't t
+  -> [ `int32 ] t
+  -> 't t
+
 (* Returns element-wise remainder of division. *)
 val mod_
   :  ?name:string
@@ -2184,6 +2728,104 @@ val notEqual
   -> ([< `float | `double | `int32 | `int64 | `complex64 | `string ] as 't) t
   -> ([< `float | `double | `int32 | `int64 | `complex64 | `string ] as 't) t
   -> [ `bool ] t
+
+(* Returns a one-hot tensor. *)
+(* The locations represented by indices in `indices` take value `on_value`,
+while all other locations take value `off_value`.
+
+If the input `indices` is rank `N`, the output will have rank `N+1`,
+The new axis is created at dimension `axis` (default: the new axis is
+appended at the end).
+
+If `indices` is a scalar the output shape will be a vector of length `depth`.
+
+If `indices` is a vector of length `features`, the output shape will be:
+```
+  features x depth if axis == -1
+  depth x features if axis == 0
+```
+
+If `indices` is a matrix (batch) with shape `[batch, features]`,
+the output shape will be:
+```
+  batch x features x depth if axis == -1
+  batch x depth x features if axis == 1
+  depth x batch x features if axis == 0
+```
+
+
+Examples
+=========
+
+Suppose that
+
+```
+  indices = [0, 2, -1, 1]
+  depth = 3
+  on_value = 5.0
+  off_value = 0.0
+  axis = -1
+```
+
+Then output is `[4 x 3]`:
+
+    ```output =
+      [5.0 0.0 0.0]  // one_hot(0)
+      [0.0 0.0 5.0]  // one_hot(2)
+      [0.0 0.0 0.0]  // one_hot(-1)
+      [0.0 5.0 0.0]  // one_hot(1)
+    ```
+
+Suppose that
+
+```
+  indices = [0, 2, -1, 1]
+  depth = 3
+  on_value = 0.0
+  off_value = 3.0
+  axis = 0
+```
+
+Then output is `[3 x 4]`:
+
+    ```output =
+      [0.0 3.0 3.0 3.0]
+      [3.0 3.0 3.0 0.0]
+      [3.0 3.0 3.0 3.0]
+      [3.0 0.0 3.0 3.0]
+    //  ^                one_hot(0)
+    //      ^            one_hot(2)
+    //          ^        one_hot(-1)
+    //              ^    one_hot(1)
+    ```
+Suppose that
+
+```
+  indices = [[0, 2], [1, -1]]
+  depth = 3
+  on_value = 1.0
+  off_value = 0.0
+  axis = -1
+```
+
+Then output is `[2 x 2 x 3]`:
+
+    ```output =
+      [
+        [1.0, 0.0, 0.0]  // one_hot(0)
+        [0.0, 0.0, 1.0]  // one_hot(2)
+      ][
+        [0.0, 1.0, 0.0]  // one_hot(1)
+        [0.0, 0.0, 0.0]  // one_hot(-1)
+      ]``` *)
+val oneHot
+  :  ?name:string
+  -> ?axis:int
+  -> [ `int64 ] t
+  -> [ `int32 ] t
+  -> 't t
+  -> 't t
+  -> 't t
 
 (* Packs a list of `N` rank-`R` tensors into one rank-`(R+1)` tensor. *)
 (* Packs the `N` tensors in `values` into a tensor with rank one higher than each
@@ -2248,6 +2890,13 @@ val placeholder
   -> type_:'dtype Type.t
   -> ?shape:Dim.t list
   -> unit
+  -> 'dtype t
+
+(* A placeholder op that passes though `input` when its output is not fed. *)
+val placeholderWithDefault
+  :  ?name:string
+  -> shape:Dim.t list
+  -> 'dtype t
   -> 'dtype t
 
 (* Computes the power of one value to another. *)
@@ -2499,6 +3148,37 @@ val real
   :  ?name:string
   -> [ `complex64 ] t
   -> [ `float ] t
+
+(* Joins a string Tensor across the given dimensions. *)
+(* Computes the string join across dimensions in the given string Tensor of shape
+`[d_0, d_1, ..., d_n-1]`.  Returns a new Tensor created by joining the input
+strings with the given separator (default: empty string).  Negative indices are
+counted backwards from the end, with `-1` being equivalent to `n - 1`.  Passing
+an empty `reduction_indices` joins all strings in linear index order and outputs
+a scalar string.
+
+
+For example:
+```
+# tensor `a` is [["a", "b"], ["c", "d"]]
+tf.reduce_join(a, 0) ==> ["ac", "bd"]
+tf.reduce_join(a, 1) ==> ["ab", "cd"]
+tf.reduce_join(a, -2) = tf.reduce_join(a, 0) ==> ["ac", "bd"]
+tf.reduce_join(a, -1) = tf.reduce_join(a, 1) ==> ["ab", "cd"]
+tf.reduce_join(a, 0, keep_dims=True) ==> [["ac", "bd"]]
+tf.reduce_join(a, 1, keep_dims=True) ==> [["ab"], ["cd"]]
+tf.reduce_join(a, 0, separator=".") ==> ["a.c", "b.d"]
+tf.reduce_join(a, [0, 1]) ==> ["acbd"]
+tf.reduce_join(a, [1, 0]) ==> ["abcd"]
+tf.reduce_join(a, []) ==> ["abcd"]
+``` *)
+val reduceJoin
+  :  ?name:string
+  -> ?keep_dims:bool
+  -> ?separator:string
+  -> [ `string ] t
+  -> [ `int32 ] t
+  -> [ `string ] t
 
 (* Creates or finds a child frame, and makes `data` available to the child frame. *)
 (* The unique `frame_name` is used by the `Executor` to identify frames. If
@@ -2868,7 +3548,27 @@ what the bounding box looks like.
 
 Bounding boxes are supplied and returned as `[y_min, x_min, y_max, x_max]`. The
 bounding box coordinates are floats in `[0.0, 1.0]` relative to the width and
-height of the underlying image. *)
+height of the underlying image.
+
+For example,
+
+    # Generate a single distorted bounding box.
+    begin, size, bbox_for_draw = tf.image.sample_distorted_bounding_box(
+        tf.shape(image),
+        bounding_boxes=bounding_boxes)
+
+    # Draw the bounding box in an image summary.
+    image_with_box = tf.image.draw_bounding_boxes(tf.expand_dims(image, 0),
+                                                  bbox_for_draw)
+    tf.image_summary('images_with_box', image_with_box)
+
+    # Employ the bounding box to distort the image.
+    distorted_image = tf.slice(image, begin, size)
+
+Note that if no bounding box information is available, setting
+`use_image_if_no_bounding_boxes = true` will assume there is a single implicit
+bounding box covering the whole image. If `use_image_if_no_bounding_boxes` is
+false and no bounding boxes are supplied, an error is raised. *)
 val sampleDistortedBoundingBox
   :  ?name:string
   -> ?seed:int
@@ -2966,8 +3666,9 @@ val scatterSub
 This operation outputs `ref` after the update is done.
 This makes it easier to chain operations that need to use the reset value.
 
-If `indices` contains duplicate entries, lexicographically later entries
-override earlier entries.
+If values in `ref` is to be updated more than once, because there are
+duplicate entires in `indices`, the order at which the updates happen
+for each value is undefined.
 
 Requires `updates.shape = indices.shape + ref.shape[1:]`.
 
@@ -3195,11 +3896,13 @@ val sigmoid
   -> ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t
 
 (* Returns an element-wise indication of the sign of a number. *)
-(* y = sign(x) = -1 if x < 0; 0 if x == 0; 1 if x > 0. *)
+(* `y = sign(x) = -1` if `x < 0`; 0 if `x == 0`; 1 if `x > 0`.
+
+For complex numbers, `y = sign(x) = x / |x|` if `x != 0`, otherwise `y = 0`. *)
 val sign
   :  ?name:string
-  -> ([< `float | `double | `int32 | `int64 ] as 't) t
-  -> ([< `float | `double | `int32 | `int64 ] as 't) t
+  -> ([< `float | `double | `int32 | `int64 | `complex64 ] as 't) t
+  -> ([< `float | `double | `int32 | `int64 | `complex64 ] as 't) t
 
 (* Computes sin of x element-wise. *)
 val sin
@@ -3368,6 +4071,58 @@ val spaceToDepth
   -> 't t
   -> 't t
 
+(* Adds two `SparseTensor` objects to produce another `SparseTensor`. *)
+(* The input `SparseTensor` objects' indices are assumed ordered in standard
+lexicographic order.  If this is not the case, before this step run
+`SparseReorder` to restore index ordering.
+
+By default, if two values sum to zero at some index, the output `SparseTensor`
+would still include that particular location in its index, storing a zero in the
+corresponding value slot.  To override this, callers can specify `thresh`,
+indicating that if the sum has a magnitude strictly smaller than `thresh`, its
+corresponding value and index would then not be included.  In particular,
+`thresh == 0` (default) means everything is kept and actual thresholding happens
+only for a positive value.
+
+In the following shapes, `nnz` is the count after taking `thresh` into account. *)
+val sparseAdd
+  :  ?name:string
+  -> [ `int64 ] t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
+  -> [ `int64 ] t
+  -> [ `int64 ] t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
+  -> [ `int64 ] t
+  -> ([< `float | `double | `int32 | `int64 ] as 'treal) t
+  -> [ `int64 ] t * ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t * [ `int64 ] t
+
+(* The gradient operator for the SparseAdd op. *)
+(* The SparseAdd op calculates A + B, where A, B, and the sum are all represented
+as `SparseTensor` objects.  This op takes in the upstream gradient w.r.t.
+non-empty values of the sum, and outputs the gradients w.r.t. the non-empty
+values of A and B. *)
+val sparseAddGrad
+  :  ?name:string
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
+  -> [ `int64 ] t
+  -> [ `int64 ] t
+  -> [ `int64 ] t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t * ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
+
+(* var: Should be from a Variable(). *)
+val sparseApplyAdadelta
+  :  ?name:string
+  -> ?use_locking:bool
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
+  -> ([< `int32 | `int64 ] as 'tindices) t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
+
 (* Update relevant entries in '*var' and '*accum' according to the adagrad scheme. *)
 (* That is for rows we have grad for, we update var and accum as follows:
 accum += grad * grad
@@ -3380,6 +4135,27 @@ val sparseApplyAdagrad
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
   -> ([< `int32 | `int64 ] as 'tindices) t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
+
+(* Update relevant entries in '*var' according to the Ftrl-proximal scheme. *)
+(* That is for rows we have grad for, we update var, accum and linear as follows:
+accum_new = accum + grad * grad
+linear += grad + (accum_new^(-lr_power) - accum^(-lr_power)) / lr * var
+quadratic = 1.0 / (accum_new^(lr_power) * lr) + 2 * l2
+var = (sign(linear) * l1 - linear) / quadratic if |linear| > l1 else 0.0
+accum = accum_new *)
+val sparseApplyFtrl
+  :  ?name:string
+  -> ?use_locking:bool
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
+  -> ([< `int32 | `int64 ] as 'tindices) t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
 
 (* Update relevant entries in '*var' and '*accum' according to the momentum scheme. *)
@@ -3575,8 +4351,28 @@ Inputs are the logits, not probabilities. *)
 val sparseSoftmaxCrossEntropyWithLogits
   :  ?name:string
   -> ([< `float | `double ] as 't) t
-  -> [ `int64 ] t
+  -> ([< `int32 | `int64 ] as 'tlabels) t
   -> ([< `float | `double ] as 't) t * ([< `float | `double ] as 't) t
+
+(* Multiply SparseTensor (of rank 2) "A" by dense matrix "B". *)
+(* No validity checking is performed on the indices of A.  However, the following
+input format is recommended for optimal behavior:
+
+if adjoint_a == false:
+  A should be sorted in lexicographically increasing order.  Use SparseReorder
+  if you're not sure.
+if adjoint_a == true:
+  A should be sorted in order of increasing dimension 1 (i.e., "column major"
+  order instead of "row major" order). *)
+val sparseTensorDenseMatMul
+  :  ?name:string
+  -> ?adjoint_a:bool
+  -> ?adjoint_b:bool
+  -> [ `int64 ] t
+  -> 't t
+  -> [ `int64 ] t
+  -> 't t
+  -> 't t
 
 (* Converts a sparse representation into a dense tensor. *)
 (* Builds an array `dense` with shape `output_shape` such that
@@ -3629,6 +4425,13 @@ val square
   -> ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t
   -> ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t
 
+(* Returns (x - y)(x - y) element-wise. *)
+val squaredDifference
+  :  ?name:string
+  -> ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t
+  -> ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t
+  -> ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t
+
 (* Removes dimensions of size 1 from the shape of a tensor. *)
 (* Given a tensor `input`, this operation returns a tensor of the same type with
 all dimensions of size 1 removed. If you don't want to remove all size 1
@@ -3677,6 +4480,7 @@ val stackPop
 (* Push an element onto the stack. *)
 val stackPush
   :  ?name:string
+  -> ?swap_memory:bool
   -> [ `string ] t
   -> 't t
   -> 't t
@@ -3798,6 +4602,7 @@ val temporaryVariable
 val tensorArray
   :  ?name:string
   -> ?dynamic_size:bool
+  -> ?clear_after_read:bool
   -> ?tensor_array_name:string
   -> [ `int32 ] t
   -> [ `string ] t
@@ -3808,6 +4613,25 @@ val tensorArrayClose
   :  ?name:string
   -> [ `string ] t
   -> [ `unit ] t
+
+(* Concat the elements from the TensorArray into value `value`. *)
+(* Takes `T` elements of shapes
+
+  ```
+  (n0 x d0 x d1 x ...), (n1 x d0 x d1 x ...), ..., (n(T-1) x d0 x d1 x ...)
+  ```
+
+and concatenates them into a Tensor of shape:
+
+  ```(n0 + n1 + ... + n(T-1) x d0 x d1 x ...)```
+
+All elements must have the same shape (excepting the first dimension). *)
+val tensorArrayConcat
+  :  ?name:string
+  -> type_:'dtype Type.t
+  -> [ `string ] t
+  -> [ `float ] t
+  -> 'dtype t * [ `int64 ] t
 
 (* Creates a TensorArray for storing the gradients of values in the given handle. *)
 (* If the given TensorArray gradient already exists, returns a reference to it.
@@ -3833,7 +4657,7 @@ val tensorArrayGrad
   -> [ `float ] t
   -> [ `string ] t
 
-(* Pack the elements from the TensorArray. *)
+(* Pack the elements from the TensorArray into output `value`. *)
 (* All elements must have the same shape. *)
 val tensorArrayPack
   :  ?name:string
@@ -3842,7 +4666,7 @@ val tensorArrayPack
   -> [ `float ] t
   -> 'dtype t
 
-(* Read an element from the TensorArray. *)
+(* Read an element from the TensorArray into output `value`. *)
 val tensorArrayRead
   :  ?name:string
   -> type_:'dtype Type.t
@@ -3857,6 +4681,32 @@ val tensorArraySize
   -> [ `string ] t
   -> [ `float ] t
   -> [ `int32 ] t
+
+(* Split the data from the input value into TensorArray elements. *)
+(* Assuming that `lengths` takes on values
+
+  ```(n0, n1, ..., n(T-1))```
+
+and that `value` has shape
+
+  ```(n0 + n1 + ... + n(T-1) x d0 x d1 x ...)```,
+
+this splits values into a TensorArray with T tensors.
+
+TensorArray index t will be the subtensor of values with starting position
+
+  ```(n0 + n1 + ... + n(t-1), 0, 0, ...)```
+
+and having size
+
+  ```nt x d0 x d1 x ...``` *)
+val tensorArraySplit
+  :  ?name:string
+  -> [ `string ] t
+  -> 't t
+  -> [ `int64 ] t
+  -> [ `float ] t
+  -> [ `float ] t
 
 (* Unpack the data from the input value into TensorArray elements. *)
 val tensorArrayUnpack
