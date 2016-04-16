@@ -331,19 +331,19 @@ module Session = struct
   let c_tensor_of_tensor packed_tensor =
     let Tensor.P tensor = packed_tensor in
     let id = fresh_id () in
-    let dim_array = Bigarray.Genarray.dims tensor in
+    let dim_array = Tensor.dims tensor in
     let dims =
       Array.to_list dim_array
       |> List.map Int64.of_int
       |> CArray.of_list int64_t
       |> CArray.start
     in
-    let data_type = Bigarray.Genarray.kind tensor |> data_type_of_kind in
+    let data_type = Tensor.kind tensor |> data_type_of_kind in
     let size = Array.fold_left ( * ) 1 dim_array * sizeof data_type in
     Hashtbl.add live_tensors id packed_tensor;
     tf_newtensor (data_type_to_int data_type)
       dims
-      (Bigarray.Genarray.num_dims tensor)
+      (Tensor.num_dims tensor)
       (bigarray_start genarray tensor |> to_voidp)
       (Unsigned.Size_t.of_int size)
       deallocate

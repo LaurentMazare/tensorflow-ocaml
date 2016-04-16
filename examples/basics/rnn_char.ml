@@ -66,7 +66,7 @@ let fit_and_evaluate x_data y_data =
     fun () ->
       let tensor size =
         let tensor = Tensor.create2 Float32 1 size in
-        Bigarray.Genarray.fill tensor 0.;
+        Tensor.fill tensor 0.;
         tensor
       in
       let init = [], tensor alphabet_size, tensor size_c, tensor size_c in
@@ -77,7 +77,7 @@ let fit_and_evaluate x_data y_data =
               ~inputs:Session.Input.[ float x prev_y; float h prev_h; float c prev_c ]
               Session.Output.(four (int64 y_char) (float y_bar) (float h_out) (float c_out))
           in
-          let y = Bigarray.Genarray.get y_char [| 0 |] |> Int64.to_int_exn in
+          let y = Tensor.get y_char [| 0 |] |> Int64.to_int_exn in
           y :: acc_y, y_res, h_res, c_res)
       in
       List.rev ys
@@ -89,8 +89,8 @@ let fit_and_evaluate x_data y_data =
   in
   for i = 1 to epochs do
     let start_idx = (i * batch_size) % (train_size - batch_size) in
-    let x_data = Bigarray.Genarray.sub_left x_data start_idx batch_size in
-    let y_data = Bigarray.Genarray.sub_left y_data start_idx batch_size in
+    let x_data = Tensor.sub_left x_data start_idx batch_size in
+    let y_data = Tensor.sub_left y_data start_idx batch_size in
     let err =
       Session.run
         ~inputs:Session.Input.[ float placeholder_x x_data; float placeholder_y y_data ]
@@ -119,7 +119,7 @@ let get_samples ?(filename = "data/input.txt") ~sample_size n =
       else 26
     in
     for z = 0 to alphabet_size - 1 do
-      Bigarray.Genarray.set vec [| x; y; z |] (if c = z then 1. else 0.);
+      Tensor.set vec [| x; y; z |] (if c = z then 1. else 0.);
     done
   in
   let xs = create_vec () in

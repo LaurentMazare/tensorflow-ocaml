@@ -87,13 +87,13 @@ let fit_1d fn =
   let init = [], tensor 1, tensor size_h in
   let ys, _, h_res =
     List.foldi (List.range 0 500) ~init ~f:(fun idx (acc_y, prev_y, prev_h) _ ->
-      if idx < 5 then Bigarray.Genarray.set prev_y [| 0; 0 |] (sin (float idx *. step_size));
+      if idx < 5 then Tensor.set prev_y [| 0; 0 |] (sin (float idx *. step_size));
       let y_res, h_res =
         Session.run
           ~inputs:Session.Input.[ float x prev_y; float h prev_h ]
           Session.Output.(both (float y_bar) (float h_out))
       in
-      let y = Bigarray.Genarray.get y_res [| 0; 0 |] in
+      let y = Tensor.get y_res [| 0; 0 |] in
       y :: acc_y, y_res, h_res)
   in
   let init = [], tensor 1, h_res in
@@ -104,7 +104,7 @@ let fit_1d fn =
           ~inputs:Session.Input.[ float x prev_y; float h prev_h ]
           Session.Output.(both (float y_bar) (float h_out))
       in
-      let y = Bigarray.Genarray.get y_res [| 0; 0 |] in
+      let y = Tensor.get y_res [| 0; 0 |] in
       y :: acc_y, y_res, h_res)
   in
   List.rev ys, List.rev ys'

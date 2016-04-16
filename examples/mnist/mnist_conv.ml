@@ -3,8 +3,8 @@ open Tensorflow
 module O = Ops
 
 let scalar_tensor f =
-  let array = Bigarray.Genarray.create Bigarray.float32 Bigarray.c_layout [| 1 |] in
-  Bigarray.Genarray.set array [| 0 |] f;
+  let array = Tensor.create1 Bigarray.float32 1 in
+  Tensor.set array [| 0 |] f;
   array
 
 let batch_size = 512
@@ -52,8 +52,8 @@ let () =
   let gd = Optimizers.adam_minimizer ~learning_rate:(O.f 1e-5) cross_entropy in
   let validation_inputs =
     let one = scalar_tensor 1. in
-    let validation_images = Bigarray.Genarray.sub_left mnist.test_images 0 1024 in
-    let validation_labels = Bigarray.Genarray.sub_left mnist.test_labels 0 1024 in
+    let validation_images = Tensor.sub_left mnist.test_images 0 1024 in
+    let validation_labels = Tensor.sub_left mnist.test_labels 0 1024 in
     Session.Input.
       [ float xs validation_images; float ys validation_labels; float keep_prob one ]
   in

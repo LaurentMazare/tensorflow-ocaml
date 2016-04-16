@@ -8,19 +8,19 @@ let assert_equal value ~expected_value ~tol =
 
 let assert_scalar tensor ~expected_value ~tol =
   let index =
-    match Bigarray.Genarray.dims tensor with
+    match Tensor.dims tensor with
     | [||] -> [||]
     | [| 1 |] -> [| 0 |]
     | [| n |] -> failwithf "Single dimension tensor with %d elements" n ()
     | _ -> failwith "Multi-dimensional tensor."
   in
-  assert_equal (Bigarray.Genarray.get tensor index) ~expected_value ~tol
+  assert_equal (Tensor..get tensor index) ~expected_value ~tol
 
 let assert_vector tensor ~expected_value ~tol =
-  match Bigarray.Genarray.dims tensor with
+  match Tensor.dims tensor with
   | [||] -> failwith "Scalar rather than vector"
   | [| n |] ->
-    List.init n ~f:(fun i -> Bigarray.Genarray.get tensor [| i |])
+    List.init n ~f:(fun i -> Tensor.get tensor [| i |])
     |> List.iter2_exn expected_value ~f:(fun expected_value value ->
       assert_equal value ~expected_value ~tol)
   | _ -> failwith "Multi-dimensional tensor."

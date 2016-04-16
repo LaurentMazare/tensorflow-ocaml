@@ -9,10 +9,10 @@ let one_hot labels =
   let one_hot = Tensor.create2 Float32 nsamples label_count in
   for idx = 0 to nsamples - 1 do
     for lbl = 0 to 9 do
-      Bigarray.Genarray.set one_hot [| idx; lbl |] 0.
+      Tensor.set one_hot [| idx; lbl |] 0.
     done;
     let lbl = Bigarray.Array1.get labels idx |> Int32.to_int_exn in
-    Bigarray.Genarray.set one_hot [| idx; lbl |] 1.
+    Tensor.set one_hot [| idx; lbl |] 1.
   done;
   one_hot
 
@@ -57,14 +57,13 @@ let read_labels filename =
   In_channel.close in_channel;
   data
 
-type float32_genarray =
-  (float, Bigarray.float32_elt, Bigarray.c_layout) Bigarray.Genarray.t
+type float32_tensor = (float, Bigarray.float32_elt) Tensor.t
 
 type t =
-  { train_images : float32_genarray
-  ; train_labels : float32_genarray
-  ; test_images : float32_genarray
-  ; test_labels : float32_genarray
+  { train_images : float32_tensor
+  ; train_labels : float32_tensor
+  ; test_images : float32_tensor
+  ; test_labels : float32_tensor
   }
 
 let read_files
@@ -85,10 +84,10 @@ let read_files
   }
 
 let train_batch { train_images; train_labels; _ } ~batch_size ~batch_idx =
-  let train_size = (Bigarray.Genarray.dims train_images).(0) in
+  let train_size = (Tensor.dims train_images).(0) in
   let start_batch = (batch_size * batch_idx) mod (train_size - batch_size) in
-  let batch_images = Bigarray.Genarray.sub_left train_images start_batch batch_size in
-  let batch_labels = Bigarray.Genarray.sub_left train_labels start_batch batch_size in
+  let batch_images = Tensor.sub_left train_images start_batch batch_size in
+  let batch_labels = Tensor.sub_left train_labels start_batch batch_size in
   batch_images, batch_labels
 
 let accuracy ys ys' =

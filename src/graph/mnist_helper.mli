@@ -1,11 +1,10 @@
-type float32_genarray =
-  (float, Bigarray.float32_elt, Bigarray.c_layout) Bigarray.Genarray.t
+type float32_tensor = (float, Bigarray.float32_elt) Tensor.t
 
 type t =
-  { train_images : float32_genarray
-  ; train_labels : float32_genarray
-  ; test_images : float32_genarray
-  ; test_labels : float32_genarray
+  { train_images : float32_tensor
+  ; train_labels : float32_tensor
+  ; test_images : float32_tensor
+  ; test_labels : float32_tensor
   }
 
 val read_files
@@ -20,12 +19,12 @@ val train_batch
   :  t
   -> batch_size:int
   -> batch_idx:int
-  -> float32_genarray * float32_genarray
+  -> float32_tensor * float32_tensor
 
 val image_dim : int
 val label_count : int
 
 val accuracy
-  :  float32_genarray
-  -> float32_genarray
+  :  float32_tensor
+  -> float32_tensor
   -> float

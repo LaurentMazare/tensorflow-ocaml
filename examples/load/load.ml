@@ -10,9 +10,9 @@ let ok_exn (result : 'a Session.result) ~context =
 
 let () =
   let data = Tensor.create1 Float32 3 in
-  Bigarray.Genarray.set data [| 0 |] 1.;
-  Bigarray.Genarray.set data [| 1 |] 2.;
-  Bigarray.Genarray.set data [| 2 |] 6.;
+  Tensor.set data [| 0 |] 1.;
+  Tensor.set data [| 1 |] 2.;
+  Tensor.set data [| 2 |] 6.;
   let input_tensor = Tensor.P data in
   let session =
     Session.create ()

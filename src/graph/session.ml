@@ -144,28 +144,28 @@ struct
   let float (node : [`float] Node.t) : (float, Bigarray.float32_elt) Tensor.t t =
     Compute node
     |> map ~f:(fun (Tensor.P tensor) ->
-      match Bigarray.Genarray.kind tensor with
+      match Tensor.kind tensor with
       | Bigarray.Float32 -> (tensor : (float, Bigarray.float32_elt) Tensor.t)
       | _ -> failwith "PANIC: wrong kind in float")
 
   let double (node : [`double] Node.t) : (float, Bigarray.float64_elt) Tensor.t t =
     Compute node
     |> map ~f:(fun (Tensor.P tensor) ->
-      match Bigarray.Genarray.kind tensor with
+      match Tensor.kind tensor with
       | Bigarray.Float64 -> (tensor : (float, Bigarray.float64_elt) Tensor.t)
       | _ -> failwith "PANIC: wrong kind in double")
 
   let int32 (node : [`int32] Node.t) : (int32, Bigarray.int32_elt) Tensor.t t =
     Compute node
     |> map ~f:(fun (Tensor.P tensor) ->
-      match Bigarray.Genarray.kind tensor with
+      match Tensor.kind tensor with
       | Bigarray.Int32 -> (tensor : (int32, Bigarray.int32_elt) Tensor.t)
       | _ -> failwith "PANIC: wrong kind in double")
 
   let int64 (node : [`int64] Node.t) : (Int64.t, Bigarray.int64_elt) Tensor.t t =
     Compute node
     |> map ~f:(fun (Tensor.P tensor) ->
-      match Bigarray.Genarray.kind tensor with
+      match Tensor.kind tensor with
       | Bigarray.Int64 -> (tensor : (Int64.t, Bigarray.int64_elt) Tensor.t)
       | _ -> failwith "PANIC: wrong kind in double")
 
@@ -173,8 +173,8 @@ struct
 
   let scalar_gen extract node =
     extract node |> map ~f:(fun t ->
-      Array.create 0 ~len:(Bigarray.Genarray.num_dims t)
-      |> Bigarray.Genarray.get t)
+      Array.create 0 ~len:(Tensor.num_dims t)
+      |> Tensor.get t)
 
   let scalar_float n = scalar_gen float n
   let scalar_double n = scalar_gen double n

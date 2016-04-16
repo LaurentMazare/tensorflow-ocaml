@@ -81,7 +81,7 @@ let fit_1d fn =
           ~inputs:Session.Input.[ float x prev_y; float h prev_h; float c prev_c ]
           Session.Output.(three (float y_bar) (float h_out) (float c_out))
       in
-      let y = Bigarray.Genarray.get y_res [| 0; 0 |] in
+      let y = Tensor.get y_res [| 0; 0 |] in
       y :: acc_y, y_res, h_res, c_res)
   in
   List.rev ys

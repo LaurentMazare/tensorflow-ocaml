@@ -86,7 +86,7 @@ let fit_gen f_or_d scalar_f_or_d =
   fun ?named_inputs ?batch_size ?on_epoch ~loss ~optimizer ~epochs ~xs ~ys t ->
     let loss = Loss.get loss ~sample_ys:t.placeholder ~model_ys:(Nn.node t.net) in
     let optimizer = Optimizer.get optimizer ~loss in
-    let samples = (Bigarray.Genarray.dims xs).(0) in
+    let samples = (Tensor.dims xs).(0) in
     let batch_size =
       match batch_size with
       | None -> None
@@ -107,8 +107,8 @@ let fit_gen f_or_d scalar_f_or_d =
         | None -> inputs ~xs ~ys
         | Some batch_size ->
           let offset = ((epoch-1) * batch_size) mod (samples - batch_size) in
-          let xs = Bigarray.Genarray.sub_left xs offset batch_size in
-          let ys = Bigarray.Genarray.sub_left ys offset batch_size in
+          let xs = Tensor.sub_left xs offset batch_size in
+          let ys = Tensor.sub_left ys offset batch_size in
           inputs ~xs ~ys
       in
       let err =
@@ -128,7 +128,7 @@ let fit_d = fit_gen Session.Input.double Session.Output.scalar_double
 
 let evaluate_gen input_f_or_d output_f_or_d type_ =
   fun ?named_inputs ?batch_size ?node t xs ->
-    let nsamples = Bigarray.Genarray.nth_dim xs 0 in
+    let nsamples = (Tensor.dims xs).(0) in
     let nbatchs, batch_size =
       match batch_size with
       | None -> 1, nsamples
@@ -151,16 +151,16 @@ let evaluate_gen input_f_or_d output_f_or_d type_ =
       for batch_idx = 0 to nbatchs - 1 do
         let samples_idx = batch_idx * batch_size in
         let samples_count = min batch_size (nsamples - samples_idx) in
-        let xs = Bigarray.Genarray.sub_left xs samples_idx samples_count in
+        let xs = Tensor.sub_left xs samples_idx samples_count in
         let batch_results =
           Session.run
             ~inputs:(all_inputs input_f_or_d ?named_inputs t xs)
             ~session:t.session
             (output_f_or_d node)
         in
-        Bigarray.Genarray.blit
+        Tensor.blit
           batch_results
-          (Bigarray.Genarray.sub_left ys samples_idx samples_count)
+          (Tensor.sub_left ys samples_idx samples_count)
       done;
       ys
     end
