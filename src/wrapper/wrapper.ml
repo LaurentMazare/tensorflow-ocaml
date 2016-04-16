@@ -235,6 +235,7 @@ let tf_extendgraph =
 let tf_run =
   foreign "TF_Run" ~from
     (tf_session
+    @-> ptr void (* run_options *)
     (* Input tensors *)
     @-> ptr (ptr char)
     @-> ptr tf_tensor
@@ -246,6 +247,7 @@ let tf_run =
     (* Target nodes *)
     @-> ptr (ptr char)
     @-> int
+    @-> ptr void (* run_metadata *)
     (* Output status *)
     @-> tf_status
     @-> returning void)
@@ -391,6 +393,7 @@ module Session = struct
     let output_tensors = CArray.make tf_tensor output_len in
     tf_run
       t
+      null
       (ptr_ptr_char input_names)
       CArray.(of_list tf_tensor input_tensors |> start)
       (List.length inputs)
@@ -399,6 +402,7 @@ module Session = struct
       output_len
       (ptr_ptr_char targets)
       (List.length targets)
+      null
       status;
     match result_or_error status () with
     | Ok () ->

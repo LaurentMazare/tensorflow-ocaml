@@ -2,9 +2,9 @@ module rec Op_def_piqi:
   sig
     type float32 = float
     type float64 = float
-    type protobuf_int64 = int64
     type protobuf_int32 = int32
     type binary = string
+    type protobuf_int64 = int64
     type data_type =
       [
         | `dt_invalid
@@ -26,6 +26,7 @@ module rec Op_def_piqi:
         | `dt_quint16
         | `dt_uint16
         | `dt_complex128
+        | `dt_half
         | `dt_float_ref
         | `dt_double_ref
         | `dt_int32_ref
@@ -44,10 +45,11 @@ module rec Op_def_piqi:
         | `dt_quint16_ref
         | `dt_uint16_ref
         | `dt_complex128_ref
+        | `dt_half_ref
       ]
+    type tensor_proto = Tensor_proto.t
     type tensor_shape_proto = Tensor_shape_proto.t
     type tensor_shape_proto_dim = Tensor_shape_proto_dim.t
-    type tensor_proto = Tensor_proto.t
     type attr_value = Attr_value.t
     type attr_value_list_value = Attr_value_list_value.t
     type name_attr_list = Name_attr_list.t
@@ -57,6 +59,24 @@ module rec Op_def_piqi:
     type op_def_attr_def = Op_def_attr_def.t
     type op_list = Op_list.t
   end = Op_def_piqi
+and Tensor_proto:
+  sig
+    type t = {
+      mutable dtype: Op_def_piqi.data_type option;
+      mutable tensor_shape: Op_def_piqi.tensor_shape_proto option;
+      mutable version_number: Op_def_piqi.protobuf_int32 option;
+      mutable tensor_content: Op_def_piqi.binary option;
+      mutable half_val: Op_def_piqi.protobuf_int32 list;
+      mutable float_val: Op_def_piqi.float32 list;
+      mutable double_val: Op_def_piqi.float64 list;
+      mutable int_val: Op_def_piqi.protobuf_int32 list;
+      mutable string_val: Op_def_piqi.binary list;
+      mutable scomplex_val: Op_def_piqi.float32 list;
+      mutable int64_val: Op_def_piqi.protobuf_int64 list;
+      mutable bool_val: bool list;
+      mutable dcomplex_val: Op_def_piqi.float64 list;
+    }
+  end = Tensor_proto
 and Tensor_shape_proto:
   sig
     type t = {
@@ -71,23 +91,6 @@ and Tensor_shape_proto_dim:
       mutable name: string option;
     }
   end = Tensor_shape_proto_dim
-and Tensor_proto:
-  sig
-    type t = {
-      mutable dtype: Op_def_piqi.data_type option;
-      mutable tensor_shape: Op_def_piqi.tensor_shape_proto option;
-      mutable version_number: Op_def_piqi.protobuf_int32 option;
-      mutable tensor_content: Op_def_piqi.binary option;
-      mutable float_val: Op_def_piqi.float32 list;
-      mutable double_val: Op_def_piqi.float64 list;
-      mutable int_val: Op_def_piqi.protobuf_int32 list;
-      mutable string_val: Op_def_piqi.binary list;
-      mutable scomplex_val: Op_def_piqi.float32 list;
-      mutable int64_val: Op_def_piqi.protobuf_int64 list;
-      mutable bool_val: bool list;
-      mutable dcomplex_val: Op_def_piqi.float64 list;
-    }
-  end = Tensor_proto
 and Attr_value:
   sig
     type t = {
@@ -176,19 +179,11 @@ and Op_list:
   end = Op_list
 
 
-let rec parse_int64 x = Piqirun.int64_of_zigzag_varint x
-and packed_parse_int64 x = Piqirun.int64_of_packed_zigzag_varint x
-
-and parse_int32 x = Piqirun.int32_of_zigzag_varint x
+let rec parse_int32 x = Piqirun.int32_of_zigzag_varint x
 and packed_parse_int32 x = Piqirun.int32_of_packed_zigzag_varint x
 
-and parse_bool x = Piqirun.bool_of_varint x
-and packed_parse_bool x = Piqirun.bool_of_packed_varint x
-
-and parse_protobuf_int64 x = Piqirun.int64_of_signed_varint x
-and packed_parse_protobuf_int64 x = Piqirun.int64_of_packed_signed_varint x
-
-and parse_string x = Piqirun.string_of_block x
+and parse_int64 x = Piqirun.int64_of_zigzag_varint x
+and packed_parse_int64 x = Piqirun.int64_of_packed_zigzag_varint x
 
 and parse_protobuf_int32 x = Piqirun.int32_of_signed_varint x
 and packed_parse_protobuf_int32 x = Piqirun.int32_of_packed_signed_varint x
@@ -200,6 +195,46 @@ and packed_parse_float32 x = Piqirun.float_of_packed_fixed32 x
 
 and parse_float64 x = Piqirun.float_of_fixed64 x
 and packed_parse_float64 x = Piqirun.float_of_packed_fixed64 x
+
+and parse_protobuf_int64 x = Piqirun.int64_of_signed_varint x
+and packed_parse_protobuf_int64 x = Piqirun.int64_of_packed_signed_varint x
+
+and parse_bool x = Piqirun.bool_of_varint x
+and packed_parse_bool x = Piqirun.bool_of_packed_varint x
+
+and parse_string x = Piqirun.string_of_block x
+
+and parse_tensor_proto x =
+  let x = Piqirun.parse_record x in
+  let _dtype, x = Piqirun.parse_optional_field 1 parse_data_type x in
+  let _tensor_shape, x = Piqirun.parse_optional_field 2 parse_tensor_shape_proto x in
+  let _version_number, x = Piqirun.parse_optional_field 3 parse_protobuf_int32 x in
+  let _tensor_content, x = Piqirun.parse_optional_field 4 parse_binary x in
+  let _float_val, x = Piqirun.parse_packed_repeated_field 5 packed_parse_float32 parse_float32 x in
+  let _double_val, x = Piqirun.parse_packed_repeated_field 6 packed_parse_float64 parse_float64 x in
+  let _int_val, x = Piqirun.parse_packed_repeated_field 7 packed_parse_protobuf_int32 parse_protobuf_int32 x in
+  let _string_val, x = Piqirun.parse_repeated_field 8 parse_binary x in
+  let _scomplex_val, x = Piqirun.parse_packed_repeated_field 9 packed_parse_float32 parse_float32 x in
+  let _int64_val, x = Piqirun.parse_packed_repeated_field 10 packed_parse_protobuf_int64 parse_protobuf_int64 x in
+  let _bool_val, x = Piqirun.parse_packed_repeated_field 11 packed_parse_bool parse_bool x in
+  let _dcomplex_val, x = Piqirun.parse_packed_repeated_field 12 packed_parse_float64 parse_float64 x in
+  let _half_val, x = Piqirun.parse_packed_repeated_field 13 packed_parse_protobuf_int32 parse_protobuf_int32 x in
+  Piqirun.check_unparsed_fields x;
+  {
+    Tensor_proto.dtype = _dtype;
+    Tensor_proto.tensor_shape = _tensor_shape;
+    Tensor_proto.version_number = _version_number;
+    Tensor_proto.tensor_content = _tensor_content;
+    Tensor_proto.float_val = _float_val;
+    Tensor_proto.double_val = _double_val;
+    Tensor_proto.int_val = _int_val;
+    Tensor_proto.string_val = _string_val;
+    Tensor_proto.scomplex_val = _scomplex_val;
+    Tensor_proto.int64_val = _int64_val;
+    Tensor_proto.bool_val = _bool_val;
+    Tensor_proto.dcomplex_val = _dcomplex_val;
+    Tensor_proto.half_val = _half_val;
+  }
 
 and parse_tensor_shape_proto x =
   let x = Piqirun.parse_record x in
@@ -219,36 +254,6 @@ and parse_tensor_shape_proto_dim x =
   {
     Tensor_shape_proto_dim.size = _size;
     Tensor_shape_proto_dim.name = _name;
-  }
-
-and parse_tensor_proto x =
-  let x = Piqirun.parse_record x in
-  let _dtype, x = Piqirun.parse_optional_field 1 parse_data_type x in
-  let _tensor_shape, x = Piqirun.parse_optional_field 2 parse_tensor_shape_proto x in
-  let _version_number, x = Piqirun.parse_optional_field 3 parse_protobuf_int32 x in
-  let _tensor_content, x = Piqirun.parse_optional_field 4 parse_binary x in
-  let _float_val, x = Piqirun.parse_packed_repeated_field 5 packed_parse_float32 parse_float32 x in
-  let _double_val, x = Piqirun.parse_packed_repeated_field 6 packed_parse_float64 parse_float64 x in
-  let _int_val, x = Piqirun.parse_packed_repeated_field 7 packed_parse_protobuf_int32 parse_protobuf_int32 x in
-  let _string_val, x = Piqirun.parse_repeated_field 8 parse_binary x in
-  let _scomplex_val, x = Piqirun.parse_packed_repeated_field 9 packed_parse_float32 parse_float32 x in
-  let _int64_val, x = Piqirun.parse_packed_repeated_field 10 packed_parse_protobuf_int64 parse_protobuf_int64 x in
-  let _bool_val, x = Piqirun.parse_packed_repeated_field 11 packed_parse_bool parse_bool x in
-  let _dcomplex_val, x = Piqirun.parse_packed_repeated_field 12 packed_parse_float64 parse_float64 x in
-  Piqirun.check_unparsed_fields x;
-  {
-    Tensor_proto.dtype = _dtype;
-    Tensor_proto.tensor_shape = _tensor_shape;
-    Tensor_proto.version_number = _version_number;
-    Tensor_proto.tensor_content = _tensor_content;
-    Tensor_proto.float_val = _float_val;
-    Tensor_proto.double_val = _double_val;
-    Tensor_proto.int_val = _int_val;
-    Tensor_proto.string_val = _string_val;
-    Tensor_proto.scomplex_val = _scomplex_val;
-    Tensor_proto.int64_val = _int64_val;
-    Tensor_proto.bool_val = _bool_val;
-    Tensor_proto.dcomplex_val = _dcomplex_val;
   }
 
 and parse_attr_value x =
@@ -412,6 +417,7 @@ and parse_data_type x =
     | 16l -> `dt_quint16
     | 17l -> `dt_uint16
     | 18l -> `dt_complex128
+    | 19l -> `dt_half
     | 101l -> `dt_float_ref
     | 102l -> `dt_double_ref
     | 103l -> `dt_int32_ref
@@ -430,6 +436,7 @@ and parse_data_type x =
     | 116l -> `dt_quint16_ref
     | 117l -> `dt_uint16_ref
     | 118l -> `dt_complex128_ref
+    | 119l -> `dt_half_ref
     | x -> Piqirun.error_enum_const x
 and packed_parse_data_type x =
   match Piqirun.int32_of_packed_signed_varint x with
@@ -452,6 +459,7 @@ and packed_parse_data_type x =
     | 16l -> `dt_quint16
     | 17l -> `dt_uint16
     | 18l -> `dt_complex128
+    | 19l -> `dt_half
     | 101l -> `dt_float_ref
     | 102l -> `dt_double_ref
     | 103l -> `dt_int32_ref
@@ -470,22 +478,15 @@ and packed_parse_data_type x =
     | 116l -> `dt_quint16_ref
     | 117l -> `dt_uint16_ref
     | 118l -> `dt_complex128_ref
+    | 119l -> `dt_half_ref
     | x -> Piqirun.error_enum_const x
 
 
-let rec gen__int64 code x = Piqirun.int64_to_zigzag_varint code x
-and packed_gen__int64 x = Piqirun.int64_to_packed_zigzag_varint x
-
-and gen__int32 code x = Piqirun.int32_to_zigzag_varint code x
+let rec gen__int32 code x = Piqirun.int32_to_zigzag_varint code x
 and packed_gen__int32 x = Piqirun.int32_to_packed_zigzag_varint x
 
-and gen__bool code x = Piqirun.bool_to_varint code x
-and packed_gen__bool x = Piqirun.bool_to_packed_varint x
-
-and gen__protobuf_int64 code x = Piqirun.int64_to_signed_varint code x
-and packed_gen__protobuf_int64 x = Piqirun.int64_to_packed_signed_varint x
-
-and gen__string code x = Piqirun.string_to_block code x
+and gen__int64 code x = Piqirun.int64_to_zigzag_varint code x
+and packed_gen__int64 x = Piqirun.int64_to_packed_zigzag_varint x
 
 and gen__protobuf_int32 code x = Piqirun.int32_to_signed_varint code x
 and packed_gen__protobuf_int32 x = Piqirun.int32_to_packed_signed_varint x
@@ -498,15 +499,13 @@ and packed_gen__float32 x = Piqirun.float_to_packed_fixed32 x
 and gen__float64 code x = Piqirun.float_to_fixed64 code x
 and packed_gen__float64 x = Piqirun.float_to_packed_fixed64 x
 
-and gen__tensor_shape_proto code x =
-  let _dim = Piqirun.gen_repeated_field 2 gen__tensor_shape_proto_dim x.Tensor_shape_proto.dim in
-  let _unknown_rank = Piqirun.gen_optional_field 3 gen__bool x.Tensor_shape_proto.unknown_rank in
-  Piqirun.gen_record code (_dim :: _unknown_rank :: [])
+and gen__protobuf_int64 code x = Piqirun.int64_to_signed_varint code x
+and packed_gen__protobuf_int64 x = Piqirun.int64_to_packed_signed_varint x
 
-and gen__tensor_shape_proto_dim code x =
-  let _size = Piqirun.gen_optional_field 1 gen__protobuf_int64 x.Tensor_shape_proto_dim.size in
-  let _name = Piqirun.gen_optional_field 2 gen__string x.Tensor_shape_proto_dim.name in
-  Piqirun.gen_record code (_size :: _name :: [])
+and gen__bool code x = Piqirun.bool_to_varint code x
+and packed_gen__bool x = Piqirun.bool_to_packed_varint x
+
+and gen__string code x = Piqirun.string_to_block code x
 
 and gen__tensor_proto code x =
   let _dtype = Piqirun.gen_optional_field 1 gen__data_type x.Tensor_proto.dtype in
@@ -521,7 +520,18 @@ and gen__tensor_proto code x =
   let _int64_val = Piqirun.gen_packed_repeated_field 10 packed_gen__protobuf_int64 x.Tensor_proto.int64_val in
   let _bool_val = Piqirun.gen_packed_repeated_field 11 packed_gen__bool x.Tensor_proto.bool_val in
   let _dcomplex_val = Piqirun.gen_packed_repeated_field 12 packed_gen__float64 x.Tensor_proto.dcomplex_val in
-  Piqirun.gen_record code (_dtype :: _tensor_shape :: _version_number :: _tensor_content :: _float_val :: _double_val :: _int_val :: _string_val :: _scomplex_val :: _int64_val :: _bool_val :: _dcomplex_val :: [])
+  let _half_val = Piqirun.gen_packed_repeated_field 13 packed_gen__protobuf_int32 x.Tensor_proto.half_val in
+  Piqirun.gen_record code (_dtype :: _tensor_shape :: _version_number :: _tensor_content :: _float_val :: _double_val :: _int_val :: _string_val :: _scomplex_val :: _int64_val :: _bool_val :: _dcomplex_val :: _half_val :: [])
+
+and gen__tensor_shape_proto code x =
+  let _dim = Piqirun.gen_repeated_field 2 gen__tensor_shape_proto_dim x.Tensor_shape_proto.dim in
+  let _unknown_rank = Piqirun.gen_optional_field 3 gen__bool x.Tensor_shape_proto.unknown_rank in
+  Piqirun.gen_record code (_dim :: _unknown_rank :: [])
+
+and gen__tensor_shape_proto_dim code x =
+  let _size = Piqirun.gen_optional_field 1 gen__protobuf_int64 x.Tensor_shape_proto_dim.size in
+  let _name = Piqirun.gen_optional_field 2 gen__string x.Tensor_shape_proto_dim.name in
+  Piqirun.gen_record code (_size :: _name :: [])
 
 and gen__attr_value code x =
   let _list = Piqirun.gen_optional_field 1 gen__attr_value_list_value x.Attr_value.list in
@@ -614,6 +624,7 @@ and gen__data_type code x =
     | `dt_quint16 -> 16l
     | `dt_uint16 -> 17l
     | `dt_complex128 -> 18l
+    | `dt_half -> 19l
     | `dt_float_ref -> 101l
     | `dt_double_ref -> 102l
     | `dt_int32_ref -> 103l
@@ -632,6 +643,7 @@ and gen__data_type code x =
     | `dt_quint16_ref -> 116l
     | `dt_uint16_ref -> 117l
     | `dt_complex128_ref -> 118l
+    | `dt_half_ref -> 119l
   )
 and packed_gen__data_type x =
   Piqirun.int32_to_packed_signed_varint (match x with
@@ -654,6 +666,7 @@ and packed_gen__data_type x =
     | `dt_quint16 -> 16l
     | `dt_uint16 -> 17l
     | `dt_complex128 -> 18l
+    | `dt_half -> 19l
     | `dt_float_ref -> 101l
     | `dt_double_ref -> 102l
     | `dt_int32_ref -> 103l
@@ -672,21 +685,22 @@ and packed_gen__data_type x =
     | `dt_quint16_ref -> 116l
     | `dt_uint16_ref -> 117l
     | `dt_complex128_ref -> 118l
+    | `dt_half_ref -> 119l
   )
 
 
-let gen_int64 x = gen__int64 (-1) x
 let gen_int32 x = gen__int32 (-1) x
-let gen_bool x = gen__bool (-1) x
-let gen_protobuf_int64 x = gen__protobuf_int64 (-1) x
-let gen_string x = gen__string (-1) x
+let gen_int64 x = gen__int64 (-1) x
 let gen_protobuf_int32 x = gen__protobuf_int32 (-1) x
 let gen_binary x = gen__binary (-1) x
 let gen_float32 x = gen__float32 (-1) x
 let gen_float64 x = gen__float64 (-1) x
+let gen_protobuf_int64 x = gen__protobuf_int64 (-1) x
+let gen_bool x = gen__bool (-1) x
+let gen_string x = gen__string (-1) x
+let gen_tensor_proto x = gen__tensor_proto (-1) x
 let gen_tensor_shape_proto x = gen__tensor_shape_proto (-1) x
 let gen_tensor_shape_proto_dim x = gen__tensor_shape_proto_dim (-1) x
-let gen_tensor_proto x = gen__tensor_proto (-1) x
 let gen_attr_value x = gen__attr_value (-1) x
 let gen_attr_value_list_value x = gen__attr_value_list_value (-1) x
 let gen_name_attr_list x = gen__name_attr_list (-1) x
@@ -698,25 +712,15 @@ let gen_op_list x = gen__op_list (-1) x
 let gen_data_type x = gen__data_type (-1) x
 
 
-let rec default_int64 () = 0L
-and default_int32 () = 0l
-and default_bool () = false
-and default_protobuf_int64 () = default_int64 ()
-and default_string () = ""
+let rec default_int32 () = 0l
+and default_int64 () = 0L
 and default_protobuf_int32 () = default_int32 ()
 and default_binary () = ""
 and default_float32 () = 0.0
 and default_float64 () = 0.0
-and default_tensor_shape_proto () =
-  {
-    Tensor_shape_proto.dim = [];
-    Tensor_shape_proto.unknown_rank = None;
-  }
-and default_tensor_shape_proto_dim () =
-  {
-    Tensor_shape_proto_dim.size = None;
-    Tensor_shape_proto_dim.name = None;
-  }
+and default_protobuf_int64 () = default_int64 ()
+and default_bool () = false
+and default_string () = ""
 and default_tensor_proto () =
   {
     Tensor_proto.dtype = None;
@@ -731,6 +735,17 @@ and default_tensor_proto () =
     Tensor_proto.int64_val = [];
     Tensor_proto.bool_val = [];
     Tensor_proto.dcomplex_val = [];
+    Tensor_proto.half_val = [];
+  }
+and default_tensor_shape_proto () =
+  {
+    Tensor_shape_proto.dim = [];
+    Tensor_shape_proto.unknown_rank = None;
+  }
+and default_tensor_shape_proto_dim () =
+  {
+    Tensor_shape_proto_dim.size = None;
+    Tensor_shape_proto_dim.name = None;
   }
 and default_attr_value () =
   {
