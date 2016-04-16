@@ -12,7 +12,7 @@ opam install tensorflow
 
 After that you have to get/build the TensorFlow library `libtensorflow.so`. The current opam package uses TensorFlow release 0.7 whereas the current tip uses release 0.8. There are three possibilities to get release 0.7, they could be adapted for 0.8:
 
-* Download the [pre-built binary](https://github.com/LaurentMazare/tensorflow-ocaml/releases/download/v0.0.1/libtensorflow.so) for linux/x86_64 (cpu only).
+* Download the [release 0.7](https://github.com/LaurentMazare/tensorflow-ocaml/releases/download/v0.0.1/libtensorflow.so) or [release 0.8](https://github.com/LaurentMazare/tensorflow-ocaml/releases/download/v0.0.3/libtensorflow.so) prebuilt binary for linux/x86_64 (cpu only).
 * Or you can build it from source by following these steps:
     1. [Install the Bazel build system](http://bazel.io/docs/install.html)
     1. Clone the TensorFlow repo `git clone --recurse-submodules -b r0.7 https://github.com/tensorflow/tensorflow`
