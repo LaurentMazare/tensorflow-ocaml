@@ -11,38 +11,48 @@ let epochs = 100000
 let size_c = 100
 let gen_len = 220
 let sample_size = 20
+let hidden_nodes = 15
 
 let lstm ~size_c ~size_x ~size_y x_and_ys =
-  let create_vars () = Var.normalf [ size_c+size_x; size_c ] ~stddev:0.1, Var.f [ size_c ] 0. in
-  let wf, bf = create_vars () in
-  let wi, bi = create_vars () in
-  let wC, bC = create_vars () in
-  let wo, bo = create_vars () in
+  let one_lstm ~size_c ~size_x =
+    let create_vars () = Var.normalf [ size_c+size_x; size_c ] ~stddev:0.1, Var.f [ size_c ] 0. in
+    let wf, bf = create_vars () in
+    let wi, bi = create_vars () in
+    let wC, bC = create_vars () in
+    let wo, bo = create_vars () in
+    Staged.stage (fun ~h ~x ~c ->
+      let open Ops in
+      let h_and_x = concat one32 [ h; x ] in
+      let c =
+        sigmoid (h_and_x *^ wf + bf) * c
+        + sigmoid (h_and_x *^ wi + bi) * tanh (sigmoid (h_and_x *^ wC + bC))
+      in
+      let h = sigmoid (h_and_x *^ wo + bo) * tanh c in
+      h, c)
+  in
   let wy, by = Var.normalf [ size_c; size_y ] ~stddev:0.1, Var.f [ size_y ] 0. in
-  let one_lstm ~h ~x ~c =
-    let open Ops in
-    let h_and_x = concat one32 [ h; x ] in
-    let c =
-      sigmoid (h_and_x *^ wf + bf) * c
-      + sigmoid (h_and_x *^ wi + bi) * tanh (sigmoid (h_and_x *^ wC + bC))
-    in
-    let h = sigmoid (h_and_x *^ wo + bo) * tanh c in
-    let y_bar = Ops.(h *^ wy + by) |> Ops.softmax in
-    y_bar, h, c
+  let lstm1 = Staged.unstage (one_lstm ~size_c ~size_x) in
+  let lstm2 = Staged.unstage (one_lstm ~size_c ~size_x:size_c) in
+  let two_lstm ~h1 ~c1 ~h2 ~c2 ~x =
+    let h1, c1 = lstm1 ~h:h1 ~c:c1 ~x in
+    let h2, c2 = lstm2 ~h:h2 ~c:c2 ~x:h1 in
+    let y_bar = Ops.(h2 *^ wy + by) |> Ops.softmax in
+    y_bar, h1, c1, h2, c2
   in
   let err =
     let zero = Ops.f ~shape:[ batch_size; size_c ] 0. in
-    List.fold x_and_ys ~init:([], zero, zero) ~f:(fun (errs, h, c) (x, y) ->
-      let y_bar, h, c = one_lstm ~h ~x ~c in
-      let err = Ops.(neg (y * log y_bar)) in
-      err :: errs, h, c)
-    |> fun (errs, _, _) ->
+    List.fold x_and_ys ~init:([], zero, zero, zero, zero)
+      ~f:(fun (errs, h1, c1, h2, c2) (x, y) ->
+        let y_bar, h1, c1, h2, c2 = two_lstm ~h1 ~c1 ~h2 ~c2 ~x in
+        let err = Ops.(neg (y * log y_bar)) in
+        err :: errs, h1, c1, h2, c2)
+    |> fun (errs, _, _, _, _) ->
     match errs with
     | [] -> failwith "Empty input list"
     | [ err ] -> err
     | errs -> Ops.concat Ops.one32 errs |> Ops.reduce_mean
   in
-  err, one_lstm
+  err, two_lstm
 
 let fit_and_evaluate x_data y_data =
   let placeholder_x = Ops.placeholder ~type_:Float [] in
@@ -55,13 +65,15 @@ let fit_and_evaluate x_data y_data =
   let xs = split placeholder_x in
   let ys = split placeholder_y in
   let x_and_ys = List.zip_exn xs ys in
-  let err, one_lstm = lstm ~size_c ~size_x:alphabet_size ~size_y:alphabet_size x_and_ys in
+  let err, two_lstm = lstm ~size_c ~size_x:alphabet_size ~size_y:alphabet_size x_and_ys in
   let gd = Optimizers.adam_minimizer err ~learning_rate:(Ops.f 0.004) in
   let print_sample =
-    let h = Ops.placeholder [] ~type_:Float in
+    let h1 = Ops.placeholder [] ~type_:Float in
+    let c1 = Ops.placeholder [] ~type_:Float in
+    let h2 = Ops.placeholder [] ~type_:Float in
+    let c2 = Ops.placeholder [] ~type_:Float in
     let x = Ops.placeholder [] ~type_:Float in
-    let c = Ops.placeholder [] ~type_:Float in
-    let y_bar, h_out, c_out = one_lstm ~h ~x ~c in
+    let y_bar, h1_out, c1_out, h2_out, c2_out = two_lstm ~x ~h1 ~c1 ~h2 ~c2 in
     let y_char = Ops.argMax y_bar Ops.one32 in
     fun () ->
       let tensor size =
@@ -69,16 +81,16 @@ let fit_and_evaluate x_data y_data =
         Tensor.fill tensor 0.;
         tensor
       in
-      let init = [], tensor alphabet_size, tensor size_c, tensor size_c in
-      let ys, _, _, _ =
-        List.fold (List.range 0 gen_len) ~init ~f:(fun (acc_y, prev_y, prev_h, prev_c) _ ->
-          let y_char, y_res, h_res, c_res =
+      let init = [], tensor alphabet_size, tensor size_c, tensor size_c, tensor size_c, tensor size_c in
+      let ys, _, _, _, _, _ =
+        List.fold (List.range 0 gen_len) ~init ~f:(fun (acc_y, prev_y, prev_h1, prev_c1, prev_h2, prev_c2) _ ->
+          let y_char, y_res, h1_res, c1_res, h2_res, c2_res =
             Session.run
-              ~inputs:Session.Input.[ float x prev_y; float h prev_h; float c prev_c ]
-              Session.Output.(four (int64 y_char) (float y_bar) (float h_out) (float c_out))
+              ~inputs:Session.Input.[ float x prev_y; float h1 prev_h1; float c1 prev_c1; float h2 prev_h2; float c2 prev_c2 ]
+              Session.Output.(six (int64 y_char) (float y_bar) (float h1_out) (float c1_out) (float h2_out) (float c2_out))
           in
           let y = Tensor.get y_char [| 0 |] |> Int64.to_int_exn in
-          y :: acc_y, y_res, h_res, c_res)
+          y :: acc_y, y_res, h1_res, c1_res, h2_res, c2_res)
       in
       List.rev ys
       |> List.map ~f:(fun c ->

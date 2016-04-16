@@ -18,6 +18,7 @@ sig
   val three : 'a t -> 'b t -> 'c t -> ('a * 'b * 'c) t
   val four : 'a t -> 'b t -> 'c t -> 'd t -> ('a * 'b * 'c *'d) t
   val five : 'a t -> 'b t -> 'c t -> 'd t -> 'e t -> ('a * 'b * 'c * 'd * 'e) t
+  val six : 'a t -> 'b t -> 'c t -> 'd t -> 'e t -> 'f t -> ('a * 'b * 'c * 'd * 'e * 'f) t
   val empty : unit t
 
   val float  : [`float] Node.t -> (float, Bigarray.float32_elt) Tensor.t t

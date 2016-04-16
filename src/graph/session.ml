@@ -140,6 +140,10 @@ struct
     both (both (both t1 t2) (both t3 t4)) t5
     |> map ~f:(fun (((t1, t2), (t3, t4)), t5) -> t1, t2, t3, t4, t5)
 
+  let six t1 t2 t3 t4 t5 t6 =
+    both (both (both t1 t2) (both t3 t4)) (both t5 t6)
+    |> map ~f:(fun (((t1, t2), (t3, t4)), (t5, t6)) -> t1, t2, t3, t4, t5, t6)
+
   (* CR-someday noury: this could be just one function with modular implicits *)
   let float (node : [`float] Node.t) : (float, Bigarray.float32_elt) Tensor.t t =
     Compute node
