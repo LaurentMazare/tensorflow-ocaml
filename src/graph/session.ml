@@ -11,12 +11,10 @@ type t =
   (* The nodes already in the graph of the session, with their name there *)
   ; exported_nodes : Node.Id.Hash_set.t
   (* To manage variable initialisation, each unitialised variable has a height.
-     If a variable init depends of no initialised variable,
-     its height is 0.
+     If a variable init depends of no initialised variable, its height is 0.
      If it depends of unitialised variable v1 ... vn, its height is max(height(vi)) + 1
      Initialisation can be done one level after one level *)
   ; uninitialised_variables : Node.p list Int.Table.t
-  ; current_table : int Node.Id.Table.t
 }
 
 let create () =
@@ -27,26 +25,25 @@ let create () =
     { session
     ; exported_nodes = Node.Id.Hash_set.create ()
     ; uninitialised_variables = Int.Table.create ()
-    ; current_table = Node.Id.Table.create ()
     }
 
 let default_session = lazy (create ())
 
 (* [walk t node] walks through the graph and store the unitialized variables. *)
-let rec walk t node =
+let rec walk t node ~current_table =
   let id = Node.packed_id node in
   if Hash_set.mem t.exported_nodes id
   then 0 (* already exported before starting this run *)
   else
-    Hashtbl.find_or_add t.current_table id ~default:(fun () ->
+    Hashtbl.find_or_add current_table id ~default:(fun () ->
       let Node.P u_node = node in
       match Var.get_init node with
       | None ->
         List.fold (Node.inputs u_node) ~init:0 ~f:(fun acc_height input ->
-          max acc_height (walk t input))
+          max acc_height (walk t input ~current_table))
       | Some assign ->
-        Hashtbl.set t.current_table ~key:id ~data:0;
-        let h = walk t assign in
+        Hashtbl.set current_table ~key:id ~data:0;
+        let h = walk t assign ~current_table in
         Hashtbl.add_multi t.uninitialised_variables ~key:h ~data:assign;
         h + 1)
 
@@ -58,11 +55,13 @@ type node_names =
   }
 
 let prepare_graph t ~inputs ~targets ~outputs =
-  let prep = List.map ~f:(walk t) in
-  ignore (prep inputs : int list);
-  ignore (prep targets : int list);
-  ignore (prep outputs : int list);
-  Hashtbl.clear t.current_table;
+  let current_table = Node.Id.Table.create () in
+  let prep =
+    List.iter ~f:(fun node -> ignore (walk t node ~current_table : int))
+  in
+  prep inputs;
+  prep targets;
+  prep outputs;
   let rec build_variables i =
     match Hashtbl.find t.uninitialised_variables i with
     | None -> []
