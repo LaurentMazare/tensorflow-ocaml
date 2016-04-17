@@ -11,7 +11,6 @@ let epochs = 100000
 let size_c = 100
 let gen_len = 220
 let sample_size = 20
-let hidden_nodes = 15
 
 let lstm ~size_c ~size_x ~size_y x_and_ys =
   let one_lstm ~size_c ~size_x =

@@ -14,7 +14,7 @@ let assert_scalar tensor ~expected_value ~tol =
     | [| n |] -> failwithf "Single dimension tensor with %d elements" n ()
     | _ -> failwith "Multi-dimensional tensor."
   in
-  assert_equal (Tensor..get tensor index) ~expected_value ~tol
+  assert_equal (Tensor.get tensor index) ~expected_value ~tol
 
 let assert_vector tensor ~expected_value ~tol =
   match Tensor.dims tensor with

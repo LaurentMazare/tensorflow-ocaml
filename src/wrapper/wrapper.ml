@@ -12,6 +12,7 @@ let () =
 let from = Dl.dlopen ~filename:"libtensorflow.so" ~flags:[ RTLD_LAZY ]
 
 let verbose = false
+let force_full_major = false
 (* TF_TENSOR *)
 type tf_tensor = unit ptr
 let tf_tensor : tf_tensor typ = ptr void
@@ -282,6 +283,8 @@ module Session = struct
   let extend_graph t protobuf =
     let status = Status.create () in
     let protobuf = Protobuf.to_string protobuf in
+    if force_full_major
+    then Gc.full_major ();
     tf_extendgraph
       t
       protobuf
@@ -341,10 +344,14 @@ module Session = struct
     let data_type = Tensor.kind tensor |> data_type_of_kind in
     let size = Array.fold_left ( * ) 1 dim_array * sizeof data_type in
     Hashtbl.add live_tensors id packed_tensor;
+    let num_dims = Tensor.num_dims tensor in
+    let start = bigarray_start genarray tensor |> to_voidp in
+    if force_full_major
+    then Gc.full_major ();
     tf_newtensor (data_type_to_int data_type)
       dims
-      (Tensor.num_dims tensor)
-      (bigarray_start genarray tensor |> to_voidp)
+      num_dims
+      start
       (Unsigned.Size_t.of_int size)
       deallocate
       (Nativeint.of_int id |> ptr_of_raw_address)
@@ -387,21 +394,30 @@ module Session = struct
 
   let run ?(inputs = []) ?(outputs = []) ?(targets = []) t =
     let status = Status.create () in
+    let ninputs = List.length inputs in
     let input_names, input_tensors = List.split inputs in
     let input_tensors = List.map c_tensor_of_tensor input_tensors in
     let output_len = List.length outputs in
     let output_tensors = CArray.make tf_tensor output_len in
+    let input_names = ptr_ptr_char input_names in
+    let input_tensor_start = CArray.(of_list tf_tensor input_tensors |> start) in
+    let outputs = ptr_ptr_char outputs in
+    let ntargets = List.length targets in
+    let targets = ptr_ptr_char targets in
+    let output_tensor_start = CArray.start output_tensors in
+    if force_full_major
+    then Gc.full_major ();
     tf_run
       t
       null
-      (ptr_ptr_char input_names)
-      CArray.(of_list tf_tensor input_tensors |> start)
-      (List.length inputs)
-      (ptr_ptr_char outputs)
-      (CArray.start output_tensors)
+      input_names
+      input_tensor_start
+      ninputs
+      outputs
+      output_tensor_start
       output_len
-      (ptr_ptr_char targets)
-      (List.length targets)
+      targets
+      ntargets
       null
       status;
     match result_or_error status () with
