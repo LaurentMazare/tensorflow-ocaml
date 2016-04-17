@@ -41,9 +41,11 @@ let rec walk t node ~current_table =
       | None ->
         List.fold (Node.inputs u_node) ~init:0 ~f:(fun acc_height input ->
           max acc_height (walk t input ~current_table))
-      | Some assign ->
-        Hashtbl.set current_table ~key:id ~data:0;
-        let h = walk t assign ~current_table in
+      | Some init ->
+        let h = walk t init ~current_table in
+        let init = Node.extract init (Node.output_type u_node) in
+        let init = Option.value_exn init in
+        let assign = Node.P (Ops.assign u_node init) in
         Hashtbl.add_multi t.uninitialised_variables ~key:h ~data:assign;
         h + 1)
 
