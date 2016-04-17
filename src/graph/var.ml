@@ -8,7 +8,7 @@ let create shape ~type_ ~init =
       ~type_
       ~shape:(List.map shape ~f:(fun size -> { Node.Dim.size; name = None }))
   in
-  Node.Weak_table.set init_table ~key:(Node.P node) ~data:(Node.P init);
+  Node.Weak_table.set init_table ~key:node ~data:init;
   node
 
 let load ~type_ shape ~filename ~tensor =

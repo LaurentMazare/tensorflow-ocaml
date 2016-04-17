@@ -194,11 +194,19 @@ let extract : type a . p -> a Type.t -> a t option = fun p type_ ->
   | _, _ -> None
 
 (* CR noury: actually make weak *)
-module Weak_table =
-  struct
-   type 'a t = 'a Id.Table.t
-   let create () = Id.Table.create ()
-   let set t ~key ~data =
-     Id.Table.set t ~key:(packed_id key) ~data
-   let find t key = Id.Table.find t (packed_id key)
-  end
+module Weak_table = struct
+  type 'a node = 'a t
+  type t = p Id.Table.t
+
+  let create () =
+    Id.Table.create ()
+
+  let set t ~key ~data =
+    Id.Table.set t ~key:(id key) ~data:(P data)
+
+  let find t key =
+    match Id.Table.find t (id key) with
+    | None -> None
+    | Some packed_node ->
+      extract packed_node (output_type key)
+end

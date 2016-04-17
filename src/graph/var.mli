@@ -37,4 +37,4 @@ val truncated_normald : int list -> stddev:float -> [ `double ] Node.t
 val load_f : int list -> filename:string -> tensor:string -> [ `float ] Node.t
 val load_d : int list -> filename:string -> tensor:string -> [ `double ] Node.t
 
-val get_init : Node.p -> Node.p option
+val get_init : 'a Node.t -> 'a Node.t option
