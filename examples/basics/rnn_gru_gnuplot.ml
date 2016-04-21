@@ -12,27 +12,11 @@ open Tensorflow
 let train_size = 1000
 
 let gru ~size_h ~size_x ~size_y x_and_ys =
-  let create_vars () = Var.normalf [ size_h+size_x; size_h ] ~stddev:0.1, Var.f [ size_h ] 0. in
-  (* The reset parameters *)
-  let wr, br = create_vars () in
-  (* The mixing variables *)
-  let wz, bz = create_vars () in
-  (* The contribution of x and the resetted old state *)
-  let wH, bH = create_vars () in
   (* Output y from the hidden state *)
   let wy, by = Var.normalf [ size_h; size_y ] ~stddev:0.1, Var.f [ size_y ] 0. in
+  let gru = Staged.unstage (Cell.gru ~size_h ~size_x) in
   let one_gru ~h ~x =
-    let open Ops in
-    let h_and_x = concat one32 [ h; x ] in
-    (* h partly reseted reset h *)
-    let rh = sigmoid (h_and_x *^ wr + br) * h in
-    let rh_and_x = concat one32 [ rh; x ] in
-    (* the new value of h *)
-    let nh = tanh (rh_and_x *^ wH + bH) in
-    (* How do we mix th new h and the old h *)
-    let z = sigmoid (h_and_x *^ wz + bz) in
-    (* we mix the old h and the new h *)
-    let h = z * nh + (f 1.0 - z) * h in
+    let h = gru ~h ~x in
     let y_bar = Ops.(h *^ wy + by) in
     y_bar, h
   in
