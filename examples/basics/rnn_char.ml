@@ -13,28 +13,12 @@ let gen_len = 220
 let sample_size = 20
 
 let lstm ~size_c ~size_x ~size_y x_and_ys =
-  let one_lstm ~size_c ~size_x =
-    let create_vars () = Var.normalf [ size_c+size_x; size_c ] ~stddev:0.1, Var.f [ size_c ] 0. in
-    let wf, bf = create_vars () in
-    let wi, bi = create_vars () in
-    let wC, bC = create_vars () in
-    let wo, bo = create_vars () in
-    Staged.stage (fun ~h ~x ~c ->
-      let open Ops in
-      let h_and_x = concat one32 [ h; x ] in
-      let c =
-        sigmoid (h_and_x *^ wf + bf) * c
-        + sigmoid (h_and_x *^ wi + bi) * tanh (sigmoid (h_and_x *^ wC + bC))
-      in
-      let h = sigmoid (h_and_x *^ wo + bo) * tanh c in
-      h, c)
-  in
   let wy, by = Var.normalf [ size_c; size_y ] ~stddev:0.1, Var.f [ size_y ] 0. in
-  let lstm1 = Staged.unstage (one_lstm ~size_c ~size_x) in
-  let lstm2 = Staged.unstage (one_lstm ~size_c ~size_x:size_c) in
+  let lstm1 = Staged.unstage (Cell.lstm ~size_c ~size_x) in
+  let lstm2 = Staged.unstage (Cell.lstm ~size_c ~size_x:size_c) in
   let two_lstm ~h1 ~c1 ~h2 ~c2 ~x =
-    let h1, c1 = lstm1 ~h:h1 ~c:c1 ~x in
-    let h2, c2 = lstm2 ~h:h2 ~c:c2 ~x:h1 in
+    let `h h1, `c c1 = lstm1 ~h:h1 ~c:c1 ~x in
+    let `h h2, `c c2 = lstm2 ~h:h2 ~c:c2 ~x:h1 in
     let y_bar = Ops.(h2 *^ wy + by) |> Ops.softmax in
     y_bar, h1, c1, h2, c2
   in
