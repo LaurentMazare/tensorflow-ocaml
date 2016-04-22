@@ -5,6 +5,16 @@ type p = P : (_, _) t -> p
 let create kind dims =
   Bigarray.Genarray.create kind Bigarray.c_layout dims
 
+let copy t =
+  let copy =
+    Bigarray.Genarray.create
+      (Bigarray.Genarray.kind t)
+      Bigarray.c_layout
+      (Bigarray.Genarray.dims t)
+  in
+  Bigarray.Genarray.blit t copy;
+  copy
+
 let create1 kind d = create kind [| d |]
 let create2 kind d d' = create kind [| d; d' |]
 let create3 kind d d' d'' = create kind [| d; d'; d'' |]

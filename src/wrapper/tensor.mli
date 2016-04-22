@@ -12,6 +12,8 @@ val create1 : ('a, 'b) Bigarray.kind -> int -> ('a, 'b) t
 val create2 : ('a, 'b) Bigarray.kind -> int -> int -> ('a, 'b) t
 val create3 : ('a, 'b) Bigarray.kind -> int -> int -> int -> ('a, 'b) t
 
+val copy : ('a, 'b) t -> ('a, 'b) t
+
 val set : ('a, 'b) t -> int array -> 'a -> unit
 val get : ('a, 'b) t -> int array -> 'a
 val dims : ('a, 'b) t -> int array
