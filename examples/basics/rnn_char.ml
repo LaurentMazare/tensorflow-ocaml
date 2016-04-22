@@ -133,7 +133,7 @@ let fit_and_evaluate data all_chars =
       let mem_data = h1_res, c1_res, h2_res, c2_res in
       let smooth_error = 0.999 *. smooth_error +. 0.001 *. err in
       if i % 50 = 0 then begin
-        printf "%d %f\n%!" i smooth_error;
+        printf "\n%d %f\n%!" i smooth_error;
         let prev_y = tensor_zero alphabet_size in
         Tensor.set prev_y [| 0; 0 |] 1.;
         print_sample ~prev_y ~prev_mem_data:mem_data
@@ -142,11 +142,7 @@ let fit_and_evaluate data all_chars =
   |> ignore
 
 let read_file ?(filename = "data/input.txt") () =
-  let input =
-    In_channel.read_lines filename
-    |> List.concat_map ~f:(fun str -> String.to_list str)
-    |> Array.of_list
-  in
+  let input = In_channel.read_all filename |> String.to_array in
   let all_chars = Char.Set.of_array input |> Set.to_array in
   let index_by_char =
     Array.mapi all_chars ~f:(fun i c -> c, i)
