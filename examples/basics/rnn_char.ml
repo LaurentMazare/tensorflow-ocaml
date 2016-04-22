@@ -5,9 +5,10 @@ open Core_kernel.Std
 open Tensorflow
 
 let epochs = 100000
-let size_c = 100
-let gen_len = 220
+let size_c = 256
+let gen_len = 500
 let sample_size = 25
+let temperature = 0.5
 
 let lstm ~size_c ~size_x ~size_y ~prev_mem x_and_ys =
   let wy, by = Var.normalf [ size_c; size_y ] ~stddev:0.1, Var.f [ size_y ] 0. in
@@ -65,12 +66,16 @@ let print_sample two_lstm all_chars =
           Session.run ~inputs
             Session.Output.(five (float y_bar) (float h1_out) (float c1_out) (float h2_out) (float c2_out))
         in
-        let p = Random.float 1. in
+        let dist =
+          Array.init alphabet_size ~f:(fun i ->
+            (Tensor.get y_res [| 0; i |]) ** (1. /. temperature))
+        in
+        let p = Random.float (Array.reduce_exn dist ~f:(+.)) in
         let acc = ref 0. in
         let y = ref 0 in
         for i = 0 to alphabet_size - 1 do
           if !acc <= p then y := i;
-          acc := !acc +. Tensor.get y_res [| 0; i |]
+          acc := !acc +. dist.(i)
         done;
         let y_res = tensor_zero alphabet_size in
         Tensor.set y_res [| 0; !y |] 1.;
@@ -79,7 +84,7 @@ let print_sample two_lstm all_chars =
     List.rev ys
     |> List.map ~f:(fun i -> all_chars.(i))
     |> String.of_char_list
-    |> printf "%s\n%!")
+    |> printf "%s\n\n%!")
 
 let fit_and_evaluate data all_chars =
   let alphabet_size = Array.length all_chars in
@@ -132,8 +137,8 @@ let fit_and_evaluate data all_chars =
       in
       let mem_data = h1_res, c1_res, h2_res, c2_res in
       let smooth_error = 0.999 *. smooth_error +. 0.001 *. err in
-      if i % 50 = 0 then begin
-        printf "\n%d %f\n%!" i smooth_error;
+      if i % 500 = 0 then begin
+        printf "Epoch: %d %f\n%!" i smooth_error;
         let prev_y = tensor_zero alphabet_size in
         Tensor.set prev_y [| 0; 0 |] 1.;
         print_sample ~prev_y ~prev_mem_data:mem_data
