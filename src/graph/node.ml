@@ -180,6 +180,8 @@ let get_shape t =
     | Shape shape -> Some shape
     | _ -> None)
 
+let set_output_idx t output_idx = { t with output_idx }
+
 let extract : type a . p -> a Type.t -> a t option = fun p type_ ->
   let P t = p in
   match t.output_type, type_ with

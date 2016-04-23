@@ -1602,15 +1602,17 @@ let concatOffset
   let name = Name.of_string name in
   let op_name = Op_names.concatOffset in
   let inputs = [ P concat_dim ] @ List.map ~f:(fun n -> P n) shape in
-  List.init (List.length shape) ~f:(fun output_idx ->
+  let node =
     Node.create
       ~name
       ~op_name
       ~output_type:Type.Int32
       ~inputs
       ~attributes
-      ~output_idx:(Some output_idx)
-    )
+      ~output_idx:None
+  in
+  List.init (List.length shape) ~f:(fun output_idx ->
+    set_output_idx node (Some output_idx))
 
 let conj
     ?(name = "Conj")
@@ -2117,15 +2119,17 @@ let dynamicPartition
   let name = Name.of_string name in
   let op_name = Op_names.dynamicPartition in
   let inputs = [ P data; P partitions ] in
-  List.init num_partitions ~f:(fun output_idx ->
+  let node =
     Node.create
       ~name
       ~op_name
       ~output_type:(Node.output_type data)
       ~inputs
       ~attributes
-      ~output_idx:(Some output_idx)
-    )
+      ~output_idx:None
+  in
+  List.init num_partitions ~f:(fun output_idx ->
+    set_output_idx node (Some output_idx))
 
 let dynamicStitch
     ?(name = "DynamicStitch")
@@ -5498,15 +5502,17 @@ let shapeN
   let name = Name.of_string name in
   let op_name = Op_names.shapeN in
   let inputs = List.map ~f:(fun n -> P n) input in
-  List.init (List.length input) ~f:(fun output_idx ->
+  let node =
     Node.create
       ~name
       ~op_name
       ~output_type:Type.Int32
       ~inputs
       ~attributes
-      ~output_idx:(Some output_idx)
-    )
+      ~output_idx:None
+  in
+  List.init (List.length input) ~f:(fun output_idx ->
+    set_output_idx node (Some output_idx))
 
 let shardedFilename
     ?(name = "ShardedFilename")
@@ -6285,15 +6291,17 @@ let split
   let name = Name.of_string name in
   let op_name = Op_names.split in
   let inputs = [ P split_dim; P value ] in
-  List.init num_split ~f:(fun output_idx ->
+  let node =
     Node.create
       ~name
       ~op_name
       ~output_type:(Node.output_type value)
       ~inputs
       ~attributes
-      ~output_idx:(Some output_idx)
-    )
+      ~output_idx:None
+  in
+  List.init num_split ~f:(fun output_idx ->
+    set_output_idx node (Some output_idx))
 
 let sqrt
     ?(name = "Sqrt")
@@ -7165,15 +7173,17 @@ let unpack
   let name = Name.of_string name in
   let op_name = Op_names.unpack in
   let inputs = [ P value ] in
-  List.init num ~f:(fun output_idx ->
+  let node =
     Node.create
       ~name
       ~op_name
       ~output_type:(Node.output_type value)
       ~inputs
       ~attributes
-      ~output_idx:(Some output_idx)
-    )
+      ~output_idx:None
+  in
+  List.init num ~f:(fun output_idx ->
+    set_output_idx node (Some output_idx))
 
 let unsortedSegmentSum
     ?(name = "UnsortedSegmentSum")

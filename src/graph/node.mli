@@ -115,6 +115,8 @@ val get_attr_string : _ t -> string -> string option
 val get_attr_int_list : _ t -> string -> int list option
 val get_shape : _ t -> Dim.t list option
 
+val set_output_idx : 'a t -> int option -> 'a t
+
 val id : _ t -> Id.t
 
 val extract : p -> 'a Type.t -> 'a t option

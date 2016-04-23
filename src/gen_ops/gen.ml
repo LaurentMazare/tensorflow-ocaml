@@ -408,15 +408,17 @@ let handle_one_op (op : Op.t) out_channel =
         | Some input -> sprintf "(List.length %s)" input.name
         | None -> number_attr.name
       in
-      p "  List.init %s ~f:(fun output_idx ->" number_value;
+      p "  let node =";
       p "    Node.create";
       p "      ~name";
       p "      ~op_name";
       p "      ~output_type:%s" output_type_string;
       p "      ~inputs";
       p "      ~attributes";
-      p "      ~output_idx:(Some output_idx)";
-      p "    )";
+      p "      ~output_idx:None";
+      p "  in";
+      p "  List.init %s ~f:(fun output_idx ->" number_value;
+      p "    set_output_idx node (Some output_idx))";
     | output_types ->
       List.iteri output_types ~f:(fun idx output_type ->
         let output_type_string = output_type_string op output_type.type_ ~idx in
