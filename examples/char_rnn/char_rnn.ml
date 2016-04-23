@@ -161,7 +161,7 @@ let fit_and_evaluate data all_chars =
       smooth_error, mem_data)
   |> ignore
 
-let read_file ?(filename = "data/input.txt") () =
+let read_file filename =
   let input = In_channel.read_all filename |> String.to_array in
   let all_chars = Char.Set.of_array input |> Set.to_array in
   let index_by_char =
@@ -179,7 +179,34 @@ let read_file ?(filename = "data/input.txt") () =
   done;
   data, all_chars
 
+let train filename =
+  let data, all_chars = read_file filename in
+  fit_and_evaluate data all_chars
+
 let () =
   Random.init 42;
-  let data, all_chars = read_file () in
-  fit_and_evaluate data all_chars
+  let open Cmdliner in
+  let train_cmd =
+    let train_filename =
+      let doc = "Data file to use for training." in
+      Arg.(value & opt file "data/input.txt"
+        & info [ "train-file" ] ~docv:"FILE" ~doc)
+    in
+    let doc = "Train a char based RNN on a given file" in
+    let man =
+      [ `S "DESCRIPTION"
+      ; `P "Train a char based RNN on a given file"
+      ]
+    in
+    Term.(const train $ train_filename),
+    Term.info "train" ~sdocs:"" ~doc ~man
+  in
+  let default_cmd =
+    let doc = "char based RNN" in
+    Term.(ret (const (`Help (`Pager, None)))),
+    Term.info "char_rnn" ~version:"0" ~sdocs:"" ~doc
+  in
+  let cmds = [ train_cmd ] in
+  match Term.eval_choice default_cmd cmds with
+  | `Error _ -> exit 1
+  | _ -> exit 0

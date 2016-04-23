@@ -11,6 +11,7 @@ install: []
 remove:  []
 
 depends: [
+  "cmdliner"
   "core_kernel"
   "ctypes" {>= "0.5"}
   "ctypes-foreign"
