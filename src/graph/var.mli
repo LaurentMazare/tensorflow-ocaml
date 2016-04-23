@@ -38,3 +38,5 @@ val load_f : int list -> filename:string -> tensor:string -> [ `float ] Node.t
 val load_d : int list -> filename:string -> tensor:string -> [ `double ] Node.t
 
 val get_init : 'a Node.t -> 'a Node.t option
+
+val get_all_vars : 'a Node.t -> Node.p list

@@ -46,3 +46,19 @@ let truncated_normalf = truncated_normal ~type_:Float
 let truncated_normald = truncated_normal ~type_:Double
 
 let get_init p = Node.Weak_table.find init_table p
+
+let get_all_vars node =
+  let processed_nodes = Node.Id.Hash_set.create () in
+  (* Using references here make the following code quite consise. *)
+  let all_vars = ref [] in
+  let rec vars (Node.P node) =
+    if not (Hash_set.mem processed_nodes (Node.id node))
+    then begin
+      Hash_set.add processed_nodes (Node.id node);
+      if Node.Op_name.(=) (Node.op_name node) Ops.Op_names.variable
+      then all_vars := (Node.P node) :: !all_vars
+      else List.iter (Node.inputs node) ~f:vars
+    end
+  in
+  vars (Node.P node);
+  !all_vars

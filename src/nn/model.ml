@@ -171,24 +171,8 @@ let evaluate_d = evaluate_gen Session.Input.double Session.Output.double Float64
 (* Collect all variables in a net. The order of the created list is important as it
    will serve to name the variable.
    This does not seem very robust but will do for now. *)
-let get_all_vars t =
-  let processed_nodes = Node.Id.Hash_set.create () in
-  (* Using references here make the following code quite consise. *)
-  let all_vars = ref [] in
-  let rec vars (Node.P node) =
-    if not (Hash_set.mem processed_nodes (Node.id node))
-    then begin
-      Hash_set.add processed_nodes (Node.id node);
-      if Node.Op_name.(=) (Node.op_name node) Ops.Op_names.variable
-      then all_vars := (Node.P node) :: !all_vars
-      else List.iter (Node.inputs node) ~f:vars
-    end
-  in
-  vars (Node.P (Nn.node t.net));
-  !all_vars
-
 let all_vars_with_names t =
-  get_all_vars t
+  Var.get_all_vars (Nn.node t.net)
   |> List.mapi ~f:(fun i var -> sprintf "V%d" i, var)
 
 let save t ~filename =

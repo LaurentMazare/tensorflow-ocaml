@@ -125,7 +125,8 @@ let print_sample t all_chars =
     |> String.of_char_list
     |> printf "%s\n\n%!")
 
-let fit_and_evaluate data all_chars =
+let fit_and_evaluate data all_chars ~checkpoint =
+  ignore checkpoint;
   let alphabet_size = Array.length all_chars in
   let input_size = (Tensor.dims data).(0) in
   let t = rnn ~size_c ~sample_size ~alphabet_size in
@@ -179,9 +180,9 @@ let read_file filename =
   done;
   data, all_chars
 
-let train filename =
+let train filename checkpoint =
   let data, all_chars = read_file filename in
-  fit_and_evaluate data all_chars
+  fit_and_evaluate data all_chars ~checkpoint
 
 let () =
   Random.init 42;
@@ -192,13 +193,20 @@ let () =
       Arg.(value & opt file "data/input.txt"
         & info [ "train-file" ] ~docv:"FILE" ~doc)
     in
+    let checkpoint =
+      let doc = "Checkpoint file to store the current state." in
+      Arg.(value & opt string "out.cpkt"
+        & info [ "checkpoint" ] ~docv:"FILE" ~doc)
+    in
     let doc = "Train a char based RNN on a given file" in
     let man =
       [ `S "DESCRIPTION"
       ; `P "Train a char based RNN on a given file"
       ]
     in
-    Term.(const train $ train_filename),
+    Term.(const train
+      $ train_filename
+      $ checkpoint),
     Term.info "train" ~sdocs:"" ~doc ~man
   in
   let default_cmd =
