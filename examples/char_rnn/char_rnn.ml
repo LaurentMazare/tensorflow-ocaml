@@ -8,9 +8,7 @@ open Tensorflow
 
 let epochs = 100000
 let size_c = 256
-let gen_len = 500
 let sample_size = 25
-let temperature = 0.5
 
 type t =
   { train_err              : [ `float ] Node.t
@@ -93,49 +91,12 @@ let all_vars_with_names t =
   Var.get_all_vars t.sample_output
   |> List.mapi ~f:(fun i var -> sprintf "V%d" i, var)
 
-let print_sample t all_chars =
-  let alphabet_size = Array.length all_chars in
-  Staged.stage (fun ~prev_y ~prev_mem_data ->
-    let init = [], prev_y, prev_mem_data in
-    let ys, _, _ =
-      List.fold (List.range 0 gen_len) ~init ~f:(fun (acc_y, prev_y, prev_mem_data) _ ->
-        let inputs =
-          Session.Input.
-            [ float t.sample_placeholder_x prev_y
-            ; float t.sample_placeholder_mem prev_mem_data
-            ]
-        in
-        let y_res, mem_data =
-          Session.run ~inputs
-            Session.Output.(both (float t.sample_output) (float t.sample_output_mem))
-        in
-        let dist =
-          Array.init alphabet_size ~f:(fun i ->
-            (Tensor.get y_res [| 0; i |]) ** (1. /. temperature))
-        in
-        let p = Random.float (Array.reduce_exn dist ~f:(+.)) in
-        let acc = ref 0. in
-        let y = ref 0 in
-        for i = 0 to alphabet_size - 1 do
-          if !acc <= p then y := i;
-          acc := !acc +. dist.(i)
-        done;
-        let y_res = tensor_zero alphabet_size in
-        Tensor.set y_res [| 0; !y |] 1.;
-        !y :: acc_y, y_res, mem_data)
-    in
-    List.rev ys
-    |> List.map ~f:(fun i -> all_chars.(i))
-    |> String.of_char_list
-    |> printf "%s\n\n%!")
-
 let fit_and_evaluate data all_chars ~checkpoint =
   let alphabet_size = Array.length all_chars in
   let input_size = (Tensor.dims data).(0) in
   let t = rnn ~size_c ~sample_size ~alphabet_size in
   let gd = Optimizers.adam_minimizer t.train_err ~learning_rate:(Ops.f 0.004) in
   let save_node = Ops.save ~filename:checkpoint (all_vars_with_names t) in
-  let print_sample = Staged.unstage (print_sample t all_chars) in
   let zero = tensor_zero (4 * size_c) in
   List.fold (List.range 1 epochs)
     ~init:(log (float alphabet_size) *. float sample_size, zero)
@@ -160,9 +121,6 @@ let fit_and_evaluate data all_chars ~checkpoint =
       if i % 500 = 0 then begin
         printf "Epoch: %d %f\n%!" i smooth_error;
         Session.run ~targets:[ Node.P save_node ] Session.Output.empty;
-        let prev_y = tensor_zero alphabet_size in
-        Tensor.set prev_y [| 0; 0 |] 1.;
-        print_sample ~prev_y ~prev_mem_data:mem_data
       end;
       smooth_error, mem_data)
   |> ignore
@@ -189,9 +147,90 @@ let train filename checkpoint =
   let data, all_chars = read_file filename in
   fit_and_evaluate data all_chars ~checkpoint
 
+let sample filename checkpoint gen_size temperature =
+  let _data, all_chars = read_file filename in
+  let alphabet_size = Array.length all_chars in
+  let t = rnn ~size_c ~sample_size ~alphabet_size in
+  let load_and_assign_nodes =
+    let checkpoint = Ops.const_string [ checkpoint ] in
+    List.map (all_vars_with_names t) ~f:(fun (var_name, (Node.P var)) ->
+      Ops.restore
+        ~type_:(Node.output_type var)
+        checkpoint
+        (Ops.const_string [ var_name ])
+      |> Ops.assign var
+      |> fun node -> Node.P node)
+  in
+  Session.run ~targets:load_and_assign_nodes Session.Output.empty;
+  let prev_y = tensor_zero alphabet_size in
+  let zero = tensor_zero (4 * size_c) in
+  Tensor.set prev_y [| 0; 0 |] 1.;
+  let init = [], prev_y, zero in
+  let ys, _, _ =
+    List.fold (List.range 0 gen_size) ~init ~f:(fun (acc_y, prev_y, prev_mem_data) _ ->
+      let inputs =
+        Session.Input.
+          [ float t.sample_placeholder_x prev_y
+          ; float t.sample_placeholder_mem prev_mem_data
+          ]
+      in
+      let y_res, mem_data =
+        Session.run ~inputs
+          Session.Output.(both (float t.sample_output) (float t.sample_output_mem))
+      in
+      let dist =
+        Array.init alphabet_size ~f:(fun i ->
+          (Tensor.get y_res [| 0; i |]) ** (1. /. temperature))
+      in
+      let p = Random.float (Array.reduce_exn dist ~f:(+.)) in
+      let acc = ref 0. in
+      let y = ref 0 in
+      for i = 0 to alphabet_size - 1 do
+        if !acc <= p then y := i;
+        acc := !acc +. dist.(i)
+      done;
+      let y_res = tensor_zero alphabet_size in
+      Tensor.set y_res [| 0; !y |] 1.;
+      !y :: acc_y, y_res, mem_data)
+  in
+  List.rev ys
+  |> List.map ~f:(fun i -> all_chars.(i))
+  |> String.of_char_list
+  |> printf "%s\n\n%!"
+
 let () =
   Random.init 42;
   let open Cmdliner in
+  let sample_cmd =
+    let train_filename =
+      let doc = "Data file to use for training." in
+      Arg.(value & opt file "data/input.txt"
+        & info [ "train-file" ] ~docv:"FILE" ~doc)
+    in
+    let checkpoint =
+      let doc = "Checkpoint file to store the current state." in
+      Arg.(value & opt string "out.cpkt"
+        & info [ "checkpoint" ] ~docv:"FILE" ~doc)
+    in
+    let length =
+      let doc = "Length of the text to generate." in
+      Arg.(value & opt int 1024
+        & info [ "length" ] ~docv:"INT" ~doc)
+    in
+    let temperature =
+      let doc = "Temperature at which the text gets generated." in
+      Arg.(value & opt float 0.5
+        & info [ "temperature" ] ~docv:"FLOAT" ~doc)
+    in
+    let doc = "Sample a text using a trained state" in
+    let man =
+      [ `S "DESCRIPTION"
+      ; `P "Sample a text using a trained state"
+      ]
+    in
+    Term.(const sample $ train_filename $ checkpoint $ length $ temperature),
+    Term.info "sample" ~sdocs:"" ~doc ~man
+  in
   let train_cmd =
     let train_filename =
       let doc = "Data file to use for training." in
@@ -209,9 +248,7 @@ let () =
       ; `P "Train a char based RNN on a given file"
       ]
     in
-    Term.(const train
-      $ train_filename
-      $ checkpoint),
+    Term.(const train $ train_filename $ checkpoint),
     Term.info "train" ~sdocs:"" ~doc ~man
   in
   let default_cmd =
@@ -219,7 +256,7 @@ let () =
     Term.(ret (const (`Help (`Pager, None)))),
     Term.info "char_rnn" ~version:"0" ~sdocs:"" ~doc
   in
-  let cmds = [ train_cmd ] in
+  let cmds = [ train_cmd; sample_cmd ] in
   match Term.eval_choice default_cmd cmds with
   | `Error _ -> exit 1
   | _ -> exit 0
