@@ -67,6 +67,15 @@ let test_vector () =
               ]
           | _ -> assert false)
       , [ 2.; 4.; 1.; 3. ]
+    ; 0., O.(split ~num_split:2 zero32 (cd ~shape:[ 2; 2 ] [ 1.; 2.; 3.; 4. ])
+          |> function
+          | [ o1; o2 ] ->
+            concat zero32
+              [ reshape o2 (const_int ~type_:Int32 [ 2 ])
+              ; reshape o1 (const_int ~type_:Int32 [ 2 ])
+              ]
+          | _ -> assert false)
+      , [ 3.; 4.; 1.; 2. ]
     ]
 
 let () =
