@@ -1,5 +1,7 @@
 (* This example uses the tinyshakespeare dataset which can be downloaded at:
    https://raw.githubusercontent.com/karpathy/char-rnn/master/data/tinyshakespeare/input.txt
+
+   It has been heavily inspired by https://github.com/karpathy/char-rnn
 *)
 open Core_kernel.Std
 open Tensorflow
