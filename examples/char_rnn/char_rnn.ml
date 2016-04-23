@@ -89,6 +89,10 @@ let tensor_zero size =
   Tensor.fill tensor 0.;
   tensor
 
+let all_vars_with_names t =
+  Var.get_all_vars t.sample_output
+  |> List.mapi ~f:(fun i var -> sprintf "V%d" i, var)
+
 let print_sample t all_chars =
   let alphabet_size = Array.length all_chars in
   Staged.stage (fun ~prev_y ~prev_mem_data ->
@@ -126,11 +130,11 @@ let print_sample t all_chars =
     |> printf "%s\n\n%!")
 
 let fit_and_evaluate data all_chars ~checkpoint =
-  ignore checkpoint;
   let alphabet_size = Array.length all_chars in
   let input_size = (Tensor.dims data).(0) in
   let t = rnn ~size_c ~sample_size ~alphabet_size in
   let gd = Optimizers.adam_minimizer t.train_err ~learning_rate:(Ops.f 0.004) in
+  let save_node = Ops.save ~filename:checkpoint (all_vars_with_names t) in
   let print_sample = Staged.unstage (print_sample t all_chars) in
   let zero = tensor_zero (4 * size_c) in
   List.fold (List.range 1 epochs)
@@ -155,6 +159,7 @@ let fit_and_evaluate data all_chars ~checkpoint =
       let smooth_error = 0.999 *. smooth_error +. 0.001 *. err in
       if i % 500 = 0 then begin
         printf "Epoch: %d %f\n%!" i smooth_error;
+        Session.run ~targets:[ Node.P save_node ] Session.Output.empty;
         let prev_y = tensor_zero alphabet_size in
         Tensor.set prev_y [| 0; 0 |] 1.;
         print_sample ~prev_y ~prev_mem_data:mem_data
