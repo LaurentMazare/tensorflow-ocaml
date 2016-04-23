@@ -361,6 +361,21 @@ let concat_gradient ~self ~gradient =
     in
     None :: all concat_grads
 
+let split_gradient ~self ~gradient =
+  match N.inputs self with
+  | [ split_dim; _ ] ->
+    let all_gradients =
+      ignore gradient;
+      failwith "gradients are not supported for node with multiple outputs like split"
+    in
+    let split_dim =
+      match N.extract split_dim Int32 with
+      | None -> failwith "The first parameter of split should have type int32."
+      | Some split_dim -> split_dim
+    in
+    [ None; Some (N.P (Ops.concat split_dim all_gradients)) ]
+  | _ -> failwith "split must have two arguments"
+
 let register_all () =
   let module O = Ops.Op_names in
   List.iter ~f:(fun (name, f) -> Registered_gradients.add name f)
@@ -393,6 +408,7 @@ let register_all () =
     ; O.sign,    { f = sign_gradient }
     ; O.sin,     { f = sin_gradient }
     ; O.softmax, { f = softmax_gradient }
+    ; O.split,   { f = split_gradient }
     ; O.sqrt,    { f = sqrt_gradient }
     ; O.square,  { f = square_gradient }
     ; O.sub,     { f = sub_gradient }
