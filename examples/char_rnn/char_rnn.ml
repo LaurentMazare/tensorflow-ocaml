@@ -117,6 +117,13 @@ let fit_and_evaluate data all_chars ~checkpoint =
           ~targets:gd
           Session.Output.(both (scalar_float t.train_err) (float t.train_output_mem))
       in
+      let error_is_reasonable =
+        match Float.classify err with
+        | Infinite | Nan | Zero | Subnormal -> false
+        | Normal -> true
+      in
+      if not error_is_reasonable
+      then failwith "The training error is not reasonable.";
       let smooth_error = 0.999 *. smooth_error +. 0.001 *. err in
       if i % 500 = 0 then begin
         printf "Epoch: %d %f\n%!" i smooth_error;
