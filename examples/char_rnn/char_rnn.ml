@@ -132,14 +132,15 @@ let fit_and_evaluate data all_chars ~checkpoint =
       smooth_error, mem_data)
   |> ignore
 
+let index_by_char all_chars =
+  Array.mapi all_chars ~f:(fun i c -> c, i)
+  |> Array.to_list
+  |> Char.Table.of_alist_exn
+
 let read_file filename =
   let input = In_channel.read_all filename |> String.to_array in
   let all_chars = Char.Set.of_array input |> Set.to_array in
-  let index_by_char =
-    Array.mapi all_chars ~f:(fun i c -> c, i)
-    |> Array.to_list
-    |> Char.Table.of_alist_exn
-  in
+  let index_by_char = index_by_char all_chars in
   let input_length = Array.length input in
   let alphabet_size = Array.length all_chars in
   let data = Tensor.create2 Float32 input_length alphabet_size in
@@ -154,9 +155,11 @@ let train filename checkpoint =
   let data, all_chars = read_file filename in
   fit_and_evaluate data all_chars ~checkpoint
 
-let sample filename checkpoint gen_size temperature =
+let sample filename checkpoint gen_size temperature seed =
   let _data, all_chars = read_file filename in
   let alphabet_size = Array.length all_chars in
+  let seed_length = String.length seed in
+  let index_by_char = index_by_char all_chars in
   let t = rnn ~size_c ~sample_size ~alphabet_size in
   let load_and_assign_nodes =
     let checkpoint = Ops.const_string [ checkpoint ] in
@@ -174,7 +177,7 @@ let sample filename checkpoint gen_size temperature =
   Tensor.set prev_y [| 0; 0 |] 1.;
   let init = [], prev_y, zero in
   let ys, _, _ =
-    List.fold (List.range 0 gen_size) ~init ~f:(fun (acc_y, prev_y, prev_mem_data) _ ->
+    List.fold (List.range 0 gen_size) ~init ~f:(fun (acc_y, prev_y, prev_mem_data) i ->
       let inputs =
         Session.Input.
           [ float t.sample_placeholder_x prev_y
@@ -185,20 +188,32 @@ let sample filename checkpoint gen_size temperature =
         Session.run ~inputs
           Session.Output.(both (float t.sample_output) (float t.sample_output_mem))
       in
-      let dist =
-        Array.init alphabet_size ~f:(fun i ->
-          (Tensor.get y_res [| 0; i |]) ** (1. /. temperature))
+      let y =
+        if i < seed_length
+        then
+          match Hashtbl.find index_by_char (String.get seed i) with
+          | None ->
+            failwithf
+              "Cannot find seed character '%c' in the train file" (String.get seed i) ()
+          | Some y -> y
+        else begin
+          let dist =
+            Array.init alphabet_size ~f:(fun i ->
+              (Tensor.get y_res [| 0; i |]) ** (1. /. temperature))
+          in
+          let p = Random.float (Array.reduce_exn dist ~f:(+.)) in
+          let acc = ref 0. in
+          let y = ref 0 in
+          for i = 0 to alphabet_size - 1 do
+            if !acc <= p then y := i;
+            acc := !acc +. dist.(i)
+          done;
+          !y
+        end
       in
-      let p = Random.float (Array.reduce_exn dist ~f:(+.)) in
-      let acc = ref 0. in
-      let y = ref 0 in
-      for i = 0 to alphabet_size - 1 do
-        if !acc <= p then y := i;
-        acc := !acc +. dist.(i)
-      done;
       let y_res = tensor_zero alphabet_size in
-      Tensor.set y_res [| 0; !y |] 1.;
-      !y :: acc_y, y_res, mem_data)
+      Tensor.set y_res [| 0; y |] 1.;
+      y :: acc_y, y_res, mem_data)
   in
   List.rev ys
   |> List.map ~f:(fun i -> all_chars.(i))
@@ -229,13 +244,18 @@ let () =
       Arg.(value & opt float 0.5
         & info [ "temperature" ] ~docv:"FLOAT" ~doc)
     in
+    let seed =
+      let doc = "Seed used to start generation." in
+      Arg.(value & opt string ""
+        & info [ "seed" ] ~docv:"STR" ~doc)
+    in
     let doc = "Sample a text using a trained state" in
     let man =
       [ `S "DESCRIPTION"
       ; `P "Sample a text using a trained state"
       ]
     in
-    Term.(const sample $ train_filename $ checkpoint $ length $ temperature),
+    Term.(const sample $ train_filename $ checkpoint $ length $ temperature $ seed),
     Term.info "sample" ~sdocs:"" ~doc ~man
   in
   let train_cmd =
