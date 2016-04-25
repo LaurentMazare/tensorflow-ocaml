@@ -364,10 +364,12 @@ let concat_gradient ~self ~gradient =
 let split_gradient ~self ~gradients =
   match N.inputs self with
   | [ split_dim; _ ] ->
-    let _num_split = Node.get_attr_int self "num_split" in
+    let num_split = Option.value_exn (Node.get_attr_int self "num_split") in
     let all_gradients =
-      ignore gradients;
-      failwith "gradients are not supported for node with multiple outputs like split"
+      List.init num_split ~f:(fun output_idx ->
+        match Map.find gradients output_idx with
+        | Some gradient -> gradient
+        | None -> Ops.zerosLike (Node.set_output_idx self (Some output_idx)))
     in
     let split_dim =
       match N.extract split_dim Int32 with
