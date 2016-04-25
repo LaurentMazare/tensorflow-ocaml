@@ -170,6 +170,11 @@ let get_attr_string t str =
     | String s -> Some s
     | _ -> None)
 
+let get_attr_int t str =
+  Option.bind (get_attr t str) (function
+    | Int l -> Some l
+    | _ -> None)
+
 let get_attr_int_list t str =
   Option.bind (get_attr t str) (function
     | List (Int l) -> Some l

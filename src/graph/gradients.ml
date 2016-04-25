@@ -48,8 +48,11 @@ let aggregate_contributions = function
     | Node.Type.Float -> Node.P (Ops.addN inputs)
     | _ -> failwith "Improper type."
 
-let aggregate_contributions_multi _gradients =
-  failwith "TODO"
+let aggregate_contributions_multi gradients =
+  List.map gradients ~f:(fun (output_idx, gradient) ->
+    Option.value_exn output_idx, gradient)
+  |> Int.Map.of_alist_multi
+  |> Map.map ~f:aggregate_contributions
 
 (* Compute the gradients of [node] with respect to [arg] using backpropagation.
    This only works when [node] is a scalar. *)
@@ -67,7 +70,8 @@ let gradient node ~with_respect_to =
     | Some uses ->
       assert (uses > 0);
       Option.iter gradient ~f:(fun gradient ->
-        Hashtbl.add_multi contributions ~key:node_id ~data:gradient);
+        Hashtbl.add_multi contributions
+          ~key:node_id ~data:(Node.packed_output_idx node, gradient));
       let uses = uses - 1 in
       Hashtbl.set uses_per_node ~key:node_id ~data:uses;
       if uses = 0
@@ -75,7 +79,10 @@ let gradient node ~with_respect_to =
         let gradients = Hashtbl.find contributions node_id in
         if Set.mem with_respect_to node_id
         then
-          let gradient = Option.map gradients ~f:aggregate_contributions in
+          let gradient =
+            Option.map gradients ~f:(fun gradients ->
+              List.map gradients ~f:snd |> aggregate_contributions)
+          in
           Hashtbl.add_exn output_gradients ~key:node_id ~data:gradient
         else
           let op_name = Node.packed_op_name node in
@@ -100,6 +107,7 @@ let gradient node ~with_respect_to =
               end
             | Some fn ->
               try
+                let gradients = List.map gradients ~f:snd in
                 List.iter2_exn
                   (fn ~self:node ~gradient:(aggregate_contributions gradients))
                   (Node.packed_inputs node)

@@ -26,7 +26,7 @@ let table_multi = Node.Op_name.Table.create ()
 type multi =
   { g : 'a .
           (  self:([< `float | `double] as 'a) Node.t
-          -> gradients:'a Node.t list
+          -> gradients:'a Node.t Int.Map.t
           -> Node.p option list)
   }
 
@@ -35,13 +35,13 @@ let add_multi op t =
     match Node.output_type self with
     | Node.Type.Double ->
       let gradients =
-        List.map gradients ~f:(fun gradient ->
+        Map.map gradients ~f:(fun gradient ->
           Option.value_exn (Node.extract gradient Double))
       in
       t.g ~self ~gradients
     | Node.Type.Float ->
       let gradients =
-        List.map gradients ~f:(fun gradient ->
+        Map.map gradients ~f:(fun gradient ->
           Option.value_exn (Node.extract gradient Float))
       in
       t.g ~self ~gradients

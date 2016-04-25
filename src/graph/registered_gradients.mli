@@ -1,3 +1,5 @@
+open Core_kernel.Std
+
 type t =
   { f : 'a .
           (  self:([< `float | `double] as 'a) Node.t
@@ -17,7 +19,7 @@ val find
 type multi =
   { g : 'a .
           (  self:([< `float | `double] as 'a) Node.t
-          -> gradients:'a Node.t list
+          -> gradients:'a Node.t Int.Map.t
           -> Node.p option list)
   }
 
@@ -28,4 +30,4 @@ val add_multi
 
 val find_multi
   :  Node.Op_name.t
-  -> (self:Node.p -> gradients:Node.p list -> Node.p option list) option
+  -> (self:Node.p -> gradients:Node.p Int.Map.t -> Node.p option list) option

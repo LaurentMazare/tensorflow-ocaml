@@ -361,11 +361,12 @@ let concat_gradient ~self ~gradient =
     in
     None :: all concat_grads
 
-let split_gradient ~self ~gradient =
+let split_gradient ~self ~gradients =
   match N.inputs self with
   | [ split_dim; _ ] ->
+    let _num_split = Node.get_attr_int self "num_split" in
     let all_gradients =
-      ignore gradient;
+      ignore gradients;
       failwith "gradients are not supported for node with multiple outputs like split"
     in
     let split_dim =
@@ -408,10 +409,12 @@ let register_all () =
     ; O.sign,    { f = sign_gradient }
     ; O.sin,     { f = sin_gradient }
     ; O.softmax, { f = softmax_gradient }
-    ; O.split,   { f = split_gradient }
     ; O.sqrt,    { f = sqrt_gradient }
     ; O.square,  { f = square_gradient }
     ; O.sub,     { f = sub_gradient }
     ; O.sum,     { f = sum_gradient }
     ; O.tanh,    { f = tanh_gradient }
+    ];
+  List.iter ~f:(fun (name, g) -> Registered_gradients.add_multi name g)
+    [ O.split,   { Registered_gradients.g = split_gradient }
     ]
