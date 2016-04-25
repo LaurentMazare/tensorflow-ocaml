@@ -20,3 +20,34 @@ let add op t =
   Hashtbl.set table ~key:op ~data:f
 
 let find = Hashtbl.find table
+
+let table_multi = Node.Op_name.Table.create ()
+
+type multi =
+  { g : 'a .
+          (  self:([< `float | `double] as 'a) Node.t
+          -> gradients:'a Node.t list
+          -> Node.p option list)
+  }
+
+let add_multi op t =
+  let f ~self:(Node.P self) ~gradients =
+    match Node.output_type self with
+    | Node.Type.Double ->
+      let gradients =
+        List.map gradients ~f:(fun gradient ->
+          Option.value_exn (Node.extract gradient Double))
+      in
+      t.g ~self ~gradients
+    | Node.Type.Float ->
+      let gradients =
+        List.map gradients ~f:(fun gradient ->
+          Option.value_exn (Node.extract gradient Float))
+      in
+      t.g ~self ~gradients
+    | _ ->
+      failwithf "Inconsistent types %s" (Node.Op_name.to_string op) ()
+  in
+  Hashtbl.set table_multi ~key:op ~data:f
+
+let find_multi = Hashtbl.find table_multi

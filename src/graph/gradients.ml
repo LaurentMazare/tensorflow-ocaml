@@ -48,6 +48,9 @@ let aggregate_contributions = function
     | Node.Type.Float -> Node.P (Ops.addN inputs)
     | _ -> failwith "Improper type."
 
+let aggregate_contributions_multi _gradients =
+  failwith "TODO"
+
 (* Compute the gradients of [node] with respect to [arg] using backpropagation.
    This only works when [node] is a scalar. *)
 let gradient node ~with_respect_to =
@@ -69,23 +72,36 @@ let gradient node ~with_respect_to =
       Hashtbl.set uses_per_node ~key:node_id ~data:uses;
       if uses = 0
       then
-        let gradient =
-          Option.map (Hashtbl.find contributions node_id) ~f:aggregate_contributions
-        in
+        let gradients = Hashtbl.find contributions node_id in
         if Set.mem with_respect_to node_id
-        then Hashtbl.add_exn output_gradients ~key:node_id ~data:gradient
+        then
+          let gradient = Option.map gradients ~f:aggregate_contributions in
+          Hashtbl.add_exn output_gradients ~key:node_id ~data:gradient
         else
           let op_name = Node.packed_op_name node in
-          match Registered_gradients.find op_name with
-          | None -> raise (No_derivative_for_op op_name)
-          | Some fn ->
-            match gradient with
+          match gradients with
+          | None ->
+            List.iter (Node.packed_inputs node) ~f:(add_contribution ~gradient:None)
+          | Some gradients ->
+            match Registered_gradients.find op_name with
             | None ->
-              List.iter (Node.packed_inputs node) ~f:(add_contribution ~gradient:None)
-            | Some gradient ->
+              begin
+                match Registered_gradients.find_multi op_name with
+                | None -> raise (No_derivative_for_op op_name)
+                | Some fn ->
+                  let gradients = aggregate_contributions_multi gradients in
+                  try
+                    List.iter2_exn
+                      (fn ~self:node ~gradients)
+                      (Node.packed_inputs node)
+                      ~f:(fun gradient input -> add_contribution input ~gradient)
+                  with
+                  | exn -> Exn.reraise exn (Node.Op_name.to_string op_name)
+              end
+            | Some fn ->
               try
                 List.iter2_exn
-                  (fn ~self:node ~gradient)
+                  (fn ~self:node ~gradient:(aggregate_contributions gradients))
                   (Node.packed_inputs node)
                   ~f:(fun gradient input -> add_contribution input ~gradient)
               with
