@@ -38,22 +38,15 @@ let aggregate_contributions = function
   | [] -> assert false
   | [ input ] -> input
   | (Node.P input :: _) as inputs ->
-    (* Hack: all the nodes in [inputs] should have the same type however they are packed
-       so we cannot use [Ops.addN] directly and build the node manually instead. *)
     let output_type = Node.output_type input in
-    let attributes =
-      [ "N", Node.Int (List.length inputs)
-      ; "T", Type (P output_type) ]
+    let inputs =
+      List.map inputs ~f:(fun input ->
+        Option.value_exn (Node.extract input output_type))
     in
-    Node.P
-      (Node.create
-        ~name:(Node.Name.of_string "gradient/addN")
-        ~op_name:(Node.Op_name.of_string "AddN")
-        ~output_type
-        ~inputs
-        ~attributes
-        ~output_idx:None
-      )
+    match output_type with
+    | Node.Type.Double -> Node.P (Ops.addN inputs)
+    | Node.Type.Float -> Node.P (Ops.addN inputs)
+    | _ -> failwith "Improper type."
 
 (* Compute the gradients of [node] with respect to [arg] using backpropagation.
    This only works when [node] is a scalar. *)
