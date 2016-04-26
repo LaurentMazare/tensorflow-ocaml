@@ -44,6 +44,9 @@ let test_scalar () =
   ; 0., (fun v -> O.(f 1. / v)), 2., 0.5, -0.25
   ; 0., (fun v -> O.(f 1. / (v * v * v))), 2., 0.125, -3. /. 16.
   ; 0., (fun v -> O.(reduce_sum (concat zero32 [ v*v; v; f 1./v ]))), 2., 6.5, 4.75
+  ; 0., (fun v -> O.(reduce_sum (v + f ~shape:[ 5 ] 1.))), 2., 15., 5.
+  ; 0., (fun v -> O.(reduce_sum (v * f ~shape:[ 5 ] 2.))), 2., 20., 10.
+  ; 0., (fun v -> O.(reduce_sum (v * v * f ~shape:[ 5 ] 2.))), 2., 40., 40.
   ]
 
 let () =
