@@ -1,0 +1,50 @@
+open Core_kernel.Std
+open Tensorflow
+module O = Ops
+
+let assert_equal value ~expected_value ~tol =
+  if Float.abs (value -. expected_value) > tol
+  then failwithf "Got %f, expected %f" value expected_value ()
+
+let assert_scalar tensor ~expected_value ~tol =
+  let index =
+    match Tensor.dims tensor with
+    | [||] -> [||]
+    | [| 1 |] -> [| 0 |]
+    | [| n |] -> failwithf "Single dimension tensor with %d elements" n ()
+    | _ -> failwith "Multi-dimensional tensor."
+  in
+  assert_equal (Tensor.get tensor index) ~expected_value ~tol
+
+let test_scalar () =
+  List.iter ~f:(fun (tol, ops, x, expected_value, expected_gradient) ->
+    let var =
+      Var.create [ 1 ]
+        ~type_:Float
+        ~init:(O.const_float ~type_:Float [ x ])
+    in
+    let ops = ops var in
+    let gradient_f, gradient_d =
+      Gradients.gradient ops
+        ~with_respect_to_float:[ var ]
+        ~with_respect_to_double:[]
+    in
+    assert (List.is_empty gradient_d);
+    let gradient =
+      match gradient_f with
+      | [] | _ :: _ :: _ -> assert false
+      | [ gradient ] -> gradient
+    in
+    let tensor_value, tensor_gradient =
+      Session.run Session.Output.(both (float ops) (float gradient))
+    in
+    assert_scalar tensor_value ~expected_value ~tol;
+    assert_scalar tensor_gradient ~expected_value:expected_gradient ~tol)
+  [ 0., (fun v -> O.(v * v + f 3. * v + v)), 5., 45., 14.
+  ; 0., (fun v -> O.(f 1. / v)), 2., 0.5, -0.25
+  ; 0., (fun v -> O.(f 1. / (v * v * v))), 2., 0.125, -3. /. 16.
+  ; 0., (fun v -> O.(reduce_sum (concat zero32 [ v*v; v; f 1./v ]))), 2., 6.5, 4.75
+  ]
+
+let () =
+  test_scalar ()

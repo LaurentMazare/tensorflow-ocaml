@@ -43,7 +43,8 @@ clean:
 
 .FORCE:
 
-runtests: tests/operator_tests.native
+runtests: tests/operator_tests.native tests/gradient_tests.native
 	LD_LIBRARY_PATH=./lib:$(LD_LIBRARY_PATH) ./operator_tests.native
+	LD_LIBRARY_PATH=./lib:$(LD_LIBRARY_PATH) ./gradient_tests.native
 
 all: $(ALL)
