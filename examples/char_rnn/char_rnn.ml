@@ -91,11 +91,13 @@ let all_vars_with_names t =
   Var.get_all_vars t.sample_output
   |> List.mapi ~f:(fun i var -> sprintf "V%d" i, var)
 
-let fit_and_evaluate data all_chars ~checkpoint =
+let fit_and_evaluate data all_chars ~learning_rate ~checkpoint =
   let alphabet_size = Array.length all_chars in
   let input_size = (Tensor.dims data).(0) in
   let t = rnn ~size_c ~sample_size ~alphabet_size in
-  let gd = Optimizers.adam_minimizer t.train_err ~learning_rate:(Ops.f 0.004) in
+  let gd =
+    Optimizers.adam_minimizer t.train_err ~learning_rate:(Ops.f learning_rate)
+  in
   let save_node = Ops.save ~filename:checkpoint (all_vars_with_names t) in
   let zero = tensor_zero (4 * size_c) in
   List.fold (List.range 1 epochs)
@@ -151,9 +153,9 @@ let read_file filename =
   done;
   data, all_chars
 
-let train filename checkpoint =
+let train filename checkpoint learning_rate =
   let data, all_chars = read_file filename in
-  fit_and_evaluate data all_chars ~checkpoint
+  fit_and_evaluate data all_chars ~checkpoint ~learning_rate
 
 let sample filename checkpoint gen_size temperature seed =
   let _data, all_chars = read_file filename in
@@ -269,13 +271,18 @@ let () =
       Arg.(value & opt string "out.cpkt"
         & info [ "checkpoint" ] ~docv:"FILE" ~doc)
     in
+    let learning_rate =
+      let doc = "Learning rate for the Adam optimizer" in
+      Arg.(value & opt float 0.004
+        & info [ "learning_rate" ] ~docv:"FLOAT" ~doc)
+    in
     let doc = "Train a char based RNN on a given file" in
     let man =
       [ `S "DESCRIPTION"
       ; `P "Train a char based RNN on a given file"
       ]
     in
-    Term.(const train $ train_filename $ checkpoint),
+    Term.(const train $ train_filename $ checkpoint $ learning_rate),
     Term.info "train" ~sdocs:"" ~doc ~man
   in
   let default_cmd =
