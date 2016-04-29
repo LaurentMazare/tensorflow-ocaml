@@ -13,12 +13,13 @@ let () =
   in
   let xs = O.placeholder [] ~type_:Float in
   let ys = O.placeholder [] ~type_:Float in
+  let ys_node = O.Placeholder.to_node ys in
   let w = Var.f [ image_dim; label_count ] 0. in
   let b = Var.f [ label_count ] 0. in
-  let ys_ = O.(xs *^ w + b) |> O.softmax in
-  let cross_entropy = O.(neg (reduce_mean (ys * log ys_))) in
+  let ys_ = O.(Placeholder.to_node xs *^ w + b) |> O.softmax in
+  let cross_entropy = O.(neg (reduce_mean (ys_node * log ys_))) in
   let accuracy =
-    O.(equal (argMax ys_ O.one32) (argMax ys O.one32))
+    O.(equal (argMax ys_ O.one32) (argMax ys_node O.one32))
     |> O.cast ~type_:Float
     |> O.reduce_mean
   in

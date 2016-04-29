@@ -12,17 +12,18 @@ let () =
   in
   let xs = Ops.placeholder [] ~type_:Float in
   let ys = Ops.placeholder [] ~type_:Float in
+  let ys_node = Ops.Placeholder.to_node ys in
   let w = Var.f [ image_dim; label_count ] 0. in
   let b = Var.f [ label_count ] 0. in
-  let ys_ = Ops.(xs *^ w - b) in
+  let ys_ = Ops.(Placeholder.to_node xs *^ w - b) in
   let accuracy =
-    Ops.equal (Ops.argMax ys_ Ops.one32) (Ops.argMax ys Ops.one32)
+    Ops.equal (Ops.argMax ys_ Ops.one32) (Ops.argMax ys_node Ops.one32)
     |> Ops.cast ~type_:Float
     |> Ops.reduce_mean
   in
 
   (* ys in {-1 ; + 1} *)
-  let ys' = Ops.(f 2.0 * ys - f 1.0) in
+  let ys' = Ops.(f 2.0 * ys_node - f 1.0) in
   let distance_from_margin =
     Ops.(f 1.0 - ys' * ys_ )
   in

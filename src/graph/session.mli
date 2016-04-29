@@ -2,15 +2,13 @@ type t
 
 val create : unit -> t
 
-module Input :
-sig
+module Input : sig
   type t
-  val float  : [`float] Node.t -> (float, Bigarray.float32_elt) Tensor.t -> t
-  val double : [`double] Node.t -> (float, Bigarray.float64_elt) Tensor.t -> t
+  val float  : [`float] Ops.Placeholder.t -> (float, Bigarray.float32_elt) Tensor.t -> t
+  val double : [`double] Ops.Placeholder.t -> (float, Bigarray.float64_elt) Tensor.t -> t
 end
 
-module Output :
-sig
+module Output : sig
   type 'a t
   val return : 'a -> 'a t
   val map : 'a t -> f:('a -> 'b) -> 'b t

@@ -1,9 +1,6 @@
 open Core_kernel.Std
 (* An higher level view of a session *)
 
-(* CR-soon noury: the whole renaming of fresh variables and export can be done in one
-   pass but we need to think more. *)
-
 (* There is no uninitialised variables because I think we can initialize
 them last minute when someone call run, as there is no extend graph *)
 type t =
@@ -102,20 +99,24 @@ let run ?(inputs=[]) ?(outputs=[]) ?(targets=[]) t =
     |> fun tensor_list -> assert (List.is_empty tensor_list));
   Wrapper.Session.(run t.session ~inputs ~outputs ~targets |> ok_exn)
 
-module Input =
- struct
+module Input = struct
    type t =
-   | I : _ Node.t * (_,_) Tensor.t -> t
+   | I : _ Ops.Placeholder.t * (_,_) Tensor.t -> t
 
-  let float (node : [`float ] Node.t)  (tensor : (float, Bigarray.float32_elt) Tensor.t)  =
+  let float
+        (node : [ `float ] Ops.Placeholder.t)
+        (tensor : (float, Bigarray.float32_elt) Tensor.t)
+    =
     I (node, tensor)
 
-  let double (node : [`double ] Node.t)  (tensor : (float, Bigarray.float64_elt) Tensor.t)  =
+  let double
+        (node : [ `double ] Ops.Placeholder.t)
+        (tensor : (float, Bigarray.float64_elt) Tensor.t)
+    =
     I (node, tensor)
  end
 
-module Output =
-struct
+module Output = struct
   type _ t =
     | Return : 'a -> 'a t
     | Compute : _ Node.t -> Tensor.p t
@@ -218,8 +219,8 @@ let run ?inputs ?targets ?session output =
     | Some session -> session
   in
   let inputs =
-    Option.map inputs
-     ~f:(List.map ~f:(fun (Input.I (n, t)) -> Node.P n, Tensor.P t))
+    Option.map inputs ~f:(List.map ~f:(fun (Input.I (n, t)) ->
+      Node.P (Ops.Placeholder.to_node n), Tensor.P t))
   in
   let outputs, k = Output.build_output output in
   k (run ?inputs ?targets ~outputs t)

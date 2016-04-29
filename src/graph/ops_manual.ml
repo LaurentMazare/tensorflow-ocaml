@@ -1,6 +1,11 @@
 open Core_kernel.Std
 open Node
 
+module Placeholder = struct
+  type nonrec 'a t = 'a t
+  let to_node = Fn.id
+end
+
 let get_shape ?shape values =
   match shape with
   | Some shape ->

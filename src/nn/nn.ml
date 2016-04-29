@@ -33,16 +33,18 @@ module Shape = struct
 end
 
 module Input_name = struct
-  type 'a t = 'a Node.t
+  type 'a t = 'a Ops.Placeholder.t
+
+  let id t = Ops.Placeholder.to_node t |> Node.id
 
   let merge t_option t_option' =
     match t_option, t_option' with
     | None, None -> None
     | (Some _ as s), None | None, (Some _ as s) -> s
-    | Some t as s, Some t' when Node.(Id.(=) (id t) (id t')) -> s
+    | Some t as s, Some t' when Node.Id.(=) (id t) (id t') -> s
     | Some _, Some _ -> failwith "Different inputs"
 
-  let to_node = Fn.id
+  let to_placeholder = Fn.id
 end
 
 type ('a, 'b) t =
@@ -64,7 +66,7 @@ let named_input ~shape ~type_ =
   let placeholder = Ops.placeholder ~type_ (-1 :: Shape.dim_list shape) in
   let t =
     { shape
-    ; node = placeholder
+    ; node = Ops.Placeholder.to_node placeholder
     ; variables = []
     ; default_input = None
     ; type_
@@ -75,7 +77,7 @@ let named_input ~shape ~type_ =
 let input ~shape ~type_ =
   let placeholder = Ops.placeholder ~type_ (-1 :: Shape.dim_list shape) in
   { shape
-  ; node = placeholder
+  ; node = Ops.Placeholder.to_node placeholder
   ; variables = []
   ; default_input = Some placeholder
   ; type_

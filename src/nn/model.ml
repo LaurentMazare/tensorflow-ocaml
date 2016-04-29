@@ -3,7 +3,7 @@ open Core_kernel.Std
 type 'a t =
   { session : Session.t
   ; net : (Nn._1d, 'a) Nn.t
-  ; placeholder : 'a Node.t
+  ; placeholder : 'a Ops.Placeholder.t
   ; save_nodes : [ `unit ] Node.t String.Table.t
   ; load_and_assign_nodes : Node.p list String.Table.t
   }
@@ -73,18 +73,22 @@ let create net =
 let all_inputs f_or_d ?(named_inputs=[]) t xs =
   let inputs =
     List.map named_inputs ~f:(fun (input_name, value) ->
-      let node = Nn.Input_name.to_node input_name in
-      f_or_d node value)
+      let placeholder = Nn.Input_name.to_placeholder input_name in
+      f_or_d placeholder value)
   in
   match Nn.default_input t.net with
   | None -> inputs
   | Some input_name ->
-    let node = Nn.Input_name.to_node input_name in
-    f_or_d node xs :: inputs
+    let placeholder = Nn.Input_name.to_placeholder input_name in
+    f_or_d placeholder xs :: inputs
 
 let fit_gen f_or_d scalar_f_or_d =
   fun ?named_inputs ?batch_size ?on_epoch ~loss ~optimizer ~epochs ~xs ~ys t ->
-    let loss = Loss.get loss ~sample_ys:t.placeholder ~model_ys:(Nn.node t.net) in
+    let loss =
+      Loss.get loss
+        ~sample_ys:(Ops.Placeholder.to_node t.placeholder)
+        ~model_ys:(Nn.node t.net)
+    in
     let optimizer = Optimizer.get optimizer ~loss in
     let samples = (Tensor.dims xs).(0) in
     let batch_size =

@@ -1,3 +1,7 @@
+module Placeholder : sig
+  type 'a t
+  val to_node : 'a t -> 'a Node.t
+end
 (* ==== Binary Operations ==== *)
 
 (* The common type for binary operators. *)
@@ -92,7 +96,7 @@ val save : filename:string -> (string * Node.p) list -> [ `unit ] Node.t
 val range : [ `int32 ] Node.t -> [ `int32 ] Node.t
 
 (* A placeholder that can be bound to a tensor via [inputs] in [Session.run]. *)
-val placeholder : ?name:string -> type_:'a Node.Type.t -> int list -> 'a Node.t
+val placeholder : ?name:string -> type_:'a Node.Type.t -> int list -> 'a Placeholder.t
 
 (* [dropout n ~keep_prob] returns a tensor with the same shape as [n] that either
    have the same value as [n] with prob [keep_prob] or else is [0].

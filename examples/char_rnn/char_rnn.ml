@@ -13,13 +13,13 @@ let sample_size = 25
 type t =
   { train_err              : [ `float ] Node.t
   ; train_output_mem       : [ `float ] Node.t
-  ; train_placeholder_mem  : [ `float ] Node.t
-  ; train_placeholder_x    : [ `float ] Node.t
-  ; train_placeholder_y    : [ `float ] Node.t
+  ; train_placeholder_mem  : [ `float ] Ops.Placeholder.t
+  ; train_placeholder_x    : [ `float ] Ops.Placeholder.t
+  ; train_placeholder_y    : [ `float ] Ops.Placeholder.t
   ; sample_output          : [ `float ] Node.t
   ; sample_output_mem      : [ `float ] Node.t
-  ; sample_placeholder_mem : [ `float ] Node.t
-  ; sample_placeholder_x   : [ `float ] Node.t
+  ; sample_placeholder_mem : [ `float ] Ops.Placeholder.t
+  ; sample_placeholder_x   : [ `float ] Ops.Placeholder.t
   }
 
 let rnn ~size_c ~sample_size ~alphabet_size =
@@ -41,7 +41,7 @@ let rnn ~size_c ~sample_size ~alphabet_size =
     y_bar, (h1, c1, h2, c2)
   in
   let split node =
-    Ops.split Ops.zero32 node ~num_split:sample_size
+    Ops.split Ops.zero32 (Ops.Placeholder.to_node node) ~num_split:sample_size
     |> List.map ~f:(fun n ->
       Ops.reshape n (Ops.const_int ~type_:Int32 [ 1; alphabet_size ]))
   in
@@ -49,7 +49,7 @@ let rnn ~size_c ~sample_size ~alphabet_size =
     List.zip_exn (split train_placeholder_x) (split train_placeholder_y)
   in
   let mem_split mem =
-    match Ops.split Ops.one32 mem ~num_split:4 with
+    match Ops.split Ops.one32 (Ops.Placeholder.to_node mem) ~num_split:4 with
     | [ h1; c1; h2; c2 ] -> h1, c1, h2, c2
     | _ -> assert false
   in
@@ -69,7 +69,9 @@ let rnn ~size_c ~sample_size ~alphabet_size =
   in
   let mem_concat (h1, c1, h2, c2) = Ops.concat Ops.one32 [ h1; c1; h2; c2 ] in
   let sample_output, sample_output_mem =
-    two_lstm ~mem:(mem_split sample_placeholder_mem) ~x:sample_placeholder_x
+    two_lstm
+      ~mem:(mem_split sample_placeholder_mem)
+      ~x:(Ops.Placeholder.to_node sample_placeholder_x)
   in
   { train_err
   ; train_output_mem = mem_concat train_output_mem

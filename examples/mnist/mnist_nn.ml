@@ -14,14 +14,15 @@ let () =
   in
   let xs = O.placeholder [] ~type_:Float in
   let ys = O.placeholder [] ~type_:Float in
+  let ys_node = O.Placeholder.to_node ys in
   let w1 = Var.normalf [ image_dim; hidden_nodes ] ~stddev:0.1 in
   let b1 = Var.f [ hidden_nodes ] 0. in
   let w2 = Var.normalf [ hidden_nodes; label_count ] ~stddev:0.1 in
   let b2 = Var.f [ label_count ] 0. in
-  let ys_ = O.(relu (xs *^ w1 + b1) *^ w2 + b2) |> O.softmax in
-  let cross_entropy = O.(neg (reduce_mean (ys * log ys_))) in
+  let ys_ = O.(relu (Placeholder.to_node xs *^ w1 + b1) *^ w2 + b2) |> O.softmax in
+  let cross_entropy = O.(neg (reduce_mean (ys_node * log ys_))) in
   let accuracy =
-    O.(equal (argMax ys_ one32) (argMax ys one32))
+    O.(equal (argMax ys_ one32) (argMax ys_node one32))
     |> O.cast ~type_:Float
     |> O.reduce_mean
   in

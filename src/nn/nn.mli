@@ -2,7 +2,7 @@ open Core_kernel.Std
 
 module Input_name : sig
   type 'a t
-  val to_node : 'a t -> 'a Node.t
+  val to_placeholder : 'a t -> 'a Ops.Placeholder.t
 end
 
 type _1d

@@ -22,7 +22,7 @@ let () =
   let xs = O.placeholder [] ~type_:Float in
   let ys = O.placeholder [] ~type_:Float in
 
-  let x_image = O.reshape xs (O.const_int ~type_:Int32 [ -1; 28; 28; 1 ]) in
+  let x_image = O.reshape (O.Placeholder.to_node xs) (O.const_int ~type_:Int32 [ -1; 28; 28; 1 ]) in
   let w_conv1 = Var.normalf [ 5; 5; 1; 32 ] ~stddev:0.1 in
   let b_conv1 = Var.f [ 32 ] 0. in
   let h_conv1 = O.add (conv2d x_image w_conv1) b_conv1 in
@@ -37,15 +37,15 @@ let () =
   let b_fc1 = Var.f [ 1024 ] 0. in
   let h_pool2_flat = O.reshape h_pool2 (O.const_int ~type_:Int32 [ -1; 7*7*64 ]) in
   let h_fc1 = O.(relu (h_pool2_flat *^ w_fc1 + b_fc1)) in
-  let h_fc1_dropout = O.dropout h_fc1 ~keep_prob in
+  let h_fc1_dropout = O.dropout h_fc1 ~keep_prob:(O.Placeholder.to_node keep_prob) in
 
   let w_fc2 = Var.normalf [ 1024; 10 ] ~stddev:0.1 in
   let b_fc2 = Var.f [ 10 ] 0. in
 
   let ys_ = O.(h_fc1_dropout *^ w_fc2 + b_fc2) |> O.softmax in
-  let cross_entropy = O.(neg (reduce_sum (ys * O.log ys_))) in
+  let cross_entropy = O.(neg (reduce_sum (O.Placeholder.to_node ys * O.log ys_))) in
   let accuracy =
-    O.(equal (argMax ys_ one32) (argMax ys one32))
+    O.(equal (argMax ys_ one32) (argMax (O.Placeholder.to_node ys) one32))
     |> O.cast ~type_:Float
     |> O.reduce_mean
   in
