@@ -3,6 +3,7 @@ bug-reports:  "https://github.com/LaurentMazare/tensorflow-ocaml/issues"
 homepage:     "https://github.com/LaurentMazare/tensorflow-ocaml"
 dev-repo:     "git+https://github.com/LaurentMazare/tensorflow-ocaml.git"
 maintainer:   "Laurent Mazare <lmazare@gmail.com>"
+authors:      [ "Laurent Mazare" "Nicolas Oury" ]
 
 version: "dev"
 
