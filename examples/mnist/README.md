@@ -34,7 +34,7 @@ the softmax function is used.
 ```ocaml
   let w = Var.f [ image_dim; label_count ] 0. in
   let b = Var.f [ label_count ] 0. in
-  let ys_ = O.(xs *^ w + b) |> O.softmax in
+  let ys_ = O.(Placeholder.to_node xs *^ w + b) |> O.softmax in
 ```
 
 The error measure that we will try to minimize is cross-entropy. We also compute
@@ -42,9 +42,9 @@ the accuracy, i.e. the percentage of images that were correctly labeled, in orde
 to make the output easier to understand.
 
 ```ocaml
-  let cross_entropy = O.(neg (reduce_mean (ys * log ys_))) in
+  let cross_entropy = O.(neg (reduce_mean (Placeholder.to_node ys * log ys_))) in
   let accuracy =
-    O.(equal (argMax ys_ O.one32) (argMax ys O.one32))
+    O.(equal (argMax ys_ O.one32) (argMax (Placeholder.to_node ys) O.one32))
     |> O.cast ~type_:Float
     |> O.reduce_mean
   in
