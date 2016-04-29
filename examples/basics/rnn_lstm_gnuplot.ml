@@ -61,7 +61,12 @@ let fit_1d fn =
   let h = Ops.placeholder [] ~type_:Float in
   let x = Ops.placeholder [] ~type_:Float in
   let c = Ops.placeholder [] ~type_:Float in
-  let y_bar, h_out, c_out = one_lstm ~h ~x ~c in
+  let y_bar, h_out, c_out =
+    one_lstm
+      ~h:(Ops.Placeholder.to_node h)
+      ~x:(Ops.Placeholder.to_node x)
+      ~c:(Ops.Placeholder.to_node c)
+  in
   let tensor size = Tensor.create2 Float32 1 size in
   let init = [], tensor 1, tensor size_c, tensor size_c in
   let ys, _, _, _ =

@@ -66,7 +66,9 @@ let fit_1d fn =
   done;
   let h = Ops.placeholder [] ~type_:Float in
   let x = Ops.placeholder [] ~type_:Float in
-  let y_bar, h_out = one_gru ~h ~x in
+  let y_bar, h_out =
+    one_gru ~h:(Ops.Placeholder.to_node h) ~x:(Ops.Placeholder.to_node x)
+  in
   let tensor size = Tensor.create2 Float32 1 size in
   let init = [], tensor 1, tensor size_h in
   let ys, _, h_res =
