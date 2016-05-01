@@ -380,6 +380,12 @@ module Session = struct
     in
     char_list_of_string (String.length s - 1) [ Char.chr 0 ]
 
+  (* [opaque_identity] is not available pre 4.03, this hack ensure that it
+     exists. *)
+  let opaque_identity x = x
+  let _ = opaque_identity
+  let opaque_identity = let open Sys in opaque_identity
+
   let ptr_ptr_char l =
     let l =
       List.map (fun s -> char_list_of_string s |> CArray.of_list char) l
@@ -388,8 +394,9 @@ module Session = struct
       CArray.of_list (ptr char) (List.map CArray.start l)
       |> CArray.start
     in
-    (* Keep a reference to l as it could be GCed otherwise. *)
-    Gc.finalise (fun _ -> ignore l; ()) ptr;
+    (* Keep a reference to l as it could be GCed otherwise, [opaque_identity] is
+       required here so that the [ignore] is not optimized by flambda. *)
+    Gc.finalise (fun _ -> ignore (opaque_identity l)) ptr;
     ptr
 
   let run ?(inputs = []) ?(outputs = []) ?(targets = []) t =
