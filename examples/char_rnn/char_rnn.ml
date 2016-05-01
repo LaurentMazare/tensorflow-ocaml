@@ -20,7 +20,13 @@ type t =
   ; sample_output_mem      : [ `float ] Node.t
   ; sample_placeholder_mem : [ `float ] Ops.Placeholder.t
   ; sample_placeholder_x   : [ `float ] Ops.Placeholder.t
+  ; initial_memory         : (float, Bigarray.float32_elt) Tensor.t
   }
+
+let tensor_zero size =
+  let tensor = Tensor.create2 Float32 1 size in
+  Tensor.fill tensor 0.;
+  tensor
 
 let rnn ~size_c ~sample_size ~alphabet_size =
   let train_placeholder_mem  = Ops.placeholder ~type_:Float [] in
@@ -82,12 +88,8 @@ let rnn ~size_c ~sample_size ~alphabet_size =
   ; sample_output_mem = mem_concat sample_output_mem
   ; sample_placeholder_mem
   ; sample_placeholder_x
+  ; initial_memory = tensor_zero (4 * size_c)
   }
-
-let tensor_zero size =
-  let tensor = Tensor.create2 Float32 1 size in
-  Tensor.fill tensor 0.;
-  tensor
 
 let all_vars_with_names t =
   Var.get_all_vars t.sample_output
@@ -101,9 +103,8 @@ let fit_and_evaluate data all_chars ~learning_rate ~checkpoint =
     Optimizers.adam_minimizer t.train_err ~learning_rate:(Ops.f learning_rate)
   in
   let save_node = Ops.save ~filename:checkpoint (all_vars_with_names t) in
-  let zero = tensor_zero (4 * size_c) in
   List.fold (List.range 1 epochs)
-    ~init:(log (float alphabet_size) *. float sample_size, zero)
+    ~init:(log (float alphabet_size) *. float sample_size, t.initial_memory)
     ~f:(fun (smooth_error, prev_mem_data) i ->
       let start_idx = (i * sample_size) % (input_size - sample_size - 1) in
       let x_data = Tensor.sub_left data start_idx sample_size in
@@ -177,9 +178,8 @@ let sample filename checkpoint gen_size temperature seed =
   in
   Session.run ~targets:load_and_assign_nodes Session.Output.empty;
   let prev_y = tensor_zero alphabet_size in
-  let zero = tensor_zero (4 * size_c) in
   Tensor.set prev_y [| 0; 0 |] 1.;
-  let init = [], prev_y, zero in
+  let init = [], prev_y, t.initial_memory in
   let ys, _, _ =
     List.fold (List.range 0 gen_size) ~init ~f:(fun (acc_y, prev_y, prev_mem_data) i ->
       let inputs =
