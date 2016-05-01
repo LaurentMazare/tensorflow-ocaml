@@ -60,6 +60,9 @@ val scalar
   -> 'dtype Node.t
 
 (* Useful int scalar values. *)
+val four32 : [ `int32 ] Node.t
+val three32 : [ `int32 ] Node.t
+val two32 : [ `int32 ] Node.t
 val one32 : [ `int32 ] Node.t
 val zero32 : [ `int32 ] Node.t
 
@@ -89,6 +92,25 @@ val save_
   -> [ `unit ] Node.t
 
 val save : filename:string -> (string * Node.p) list -> [ `unit ] Node.t
+
+(* ==== Split ==== *)
+val split2
+  :  ?name:string
+  -> [ `int32 ] Node.t
+  -> 't Node.t
+  -> 't Node.t * 't Node.t
+
+val split3
+  :  ?name:string
+  -> [ `int32 ] Node.t
+  -> 't Node.t
+  -> 't Node.t * 't Node.t * 't Node.t
+
+val split4
+  :  ?name:string
+  -> [ `int32 ] Node.t
+  -> 't Node.t
+  -> 't Node.t * 't Node.t * 't Node.t * 't Node.t
 
 (* ==== Misc ==== *)
 

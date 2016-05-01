@@ -54,11 +54,7 @@ let rnn ~size_c ~sample_size ~alphabet_size =
   let x_and_ys =
     List.zip_exn (split train_placeholder_x) (split train_placeholder_y)
   in
-  let mem_split mem =
-    match Ops.split Ops.one32 (Ops.Placeholder.to_node mem) ~num_split:4 with
-    | [ h1; c1; h2; c2 ] -> h1, c1, h2, c2
-    | _ -> assert false
-  in
+  let mem_split mem = Ops.split4 Ops.one32 (Ops.Placeholder.to_node mem) in
   let train_err, train_output_mem =
     List.fold x_and_ys
       ~init:([], mem_split train_placeholder_mem)

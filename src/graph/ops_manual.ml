@@ -97,6 +97,9 @@ let cd ?shape x = const_float ?shape ~type_:Double x
 
 let zero32 = const_int ~shape:[] ~type_:Int32 [ 0 ]
 let one32 = const_int ~shape:[] ~type_:Int32 [ 1 ]
+let two32 = const_int ~shape:[] ~type_:Int32 [ 2 ]
+let three32 = const_int ~shape:[] ~type_:Int32 [ 3 ]
+let four32 = const_int ~shape:[] ~type_:Int32 [ 4 ]
 
 let range node = Ops_generated.range zero32 node one32
 
@@ -159,3 +162,18 @@ let save ~filename named_tensors =
     (const_string [ filename ])
     (const_string tensor_names)
     tensors
+
+let split2 ?name dim node =
+  match Ops_generated.split dim node ?name ~num_split:2 with
+  | [ node1; node2 ] -> node1, node2
+  | _ -> assert false
+
+let split3 ?name dim node =
+  match Ops_generated.split dim node ?name ~num_split:3 with
+  | [ node1; node2; node3 ] -> node1, node2, node3
+  | _ -> assert false
+
+let split4 ?name dim node =
+  match Ops_generated.split dim node ?name ~num_split:4 with
+  | [ node1; node2; node3; node4 ] -> node1, node2, node3, node4
+  | _ -> assert false
