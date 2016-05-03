@@ -45,5 +45,11 @@ val dense
   -> (_1d t -> _1d t) Staged.t
 
 module Model : sig
-  type t
+  type 'a fnn = 'a t
+  type 'a t
+
+  val create
+    :  _1d fnn
+    -> [ `float | `double ] Node.Type.t
+    -> _1d t
 end

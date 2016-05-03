@@ -47,6 +47,13 @@ module Unary = struct
     | Tanh
     | Relu
     | Softmax
+
+  let apply t node =
+    match t with
+    | Sigmoid -> Ops.sigmoid node
+    | Tanh    -> Ops.tanh node
+    | Relu    -> Ops.relu node
+    | Softmax -> Ops.softmax node
 end
 
 module Binary = struct
@@ -56,9 +63,15 @@ module Binary = struct
     | Times
 
   let op_name = function
-    | Plus -> "plus"
+    | Plus  -> "plus"
     | Minus -> "minus"
     | Times -> "times"
+
+  let apply t node1 node2 =
+    match t with
+    | Plus  -> Ops.(node1 + node2)
+    | Minus -> Ops.(node1 - node2)
+    | Times -> Ops.(node1 * node2)
 end
 
 type init = [ `const of float | `normal of float | `truncated_normal of float ]
@@ -114,9 +127,34 @@ let dense ?(w_init = `const 0.) ?(b_init = `const 0.) dim =
     ; op = Dense (w_init, b_init, dim, t)
     })
 
+let build_node t ~type_ =
+  let inputs = Input.Table.create () in
+  let rec walk t =
+    match t.op with
+    | Unary (unary, t) -> Unary.apply unary (walk t)
+    | Binary (binary, t1, t2) -> Binary.apply binary (walk t1) (walk t2)
+    | Const f -> Ops.f_or_d ~shape:(Shape.dim_list t.shape) ~type_ f
+    | Dense _ -> failwith "TODO"
+    | Input input ->
+      Hashtbl.find_or_add inputs input ~default:(fun () ->
+        Ops.placeholder ~type_ (Shape.dim_list t.shape))
+      |> Ops.Placeholder.to_node
+  in
+  walk t
+
 module Model = struct
-  type t =
+  type 'a fnn = 'a t
+
+  type 'a t =
     { session : Session.t
     ; node : Node.p
+    ; shape : 'a Shape.t
+    }
+
+  let create fnn type_ =
+    let session = Session.create () in
+    { session
+    ; node = Node.P (build_node fnn ~type_)
+    ; shape = fnn.shape
     }
 end
