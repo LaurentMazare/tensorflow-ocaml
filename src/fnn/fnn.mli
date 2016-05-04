@@ -11,7 +11,7 @@ module Shape : sig
     | D3 : int * int * int -> _3d t
 end
 
-module Input : sig
+module Input_id : sig
   type t
 end
 
@@ -22,7 +22,7 @@ val shape : 'a t -> 'a Shape.t
 
 val input
   :  shape:'a Shape.t
-  -> 'a t * Input.t
+  -> 'a t * Input_id.t
 
 val const
   :  float
@@ -46,10 +46,20 @@ val dense
 
 module Model : sig
   type 'a fnn = 'a t
-  type 'a t
+  type ('a, 'b) t
 
   val create
     :  'a fnn
-    -> [ `float | `double ] Node.Type.t
-    -> 'a t
+    -> ([ `float | `double ] as 'b) Node.Type.t
+    -> ('a, 'b) t
+
+  val save
+    :  ('a, 'b) t
+    -> filename:string
+    -> unit
+
+  val load
+    :  ('a, 'b) t
+    -> filename:string
+    -> unit
 end
