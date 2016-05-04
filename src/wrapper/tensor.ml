@@ -72,3 +72,7 @@ let to_float_list (P tensor) =
   | Bigarray.Float32 -> to_elt_list tensor
   | Bigarray.Float64 -> to_elt_list tensor
   | _ -> failwith "Not a float tensor"
+
+type 'a eq =
+  | Float : (Bigarray.float32_elt * [ `float ]) eq
+  | Double : (Bigarray.float64_elt * [ `double ]) eq

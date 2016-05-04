@@ -194,19 +194,34 @@ module Model = struct
     ; load_and_assign_nodes = String.Table.create ()
     }
 
-  let predict (type a) (t : (_, a) t) inputs =
-    ignore inputs; (* TODO *)
-    match Node.output_type t.node with
-    | Node.Type.Float ->
-      let output =
-        Session.run ~session:t.session Session.Output.(float t.node)
+  let predict (type a) (type b)
+        (t : (_, a) t)
+        (inputs : (Input_id.t * (float, b) Tensor.t) list)
+        (eq : (b * a) Tensor.eq)
+    =
+    match Node.output_type t.node, eq with
+    | Node.Type.Float, Tensor.Float ->
+      let inputs =
+        List.map inputs ~f:(fun (id, tensor) ->
+          match Hashtbl.find t.inputs id with
+          | None -> failwith "missing input"
+          | Some placeholder -> Session.Input.float placeholder tensor)
       in
-      Tensor.P output
-    | Node.Type.Double ->
       let output =
-        Session.run ~session:t.session Session.Output.(double t.node)
+        Session.run ~inputs ~session:t.session Session.Output.(float t.node)
       in
-      Tensor.P output
+      (output : (float, b) Tensor.t)
+    | Node.Type.Double, Tensor.Double ->
+      let inputs =
+        List.map inputs ~f:(fun (id, tensor) ->
+          match Hashtbl.find t.inputs id with
+          | None -> failwith "missing input"
+          | Some placeholder -> Session.Input.double placeholder tensor)
+      in
+      let output =
+        Session.run ~inputs ~session:t.session Session.Output.(double t.node)
+      in
+      (output : (float, b) Tensor.t)
     | _ -> assert false
 
   (* Collect all variables in a net. The order of the created list is important as it

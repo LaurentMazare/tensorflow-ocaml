@@ -55,8 +55,9 @@ module Model : sig
 
   val predict
     :  ('a, 'b) t
-    -> (Input_id.t * (float, 'b) Tensor.t) list
-    -> Tensor.p
+    -> (Input_id.t * (float, 'c) Tensor.t) list
+    -> ('c * 'b) Tensor.eq
+    -> (float, 'c) Tensor.t
 
   val save
     :  ('a, 'b) t

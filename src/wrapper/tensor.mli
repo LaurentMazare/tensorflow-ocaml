@@ -22,3 +22,7 @@ val kind : ('a, 'b) t -> ('a, 'b) Bigarray.kind
 val sub_left : ('a, 'b) t -> int -> int -> ('a, 'b) t
 val fill : ('a, 'b) t -> 'a -> unit
 val blit : ('a, 'b) t -> ('a, 'b) t -> unit
+
+type 'a eq =
+  | Float : (Bigarray.float32_elt * [ `float ]) eq
+  | Double : (Bigarray.float64_elt * [ `double ]) eq
