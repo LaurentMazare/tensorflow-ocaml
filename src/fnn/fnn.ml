@@ -128,10 +128,6 @@ let binary binary t1 t2 =
   ; id = Id.create ()
   }
 
-let (+) t1 t2 = binary Plus t1 t2
-let (-) t1 t2 = binary Minus t1 t2
-let ( * ) t1 t2 = binary Times t1 t2
-
 let dense ?(w_init = `const 0.) ?(b_init = `const 0.) dim =
   let id = Id.create () in
   Staged.stage (fun t ->
@@ -171,13 +167,64 @@ let build_node t ~type_ =
   in
   walk t, inputs
 
+module Optimizer = struct
+  (* We should use some inline records here when they will be available. *)
+  type t =
+    | Gradient_descent of float
+    | Adam of float * float option * float option * float option
+    | Momentum of float * float
+
+  let gradient_descent ~learning_rate = Gradient_descent learning_rate
+
+  let adam ~learning_rate ?beta1 ?beta2 ?epsilon () =
+    Adam (learning_rate, beta1, beta2, epsilon)
+
+  let momentum ~learning_rate ~momentum =
+    Momentum (learning_rate, momentum)
+
+  let get t ~loss =
+    match t with
+    | Gradient_descent learning_rate ->
+      Optimizers.gradient_descent_minimizer ~learning_rate:(Ops.f learning_rate) loss
+    | Adam (learning_rate, beta1, beta2, epsilon) ->
+      Optimizers.adam_minimizer loss
+        ~learning_rate:(Ops.f learning_rate)
+        ?beta1:(Option.map beta1 ~f:Ops.f)
+        ?beta2:(Option.map beta2 ~f:Ops.f)
+        ?epsilon:(Option.map epsilon ~f:Ops.f)
+    | Momentum (learning_rate, momentum) ->
+      Optimizers.momentum_minimizer loss
+        ~learning_rate:(Ops.f learning_rate)
+        ~momentum:(Ops.f momentum)
+end
+
+module Loss = struct
+  type t =
+    | Cross_entropy of [ `sum | `mean ]
+    | L2 of [ `sum | `mean ]
+
+  let cross_entropy sum_mean = Cross_entropy sum_mean
+  let l2 sum_mean = L2 sum_mean
+
+  let get t ~sample_ys ~model_ys =
+    let reduce = function
+      | `sum -> Ops.reduce_sum
+      | `mean -> Ops.reduce_mean
+    in
+    match t with
+    | Cross_entropy sum_mean ->
+      Ops.(neg (reduce sum_mean (sample_ys * log model_ys)))
+    | L2 sum_mean ->
+      Ops.(reduce sum_mean (square (sample_ys - model_ys)))
+end
+
 module Model = struct
   type 'a fnn = 'a t
 
   type ('a, 'b) t =
     { session : Session.t
     ; node : 'b Node.t
-    ; shape : 'a Shape.t
+    ; placeholder : 'b Ops.Placeholder.t
     ; inputs : 'b Ops.Placeholder.t Id.Table.t
     ; save_nodes : [ `unit ] Node.t String.Table.t
     ; load_and_assign_nodes : Node.p list String.Table.t
@@ -186,9 +233,10 @@ module Model = struct
   let create fnn type_ =
     let node, inputs = build_node (P fnn) ~type_ in
     let session = Session.create () in
+    let placeholder = Ops.placeholder ~type_ (Shape.dim_list fnn.shape) in
     { session
     ; node
-    ; shape = fnn.shape
+    ; placeholder
     ; inputs
     ; save_nodes = String.Table.create ()
     ; load_and_assign_nodes = String.Table.create ()
@@ -199,30 +247,80 @@ module Model = struct
         (inputs : (Input_id.t * (float, b) Tensor.t) list)
         (eq : (b * a) Tensor.eq)
     =
+    let predict f_or_d_input f_or_d_output =
+      let inputs =
+        List.map inputs ~f:(fun (id, tensor) ->
+          match Hashtbl.find t.inputs id with
+          | None -> failwith "missing input"
+          | Some placeholder -> f_or_d_input placeholder tensor)
+      in
+      Session.run ~inputs ~session:t.session (f_or_d_output t.node)
+    in
     match Node.output_type t.node, eq with
     | Node.Type.Float, Tensor.Float ->
-      let inputs =
-        List.map inputs ~f:(fun (id, tensor) ->
-          match Hashtbl.find t.inputs id with
-          | None -> failwith "missing input"
-          | Some placeholder -> Session.Input.float placeholder tensor)
-      in
-      let output =
-        Session.run ~inputs ~session:t.session Session.Output.(float t.node)
-      in
-      (output : (float, b) Tensor.t)
+      (predict Session.Input.float Session.Output.float : (float, b) Tensor.t)
     | Node.Type.Double, Tensor.Double ->
-      let inputs =
-        List.map inputs ~f:(fun (id, tensor) ->
-          match Hashtbl.find t.inputs id with
-          | None -> failwith "missing input"
-          | Some placeholder -> Session.Input.double placeholder tensor)
-      in
-      let output =
-        Session.run ~inputs ~session:t.session Session.Output.(double t.node)
-      in
-      (output : (float, b) Tensor.t)
+      (predict Session.Input.double Session.Output.double : (float, b) Tensor.t)
     | _ -> .
+
+  let fit (type a) (type b)
+        (t : (_, a) t)
+        (inputs : (Input_id.t * (float, b) Tensor.t) list)
+        ?batch_size
+        ~loss
+        ~optimizer
+        ~epochs
+        ~xs
+        ~ys
+        (eq : (b * a) Tensor.eq)
+  =
+  let fit placeholder node f_or_d scalar_f_or_d =
+    let loss =
+      Loss.get loss
+        ~sample_ys:(Ops.Placeholder.to_node placeholder)
+        ~model_ys:node
+    in
+    let optimizer = Optimizer.get optimizer ~loss in
+    let samples = (Tensor.dims xs).(0) in
+    let batch_size =
+      match batch_size with
+      | None -> None
+      | Some batch_size when batch_size > samples -> None
+      | Some _ as s -> s
+    in
+    let inputs =
+      List.map inputs ~f:(fun (id, tensor) ->
+        match Hashtbl.find t.inputs id with
+        | None -> failwith "missing input"
+        | Some placeholder -> f_or_d placeholder tensor)
+    in
+    let inputs ~xs ~ys = ignore xs; f_or_d t.placeholder ys :: inputs in
+    for epoch = 1 to epochs do
+      let inputs =
+        match batch_size with
+        | None -> inputs ~xs ~ys
+        | Some batch_size ->
+          let offset = ((epoch-1) * batch_size) mod (samples - batch_size) in
+          let xs = Tensor.sub_left xs offset batch_size in
+          let ys = Tensor.sub_left ys offset batch_size in
+          inputs ~xs ~ys
+      in
+      let err =
+        Session.run
+          ~inputs
+          ~targets:optimizer
+          ~session:t.session
+          (scalar_f_or_d loss)
+      in
+      printf "Epoch: %6d/%-6d   Loss: %.2f\n%!" epoch epochs err
+    done
+  in
+  match Node.output_type t.node, eq with
+  | Node.Type.Float, Tensor.Float ->
+    fit t.placeholder t.node Session.Input.float Session.Output.scalar_float
+  | Node.Type.Double, Tensor.Double ->
+    fit t.placeholder t.node Session.Input.double Session.Output.scalar_double
+  | _ -> .
 
   (* Collect all variables in a net. The order of the created list is important as it
      will serve to name the variable.
@@ -258,3 +356,7 @@ module Model = struct
       ~targets:load_and_assign_nodes
       Session.Output.empty
 end
+
+let (+) t1 t2 = binary Plus t1 t2
+let (-) t1 t2 = binary Minus t1 t2
+let ( * ) t1 t2 = binary Times t1 t2

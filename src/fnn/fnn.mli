@@ -44,6 +44,19 @@ val dense
   -> int
   -> (_1d t -> _1d t) Staged.t
 
+module Optimizer : sig
+  type t
+  val gradient_descent : learning_rate:float -> t
+  val momentum : learning_rate:float -> momentum:float -> t
+  val adam : learning_rate:float -> ?beta1:float -> ?beta2:float -> ?epsilon:float -> unit -> t
+end
+
+module Loss : sig
+  type t
+  val cross_entropy : [ `sum | `mean ] -> t
+  val l2 : [ `sum | `mean ] -> t
+end
+
 module Model : sig
   type 'a fnn = 'a t
   type ('a, 'b) t
@@ -58,6 +71,18 @@ module Model : sig
     -> (Input_id.t * (float, 'c) Tensor.t) list
     -> ('c * 'b) Tensor.eq
     -> (float, 'c) Tensor.t
+
+  val fit
+    :  ('a, 'b) t
+    -> (Input_id.t * (float, 'c) Tensor.t) list
+    -> ?batch_size:int
+    -> loss:Loss.t
+    -> optimizer:Optimizer.t
+    -> epochs:int
+    -> xs:(float, 'c) Tensor.t
+    -> ys:(float, 'c) Tensor.t
+    -> ('c * 'b) Tensor.eq
+    -> unit
 
   val save
     :  ('a, 'b) t
