@@ -53,6 +53,11 @@ module Model : sig
     -> ([ `float | `double ] as 'b) Node.Type.t
     -> ('a, 'b) t
 
+  val predict
+    :  ('a, 'b) t
+    -> (Input_id.t * (float, 'b) Tensor.t) list
+    -> Tensor.p
+
   val save
     :  ('a, 'b) t
     -> filename:string

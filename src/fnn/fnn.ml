@@ -194,6 +194,21 @@ module Model = struct
     ; load_and_assign_nodes = String.Table.create ()
     }
 
+  let predict (type a) (t : (_, a) t) inputs =
+    ignore inputs; (* TODO *)
+    match Node.output_type t.node with
+    | Node.Type.Float ->
+      let output =
+        Session.run ~session:t.session Session.Output.(float t.node)
+      in
+      Tensor.P output
+    | Node.Type.Double ->
+      let output =
+        Session.run ~session:t.session Session.Output.(double t.node)
+      in
+      Tensor.P output
+    | _ -> assert false
+
   (* Collect all variables in a net. The order of the created list is important as it
      will serve to name the variable.
      This does not seem very robust but will do for now. *)
