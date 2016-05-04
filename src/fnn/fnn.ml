@@ -222,7 +222,7 @@ module Model = struct
         Session.run ~inputs ~session:t.session Session.Output.(double t.node)
       in
       (output : (float, b) Tensor.t)
-    | _ -> assert false
+    | _ -> .
 
   (* Collect all variables in a net. The order of the created list is important as it
      will serve to name the variable.
