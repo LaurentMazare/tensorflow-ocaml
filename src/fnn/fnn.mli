@@ -49,7 +49,7 @@ module Model : sig
   type 'a t
 
   val create
-    :  _1d fnn
+    :  'a fnn
     -> [ `float | `double ] Node.Type.t
-    -> _1d t
+    -> 'a t
 end

@@ -87,6 +87,8 @@ and 'a t =
   ; op : 'a op
   }
 
+type p = P : _ t -> p
+
 let shape t = t.shape
 
 let input ~shape =
@@ -129,10 +131,10 @@ let dense ?(w_init = `const 0.) ?(b_init = `const 0.) dim =
 
 let build_node t ~type_ =
   let inputs = Input.Table.create () in
-  let rec walk t =
+  let rec walk (P t) =
     match t.op with
-    | Unary (unary, t) -> Unary.apply unary (walk t)
-    | Binary (binary, t1, t2) -> Binary.apply binary (walk t1) (walk t2)
+    | Unary (unary, t) -> Unary.apply unary (walk (P t))
+    | Binary (binary, t1, t2) -> Binary.apply binary (walk (P t1)) (walk (P t2))
     | Const f -> Ops.f_or_d ~shape:(Shape.dim_list t.shape) ~type_ f
     | Dense _ -> failwith "TODO"
     | Input input ->
@@ -154,7 +156,7 @@ module Model = struct
   let create fnn type_ =
     let session = Session.create () in
     { session
-    ; node = Node.P (build_node fnn ~type_)
+    ; node = Node.P (build_node (P fnn) ~type_)
     ; shape = fnn.shape
     }
 end
