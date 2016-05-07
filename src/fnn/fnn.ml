@@ -222,31 +222,37 @@ end
 module Model = struct
   type 'a fnn = 'a t
 
-  type ('a, 'b) t =
+  type ('a, 'b, 'c) t =
     { session : Session.t
     ; node : 'b Node.t
     ; placeholder : 'b Ops.Placeholder.t
     ; inputs : 'b Ops.Placeholder.t Id.Table.t
     ; save_nodes : [ `unit ] Node.t String.Table.t
     ; load_and_assign_nodes : Node.p list String.Table.t
+    ; eq : ('c * 'b) Tensor.eq
     }
 
-  let create fnn ~type_ =
-    let node, inputs = build_node (P fnn) ~type_ in
-    let session = Session.create () in
-    let placeholder = Ops.placeholder ~type_ (Shape.dim_list fnn.shape) in
-    { session
-    ; node
-    ; placeholder
-    ; inputs
-    ; save_nodes = String.Table.create ()
-    ; load_and_assign_nodes = String.Table.create ()
-    }
+  let create (type a) (type b) (eq : (b * a) Tensor.eq) fnn =
+    let create eq ~type_ =
+      let node, inputs = build_node (P fnn) ~type_ in
+      let session = Session.create () in
+      let placeholder = Ops.placeholder ~type_ (Shape.dim_list fnn.shape) in
+      { session
+      ; node
+      ; placeholder
+      ; inputs
+      ; save_nodes = String.Table.create ()
+      ; load_and_assign_nodes = String.Table.create ()
+      ; eq
+      }
+    in
+    match eq with
+    | Tensor.Float -> (create Float ~type_:Float : (_, a, b) t)
+    | Tensor.Double -> create Double ~type_:Double
 
   let predict (type a) (type b)
-        (t : (_, a) t)
+        (t : (_, a, b) t)
         (inputs : (Input_id.t * (float, b) Tensor.t) list)
-        (eq : (b * a) Tensor.eq)
     =
     let predict f_or_d_input f_or_d_output =
       let inputs =
@@ -257,7 +263,7 @@ module Model = struct
       in
       Session.run ~inputs ~session:t.session (f_or_d_output t.node)
     in
-    match Node.output_type t.node, eq with
+    match Node.output_type t.node, t.eq with
     | Node.Type.Float, Tensor.Float ->
       (predict Session.Input.float Session.Output.float : (float, b) Tensor.t)
     | Node.Type.Double, Tensor.Double ->
@@ -265,16 +271,15 @@ module Model = struct
     | _ -> assert false
 
   let fit (type a) (type b)
-        (t : (_, a) t)
         ?(addn_inputs : (Input_id.t * (float, b) Tensor.t) list option)
         ?batch_size
+        (t : (_, a, b) t)
         ~loss
         ~optimizer
         ~epochs
         ~input_id
         ~xs
         ~ys
-        (eq : (b * a) Tensor.eq)
   =
   let fit placeholder node f_or_d scalar_f_or_d =
     let loss =
@@ -324,7 +329,7 @@ module Model = struct
       printf "Epoch: %6d/%-6d   Loss: %.2f\n%!" epoch epochs err
     done
   in
-  match Node.output_type t.node, eq with
+  match Node.output_type t.node, t.eq with
   | Node.Type.Float, Tensor.Float ->
     fit t.placeholder t.node Session.Input.float Session.Output.scalar_float
   | Node.Type.Double, Tensor.Double ->

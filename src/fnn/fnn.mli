@@ -59,39 +59,37 @@ end
 
 module Model : sig
   type 'a fnn = 'a t
-  type ('a, 'b) t
+  type ('a, 'b, 'c) t
 
   val create
-    :  'a fnn
-    -> type_:([< `float | `double ] as 'b) Node.Type.t
-    -> ('a, 'b) t
+    :  ('c * 'b) Tensor.eq
+    -> 'a fnn
+    -> ('a, 'b, 'c) t
 
   val predict
-    :  ('a, 'b) t
+    :  ('a, 'b, 'c) t
     -> (Input_id.t * (float, 'c) Tensor.t) list
-    -> ('c * 'b) Tensor.eq
     -> (float, 'c) Tensor.t
 
   val fit
-    :  ('a, 'b) t
-    -> ?addn_inputs:(Input_id.t * (float, 'c) Tensor.t) list
+    :  ?addn_inputs:(Input_id.t * (float, 'c) Tensor.t) list
     -> ?batch_size:int
+    -> ('a, 'b, 'c) t
     -> loss:Loss.t
     -> optimizer:Optimizer.t
     -> epochs:int
     -> input_id:Input_id.t
     -> xs:(float, 'c) Tensor.t
     -> ys:(float, 'c) Tensor.t
-    -> ('c * 'b) Tensor.eq
     -> unit
 
   val save
-    :  ('a, 'b) t
+    :  ('a, 'b, 'c) t
     -> filename:string
     -> unit
 
   val load
-    :  ('a, 'b) t
+    :  ('a, 'b, 'c) t
     -> filename:string
     -> unit
 end
