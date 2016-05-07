@@ -74,11 +74,12 @@ module Model : sig
 
   val fit
     :  ('a, 'b) t
-    -> (Input_id.t * (float, 'c) Tensor.t) list
+    -> ?addn_inputs:(Input_id.t * (float, 'c) Tensor.t) list
     -> ?batch_size:int
     -> loss:Loss.t
     -> optimizer:Optimizer.t
     -> epochs:int
+    -> input_id:Input_id.t
     -> xs:(float, 'c) Tensor.t
     -> ys:(float, 'c) Tensor.t
     -> ('c * 'b) Tensor.eq

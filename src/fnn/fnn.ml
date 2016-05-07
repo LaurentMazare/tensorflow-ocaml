@@ -153,6 +153,7 @@ let build_node t ~type_ =
     | Dense (w_init, b_init, input)->
       let Shape.D1 input_shape = input.shape in
       let Shape.D1 shape = t.shape in
+      printf "%d %d\n%!" input_shape shape;
       let w, b =
         Hashtbl.find_or_add dense_vars t.id ~default:(fun () ->
           let w = var ~type_ ~init:w_init [ input_shape; shape ] in
@@ -265,11 +266,12 @@ module Model = struct
 
   let fit (type a) (type b)
         (t : (_, a) t)
-        (inputs : (Input_id.t * (float, b) Tensor.t) list)
+        ?(addn_inputs : (Input_id.t * (float, b) Tensor.t) list option)
         ?batch_size
         ~loss
         ~optimizer
         ~epochs
+        ~input_id
         ~xs
         ~ys
         (eq : (b * a) Tensor.eq)
@@ -288,13 +290,20 @@ module Model = struct
       | Some batch_size when batch_size > samples -> None
       | Some _ as s -> s
     in
-    let inputs =
-      List.map inputs ~f:(fun (id, tensor) ->
-        match Hashtbl.find t.inputs id with
-        | None -> failwith "missing input"
-        | Some placeholder -> f_or_d placeholder tensor)
+    let find_input id =
+      match Hashtbl.find t.inputs id with
+      | None -> failwith "missing input"
+      | Some placeholder -> placeholder
     in
-    let inputs ~xs ~ys = ignore xs; f_or_d t.placeholder ys :: inputs in
+    let addn_inputs =
+      Option.value_map addn_inputs
+        ~default:[]
+        ~f:(List.map ~f:(fun (id, tensor) -> f_or_d (find_input id) tensor))
+    in
+    let xs_placeholder = find_input input_id in
+    let inputs ~xs ~ys =
+      f_or_d xs_placeholder xs :: f_or_d t.placeholder ys :: addn_inputs
+    in
     for epoch = 1 to epochs do
       let inputs =
         match batch_size with
