@@ -8,5 +8,5 @@ not <src/piqi/*>: warn_error()
 <src/gen_ops/*> or <src/graph/*> or <src/nn/*> or <src/fnn/*> or <examples/*> or <examples/*/*> or <tests/*>: package(core_kernel), thread
 <lib>: -traverse
 <lib2>: -traverse
-<src/piqi> or <src/wrapper> or <src/graph> or <src> or <src/nn>: include
+<src/piqi> or <src/wrapper> or <src/graph> or <src> or <src/nn> or <src/fnn>: include
 <src/*/*>: for-pack(Tensorflow)

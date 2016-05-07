@@ -63,7 +63,7 @@ module Model : sig
 
   val create
     :  'a fnn
-    -> ([ `float | `double ] as 'b) Node.Type.t
+    -> type_:([< `float | `double ] as 'b) Node.Type.t
     -> ('a, 'b) t
 
   val predict

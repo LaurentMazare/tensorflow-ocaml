@@ -230,7 +230,7 @@ module Model = struct
     ; load_and_assign_nodes : Node.p list String.Table.t
     }
 
-  let create fnn type_ =
+  let create fnn ~type_ =
     let node, inputs = build_node (P fnn) ~type_ in
     let session = Session.create () in
     let placeholder = Ops.placeholder ~type_ (Shape.dim_list fnn.shape) in
@@ -261,7 +261,7 @@ module Model = struct
       (predict Session.Input.float Session.Output.float : (float, b) Tensor.t)
     | Node.Type.Double, Tensor.Double ->
       (predict Session.Input.double Session.Output.double : (float, b) Tensor.t)
-    | _ -> .
+    | _ -> assert false
 
   let fit (type a) (type b)
         (t : (_, a) t)
@@ -320,7 +320,7 @@ module Model = struct
     fit t.placeholder t.node Session.Input.float Session.Output.scalar_float
   | Node.Type.Double, Tensor.Double ->
     fit t.placeholder t.node Session.Input.double Session.Output.scalar_double
-  | _ -> .
+  | _ -> assert false
 
   (* Collect all variables in a net. The order of the created list is important as it
      will serve to name the variable.
