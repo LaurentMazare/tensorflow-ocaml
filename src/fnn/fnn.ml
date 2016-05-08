@@ -80,12 +80,19 @@ end
 
 type init = [ `const of float | `normal of float | `truncated_normal of float ]
 
+type max_pool =
+  { filter : int * int
+  ; strides : int * int
+  ; padding : [ `same | `valid ]
+  }
+
 type 'a op =
   | Input : 'a op
   | Const : float -> 'a op
   | Unary : Unary.t * 'a t -> 'a op
   | Binary : Binary.t * 'a t * 'a t -> 'a op
   | Dense : init * init * _1d t -> _1d op
+  | Max_pool : max_pool * _3d t -> _3d op
 and 'a t =
   { shape : 'a Shape.t
   ; op : 'a op
@@ -136,6 +143,54 @@ let dense ?(w_init = `const 0.) ?(b_init = `const 0.) dim =
     ; id
     })
 
+let conv_sizes
+      ~input_height
+      ~input_width
+      ~filter_height
+      ~filter_width
+      ~stride_height
+      ~stride_width
+      ~padding
+  =
+  let input_height, input_width =
+    match padding with
+    | `same -> input_height, input_width
+    | `valid -> input_height - filter_height + 1, input_width - filter_width + 1
+  in
+  (input_height - 1) / stride_height + 1, (input_width - 1) / stride_width + 1
+
+let padding_str = function
+  | `same -> "SAME"
+  | `valid -> "VALID"
+
+let max_pool t ~filter ~strides ~padding =
+  let input_height, input_width, input_channels =
+    match t.shape with
+    | Shape.D3 (d, d', d'') -> d, d', d''
+  in
+  let filter_height, filter_width = filter in
+  let stride_height, stride_width = strides in
+  let output_height, output_width =
+    conv_sizes
+      ~input_height
+      ~input_width
+      ~filter_height
+      ~filter_width
+      ~stride_height
+      ~stride_width
+      ~padding
+  in
+  let max_pool =
+    { filter
+    ; strides
+    ; padding
+    }
+  in
+  { shape = D3 (output_height, output_width, input_channels)
+  ; op = Max_pool (max_pool, t)
+  ; id = Id.create ()
+  }
+
 let var dims ~init ~type_ =
   match init with
   | `const f -> Var.f_or_d dims f ~type_
@@ -165,6 +220,15 @@ let build_node t ~type_ =
       Hashtbl.find_or_add inputs t.id ~default:(fun () ->
         Ops.placeholder ~type_ (Shape.dim_list t.shape))
       |> Ops.Placeholder.to_node
+    | Max_pool (max_pool, t) ->
+      let filter_height, filter_width = max_pool.filter in
+      let stride_height, stride_width = max_pool.strides in
+      (* [maxPool] only exists for float and not for double so cast to float. *)
+      Ops.maxPool (walk (P t) |> Ops.cast ~type_:Float)
+        ~ksize:[ 1; filter_height; filter_width; 1 ]
+        ~strides:[ 1; stride_height; stride_width; 1 ]
+        ~padding:(padding_str max_pool.padding)
+      |> Ops.cast ~type_
   in
   walk t, inputs
 

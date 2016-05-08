@@ -44,6 +44,24 @@ val dense
   -> int
   -> (_1d t -> _1d t) Staged.t
 
+(* TODO
+val conv2d
+  :  ?w_init:init
+  -> ?b_init:init
+  -> filter:int*int
+  -> out_channels:int
+  -> strides:int*int
+  -> padding:[ `same | `valid ]
+  -> (_3d t -> _3d t) Staged.t
+*)
+
+val max_pool
+  :  _3d t
+  -> filter:int*int
+  -> strides:int*int
+  -> padding:[ `same | `valid ]
+  -> _3d t
+
 module Optimizer : sig
   type t
   val gradient_descent : learning_rate:float -> t
