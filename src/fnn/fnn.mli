@@ -44,7 +44,6 @@ val dense
   -> int
   -> (_1d t -> _1d t) Staged.t
 
-(* TODO
 val conv2d
   :  ?w_init:init
   -> ?b_init:init
@@ -53,7 +52,6 @@ val conv2d
   -> strides:int*int
   -> padding:[ `same | `valid ]
   -> (_3d t -> _3d t) Staged.t
-*)
 
 val max_pool
   :  _3d t

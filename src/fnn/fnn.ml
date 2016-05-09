@@ -86,6 +86,16 @@ type max_pool =
   ; padding : [ `same | `valid ]
   }
 
+type conv2d =
+  { filter : int * int
+  ; strides : int * int
+  ; padding : [ `same | `valid ]
+  ; in_channels : int
+  ; out_channels : int
+  ; w_init : init
+  ; b_init : init
+  }
+
 type 'a op =
   | Input : 'a op
   | Const : float -> 'a op
@@ -93,6 +103,7 @@ type 'a op =
   | Binary : Binary.t * 'a t * 'a t -> 'a op
   | Dense : init * init * _1d t -> _1d op
   | Max_pool : max_pool * _3d t -> _3d op
+  | Conv2d : conv2d * _3d t -> _3d op
 and 'a t =
   { shape : 'a Shape.t
   ; op : 'a op
@@ -191,6 +202,40 @@ let max_pool t ~filter ~strides ~padding =
   ; id = Id.create ()
   }
 
+let conv2d ?(w_init = `const 0.) ?(b_init = `const 0.) ~filter ~out_channels ~strides ~padding =
+  let id = Id.create () in
+  Staged.stage (fun t ->
+    let input_height, input_width, input_channels =
+      match t.shape with
+      | Shape.D3 (d, d', d'') -> d, d', d''
+    in
+    let conv2d =
+      { filter
+      ; strides
+      ; padding
+      ; in_channels = input_channels
+      ; out_channels
+      ; w_init
+      ; b_init
+      }
+    in
+    let filter_height, filter_width = filter in
+    let stride_height, stride_width = strides in
+    let output_height, output_width =
+      conv_sizes
+        ~input_height
+        ~input_width
+        ~filter_height
+        ~filter_width
+        ~stride_height
+        ~stride_width
+        ~padding
+    in
+    { shape = D3 (output_height, output_width, out_channels)
+    ; op = Conv2d (conv2d, t)
+    ; id
+    })
+
 let var dims ~init ~type_ =
   match init with
   | `const f -> Var.f_or_d dims f ~type_
@@ -200,6 +245,7 @@ let var dims ~init ~type_ =
 let build_node t ~type_ =
   let inputs = Id.Table.create () in
   let dense_vars = Id.Table.create () in
+  let conv_vars = Id.Table.create () in
   let rec walk (P t) =
     match t.op with
     | Unary (unary, t) -> Unary.apply unary (walk (P t))
@@ -229,6 +275,24 @@ let build_node t ~type_ =
         ~strides:[ 1; stride_height; stride_width; 1 ]
         ~padding:(padding_str max_pool.padding)
       |> Ops.cast ~type_
+    | Conv2d (conv2d, t) ->
+      let filter_height, filter_width = conv2d.filter in
+      let out_channels = conv2d.out_channels in
+      let w, b, in_channels =
+        Hashtbl.find_or_add conv_vars t.id ~default:(fun () ->
+          let in_channels = conv2d.in_channels in
+          let w =
+            var ~type_ ~init:conv2d.w_init
+              [ filter_height; filter_width; in_channels; out_channels ]
+          in
+          let b = var ~type_ ~init:conv2d.b_init [ out_channels ] in
+          w, b, in_channels)
+      in
+      if in_channels <> conv2d.in_channels
+      then shape_mismatch (D1 in_channels) (D1 conv2d.in_channels) ~op_name:"conv2d in-channels";
+      let stride_height, stride_width = conv2d.strides in
+      let strides = [ 1; stride_height; stride_width; 1 ] in
+      Ops.(conv2D ~strides ~padding:(padding_str conv2d.padding) (walk (P t)) w + b)
   in
   walk t, inputs
 
