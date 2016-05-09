@@ -177,3 +177,8 @@ let split4 ?name dim node =
   match Ops_generated.split dim node ?name ~num_split:4 with
   | [ node1; node2; node3; node4 ] -> node1, node2, node3, node4
   | _ -> assert false
+
+let cast ?name (type a) (type b) (t : a Node.t) ~(type_ : b Node.Type.t) =
+  match Node.output_type t, type_ with
+  | Node.Type.Float, Node.Type.Float -> (t : b Node.t)
+  | _ -> Ops_generated.cast ?name t ~type_

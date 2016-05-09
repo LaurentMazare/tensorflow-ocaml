@@ -127,3 +127,9 @@ val dropout
   :  ([< `float | `double ] as 'a) Node.t
   -> keep_prob:'a Node.t
   -> 'a Node.t
+
+val cast
+  :  ?name:string
+  -> 'srcT Node.t
+  -> type_:'dstT Node.Type.t
+  -> 'dstT Node.t
