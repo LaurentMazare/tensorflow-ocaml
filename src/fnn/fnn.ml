@@ -15,6 +15,12 @@ module Shape = struct
     | D1 d -> [ d ]
     | D2 (d, d') -> [ d; d' ]
     | D3 (d, d', d'') -> [ d; d'; d'' ]
+
+  let total_dim (type a) (t : a t) =
+    match t with
+    | D1 d -> d
+    | D2 (d, d') -> d * d'
+    | D3 (d, d', d'') -> d * d' * d''
 end
 
 exception Shape_mismatch of int list * int list * string
@@ -104,6 +110,7 @@ type 'a op =
   | Dense : init * init * _1d t -> _1d op
   | Max_pool : max_pool * _3d t -> _3d op
   | Conv2d : conv2d * _3d t -> _3d op
+  | Reshape : 'a Shape.t * 'b t -> 'a op
 and 'a t =
   { shape : 'a Shape.t
   ; op : 'a op
@@ -145,6 +152,15 @@ let binary binary t1 t2 =
   ; op = Binary (binary, t1, t2)
   ; id = Id.create ()
   }
+
+let reshape t ~shape =
+  { shape
+  ; op = Reshape (shape, t)
+  ; id = Id.create ()
+  }
+
+let flatten t =
+  reshape t ~shape:(D1 (Shape.total_dim t.shape))
 
 let dense ?(w_init = `const 0.) ?(b_init = `const 0.) dim =
   let id = Id.create () in
@@ -202,7 +218,7 @@ let max_pool t ~filter ~strides ~padding =
   ; id = Id.create ()
   }
 
-let conv2d ?(w_init = `const 0.) ?(b_init = `const 0.) ~filter ~out_channels ~strides ~padding =
+let conv2d ?(w_init = `const 0.) ?(b_init = `const 0.) ~filter ~out_channels ~strides ~padding () =
   let id = Id.create () in
   Staged.stage (fun t ->
     let input_height, input_width, input_channels =
@@ -293,6 +309,13 @@ let build_node t ~type_ =
       let stride_height, stride_width = conv2d.strides in
       let strides = [ 1; stride_height; stride_width; 1 ] in
       Ops.(conv2D ~strides ~padding:(padding_str conv2d.padding) (walk (P t)) w + b)
+    | Reshape (shape, t) ->
+      let dim_list = Shape.dim_list shape in
+      let total_dim_output = Shape.total_dim shape in
+      let total_dim_input = Shape.total_dim t.shape in
+      if total_dim_output <> total_dim_input
+      then shape_mismatch shape t.shape ~op_name:"reshape";
+      Ops.reshape (walk (P t)) (Ops.const_int ~type_:Int32 (-1 :: dim_list))
   in
   walk t, inputs
 

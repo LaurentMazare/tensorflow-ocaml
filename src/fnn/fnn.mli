@@ -51,6 +51,7 @@ val conv2d
   -> out_channels:int
   -> strides:int*int
   -> padding:[ `same | `valid ]
+  -> unit
   -> (_3d t -> _3d t) Staged.t
 
 val max_pool
@@ -59,6 +60,15 @@ val max_pool
   -> strides:int*int
   -> padding:[ `same | `valid ]
   -> _3d t
+
+val reshape
+  :  _ t
+  -> shape:'a Shape.t
+  -> 'a t
+
+val flatten
+  :  _ t
+  -> _1d t
 
 module Optimizer : sig
   type t
