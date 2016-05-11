@@ -42,9 +42,27 @@ val dense
   :  ?w_init:init
   -> ?b_init:init
   -> int
-  -> (_1d t -> _1d t) Staged.t
+  -> _1d t
+  -> _1d t
 
 val conv2d
+  :  ?w_init:init
+  -> ?b_init:init
+  -> filter:int*int
+  -> out_channels:int
+  -> strides:int*int
+  -> padding:[ `same | `valid ]
+  -> unit
+  -> _3d t
+  -> _3d t
+
+val dense'
+  :  ?w_init:init
+  -> ?b_init:init
+  -> int
+  -> (_1d t -> _1d t) Staged.t
+
+val conv2d'
   :  ?w_init:init
   -> ?b_init:init
   -> filter:int*int

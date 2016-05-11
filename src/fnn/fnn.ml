@@ -162,13 +162,16 @@ let reshape t ~shape =
 let flatten t =
   reshape t ~shape:(D1 (Shape.total_dim t.shape))
 
-let dense ?(w_init = `const 0.) ?(b_init = `const 0.) dim =
+let dense' ?(w_init = `const 0.) ?(b_init = `const 0.) dim =
   let id = Id.create () in
   Staged.stage (fun t ->
     { shape = D1 dim
     ; op = Dense (w_init, b_init, t)
     ; id
     })
+
+let dense ?w_init ?b_init dim =
+  Staged.unstage (dense' ?w_init ?b_init dim)
 
 let conv_sizes
       ~input_height
@@ -218,7 +221,7 @@ let max_pool t ~filter ~strides ~padding =
   ; id = Id.create ()
   }
 
-let conv2d ?(w_init = `const 0.) ?(b_init = `const 0.) ~filter ~out_channels ~strides ~padding () =
+let conv2d' ?(w_init = `const 0.) ?(b_init = `const 0.) ~filter ~out_channels ~strides ~padding () =
   let id = Id.create () in
   Staged.stage (fun t ->
     let input_height, input_width, input_channels =
@@ -251,6 +254,9 @@ let conv2d ?(w_init = `const 0.) ?(b_init = `const 0.) ~filter ~out_channels ~st
     ; op = Conv2d (conv2d, t)
     ; id
     })
+
+let conv2d ?w_init ?b_init ~filter ~out_channels ~strides ~padding () =
+  Staged.unstage (conv2d' ?w_init ?b_init ~filter ~out_channels ~strides ~padding ())
 
 let var dims ~init ~type_ =
   match init with

@@ -12,7 +12,7 @@ let () =
   in
   let input, input_id = Fnn.input ~shape:(D1 image_dim) in
   let model =
-    Staged.unstage (Fnn.dense label_count) input
+    Fnn.dense label_count input
     |> Fnn.softmax
     |> Fnn.Model.create Float
   in

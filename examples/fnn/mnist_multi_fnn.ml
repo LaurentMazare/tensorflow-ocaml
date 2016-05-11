@@ -13,9 +13,9 @@ let () =
   in
   let input, input_id = Fnn.input ~shape:(D1 image_dim) in
   let model =
-    Staged.unstage (Fnn.dense ~w_init:(`normal 0.1) hidden_nodes) input
+    Fnn.dense ~w_init:(`normal 0.1) hidden_nodes input
     |> Fnn.relu
-    |> Staged.unstage (Fnn.dense ~w_init:(`normal 0.1) label_count)
+    |> Fnn.dense ~w_init:(`normal 0.1) label_count
     |> Fnn.softmax
     |> Fnn.Model.create Float
   in

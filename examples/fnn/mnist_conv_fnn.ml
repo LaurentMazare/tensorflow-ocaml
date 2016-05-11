@@ -17,14 +17,14 @@ let () =
   let input, input_id = Fnn.input ~shape:(D1 image_dim) in
   let model =
     Fnn.reshape input ~shape:(D3 (28, 28, 1))
-    |> Staged.unstage (conv2d ~out_channels:32 ())
+    |> conv2d ~out_channels:32 ()
     |> max_pool
-    |> Staged.unstage (conv2d ~out_channels:64 ())
+    |> conv2d ~out_channels:64 ()
     |> max_pool
     |> Fnn.flatten
-    |> Staged.unstage (Fnn.dense ~w_init:(`normal 0.1) 1024)
+    |> Fnn.dense ~w_init:(`normal 0.1) 1024
     |> Fnn.relu
-    |> Staged.unstage (Fnn.dense ~w_init:(`normal 0.1) label_count)
+    |> Fnn.dense ~w_init:(`normal 0.1) label_count
     |> Fnn.softmax
     |> Fnn.Model.create Float
   in
