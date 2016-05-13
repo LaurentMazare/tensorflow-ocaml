@@ -88,6 +88,10 @@ val flatten
   :  _ t
   -> _1d t
 
+val split :  _2d t -> _1d t list
+
+val concat : _1d t list -> _2d t
+
 module Optimizer : sig
   type t
   val gradient_descent : learning_rate:float -> t

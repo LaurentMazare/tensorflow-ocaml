@@ -111,6 +111,8 @@ type 'a op =
   | Max_pool : max_pool * _3d t -> _3d op
   | Conv2d : conv2d * _3d t -> _3d op
   | Reshape : 'a Shape.t * 'b t -> 'a op
+  | Concat : _1d t list -> _2d op
+  | Split : _2d t * int * int -> _1d op
 and 'a t =
   { shape : 'a Shape.t
   ; op : 'a op
@@ -161,6 +163,28 @@ let reshape t ~shape =
 
 let flatten t =
   reshape t ~shape:(D1 (Shape.total_dim t.shape))
+
+let split t =
+  let id = Id.create () in
+  let Shape.D2 (num_split, d) = t.shape in
+  List.init num_split ~f:(fun idx ->
+    { shape = D1 d
+    ; op = Split (t, idx, num_split)
+    ; id
+    })
+
+let concat = function
+  | [] -> failwith "concat called on an empty list"
+  | hd :: _ as l ->
+    let shape { shape = Shape.D1 shape; _ } = shape in
+    let hd_shape = shape hd in
+    List.iter l ~f:(fun t ->
+      if hd_shape <> shape t
+      then raise (Shape_mismatch ([ hd_shape ], [ shape t ], "concat")));
+    { shape = D2 (List.length l, hd_shape)
+    ; op = Concat l
+    ; id = Id.create ()
+    }
 
 let dense' ?(w_init = `const 0.) ?(b_init = `const 0.) dim =
   let id = Id.create () in
@@ -268,6 +292,7 @@ let build_node t ~type_ =
   let inputs = Id.Table.create () in
   let dense_vars = Id.Table.create () in
   let conv_vars = Id.Table.create () in
+  let splits = Id.Table.create () in
   let rec walk (P t) =
     match t.op with
     | Unary (unary, t) -> Unary.apply unary (walk (P t))
@@ -297,7 +322,7 @@ let build_node t ~type_ =
         ~strides:[ 1; stride_height; stride_width; 1 ]
         ~padding:(padding_str max_pool.padding)
       |> Ops.cast ~type_
-    | Conv2d (conv2d, t) ->
+    | Conv2d (conv2d, u) ->
       let filter_height, filter_width = conv2d.filter in
       let out_channels = conv2d.out_channels in
       let w, b, in_channels =
@@ -314,14 +339,23 @@ let build_node t ~type_ =
       then shape_mismatch (D1 in_channels) (D1 conv2d.in_channels) ~op_name:"conv2d in-channels";
       let stride_height, stride_width = conv2d.strides in
       let strides = [ 1; stride_height; stride_width; 1 ] in
-      Ops.(conv2D ~strides ~padding:(padding_str conv2d.padding) (walk (P t)) w + b)
-    | Reshape (shape, t) ->
+      Ops.(conv2D ~strides ~padding:(padding_str conv2d.padding) (walk (P u)) w + b)
+    | Reshape (shape, u) ->
       let dim_list = Shape.dim_list shape in
       let total_dim_output = Shape.total_dim shape in
-      let total_dim_input = Shape.total_dim t.shape in
+      let total_dim_input = Shape.total_dim u.shape in
       if total_dim_output <> total_dim_input
-      then shape_mismatch shape t.shape ~op_name:"reshape";
-      Ops.reshape (walk (P t)) (Ops.const_int ~type_:Int32 (-1 :: dim_list))
+      then shape_mismatch shape u.shape ~op_name:"reshape";
+      Ops.reshape (walk (P u)) (Ops.const_int ~type_:Int32 (-1 :: dim_list))
+    | Concat list ->
+      List.map list ~f:(fun t -> walk (P t))
+      |> Ops.(concat one32)
+    | Split (u, idx, num_split) ->
+      let list =
+        Hashtbl.find_or_add splits t.id ~default:(fun () ->
+          Ops.(split ~num_split one32 (walk (P u))))
+      in
+      List.nth_exn list idx
   in
   walk t, inputs
 
