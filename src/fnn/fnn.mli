@@ -88,7 +88,7 @@ val flatten
   :  _ t
   -> _1d t
 
-val split :  _2d t -> _1d t list
+val split : _2d t -> _1d t list
 
 val concat : _1d t list -> _2d t
 
