@@ -1,6 +1,6 @@
 version = "0.0.1"
 description = "TensorFlow bindings for OCaml."
-requires = "unix bigarray str bytes"
+requires = "unix bigarray str bytes core_kernel ctypes.foreign"
 archive(byte) = "tensorflow.cma"
 archive(byte, plugin) = "tensorflow.cma"
 archive(native) = "tensorflow.cmxa"
