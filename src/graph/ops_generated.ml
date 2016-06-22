@@ -24,9 +24,13 @@ module Op_names = struct
   let assign = Op_name.of_string "Assign"
   let assignAdd = Op_name.of_string "AssignAdd"
   let assignSub = Op_name.of_string "AssignSub"
+  let audioSummary = Op_name.of_string "AudioSummary"
   let avgPool = Op_name.of_string "AvgPool"
+  let avgPool3D = Op_name.of_string "AvgPool3D"
+  let avgPool3DGrad = Op_name.of_string "AvgPool3DGrad"
   let avgPoolGrad = Op_name.of_string "AvgPoolGrad"
   let batchCholesky = Op_name.of_string "BatchCholesky"
+  let batchCholeskyGrad = Op_name.of_string "BatchCholeskyGrad"
   let batchFFT = Op_name.of_string "BatchFFT"
   let batchFFT2D = Op_name.of_string "BatchFFT2D"
   let batchFFT3D = Op_name.of_string "BatchFFT3D"
@@ -34,6 +38,7 @@ module Op_names = struct
   let batchIFFT2D = Op_name.of_string "BatchIFFT2D"
   let batchIFFT3D = Op_name.of_string "BatchIFFT3D"
   let batchMatMul = Op_name.of_string "BatchMatMul"
+  let batchMatrixBandPart = Op_name.of_string "BatchMatrixBandPart"
   let batchMatrixDeterminant = Op_name.of_string "BatchMatrixDeterminant"
   let batchMatrixDiag = Op_name.of_string "BatchMatrixDiag"
   let batchMatrixDiagPart = Op_name.of_string "BatchMatrixDiagPart"
@@ -44,6 +49,7 @@ module Op_names = struct
   let batchNormWithGlobalNormalization = Op_name.of_string "BatchNormWithGlobalNormalization"
   let batchNormWithGlobalNormalizationGrad = Op_name.of_string "BatchNormWithGlobalNormalizationGrad"
   let batchSelfAdjointEig = Op_name.of_string "BatchSelfAdjointEig"
+  let batchToSpace = Op_name.of_string "BatchToSpace"
   let biasAdd = Op_name.of_string "BiasAdd"
   let biasAddGrad = Op_name.of_string "BiasAddGrad"
   let biasAddV1 = Op_name.of_string "BiasAddV1"
@@ -55,6 +61,7 @@ module Op_names = struct
   let ceil = Op_name.of_string "Ceil"
   let checkNumerics = Op_name.of_string "CheckNumerics"
   let cholesky = Op_name.of_string "Cholesky"
+  let choleskyGrad = Op_name.of_string "CholeskyGrad"
   let complex = Op_name.of_string "Complex"
   let complexAbs = Op_name.of_string "ComplexAbs"
   let computeAccidentalHits = Op_name.of_string "ComputeAccidentalHits"
@@ -65,6 +72,9 @@ module Op_names = struct
   let conv2D = Op_name.of_string "Conv2D"
   let conv2DBackpropFilter = Op_name.of_string "Conv2DBackpropFilter"
   let conv2DBackpropInput = Op_name.of_string "Conv2DBackpropInput"
+  let conv3D = Op_name.of_string "Conv3D"
+  let conv3DBackpropFilter = Op_name.of_string "Conv3DBackpropFilter"
+  let conv3DBackpropInput = Op_name.of_string "Conv3DBackpropInput"
   let cos = Op_name.of_string "Cos"
   let countUpTo = Op_name.of_string "CountUpTo"
   let cross = Op_name.of_string "Cross"
@@ -81,6 +91,9 @@ module Op_names = struct
   let diag = Op_name.of_string "Diag"
   let diagPart = Op_name.of_string "DiagPart"
   let digamma = Op_name.of_string "Digamma"
+  let dilation2D = Op_name.of_string "Dilation2D"
+  let dilation2DBackpropFilter = Op_name.of_string "Dilation2DBackpropFilter"
+  let dilation2DBackpropInput = Op_name.of_string "Dilation2DBackpropInput"
   let div = Op_name.of_string "Div"
   let drawBoundingBoxes = Op_name.of_string "DrawBoundingBoxes"
   let dynamicPartition = Op_name.of_string "DynamicPartition"
@@ -97,6 +110,7 @@ module Op_names = struct
   let exp = Op_name.of_string "Exp"
   let expandDims = Op_name.of_string "ExpandDims"
   let extractGlimpse = Op_name.of_string "ExtractGlimpse"
+  let extractImagePatches = Op_name.of_string "ExtractImagePatches"
   let fFT = Op_name.of_string "FFT"
   let fFT2D = Op_name.of_string "FFT2D"
   let fFT3D = Op_name.of_string "FFT3D"
@@ -160,6 +174,8 @@ module Op_names = struct
   let matrixTriangularSolve = Op_name.of_string "MatrixTriangularSolve"
   let max = Op_name.of_string "Max"
   let maxPool = Op_name.of_string "MaxPool"
+  let maxPool3D = Op_name.of_string "MaxPool3D"
+  let maxPool3DGrad = Op_name.of_string "MaxPool3DGrad"
   let maxPoolGrad = Op_name.of_string "MaxPoolGrad"
   let maxPoolGradWithArgmax = Op_name.of_string "MaxPoolGradWithArgmax"
   let maxPoolWithArgmax = Op_name.of_string "MaxPoolWithArgmax"
@@ -173,6 +189,7 @@ module Op_names = struct
   let mirrorPadGrad = Op_name.of_string "MirrorPadGrad"
   let mod_ = Op_name.of_string "Mod"
   let mul = Op_name.of_string "Mul"
+  let multinomial = Op_name.of_string "Multinomial"
   let neg = Op_name.of_string "Neg"
   let negTrain = Op_name.of_string "NegTrain"
   let nextIteration = Op_name.of_string "NextIteration"
@@ -184,6 +201,7 @@ module Op_names = struct
   let paddingFIFOQueue = Op_name.of_string "PaddingFIFOQueue"
   let placeholder = Op_name.of_string "Placeholder"
   let placeholderWithDefault = Op_name.of_string "PlaceholderWithDefault"
+  let polygamma = Op_name.of_string "Polygamma"
   let pow = Op_name.of_string "Pow"
   let prod = Op_name.of_string "Prod"
   let queueClose = Op_name.of_string "QueueClose"
@@ -259,6 +277,7 @@ module Op_names = struct
   let softplusGrad = Op_name.of_string "SoftplusGrad"
   let softsign = Op_name.of_string "Softsign"
   let softsignGrad = Op_name.of_string "SoftsignGrad"
+  let spaceToBatch = Op_name.of_string "SpaceToBatch"
   let spaceToDepth = Op_name.of_string "SpaceToDepth"
   let sparseAdd = Op_name.of_string "SparseAdd"
   let sparseAddGrad = Op_name.of_string "SparseAddGrad"
@@ -267,14 +286,20 @@ module Op_names = struct
   let sparseApplyFtrl = Op_name.of_string "SparseApplyFtrl"
   let sparseApplyMomentum = Op_name.of_string "SparseApplyMomentum"
   let sparseConcat = Op_name.of_string "SparseConcat"
+  let sparseDenseCwiseAdd = Op_name.of_string "SparseDenseCwiseAdd"
+  let sparseDenseCwiseDiv = Op_name.of_string "SparseDenseCwiseDiv"
+  let sparseDenseCwiseMul = Op_name.of_string "SparseDenseCwiseMul"
   let sparseMatMul = Op_name.of_string "SparseMatMul"
+  let sparseReduceSum = Op_name.of_string "SparseReduceSum"
   let sparseReorder = Op_name.of_string "SparseReorder"
   let sparseSegmentMean = Op_name.of_string "SparseSegmentMean"
   let sparseSegmentMeanGrad = Op_name.of_string "SparseSegmentMeanGrad"
   let sparseSegmentSqrtN = Op_name.of_string "SparseSegmentSqrtN"
   let sparseSegmentSqrtNGrad = Op_name.of_string "SparseSegmentSqrtNGrad"
   let sparseSegmentSum = Op_name.of_string "SparseSegmentSum"
+  let sparseSoftmax = Op_name.of_string "SparseSoftmax"
   let sparseSoftmaxCrossEntropyWithLogits = Op_name.of_string "SparseSoftmaxCrossEntropyWithLogits"
+  let sparseTensorDenseAdd = Op_name.of_string "SparseTensorDenseAdd"
   let sparseTensorDenseMatMul = Op_name.of_string "SparseTensorDenseMatMul"
   let sparseToDense = Op_name.of_string "SparseToDense"
   let split = Op_name.of_string "Split"
@@ -288,6 +313,8 @@ module Op_names = struct
   let stackPush = Op_name.of_string "StackPush"
   let stopGradient = Op_name.of_string "StopGradient"
   let stringToHashBucket = Op_name.of_string "StringToHashBucket"
+  let stringToHashBucketFast = Op_name.of_string "StringToHashBucketFast"
+  let stringToHashBucketStrong = Op_name.of_string "StringToHashBucketStrong"
   let stringToNumber = Op_name.of_string "StringToNumber"
   let sub = Op_name.of_string "Sub"
   let sum = Op_name.of_string "Sum"
@@ -322,6 +349,7 @@ module Op_names = struct
   let where = Op_name.of_string "Where"
   let wholeFileReader = Op_name.of_string "WholeFileReader"
   let zerosLike = Op_name.of_string "ZerosLike"
+  let zeta = Op_name.of_string "Zeta"
 end
 
 let abort
@@ -805,6 +833,31 @@ let assignSub
     ~attributes
     ~output_idx:None
 
+let audioSummary
+    ?(name = "AudioSummary")
+    ~sample_rate
+    ?max_outputs
+    (tag : [ `string ] t)
+    (tensor : [ `float ] t)
+  =
+  let attributes = [] in
+  let attributes =
+    ("sample_rate", Float sample_rate) :: attributes
+  in
+  let attributes =
+    match max_outputs with | None -> attributes | Some max_outputs -> ("max_outputs", Int max_outputs) :: attributes
+  in
+  let name = Name.of_string name in
+  let op_name = Op_names.audioSummary in
+  let inputs = [ P tag; P tensor ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.String
+    ~inputs
+    ~attributes
+    ~output_idx:None
+
 let avgPool
     ?(name = "AvgPool")
     ~ksize
@@ -833,6 +886,63 @@ let avgPool
     ~name
     ~op_name
     ~output_type:(Node.output_type value)
+    ~inputs
+    ~attributes
+    ~output_idx:None
+
+let avgPool3D
+    ?(name = "AvgPool3D")
+    ~ksize
+    ~strides
+    ~padding
+    (input : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+  =
+  let attributes = [ "T", Type (P (Node.output_type input)) ] in
+  let attributes =
+    ("ksize", List (Int ksize)) :: attributes
+  in
+  let attributes =
+    ("strides", List (Int strides)) :: attributes
+  in
+  let attributes =
+    ("padding", String padding) :: attributes
+  in
+  let name = Name.of_string name in
+  let op_name = Op_names.avgPool3D in
+  let inputs = [ P input ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type input)
+    ~inputs
+    ~attributes
+    ~output_idx:None
+
+let avgPool3DGrad
+    ?(name = "AvgPool3DGrad")
+    ~ksize
+    ~strides
+    ~padding
+    (orig_input_shape : [ `int32 ] t)
+    (grad : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+  =
+  let attributes = [ "T", Type (P (Node.output_type grad)) ] in
+  let attributes =
+    ("ksize", List (Int ksize)) :: attributes
+  in
+  let attributes =
+    ("strides", List (Int strides)) :: attributes
+  in
+  let attributes =
+    ("padding", String padding) :: attributes
+  in
+  let name = Name.of_string name in
+  let op_name = Op_names.avgPool3DGrad in
+  let inputs = [ P orig_input_shape; P grad ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type grad)
     ~inputs
     ~attributes
     ~output_idx:None
@@ -886,14 +996,31 @@ let batchCholesky
     ~attributes
     ~output_idx:None
 
+let batchCholeskyGrad
+    ?(name = "BatchCholeskyGrad")
+    (l : ([< `float | `double ] as 't) t)
+    (grad : ([< `float | `double ] as 't) t)
+  =
+  let attributes = [ "T", Type (P (Node.output_type l)) ] in
+  let name = Name.of_string name in
+  let op_name = Op_names.batchCholeskyGrad in
+  let inputs = [ P l; P grad ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type l)
+    ~inputs
+    ~attributes
+    ~output_idx:None
+
 let batchFFT
     ?(name = "BatchFFT")
-    (in__ : [ `complex64 ] t)
+    (input : [ `complex64 ] t)
   =
   let attributes = [] in
   let name = Name.of_string name in
   let op_name = Op_names.batchFFT in
-  let inputs = [ P in__ ] in
+  let inputs = [ P input ] in
   Node.create
     ~name
     ~op_name
@@ -904,12 +1031,12 @@ let batchFFT
 
 let batchFFT2D
     ?(name = "BatchFFT2D")
-    (in__ : [ `complex64 ] t)
+    (input : [ `complex64 ] t)
   =
   let attributes = [] in
   let name = Name.of_string name in
   let op_name = Op_names.batchFFT2D in
-  let inputs = [ P in__ ] in
+  let inputs = [ P input ] in
   Node.create
     ~name
     ~op_name
@@ -920,12 +1047,12 @@ let batchFFT2D
 
 let batchFFT3D
     ?(name = "BatchFFT3D")
-    (in__ : [ `complex64 ] t)
+    (input : [ `complex64 ] t)
   =
   let attributes = [] in
   let name = Name.of_string name in
   let op_name = Op_names.batchFFT3D in
-  let inputs = [ P in__ ] in
+  let inputs = [ P input ] in
   Node.create
     ~name
     ~op_name
@@ -936,12 +1063,12 @@ let batchFFT3D
 
 let batchIFFT
     ?(name = "BatchIFFT")
-    (in__ : [ `complex64 ] t)
+    (input : [ `complex64 ] t)
   =
   let attributes = [] in
   let name = Name.of_string name in
   let op_name = Op_names.batchIFFT in
-  let inputs = [ P in__ ] in
+  let inputs = [ P input ] in
   Node.create
     ~name
     ~op_name
@@ -952,12 +1079,12 @@ let batchIFFT
 
 let batchIFFT2D
     ?(name = "BatchIFFT2D")
-    (in__ : [ `complex64 ] t)
+    (input : [ `complex64 ] t)
   =
   let attributes = [] in
   let name = Name.of_string name in
   let op_name = Op_names.batchIFFT2D in
-  let inputs = [ P in__ ] in
+  let inputs = [ P input ] in
   Node.create
     ~name
     ~op_name
@@ -968,12 +1095,12 @@ let batchIFFT2D
 
 let batchIFFT3D
     ?(name = "BatchIFFT3D")
-    (in__ : [ `complex64 ] t)
+    (input : [ `complex64 ] t)
   =
   let attributes = [] in
   let name = Name.of_string name in
   let op_name = Op_names.batchIFFT3D in
-  let inputs = [ P in__ ] in
+  let inputs = [ P input ] in
   Node.create
     ~name
     ~op_name
@@ -1003,6 +1130,24 @@ let batchMatMul
     ~name
     ~op_name
     ~output_type:(Node.output_type x)
+    ~inputs
+    ~attributes
+    ~output_idx:None
+
+let batchMatrixBandPart
+    ?(name = "BatchMatrixBandPart")
+    (input : 't t)
+    (num_lower : [ `int64 ] t)
+    (num_upper : [ `int64 ] t)
+  =
+  let attributes = [ "T", Type (P (Node.output_type input)) ] in
+  let name = Name.of_string name in
+  let op_name = Op_names.batchMatrixBandPart in
+  let inputs = [ P input; P num_lower; P num_upper ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type input)
     ~inputs
     ~attributes
     ~output_idx:None
@@ -1057,9 +1202,13 @@ let batchMatrixDiagPart
 
 let batchMatrixInverse
     ?(name = "BatchMatrixInverse")
-    (input : ([< `float | `double ] as 't) t)
+    ?adjoint
+    (input : ([< `double | `float ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type input)) ] in
+  let attributes =
+    match adjoint with | None -> attributes | Some adjoint -> ("adjoint", Bool adjoint) :: attributes
+  in
   let name = Name.of_string name in
   let op_name = Op_names.batchMatrixInverse in
   let inputs = [ P input ] in
@@ -1074,8 +1223,8 @@ let batchMatrixInverse
 let batchMatrixSolve
     ?(name = "BatchMatrixSolve")
     ?adjoint
-    (matrix : ([< `float | `double ] as 't) t)
-    (rhs : ([< `float | `double ] as 't) t)
+    (matrix : ([< `double | `float ] as 't) t)
+    (rhs : ([< `double | `float ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type matrix)) ] in
   let attributes =
@@ -1095,8 +1244,8 @@ let batchMatrixSolve
 let batchMatrixSolveLs
     ?(name = "BatchMatrixSolveLs")
     ?fast
-    (matrix : ([< `float | `double ] as 't) t)
-    (rhs : ([< `float | `double ] as 't) t)
+    (matrix : ([< `double | `float ] as 't) t)
+    (rhs : ([< `double | `float ] as 't) t)
     (l2_regularizer : [ `double ] t)
   =
   let attributes = [ "T", Type (P (Node.output_type matrix)) ] in
@@ -1118,8 +1267,8 @@ let batchMatrixTriangularSolve
     ?(name = "BatchMatrixTriangularSolve")
     ?lower
     ?adjoint
-    (matrix : ([< `float | `double ] as 't) t)
-    (rhs : ([< `float | `double ] as 't) t)
+    (matrix : ([< `double | `float ] as 't) t)
+    (rhs : ([< `double | `float ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type matrix)) ] in
   let attributes =
@@ -1235,6 +1384,27 @@ let batchSelfAdjointEig
   let name = Name.of_string name in
   let op_name = Op_names.batchSelfAdjointEig in
   let inputs = [ P input ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type input)
+    ~inputs
+    ~attributes
+    ~output_idx:None
+
+let batchToSpace
+    ?(name = "BatchToSpace")
+    ~block_size
+    (input : 't t)
+    (crops : [ `int32 ] t)
+  =
+  let attributes = [ "T", Type (P (Node.output_type input)) ] in
+  let attributes =
+    ("block_size", Int block_size) :: attributes
+  in
+  let name = Name.of_string name in
+  let op_name = Op_names.batchToSpace in
+  let inputs = [ P input; P crops ] in
   Node.create
     ~name
     ~op_name
@@ -1492,35 +1662,54 @@ let cholesky
     ~attributes
     ~output_idx:None
 
+let choleskyGrad
+    ?(name = "CholeskyGrad")
+    (l : ([< `float | `double ] as 't) t)
+    (grad : ([< `float | `double ] as 't) t)
+  =
+  let attributes = [ "T", Type (P (Node.output_type l)) ] in
+  let name = Name.of_string name in
+  let op_name = Op_names.choleskyGrad in
+  let inputs = [ P l; P grad ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type l)
+    ~inputs
+    ~attributes
+    ~output_idx:None
+
 let complex
     ?(name = "Complex")
-    (real : [ `float ] t)
-    (imag : [ `float ] t)
+    ~type_
+    (real : ([< `float | `double ] as 't) t)
+    (imag : ([< `float | `double ] as 't) t)
   =
-  let attributes = [] in
+  let attributes = [ "T", Type (P (Node.output_type real)) ;  "Tout", Type (P type_) ] in
   let name = Name.of_string name in
   let op_name = Op_names.complex in
   let inputs = [ P real; P imag ] in
   Node.create
     ~name
     ~op_name
-    ~output_type:Type.Complex64
+    ~output_type:type_
     ~inputs
     ~attributes
     ~output_idx:None
 
 let complexAbs
     ?(name = "ComplexAbs")
-    (x : [ `complex64 ] t)
+    ~type_
+    (x : ([< `complex64 ] as 't) t)
   =
-  let attributes = [] in
+  let attributes = [ "T", Type (P (Node.output_type x)) ;  "Tout", Type (P type_) ] in
   let name = Name.of_string name in
   let op_name = Op_names.complexAbs in
   let inputs = [ P x ] in
   Node.create
     ~name
     ~op_name
-    ~output_type:Type.Float
+    ~output_type:type_
     ~inputs
     ~attributes
     ~output_idx:None
@@ -1616,16 +1805,16 @@ let concatOffset
 
 let conj
     ?(name = "Conj")
-    (in__ : [ `complex64 ] t)
+    (input : ([< `complex64 ] as 't) t)
   =
-  let attributes = [] in
+  let attributes = [ "T", Type (P (Node.output_type input)) ] in
   let name = Name.of_string name in
   let op_name = Op_names.conj in
-  let inputs = [ P in__ ] in
+  let inputs = [ P input ] in
   Node.create
     ~name
     ~op_name
-    ~output_type:Type.Complex64
+    ~output_type:(Node.output_type input)
     ~inputs
     ~attributes
     ~output_idx:None
@@ -1747,9 +1936,86 @@ let conv2DBackpropInput
     ~attributes
     ~output_idx:None
 
+let conv3D
+    ?(name = "Conv3D")
+    ~strides
+    ~padding
+    (input : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (filter : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+  =
+  let attributes = [ "T", Type (P (Node.output_type input)) ] in
+  let attributes =
+    ("strides", List (Int strides)) :: attributes
+  in
+  let attributes =
+    ("padding", String padding) :: attributes
+  in
+  let name = Name.of_string name in
+  let op_name = Op_names.conv3D in
+  let inputs = [ P input; P filter ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type input)
+    ~inputs
+    ~attributes
+    ~output_idx:None
+
+let conv3DBackpropFilter
+    ?(name = "Conv3DBackpropFilter")
+    ~strides
+    ~padding
+    (input : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (filter : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (out_backprop : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+  =
+  let attributes = [ "T", Type (P (Node.output_type input)) ] in
+  let attributes =
+    ("strides", List (Int strides)) :: attributes
+  in
+  let attributes =
+    ("padding", String padding) :: attributes
+  in
+  let name = Name.of_string name in
+  let op_name = Op_names.conv3DBackpropFilter in
+  let inputs = [ P input; P filter; P out_backprop ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type input)
+    ~inputs
+    ~attributes
+    ~output_idx:None
+
+let conv3DBackpropInput
+    ?(name = "Conv3DBackpropInput")
+    ~strides
+    ~padding
+    (input : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (filter : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (out_backprop : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+  =
+  let attributes = [ "T", Type (P (Node.output_type input)) ] in
+  let attributes =
+    ("strides", List (Int strides)) :: attributes
+  in
+  let attributes =
+    ("padding", String padding) :: attributes
+  in
+  let name = Name.of_string name in
+  let op_name = Op_names.conv3DBackpropInput in
+  let inputs = [ P input; P filter; P out_backprop ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type input)
+    ~inputs
+    ~attributes
+    ~output_idx:None
+
 let cos
     ?(name = "Cos")
-    (x : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (x : ([< `float | `double | `complex64 ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type x)) ] in
   let name = Name.of_string name in
@@ -2026,7 +2292,7 @@ let destroyTemporaryVariable
 
 let diag
     ?(name = "Diag")
-    (diagonal : ([< `float | `double | `int32 | `int64 ] as 't) t)
+    (diagonal : ([< `float | `double | `int32 | `int64 | `complex64 ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type diagonal)) ] in
   let name = Name.of_string name in
@@ -2042,7 +2308,7 @@ let diag
 
 let diagPart
     ?(name = "DiagPart")
-    (input : ([< `float | `double | `int32 | `int64 ] as 't) t)
+    (input : ([< `float | `double | `int32 | `int64 | `complex64 ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type input)) ] in
   let name = Name.of_string name in
@@ -2058,7 +2324,7 @@ let diagPart
 
 let digamma
     ?(name = "Digamma")
-    (x : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (x : ([< `float | `double ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type x)) ] in
   let name = Name.of_string name in
@@ -2068,6 +2334,95 @@ let digamma
     ~name
     ~op_name
     ~output_type:(Node.output_type x)
+    ~inputs
+    ~attributes
+    ~output_idx:None
+
+let dilation2D
+    ?(name = "Dilation2D")
+    ~strides
+    ~rates
+    ~padding
+    (input : ([< `float | `double | `int32 | `int64 ] as 't) t)
+    (filter : ([< `float | `double | `int32 | `int64 ] as 't) t)
+  =
+  let attributes = [ "T", Type (P (Node.output_type input)) ] in
+  let attributes =
+    ("strides", List (Int strides)) :: attributes
+  in
+  let attributes =
+    ("rates", List (Int rates)) :: attributes
+  in
+  let attributes =
+    ("padding", String padding) :: attributes
+  in
+  let name = Name.of_string name in
+  let op_name = Op_names.dilation2D in
+  let inputs = [ P input; P filter ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type input)
+    ~inputs
+    ~attributes
+    ~output_idx:None
+
+let dilation2DBackpropFilter
+    ?(name = "Dilation2DBackpropFilter")
+    ~strides
+    ~rates
+    ~padding
+    (input : ([< `float | `double | `int32 | `int64 ] as 't) t)
+    (filter : ([< `float | `double | `int32 | `int64 ] as 't) t)
+    (out_backprop : ([< `float | `double | `int32 | `int64 ] as 't) t)
+  =
+  let attributes = [ "T", Type (P (Node.output_type input)) ] in
+  let attributes =
+    ("strides", List (Int strides)) :: attributes
+  in
+  let attributes =
+    ("rates", List (Int rates)) :: attributes
+  in
+  let attributes =
+    ("padding", String padding) :: attributes
+  in
+  let name = Name.of_string name in
+  let op_name = Op_names.dilation2DBackpropFilter in
+  let inputs = [ P input; P filter; P out_backprop ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type input)
+    ~inputs
+    ~attributes
+    ~output_idx:None
+
+let dilation2DBackpropInput
+    ?(name = "Dilation2DBackpropInput")
+    ~strides
+    ~rates
+    ~padding
+    (input : ([< `float | `double | `int32 | `int64 ] as 't) t)
+    (filter : ([< `float | `double | `int32 | `int64 ] as 't) t)
+    (out_backprop : ([< `float | `double | `int32 | `int64 ] as 't) t)
+  =
+  let attributes = [ "T", Type (P (Node.output_type input)) ] in
+  let attributes =
+    ("strides", List (Int strides)) :: attributes
+  in
+  let attributes =
+    ("rates", List (Int rates)) :: attributes
+  in
+  let attributes =
+    ("padding", String padding) :: attributes
+  in
+  let name = Name.of_string name in
+  let op_name = Op_names.dilation2DBackpropInput in
+  let inputs = [ P input; P filter; P out_backprop ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type input)
     ~inputs
     ~attributes
     ~output_idx:None
@@ -2091,17 +2446,17 @@ let div
 
 let drawBoundingBoxes
     ?(name = "DrawBoundingBoxes")
-    (images : [ `float ] t)
+    (images : ([< `float ] as 't) t)
     (boxes : [ `float ] t)
   =
-  let attributes = [] in
+  let attributes = [ "T", Type (P (Node.output_type images)) ] in
   let name = Name.of_string name in
   let op_name = Op_names.drawBoundingBoxes in
   let inputs = [ P images; P boxes ] in
   Node.create
     ~name
     ~op_name
-    ~output_type:Type.Float
+    ~output_type:(Node.output_type images)
     ~inputs
     ~attributes
     ~output_idx:None
@@ -2259,8 +2614,8 @@ let enter
 
 let equal
     ?(name = "Equal")
-    (x : ([< `float | `double | `int32 | `int64 | `complex64 | `string ] as 't) t)
-    (y : ([< `float | `double | `int32 | `int64 | `complex64 | `string ] as 't) t)
+    (x : ([< `float | `double | `int32 | `int64 | `complex64 | `string | `bool ] as 't) t)
+    (y : ([< `float | `double | `int32 | `int64 | `complex64 | `string | `bool ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type x)) ] in
   let name = Name.of_string name in
@@ -2276,7 +2631,7 @@ let equal
 
 let erf
     ?(name = "Erf")
-    (x : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (x : ([< `float | `double ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type x)) ] in
   let name = Name.of_string name in
@@ -2292,7 +2647,7 @@ let erf
 
 let erfc
     ?(name = "Erfc")
-    (x : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (x : ([< `float | `double ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type x)) ] in
   let name = Name.of_string name in
@@ -2324,7 +2679,7 @@ let exit
 
 let exp
     ?(name = "Exp")
-    (x : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (x : ([< `float | `double | `complex64 ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type x)) ] in
   let name = Name.of_string name in
@@ -2385,14 +2740,46 @@ let extractGlimpse
     ~attributes
     ~output_idx:None
 
+let extractImagePatches
+    ?(name = "ExtractImagePatches")
+    ?ksizes
+    ?strides
+    ?rates
+    ~padding
+    (images : ([< `float | `double | `int32 | `int64 ] as 't) t)
+  =
+  let attributes = [ "T", Type (P (Node.output_type images)) ] in
+  let attributes =
+    match ksizes with | None -> attributes | Some ksizes -> ("ksizes", List (Int ksizes)) :: attributes
+  in
+  let attributes =
+    match strides with | None -> attributes | Some strides -> ("strides", List (Int strides)) :: attributes
+  in
+  let attributes =
+    match rates with | None -> attributes | Some rates -> ("rates", List (Int rates)) :: attributes
+  in
+  let attributes =
+    ("padding", String padding) :: attributes
+  in
+  let name = Name.of_string name in
+  let op_name = Op_names.extractImagePatches in
+  let inputs = [ P images ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type images)
+    ~inputs
+    ~attributes
+    ~output_idx:None
+
 let fFT
     ?(name = "FFT")
-    (in__ : [ `complex64 ] t)
+    (input : [ `complex64 ] t)
   =
   let attributes = [] in
   let name = Name.of_string name in
   let op_name = Op_names.fFT in
-  let inputs = [ P in__ ] in
+  let inputs = [ P input ] in
   Node.create
     ~name
     ~op_name
@@ -2403,12 +2790,12 @@ let fFT
 
 let fFT2D
     ?(name = "FFT2D")
-    (in__ : [ `complex64 ] t)
+    (input : [ `complex64 ] t)
   =
   let attributes = [] in
   let name = Name.of_string name in
   let op_name = Op_names.fFT2D in
-  let inputs = [ P in__ ] in
+  let inputs = [ P input ] in
   Node.create
     ~name
     ~op_name
@@ -2419,12 +2806,12 @@ let fFT2D
 
 let fFT3D
     ?(name = "FFT3D")
-    (in__ : [ `complex64 ] t)
+    (input : [ `complex64 ] t)
   =
   let attributes = [] in
   let name = Name.of_string name in
   let op_name = Op_names.fFT3D in
-  let inputs = [ P in__ ] in
+  let inputs = [ P input ] in
   Node.create
     ~name
     ~op_name
@@ -2798,12 +3185,12 @@ let histogramSummary
 
 let iFFT
     ?(name = "IFFT")
-    (in__ : [ `complex64 ] t)
+    (input : [ `complex64 ] t)
   =
   let attributes = [] in
   let name = Name.of_string name in
   let op_name = Op_names.iFFT in
-  let inputs = [ P in__ ] in
+  let inputs = [ P input ] in
   Node.create
     ~name
     ~op_name
@@ -2814,12 +3201,12 @@ let iFFT
 
 let iFFT2D
     ?(name = "IFFT2D")
-    (in__ : [ `complex64 ] t)
+    (input : [ `complex64 ] t)
   =
   let attributes = [] in
   let name = Name.of_string name in
   let op_name = Op_names.iFFT2D in
-  let inputs = [ P in__ ] in
+  let inputs = [ P input ] in
   Node.create
     ~name
     ~op_name
@@ -2830,12 +3217,12 @@ let iFFT2D
 
 let iFFT3D
     ?(name = "IFFT3D")
-    (in__ : [ `complex64 ] t)
+    (input : [ `complex64 ] t)
   =
   let attributes = [] in
   let name = Name.of_string name in
   let op_name = Op_names.iFFT3D in
-  let inputs = [ P in__ ] in
+  let inputs = [ P input ] in
   Node.create
     ~name
     ~op_name
@@ -2920,16 +3307,17 @@ let igammac
 
 let imag
     ?(name = "Imag")
-    (in__ : [ `complex64 ] t)
+    ~type_
+    (input : ([< `complex64 ] as 't) t)
   =
-  let attributes = [] in
+  let attributes = [ "T", Type (P (Node.output_type input)) ;  "Tout", Type (P type_) ] in
   let name = Name.of_string name in
   let op_name = Op_names.imag in
-  let inputs = [ P in__ ] in
+  let inputs = [ P input ] in
   Node.create
     ~name
     ~op_name
-    ~output_type:Type.Float
+    ~output_type:type_
     ~inputs
     ~attributes
     ~output_idx:None
@@ -3021,7 +3409,7 @@ let initializeTable
 
 let inv
     ?(name = "Inv")
-    (x : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (x : ([< `float | `double | `int32 | `int64 | `complex64 ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type x)) ] in
   let name = Name.of_string name in
@@ -3289,7 +3677,7 @@ let lessEqual
 
 let lgamma
     ?(name = "Lgamma")
-    (x : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (x : ([< `float | `double ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type x)) ] in
   let name = Name.of_string name in
@@ -3348,7 +3736,7 @@ let listDiff
 
 let log
     ?(name = "Log")
-    (x : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (x : ([< `float | `double | `complex64 ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type x)) ] in
   let name = Name.of_string name in
@@ -3593,9 +3981,13 @@ let matrixDeterminant
 
 let matrixInverse
     ?(name = "MatrixInverse")
-    (input : ([< `float | `double ] as 't) t)
+    ?adjoint
+    (input : ([< `double | `float ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type input)) ] in
+  let attributes =
+    match adjoint with | None -> attributes | Some adjoint -> ("adjoint", Bool adjoint) :: attributes
+  in
   let name = Name.of_string name in
   let op_name = Op_names.matrixInverse in
   let inputs = [ P input ] in
@@ -3610,8 +4002,8 @@ let matrixInverse
 let matrixSolve
     ?(name = "MatrixSolve")
     ?adjoint
-    (matrix : ([< `float | `double ] as 't) t)
-    (rhs : ([< `float | `double ] as 't) t)
+    (matrix : ([< `double | `float ] as 't) t)
+    (rhs : ([< `double | `float ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type matrix)) ] in
   let attributes =
@@ -3631,8 +4023,8 @@ let matrixSolve
 let matrixSolveLs
     ?(name = "MatrixSolveLs")
     ?fast
-    (matrix : ([< `float | `double ] as 't) t)
-    (rhs : ([< `float | `double ] as 't) t)
+    (matrix : ([< `double | `float ] as 't) t)
+    (rhs : ([< `double | `float ] as 't) t)
     (l2_regularizer : [ `double ] t)
   =
   let attributes = [ "T", Type (P (Node.output_type matrix)) ] in
@@ -3654,8 +4046,8 @@ let matrixTriangularSolve
     ?(name = "MatrixTriangularSolve")
     ?lower
     ?adjoint
-    (matrix : ([< `float | `double ] as 't) t)
-    (rhs : ([< `float | `double ] as 't) t)
+    (matrix : ([< `double | `float ] as 't) t)
+    (rhs : ([< `double | `float ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type matrix)) ] in
   let attributes =
@@ -3724,6 +4116,64 @@ let maxPool
     ~name
     ~op_name
     ~output_type:Type.Float
+    ~inputs
+    ~attributes
+    ~output_idx:None
+
+let maxPool3D
+    ?(name = "MaxPool3D")
+    ~ksize
+    ~strides
+    ~padding
+    (input : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+  =
+  let attributes = [ "T", Type (P (Node.output_type input)) ] in
+  let attributes =
+    ("ksize", List (Int ksize)) :: attributes
+  in
+  let attributes =
+    ("strides", List (Int strides)) :: attributes
+  in
+  let attributes =
+    ("padding", String padding) :: attributes
+  in
+  let name = Name.of_string name in
+  let op_name = Op_names.maxPool3D in
+  let inputs = [ P input ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type input)
+    ~inputs
+    ~attributes
+    ~output_idx:None
+
+let maxPool3DGrad
+    ?(name = "MaxPool3DGrad")
+    ~ksize
+    ~strides
+    ~padding
+    (orig_input : [ `float ] t)
+    (orig_output : [ `float ] t)
+    (grad : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+  =
+  let attributes = [ "T", Type (P (Node.output_type grad)) ] in
+  let attributes =
+    ("ksize", List (Int ksize)) :: attributes
+  in
+  let attributes =
+    ("strides", List (Int strides)) :: attributes
+  in
+  let attributes =
+    ("padding", String padding) :: attributes
+  in
+  let name = Name.of_string name in
+  let op_name = Op_names.maxPool3DGrad in
+  let inputs = [ P orig_input; P orig_output; P grad ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type grad)
     ~inputs
     ~attributes
     ~output_idx:None
@@ -4027,9 +4477,34 @@ let mul
     ~attributes
     ~output_idx:None
 
+let multinomial
+    ?(name = "Multinomial")
+    ?seed
+    ?seed2
+    (logits : ([< `float | `double | `int32 | `int64 ] as 't) t)
+    (num_samples : [ `int32 ] t)
+  =
+  let attributes = [ "T", Type (P (Node.output_type logits)) ] in
+  let attributes =
+    match seed with | None -> attributes | Some seed -> ("seed", Int seed) :: attributes
+  in
+  let attributes =
+    match seed2 with | None -> attributes | Some seed2 -> ("seed2", Int seed2) :: attributes
+  in
+  let name = Name.of_string name in
+  let op_name = Op_names.multinomial in
+  let inputs = [ P logits; P num_samples ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Int64
+    ~inputs
+    ~attributes
+    ~output_idx:None
+
 let neg
     ?(name = "Neg")
-    (x : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (x : ([< `float | `double | `int32 | `int64 | `complex64 ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type x)) ] in
   let name = Name.of_string name in
@@ -4105,8 +4580,8 @@ let noOp
 
 let notEqual
     ?(name = "NotEqual")
-    (x : ([< `float | `double | `int32 | `int64 | `complex64 | `string ] as 't) t)
-    (y : ([< `float | `double | `int32 | `int64 | `complex64 | `string ] as 't) t)
+    (x : ([< `float | `double | `int32 | `int64 | `complex64 | `string | `bool ] as 't) t)
+    (y : ([< `float | `double | `int32 | `int64 | `complex64 | `string | `bool ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type x)) ] in
   let name = Name.of_string name in
@@ -4123,12 +4598,12 @@ let notEqual
 let oneHot
     ?(name = "OneHot")
     ?axis
-    (indices : [ `int64 ] t)
+    (indices : ([< `int32 | `int64 ] as 'tI) t)
     (depth : [ `int32 ] t)
     (on_value : 't t)
     (off_value : 't t)
   =
-  let attributes = [ "T", Type (P (Node.output_type on_value)) ] in
+  let attributes = [ "TI", Type (P (Node.output_type indices)) ;  "T", Type (P (Node.output_type on_value)) ] in
   let attributes =
     match axis with | None -> attributes | Some axis -> ("axis", Int axis) :: attributes
   in
@@ -4256,10 +4731,27 @@ let placeholderWithDefault
     ~attributes
     ~output_idx:None
 
+let polygamma
+    ?(name = "Polygamma")
+    (a : ([< `float | `double ] as 't) t)
+    (x : ([< `float | `double ] as 't) t)
+  =
+  let attributes = [ "T", Type (P (Node.output_type a)) ] in
+  let name = Name.of_string name in
+  let op_name = Op_names.polygamma in
+  let inputs = [ P a; P x ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type a)
+    ~inputs
+    ~attributes
+    ~output_idx:None
+
 let pow
     ?(name = "Pow")
-    (x : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
-    (y : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (x : ([< `float | `double | `int32 | `int64 | `complex64 ] as 't) t)
+    (y : ([< `float | `double | `int32 | `int64 | `complex64 ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type x)) ] in
   let name = Name.of_string name in
@@ -4677,16 +5169,17 @@ let readerSerializeState
 
 let real
     ?(name = "Real")
-    (in__ : [ `complex64 ] t)
+    ~type_
+    (input : ([< `complex64 ] as 't) t)
   =
-  let attributes = [] in
+  let attributes = [ "T", Type (P (Node.output_type input)) ;  "Tout", Type (P type_) ] in
   let name = Name.of_string name in
   let op_name = Op_names.real in
-  let inputs = [ P in__ ] in
+  let inputs = [ P input ] in
   Node.create
     ~name
     ~op_name
-    ~output_type:Type.Float
+    ~output_type:type_
     ~inputs
     ~attributes
     ~output_idx:None
@@ -5162,7 +5655,7 @@ let reverseSequence
 
 let rsqrt
     ?(name = "Rsqrt")
-    (x : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (x : ([< `float | `double | `complex64 ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type x)) ] in
   let name = Name.of_string name in
@@ -5551,7 +6044,7 @@ let shardedFilespec
 
 let sigmoid
     ?(name = "Sigmoid")
-    (x : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (x : ([< `float | `double | `complex64 ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type x)) ] in
   let name = Name.of_string name in
@@ -5583,7 +6076,7 @@ let sign
 
 let sin
     ?(name = "Sin")
-    (x : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (x : ([< `float | `double | `complex64 ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type x)) ] in
   let name = Name.of_string name in
@@ -5822,6 +6315,27 @@ let softsignGrad
     ~attributes
     ~output_idx:None
 
+let spaceToBatch
+    ?(name = "SpaceToBatch")
+    ~block_size
+    (input : 't t)
+    (paddings : [ `int32 ] t)
+  =
+  let attributes = [ "T", Type (P (Node.output_type input)) ] in
+  let attributes =
+    ("block_size", Int block_size) :: attributes
+  in
+  let name = Name.of_string name in
+  let op_name = Op_names.spaceToBatch in
+  let inputs = [ P input; P paddings ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type input)
+    ~inputs
+    ~attributes
+    ~output_idx:None
+
 let spaceToDepth
     ?(name = "SpaceToDepth")
     ~block_size
@@ -6052,16 +6566,73 @@ let sparseConcat
     ~attributes
     ~output_idx:(Some 2)
 
+let sparseDenseCwiseAdd
+    ?(name = "SparseDenseCwiseAdd")
+    (sp_indices : [ `int64 ] t)
+    (sp_values : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (sp_shape : [ `int64 ] t)
+    (dense : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+  =
+  let attributes = [ "T", Type (P (Node.output_type sp_values)) ] in
+  let name = Name.of_string name in
+  let op_name = Op_names.sparseDenseCwiseAdd in
+  let inputs = [ P sp_indices; P sp_values; P sp_shape; P dense ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type sp_values)
+    ~inputs
+    ~attributes
+    ~output_idx:None
+
+let sparseDenseCwiseDiv
+    ?(name = "SparseDenseCwiseDiv")
+    (sp_indices : [ `int64 ] t)
+    (sp_values : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (sp_shape : [ `int64 ] t)
+    (dense : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+  =
+  let attributes = [ "T", Type (P (Node.output_type sp_values)) ] in
+  let name = Name.of_string name in
+  let op_name = Op_names.sparseDenseCwiseDiv in
+  let inputs = [ P sp_indices; P sp_values; P sp_shape; P dense ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type sp_values)
+    ~inputs
+    ~attributes
+    ~output_idx:None
+
+let sparseDenseCwiseMul
+    ?(name = "SparseDenseCwiseMul")
+    (sp_indices : [ `int64 ] t)
+    (sp_values : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (sp_shape : [ `int64 ] t)
+    (dense : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+  =
+  let attributes = [ "T", Type (P (Node.output_type sp_values)) ] in
+  let name = Name.of_string name in
+  let op_name = Op_names.sparseDenseCwiseMul in
+  let inputs = [ P sp_indices; P sp_values; P sp_shape; P dense ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type sp_values)
+    ~inputs
+    ~attributes
+    ~output_idx:None
+
 let sparseMatMul
     ?(name = "SparseMatMul")
     ?transpose_a
     ?transpose_b
     ?a_is_sparse
     ?b_is_sparse
-    (a : [ `float ] t)
-    (b : [ `float ] t)
+    (a : ([< `float ] as 'ta) t)
+    (b : ([< `float ] as 'tb) t)
   =
-  let attributes = [] in
+  let attributes = [ "Tb", Type (P (Node.output_type b)) ;  "Ta", Type (P (Node.output_type a)) ] in
   let attributes =
     match transpose_a with | None -> attributes | Some transpose_a -> ("transpose_a", Bool transpose_a) :: attributes
   in
@@ -6081,6 +6652,29 @@ let sparseMatMul
     ~name
     ~op_name
     ~output_type:Type.Float
+    ~inputs
+    ~attributes
+    ~output_idx:None
+
+let sparseReduceSum
+    ?(name = "SparseReduceSum")
+    ?keep_dims
+    (input_indices : [ `int64 ] t)
+    (input_values : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (input_shape : [ `int64 ] t)
+    (reduction_axes : [ `int32 ] t)
+  =
+  let attributes = [ "T", Type (P (Node.output_type input_values)) ] in
+  let attributes =
+    match keep_dims with | None -> attributes | Some keep_dims -> ("keep_dims", Bool keep_dims) :: attributes
+  in
+  let name = Name.of_string name in
+  let op_name = Op_names.sparseReduceSum in
+  let inputs = [ P input_indices; P input_values; P input_shape; P reduction_axes ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type input_values)
     ~inputs
     ~attributes
     ~output_idx:None
@@ -6203,6 +6797,24 @@ let sparseSegmentSum
     ~attributes
     ~output_idx:None
 
+let sparseSoftmax
+    ?(name = "SparseSoftmax")
+    (sp_indices : [ `int64 ] t)
+    (sp_values : ([< `float | `double ] as 't) t)
+    (sp_shape : [ `int64 ] t)
+  =
+  let attributes = [ "T", Type (P (Node.output_type sp_values)) ] in
+  let name = Name.of_string name in
+  let op_name = Op_names.sparseSoftmax in
+  let inputs = [ P sp_indices; P sp_values; P sp_shape ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type sp_values)
+    ~inputs
+    ~attributes
+    ~output_idx:None
+
 let sparseSoftmaxCrossEntropyWithLogits
     ?(name = "SparseSoftmaxCrossEntropyWithLogits")
     (features : ([< `float | `double ] as 't) t)
@@ -6227,6 +6839,25 @@ let sparseSoftmaxCrossEntropyWithLogits
     ~inputs
     ~attributes
     ~output_idx:(Some 1)
+
+let sparseTensorDenseAdd
+    ?(name = "SparseTensorDenseAdd")
+    (a_indices : ([< `int32 | `int64 ] as 'tindices) t)
+    (a_values : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (a_shape : ([< `int32 | `int64 ] as 'tindices) t)
+    (b : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+  =
+  let attributes = [ "Tindices", Type (P (Node.output_type a_indices)) ;  "T", Type (P (Node.output_type a_values)) ] in
+  let name = Name.of_string name in
+  let op_name = Op_names.sparseTensorDenseAdd in
+  let inputs = [ P a_indices; P a_values; P a_shape; P b ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type a_values)
+    ~inputs
+    ~attributes
+    ~output_idx:None
 
 let sparseTensorDenseMatMul
     ?(name = "SparseTensorDenseMatMul")
@@ -6305,7 +6936,7 @@ let split
 
 let sqrt
     ?(name = "Sqrt")
-    (x : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (x : ([< `float | `double | `complex64 ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type x)) ] in
   let name = Name.of_string name in
@@ -6321,7 +6952,7 @@ let sqrt
 
 let square
     ?(name = "Square")
-    (x : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (x : ([< `float | `double | `int32 | `int64 | `complex64 ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type x)) ] in
   let name = Name.of_string name in
@@ -6337,8 +6968,8 @@ let square
 
 let squaredDifference
     ?(name = "SquaredDifference")
-    (x : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
-    (y : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (x : ([< `float | `double | `int32 | `int64 | `complex64 ] as 't) t)
+    (y : ([< `float | `double | `int32 | `int64 | `complex64 ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type x)) ] in
   let name = Name.of_string name in
@@ -6482,6 +7113,50 @@ let stringToHashBucket
     ~attributes
     ~output_idx:None
 
+let stringToHashBucketFast
+    ?(name = "StringToHashBucketFast")
+    ~num_buckets
+    (input : [ `string ] t)
+  =
+  let attributes = [] in
+  let attributes =
+    ("num_buckets", Int num_buckets) :: attributes
+  in
+  let name = Name.of_string name in
+  let op_name = Op_names.stringToHashBucketFast in
+  let inputs = [ P input ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Int64
+    ~inputs
+    ~attributes
+    ~output_idx:None
+
+let stringToHashBucketStrong
+    ?(name = "StringToHashBucketStrong")
+    ~num_buckets
+    ~key
+    (input : [ `string ] t)
+  =
+  let attributes = [] in
+  let attributes =
+    ("num_buckets", Int num_buckets) :: attributes
+  in
+  let attributes =
+    ("key", List (Int key)) :: attributes
+  in
+  let name = Name.of_string name in
+  let op_name = Op_names.stringToHashBucketStrong in
+  let inputs = [ P input ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Int64
+    ~inputs
+    ~attributes
+    ~output_idx:None
+
 let stringToNumber
     ?(name = "StringToNumber")
     ~type_
@@ -6501,8 +7176,8 @@ let stringToNumber
 
 let sub
     ?(name = "Sub")
-    (x : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
-    (y : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (x : ([< `float | `double | `int32 | `int64 | `complex64 ] as 't) t)
+    (y : ([< `float | `double | `int32 | `int64 | `complex64 ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type x)) ] in
   let name = Name.of_string name in
@@ -6588,7 +7263,7 @@ let tFRecordReader
 
 let tanh
     ?(name = "Tanh")
-    (x : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (x : ([< `float | `double | `complex64 ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type x)) ] in
   let name = Name.of_string name in
@@ -7280,6 +7955,23 @@ let zerosLike
   let name = Name.of_string name in
   let op_name = Op_names.zerosLike in
   let inputs = [ P x ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type x)
+    ~inputs
+    ~attributes
+    ~output_idx:None
+
+let zeta
+    ?(name = "Zeta")
+    (x : ([< `float | `double ] as 't) t)
+    (q : ([< `float | `double ] as 't) t)
+  =
+  let attributes = [ "T", Type (P (Node.output_type x)) ] in
+  let name = Name.of_string name in
+  let op_name = Op_names.zeta in
+  let inputs = [ P x; P q ] in
   Node.create
     ~name
     ~op_name
