@@ -68,3 +68,5 @@ There are also some MNIST based [examples](https://github.com/LaurentMazare/tens
 * [ocaml-ctypes](https://github.com/ocamllabs/ocaml-ctypes) is used for the C bindings.
 * [Core_kernel](https://github.com/janestreet/core_kernel) is only necessary when generating the graph from OCaml, the wrapper itself does not need it.
 * The code in the piqi directory comes from the [Piqi project](http://piqi.org). There is no need to install piqi though.
+* [Cmdliner](https://github.com/dbuenzli/cmdliner) is used for command line interfaces.
+* [Gnuplot-ocaml](https://bitbucket.org/ogu/gnuplot-ocaml) is an optional dependency used by a couple examples.
