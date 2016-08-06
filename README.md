@@ -59,6 +59,21 @@ The FNN API is a layer based API to easily build neural-networks. A linear class
 
 There are also some MNIST based [examples](https://github.com/LaurentMazare/tensorflow-ocaml/tree/master/examples/fnn).
 
+### Character level RNN
+
+A simplified version of [char-rnn](https://github.com/karpathy/char-rnn) can also be found in the [examples directory](https://github.com/LaurentMazare/tensorflow-ocaml/blob/master/examples/char_rnn/char_rnn.ml). This ocaml port uses two LSTM layers. You can compile it with the following command:
+```bash
+ocamlbuild examples/char_rnn/char_rnn.native
+```
+Then you can train it on some text file, e.g. a [Shakespeare corpus](https://github.com/karpathy/char-rnn/blob/master/data/tinyshakespeare/input.txt).
+```bash
+./char_rnn.native train --train-file path/to/input.txt
+```
+During the training the current LSTM network will be dumped every 500 epochs in a .cpkt file. This file can later be used to generate new contents in the style of the training file.
+```bash
+./char_rnn.native sample --train-file path/to/input.txt
+```
+
 ## Dependencies
 
 * [ocaml-ctypes](https://github.com/ocamllabs/ocaml-ctypes) is used for the C bindings.
