@@ -1,14 +1,6 @@
 open Ctypes
 open Foreign
 
-let () =
-  (* Hacky solution for now, try loading python but do not fail if not available,
-     this way we'll only fail later if the symbols are needed. *)
-  try
-    ignore
-      (Dl.dlopen ~filename:"libpython2.7.so" ~flags:[ RTLD_GLOBAL; RTLD_LAZY ] : Dl.library)
-  with _ -> ()
-
 let from = Dl.dlopen ~filename:"libtensorflow.so" ~flags:[ RTLD_LAZY ]
 
 let verbose = false

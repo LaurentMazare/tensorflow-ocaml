@@ -10,7 +10,7 @@ let () =
       in
       if link_at_compile_time
       then
-        flag ["ocaml"; "link"] (S [ A "-cclib"; A "-ltensorflow"; A "-cclib"; A "-lpython2.7"; A "-cclib"; A "-L../lib2" ]);
+        flag ["ocaml"; "link"] (S [ A "-cclib"; A "-ltensorflow"; A "-cclib"; A "-L../lib2" ]);
       Options.use_ocamlfind := true
     | After_rules ->
       ocaml_lib "src/tensorflow"
