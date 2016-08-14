@@ -1,7 +1,7 @@
 open Ctypes
 open Foreign
 
-let from = Dl.dlopen ~filename:"libtensorflow.so" ~flags:[ RTLD_LAZY ]
+let from = Dl.dlopen ~filename:"libtensorflow-0.10.so" ~flags:[ RTLD_LAZY ]
 
 let verbose = false
 let force_full_major = false
