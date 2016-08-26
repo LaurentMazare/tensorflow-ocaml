@@ -15,7 +15,7 @@ After that you have to get/build the TensorFlow library `libtensorflow-0.10.so`.
 * You can build it from source by following these steps:
     1. [Install the Bazel build system](http://bazel.io/docs/install.html)
     1. Clone the TensorFlow repo `git clone --recurse-submodules -b r0.10 https://github.com/tensorflow/tensorflow`
-    1. In `tensorflow` run `./configure` then `bazel build -c opt tensorflow:libtensorflow.so`. Note: you first have to edit tensorflow/BUILD to include `"//tensorflow/c:c_apis"` in the deps section of libtensorflow.so.
+    1. In `tensorflow` run `./configure` then `bazel build -c opt tensorflow:libtensorflow.so`. Note: you first have to edit tensorflow/BUILD to include `"//tensorflow/c:c_api"` in the deps section of libtensorflow.so.
        - In order to build with GPU support, CUDA needs to be installed and specified during `./configure`, and use `bazel build -c opt --config=cuda tensorflow:libtensorflow.so` to build.
 * You can download a prebuilt x86-64 linux binary (this is not available for r0.10 yet).
 
