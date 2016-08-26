@@ -5,120 +5,208 @@ let from = Dl.dlopen ~filename:"libtensorflow-0.10.so" ~flags:[ RTLD_LAZY ]
 
 let verbose = false
 let force_full_major = false
-(* TF_TENSOR *)
-type tf_tensor = unit ptr
-let tf_tensor : tf_tensor typ = ptr void
 
-type data_type =
-  | TF_FLOAT
-  | TF_DOUBLE
-  | TF_INT32
-  | TF_UINT8
-  | TF_INT16
-  | TF_INT8
-  | TF_STRING
-  | TF_COMPLEX
-  | TF_INT64
-  | TF_BOOL
-  | TF_QINT8
-  | TF_QUINT8
-  | TF_QINT32
-  | TF_BFLOAT16
-  | TF_QINT16
-  | TF_QUINT16
-  | TF_UINT16
-  | Unknown of int
+module Tf_tensor = struct
+  type t = unit ptr
+  let t : t typ = ptr void
 
-let data_type_to_int = function
-  | TF_FLOAT -> 1
-  | TF_DOUBLE -> 2
-  | TF_INT32 -> 3
-  | TF_UINT8 -> 4
-  | TF_INT16 -> 5
-  | TF_INT8 -> 6
-  | TF_STRING -> 7
-  | TF_COMPLEX -> 8
-  | TF_INT64 -> 9
-  | TF_BOOL -> 10
-  | TF_QINT8 -> 11
-  | TF_QUINT8 -> 12
-  | TF_QINT32 -> 13
-  | TF_BFLOAT16 -> 14
-  | TF_QINT16 -> 15
-  | TF_QUINT16 -> 16
-  | TF_UINT16 -> 17
-  | Unknown n -> n
+  type data_type =
+    | TF_FLOAT
+    | TF_DOUBLE
+    | TF_INT32
+    | TF_UINT8
+    | TF_INT16
+    | TF_INT8
+    | TF_STRING
+    | TF_COMPLEX
+    | TF_INT64
+    | TF_BOOL
+    | TF_QINT8
+    | TF_QUINT8
+    | TF_QINT32
+    | TF_BFLOAT16
+    | TF_QINT16
+    | TF_QUINT16
+    | TF_UINT16
+    | Unknown of int
 
-let int_to_data_type = function
-  | 1 -> TF_FLOAT
-  | 2 -> TF_DOUBLE
-  | 3 -> TF_INT32
-  | 4 -> TF_UINT8
-  | 5 -> TF_INT16
-  | 6 -> TF_INT8
-  | 7 -> TF_STRING
-  | 8 -> TF_COMPLEX
-  | 9 -> TF_INT64
-  | 10 -> TF_BOOL
-  | 11 -> TF_QINT8
-  | 12 -> TF_QUINT8
-  | 13 -> TF_QINT32
-  | 14 -> TF_BFLOAT16
-  | 15 -> TF_QINT16
-  | 16 -> TF_QUINT16
-  | 17 -> TF_UINT16
-  | n -> Unknown n
+  let data_type_to_int = function
+    | TF_FLOAT -> 1
+    | TF_DOUBLE -> 2
+    | TF_INT32 -> 3
+    | TF_UINT8 -> 4
+    | TF_INT16 -> 5
+    | TF_INT8 -> 6
+    | TF_STRING -> 7
+    | TF_COMPLEX -> 8
+    | TF_INT64 -> 9
+    | TF_BOOL -> 10
+    | TF_QINT8 -> 11
+    | TF_QUINT8 -> 12
+    | TF_QINT32 -> 13
+    | TF_BFLOAT16 -> 14
+    | TF_QINT16 -> 15
+    | TF_QUINT16 -> 16
+    | TF_UINT16 -> 17
+    | Unknown n -> n
 
-let tf_newtensor =
-  foreign "TF_NewTensor" ~from
-    (int
-    @-> ptr int64_t (* dims *)
-    @-> int         (* num dims *)
-    @-> ptr void    (* data *)
-    @-> size_t      (* len *)
-    @-> funptr (ptr void @-> int @-> ptr void @-> returning void) (* deallocator *)
-    @-> ptr void    (* deallocator arg *)
-    @-> returning tf_tensor)
+  let int_to_data_type = function
+    | 1 -> TF_FLOAT
+    | 2 -> TF_DOUBLE
+    | 3 -> TF_INT32
+    | 4 -> TF_UINT8
+    | 5 -> TF_INT16
+    | 6 -> TF_INT8
+    | 7 -> TF_STRING
+    | 8 -> TF_COMPLEX
+    | 9 -> TF_INT64
+    | 10 -> TF_BOOL
+    | 11 -> TF_QINT8
+    | 12 -> TF_QUINT8
+    | 13 -> TF_QINT32
+    | 14 -> TF_BFLOAT16
+    | 15 -> TF_QINT16
+    | 16 -> TF_QUINT16
+    | 17 -> TF_UINT16
+    | n -> Unknown n
 
-let tf_deletetensor =
-  foreign "TF_DeleteTensor" ~from (tf_tensor @-> returning void)
+  let tf_newtensor =
+    foreign "TF_NewTensor" ~from
+      (int            (* data type *)
+      @-> ptr int64_t (* dims *)
+      @-> int         (* num dims *)
+      @-> ptr void    (* data *)
+      @-> size_t      (* len *)
+      @-> funptr (ptr void @-> int @-> ptr void @-> returning void) (* deallocator *)
+      @-> ptr void    (* deallocator arg *)
+      @-> returning t)
 
-let tf_numdims =
-  foreign "TF_NumDims" ~from (tf_tensor @-> returning int)
+  let tf_deletetensor =
+    foreign "TF_DeleteTensor" ~from (t @-> returning void)
 
-let tf_dim =
-  foreign "TF_Dim" ~from (tf_tensor @-> int @-> returning int)
+  let tf_numdims =
+    foreign "TF_NumDims" ~from (t @-> returning int)
 
-let tf_tensorbytesize =
-  foreign "TF_TensorByteSize" ~from (tf_tensor @-> returning size_t)
+  let tf_dim =
+    foreign "TF_Dim" ~from (t @-> int @-> returning int)
 
-let tf_tensordata =
-  foreign "TF_TensorData" ~from (tf_tensor @-> returning (ptr void))
+  let tf_tensorbytesize =
+    foreign "TF_TensorByteSize" ~from (t @-> returning size_t)
 
-let tf_tensortype =
-  foreign "TF_TensorType" ~from (tf_tensor @-> returning int)
+  let tf_tensordata =
+    foreign "TF_TensorData" ~from (t @-> returning (ptr void))
 
-(* TF_STATUS *)
-type tf_status = unit ptr
-let tf_status : tf_status typ = ptr void
+  let tf_tensortype =
+    foreign "TF_TensorType" ~from (t @-> returning int)
+end
 
-let tf_newstatus =
-  foreign "TF_NewStatus" ~from (void @-> returning tf_status)
+module Tensor = struct
+  include Tf_tensor
 
-let tf_deletestatus =
-  foreign "TF_DeleteStatus" ~from (tf_status @-> returning void)
+  let sizeof = function
+    | TF_FLOAT -> 4
+    | TF_DOUBLE -> 8
+    | TF_INT32 -> 4
+    | TF_UINT16
+    | TF_INT16 -> 2
+    | TF_UINT8
+    | TF_INT8 -> 1
+    | TF_INT64 -> 8
+    | TF_STRING
+    | TF_COMPLEX
+    | TF_BOOL
+    | TF_QINT8
+    | TF_QUINT8
+    | TF_QINT32
+    | TF_BFLOAT16
+    | TF_QINT16
+    | TF_QUINT16
+    | Unknown _ -> failwith "Unsupported tensor type"
 
-let tf_setstatus =
-  foreign "TF_SetStatus" ~from (tf_status @-> int @-> string @-> returning void)
+  let data_type_of_kind (type a) (type b) (kind : (a, b) Bigarray.kind) =
+    match kind with
+    | Bigarray.Float32 -> TF_FLOAT
+    | Bigarray.Float64 -> TF_DOUBLE
+    | Bigarray.Int64 -> TF_INT64
+    | Bigarray.Int32 -> TF_INT32
+    | _ -> failwith "Unsupported yet"
 
-let tf_getcode =
-  foreign "TF_GetCode" ~from (tf_status @-> returning int)
 
-let tf_message =
-  foreign "TF_Message" ~from (tf_status @-> returning string)
+  let fresh_id =
+    let cnt = ref 0 in
+    fun () -> incr cnt; !cnt
+
+  let live_tensors = Hashtbl.create 1024
+  let deallocate _ _ id =
+    let id = raw_address_of_ptr id |> Nativeint.to_int in
+    if verbose
+    then Printf.printf "Deallocating tensor %d\n%!" id;
+    Hashtbl.remove live_tensors id
+
+  let c_tensor_of_tensor packed_tensor =
+    let Tensor.P tensor = packed_tensor in
+    let id = fresh_id () in
+    let dim_array = Tensor.dims tensor in
+    let dims =
+      Array.to_list dim_array
+      |> List.map Int64.of_int
+      |> CArray.of_list int64_t
+      |> CArray.start
+    in
+    let data_type = Tensor.kind tensor |> data_type_of_kind in
+    let size = Array.fold_left ( * ) 1 dim_array * sizeof data_type in
+    Hashtbl.add live_tensors id packed_tensor;
+    let num_dims = Tensor.num_dims tensor in
+    let start = bigarray_start genarray tensor |> to_voidp in
+    if force_full_major
+    then Gc.full_major ();
+    tf_newtensor (data_type_to_int data_type)
+      dims
+      num_dims
+      start
+      (Unsigned.Size_t.of_int size)
+      deallocate
+      (Nativeint.of_int id |> ptr_of_raw_address)
+
+  let tensor_of_c_tensor c_tensor =
+    let num_dims = tf_numdims c_tensor in
+    let dims = Array.init num_dims (fun i -> tf_dim c_tensor i) in
+    let apply_kind kind =
+      let data = tf_tensordata c_tensor |> from_voidp (typ_of_bigarray_kind kind) in
+      let data = bigarray_of_ptr genarray dims kind data in
+      Gc.finalise (fun _data -> tf_deletetensor c_tensor) data;
+      Tensor.P data
+    in
+    match tf_tensortype c_tensor |> int_to_data_type with
+    | TF_FLOAT -> apply_kind Bigarray.float32
+    | TF_DOUBLE -> apply_kind Bigarray.float64
+    | TF_INT32 -> apply_kind Bigarray.int32
+    | TF_INT64 -> apply_kind Bigarray.int64
+    | _ -> failwith "Unsupported tensor type"
+end
+
+module Tf_status = struct
+  type t = unit ptr
+  let t : t typ = ptr void
+
+  let tf_newstatus =
+    foreign "TF_NewStatus" ~from (void @-> returning t)
+
+  let tf_deletestatus =
+    foreign "TF_DeleteStatus" ~from (t @-> returning void)
+
+  let tf_setstatus =
+    foreign "TF_SetStatus" ~from (t @-> int @-> string @-> returning void)
+
+  let tf_getcode =
+    foreign "TF_GetCode" ~from (t @-> returning int)
+
+  let tf_message =
+    foreign "TF_Message" ~from (t @-> returning string)
+end
 
 module Status = struct
-  type t = tf_status
+  include Tf_status
 
   type code =
     | TF_OK
@@ -174,29 +262,30 @@ module Status = struct
   let message = tf_message
 end
 
-(* TF_SESSIONOPTIONS *)
-type tf_sessionoptions = unit ptr
-let tf_sessionoptions : tf_sessionoptions typ = ptr void
+module Tf_sessionoptions = struct
+  type t = unit ptr
+  let t : t typ = ptr void
 
-let tf_newsessionoptions =
-  foreign "TF_NewSessionOptions" ~from (void @-> returning tf_sessionoptions)
+  let tf_newsessionoptions =
+    foreign "TF_NewSessionOptions" ~from (void @-> returning t)
 
-let tf_settarget =
-  foreign "TF_SetTarget" ~from (tf_sessionoptions @-> string @-> returning void)
+  let tf_settarget =
+    foreign "TF_SetTarget" ~from (t @-> string @-> returning void)
 
-let tf_setconfig =
-  foreign "TF_SetConfig" ~from
-    (tf_sessionoptions
-    @-> ptr void
-    @-> size_t
-    @-> tf_status
-    @-> returning tf_sessionoptions)
+  let tf_setconfig =
+    foreign "TF_SetConfig" ~from
+      (t
+      @-> ptr void
+      @-> size_t
+      @-> Tf_status.t
+      @-> returning t)
 
-let tf_deletesessionoptions =
-  foreign "TF_DeleteSessionOptions" ~from (tf_sessionoptions @-> returning void)
+  let tf_deletesessionoptions =
+    foreign "TF_DeleteSessionOptions" ~from (t @-> returning void)
+end
 
 module Session_options = struct
-  type t = tf_sessionoptions
+  include Tf_sessionoptions
 
   let create () =
     let session_options = tf_newsessionoptions () in
@@ -204,49 +293,50 @@ module Session_options = struct
     session_options
 end
 
-(* TF_SESSION *)
-type tf_session = unit ptr
-let tf_session : tf_session typ = ptr void
+module Tf_session = struct
+  type t = unit ptr
+  let t : t typ = ptr void
 
-let tf_newsession =
-  foreign "TF_NewSession" ~from
-    (tf_sessionoptions @-> tf_status @-> returning tf_session)
+  let tf_newsession =
+    foreign "TF_NewSession" ~from
+      (Tf_sessionoptions.t @-> Tf_status.t @-> returning t)
 
-let tf_closesession =
-  foreign "TF_CloseSession" ~from (tf_session @-> tf_status @-> returning void)
+  let tf_closesession =
+    foreign "TF_CloseSession" ~from (t @-> Tf_status.t @-> returning void)
 
-let tf_deletesession =
-  foreign "TF_DeleteSession" ~from (tf_session @-> tf_status @-> returning void)
+  let tf_deletesession =
+    foreign "TF_DeleteSession" ~from (t @-> Tf_status.t @-> returning void)
 
-let tf_extendgraph =
-  foreign "TF_ExtendGraph" ~from
-    (tf_session @-> string @-> size_t @-> tf_status @-> returning void)
+  let tf_extendgraph =
+    foreign "TF_ExtendGraph" ~from
+      (t @-> string @-> size_t @-> Tf_status.t @-> returning void)
 
-(* We use [ptr (ptr char)] rather than [ptr string] as when using [CArray.of_list]
-   to build the [ptr string], the reference to the C (copied) version of the string can
-   get lost which will be problematic if the GC triggers just after. *)
-let tf_run =
-  foreign "TF_Run" ~from
-    (tf_session
-    @-> ptr void (* run_options *)
-    (* Input tensors *)
-    @-> ptr (ptr char)
-    @-> ptr tf_tensor
-    @-> int
-    (* Output tensors *)
-    @-> ptr (ptr char)
-    @-> ptr tf_tensor
-    @-> int
-    (* Target nodes *)
-    @-> ptr (ptr char)
-    @-> int
-    @-> ptr void (* run_metadata *)
-    (* Output status *)
-    @-> tf_status
-    @-> returning void)
+  (* We use [ptr (ptr char)] rather than [ptr string] as when using [CArray.of_list]
+     to build the [ptr string], the reference to the C (copied) version of the string can
+     get lost which will be problematic if the GC triggers just after. *)
+  let tf_run =
+    foreign "TF_Run" ~from
+      (t
+      @-> ptr void (* run_options *)
+      (* Input tensors *)
+      @-> ptr (ptr char)
+      @-> ptr Tf_tensor.t
+      @-> int
+      (* Output tensors *)
+      @-> ptr (ptr char)
+      @-> ptr Tf_tensor.t
+      @-> int
+      (* Target nodes *)
+      @-> ptr (ptr char)
+      @-> int
+      @-> ptr void (* run_metadata *)
+      (* Output status *)
+      @-> Tf_status.t
+      @-> returning void)
+end
 
 module Session = struct
-  type t = tf_session
+  include Tf_session
 
   type 'a result =
     | Ok of 'a
@@ -284,86 +374,6 @@ module Session = struct
       status;
     result_or_error status ()
 
-  let sizeof = function
-    | TF_FLOAT -> 4
-    | TF_DOUBLE -> 8
-    | TF_INT32 -> 4
-    | TF_UINT16
-    | TF_INT16 -> 2
-    | TF_UINT8
-    | TF_INT8 -> 1
-    | TF_INT64 -> 8
-    | TF_STRING
-    | TF_COMPLEX
-    | TF_BOOL
-    | TF_QINT8
-    | TF_QUINT8
-    | TF_QINT32
-    | TF_BFLOAT16
-    | TF_QINT16
-    | TF_QUINT16
-    | Unknown _ -> failwith "Unsupported tensor type"
-
-  let data_type_of_kind (type a) (type b) (kind : (a, b) Bigarray.kind) =
-    match kind with
-    | Bigarray.Float32 -> TF_FLOAT
-    | Bigarray.Float64 -> TF_DOUBLE
-    | Bigarray.Int64 -> TF_INT64
-    | Bigarray.Int32 -> TF_INT32
-    | _ -> failwith "Unsupported yet"
-
-  let fresh_id =
-    let cnt = ref 0 in
-    fun () -> incr cnt; !cnt
-
-  let live_tensors = Hashtbl.create 1024
-  let deallocate _ _ id =
-    let id = raw_address_of_ptr id |> Nativeint.to_int in
-    if verbose
-    then Printf.printf "Deallocating tensor %d\n%!" id;
-    Hashtbl.remove live_tensors id
-
-  let c_tensor_of_tensor packed_tensor =
-    let Tensor.P tensor = packed_tensor in
-    let id = fresh_id () in
-    let dim_array = Tensor.dims tensor in
-    let dims =
-      Array.to_list dim_array
-      |> List.map Int64.of_int
-      |> CArray.of_list int64_t
-      |> CArray.start
-    in
-    let data_type = Tensor.kind tensor |> data_type_of_kind in
-    let size = Array.fold_left ( * ) 1 dim_array * sizeof data_type in
-    Hashtbl.add live_tensors id packed_tensor;
-    let num_dims = Tensor.num_dims tensor in
-    let start = bigarray_start genarray tensor |> to_voidp in
-    if force_full_major
-    then Gc.full_major ();
-    tf_newtensor (data_type_to_int data_type)
-      dims
-      num_dims
-      start
-      (Unsigned.Size_t.of_int size)
-      deallocate
-      (Nativeint.of_int id |> ptr_of_raw_address)
-
-  let tensor_of_c_tensor c_tensor =
-    let num_dims = tf_numdims c_tensor in
-    let dims = Array.init num_dims (fun i -> tf_dim c_tensor i) in
-    let apply_kind kind =
-      let data = tf_tensordata c_tensor |> from_voidp (typ_of_bigarray_kind kind) in
-      let data = bigarray_of_ptr genarray dims kind data in
-      Gc.finalise (fun _data -> tf_deletetensor c_tensor) data;
-      Tensor.P data
-    in
-    match tf_tensortype c_tensor |> int_to_data_type with
-    | TF_FLOAT -> apply_kind Bigarray.float32
-    | TF_DOUBLE -> apply_kind Bigarray.float64
-    | TF_INT32 -> apply_kind Bigarray.int32
-    | TF_INT64 -> apply_kind Bigarray.int64
-    | _ -> failwith "Unsupported tensor type"
-
   let char_list_of_string s =
     let rec char_list_of_string idx acc =
       if idx < 0
@@ -395,11 +405,11 @@ module Session = struct
     let status = Status.create () in
     let ninputs = List.length inputs in
     let input_names, input_tensors = List.split inputs in
-    let input_tensors = List.map c_tensor_of_tensor input_tensors in
+    let input_tensors = List.map Tensor.c_tensor_of_tensor input_tensors in
     let output_len = List.length outputs in
-    let output_tensors = CArray.make tf_tensor output_len in
+    let output_tensors = CArray.make Tf_tensor.t output_len in
     let input_names = ptr_ptr_char input_names in
-    let input_tensor_start = CArray.(of_list tf_tensor input_tensors |> start) in
+    let input_tensor_start = CArray.(of_list Tf_tensor.t input_tensors |> start) in
     let outputs = ptr_ptr_char outputs in
     let ntargets = List.length targets in
     let targets = ptr_ptr_char targets in
@@ -423,7 +433,7 @@ module Session = struct
     | Ok () ->
       let output_tensors =
         CArray.to_list output_tensors
-        |> List.map tensor_of_c_tensor
+        |> List.map Tensor.tensor_of_c_tensor
       in
       Ok output_tensors
     | Error _ as err -> err
@@ -432,13 +442,13 @@ module Session = struct
     | Ok ok -> ok
     | Error status ->
       failwith
-        (Printf.sprintf "%d %s" (tf_getcode status) (Status.message status))
+        (Printf.sprintf "%d %s" (Tf_status.tf_getcode status) (Status.message status))
 end
 
 let () =
   ignore
-    ( data_type_to_int
-    , tf_settarget
-    , tf_setconfig
-    , tf_tensorbytesize
+    ( Tensor.data_type_to_int
+    , Tf_sessionoptions.tf_settarget
+    , Tf_sessionoptions.tf_setconfig
+    , Tf_tensor.tf_tensorbytesize
     , Status.set)
