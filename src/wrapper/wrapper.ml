@@ -330,6 +330,62 @@ module Tf_operationdescription = struct
 
   let tf_addcontrolinput =
     foreign "TF_AddControlInput" ~from (t @-> Tf_operation.t @-> returning void)
+
+  let tf_setattrstring =
+    foreign "TF_SetAttrString" ~from
+      (t @-> string @-> ptr char @-> int @-> returning void)
+
+  let tf_setattrstringlist =
+    foreign "TF_SetAttrStringList" ~from
+      (t @-> string @-> ptr (ptr char) @-> ptr int @-> int @-> returning void)
+
+  let tf_setattrint =
+    foreign "TF_SetAttrInt" ~from
+      (t @-> string @-> int64_t @-> returning void)
+
+  let tf_setattrintlist =
+    foreign "TF_SetAttrIntList" ~from
+      (t @-> string @-> ptr int64_t @-> int @-> returning void)
+
+  let tf_setattrfloat =
+    foreign "TF_SetAttrFloat" ~from
+      (t @-> string @-> float @-> returning void)
+
+  let tf_setattrfloatlist =
+    foreign "TF_SetAttrFloatList" ~from
+      (t @-> string @-> ptr float @-> int @-> returning void)
+
+  let tf_setattrbool =
+    foreign "TF_SetAttrBool" ~from
+      (t @-> string @-> uchar @-> returning void)
+
+  let tf_setattrboollist =
+    foreign "TF_SetAttrBoolList" ~from
+      (t @-> string @-> ptr uchar @-> int @-> returning void)
+
+  let tf_setattrtype =
+    foreign "TF_SetAttrType" ~from
+      (t @-> string @-> int @-> returning void)
+
+  let tf_setattrtypelist =
+    foreign "TF_SetAttrTypeList" ~from
+      (t @-> string @-> ptr int @-> int @-> returning void)
+
+  let tf_setattrshape =
+    foreign "TF_SetAttrShape" ~from
+      (t @-> string @-> ptr int64_t @-> int @-> returning void)
+
+  let tf_setattrshapelist =
+    foreign "TF_SetAttrShapeList" ~from
+      (t @-> string @-> ptr (ptr int64_t) @-> ptr int @-> int @-> returning void)
+
+  let tf_setattrtensor =
+    foreign "TF_SetAttrTensor" ~from
+      (t @-> string @-> Tf_tensor.t @-> Tf_status.t @-> returning void)
+
+  let tf_setattrtensorlist =
+    foreign "TF_SetAttrTensorList" ~from
+      (t @-> string @-> ptr Tf_tensor.t @-> int @-> Tf_status.t @-> returning void)
 end
 
 module Tf_sessionoptions = struct
