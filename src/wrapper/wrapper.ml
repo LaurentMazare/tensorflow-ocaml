@@ -262,6 +262,76 @@ module Status = struct
   let message = tf_message
 end
 
+module Tf_operation = struct
+  type t = unit ptr
+  let t : t typ = ptr void
+
+  let tf_operationname =
+    foreign "TF_OperationName" ~from (t @-> returning string)
+
+  let tf_operationoptype =
+    foreign "TF_OperationOpType" ~from (t @-> returning string)
+
+  let tf_operationdevice =
+    foreign "TF_OperationDevice" ~from (t @-> returning string)
+
+  let tf_operationnumoutputs =
+    foreign "TF_OperationNumOutputs" ~from (t @-> returning int)
+
+  let tf_operationnuminputs =
+    foreign "TF_OperationNumInputs" ~from (t @-> returning int)
+end
+
+module Tf_port = struct
+  type t
+  let t : t structure typ = structure "TF_Port"
+  let oper = field t "oper" (ptr Tf_operation.t)
+  let index = field t "index" int
+  let () = seal t
+end
+
+module Tf_graph = struct
+  type t = unit ptr
+  let t : t typ = ptr void
+
+  let tf_newgraph =
+    foreign "TF_NewGraph" ~from (void @-> returning t)
+
+  let tf_deletegraph =
+    foreign "TF_DeleteGraph" ~from (t @-> returning void)
+end
+
+module Tf_operationdescription = struct
+  type t = unit ptr
+  let t : t typ = ptr void
+
+  let tf_newoperation =
+    foreign "TF_NewOperation" ~from
+      (Tf_graph.t
+      @-> string
+      @-> string
+      @-> returning t)
+
+  let tf_finishoperation =
+    foreign "TF_FinishOperation" ~from
+      (t
+      @-> Tf_status.t
+      @-> returning Tf_operation.t)
+
+  let tf_addinput =
+    foreign "TF_AddInput" ~from (t @-> Tf_port.t @-> returning void)
+
+  let tf_addinputlist =
+    foreign "TF_AddInputList" ~from
+      (t
+      @-> ptr Tf_port.t
+      @-> int
+      @-> returning void)
+
+  let tf_addcontrolinput =
+    foreign "TF_AddControlInput" ~from (t @-> Tf_operation.t @-> returning void)
+end
+
 module Tf_sessionoptions = struct
   type t = unit ptr
   let t : t typ = ptr void
@@ -291,6 +361,42 @@ module Session_options = struct
     let session_options = tf_newsessionoptions () in
     Gc.finalise tf_deletesessionoptions session_options;
     session_options
+end
+
+
+module Tf_sessionwithgraph = struct
+  type t = unit ptr
+  let t : t typ = ptr void
+
+  let tf_newsessionwithgraph =
+    foreign "TF_NewSessionWithGraph" ~from
+      (Tf_graph.t @-> Tf_sessionoptions.t @-> Tf_status.t @-> returning t)
+
+  let tf_closesessionwithgraph =
+    foreign "TF_CloseSessionWithGraph" ~from (t @-> Tf_status.t @-> returning void)
+
+  let tf_deletesessionwithgraph =
+    foreign "TF_DeleteSessionWithGraph" ~from (t @-> Tf_status.t @-> returning void)
+
+  let tf_sessionrun =
+    foreign "TF_SessionRun" ~from
+      (t
+      @-> ptr void (* run_options *)
+      (* Input tensors *)
+      @-> ptr Tf_port.t
+      @-> ptr Tf_tensor.t
+      @-> int
+      (* Output tensors *)
+      @-> ptr Tf_port.t
+      @-> ptr Tf_tensor.t
+      @-> int
+      (* Target nodes *)
+      @-> ptr Tf_operation.t
+      @-> int
+      @-> ptr void (* run_metadata *)
+      (* Output status *)
+      @-> Tf_status.t
+      @-> returning void)
 end
 
 module Tf_session = struct
