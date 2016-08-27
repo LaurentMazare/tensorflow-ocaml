@@ -131,21 +131,31 @@ module Tensor = struct
     | Bigarray.Int32 -> TF_INT32
     | _ -> failwith "Unsupported yet"
 
+  module Id : sig
+    type t
+    val create : unit -> t
+    val to_int : t -> int
+    val of_int : int -> t
+  end = struct
+    type t = int
+    let create =
+      let cnt = ref 0 in
+      fun () -> incr cnt; !cnt
 
-  let fresh_id =
-    let cnt = ref 0 in
-    fun () -> incr cnt; !cnt
+    let to_int t = t
+    let of_int t = t
+  end
 
   let live_tensors = Hashtbl.create 1024
   let deallocate _ _ id =
-    let id = raw_address_of_ptr id |> Nativeint.to_int in
+    let id = raw_address_of_ptr id |> Nativeint.to_int |> Id.of_int in
     if verbose
-    then Printf.printf "Deallocating tensor %d\n%!" id;
+    then Printf.printf "Deallocating tensor %d\n%!" (Id.to_int id);
     Hashtbl.remove live_tensors id
 
   let c_tensor_of_tensor packed_tensor =
     let Tensor.P tensor = packed_tensor in
-    let id = fresh_id () in
+    let id = Id.create () in
     let dim_array = Tensor.dims tensor in
     let dims =
       Array.to_list dim_array
@@ -166,7 +176,7 @@ module Tensor = struct
       start
       (Unsigned.Size_t.of_int size)
       deallocate
-      (Nativeint.of_int id |> ptr_of_raw_address)
+      (Id.to_int id |> Nativeint.of_int |> ptr_of_raw_address)
 
   let tensor_of_c_tensor c_tensor =
     let num_dims = tf_numdims c_tensor in
@@ -260,6 +270,21 @@ module Status = struct
   let code t = tf_getcode t |> code_of_int
 
   let message = tf_message
+
+  type 'a result =
+    | Ok of 'a
+    | Error of t
+
+  let result_or_error status v =
+    match code status with
+    | TF_OK -> Ok v
+    | _ -> Error status
+
+  let ok_exn = function
+    | Ok ok -> ok
+    | Error status ->
+      failwith
+        (Printf.sprintf "%d %s" (tf_getcode status) (message status))
 end
 
 module Tf_operation = struct
@@ -299,6 +324,15 @@ module Tf_graph = struct
 
   let tf_deletegraph =
     foreign "TF_DeleteGraph" ~from (t @-> returning void)
+end
+
+module Graph = struct
+  include Tf_graph
+
+  let create () =
+    let t = tf_newgraph () in
+    Gc.finalise tf_deletegraph t;
+    t
 end
 
 module Tf_operationdescription = struct
@@ -388,6 +422,27 @@ module Tf_operationdescription = struct
       (t @-> string @-> ptr Tf_tensor.t @-> int @-> Tf_status.t @-> returning void)
 end
 
+module Operation = struct
+  type nonrec t = Tf_graph.t * Tf_operation.t
+end
+
+module Operation_description = struct
+  (* Keep a reference to the graph as it should not be deleted before tf_finishoperation
+     has been succesfully called. *)
+  type nonrec t = Tf_graph.t * Tf_operationdescription.t
+
+  let live_operations = Hashtbl.create 1024
+
+  let new_operation graph ~op_type ~op_name =
+    let t = Tf_operationdescription.tf_newoperation graph op_type op_name in
+    graph, t
+
+  let finish_operation (graph, t) =
+    let status = Status.create () in
+    let operation = Tf_operationdescription.tf_finishoperation t status in
+    Status.result_or_error status operation
+end
+
 module Tf_sessionoptions = struct
   type t = unit ptr
   let t : t typ = ptr void
@@ -418,7 +473,6 @@ module Session_options = struct
     Gc.finalise tf_deletesessionoptions session_options;
     session_options
 end
-
 
 module Tf_sessionwithgraph = struct
   type t = unit ptr
@@ -500,15 +554,6 @@ end
 module Session = struct
   include Tf_session
 
-  type 'a result =
-    | Ok of 'a
-    | Error of Status.t
-
-  let result_or_error status v =
-    match Status.code status with
-    | TF_OK -> Ok v
-    | _ -> Error status
-
   let create ?session_options () =
     let session_options =
       match session_options with
@@ -522,7 +567,7 @@ module Session = struct
         tf_closesession session status;
         tf_deletesession session status)
       session;
-    result_or_error status session
+    Status.result_or_error status session
 
   let extend_graph t protobuf =
     let status = Status.create () in
@@ -534,7 +579,7 @@ module Session = struct
       protobuf
       (String.length protobuf |> Unsigned.Size_t.of_int)
       status;
-    result_or_error status ()
+    Status.result_or_error status ()
 
   let char_list_of_string s =
     let rec char_list_of_string idx acc =
@@ -591,20 +636,14 @@ module Session = struct
       ntargets
       null
       status;
-    match result_or_error status () with
+    match Status.result_or_error status () with
     | Ok () ->
       let output_tensors =
         CArray.to_list output_tensors
         |> List.map Tensor.tensor_of_c_tensor
       in
-      Ok output_tensors
+      Status.Ok output_tensors
     | Error _ as err -> err
-
-  let ok_exn = function
-    | Ok ok -> ok
-    | Error status ->
-      failwith
-        (Printf.sprintf "%d %s" (Tf_status.tf_getcode status) (Status.message status))
 end
 
 let () =

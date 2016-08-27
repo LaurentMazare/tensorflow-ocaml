@@ -29,30 +29,31 @@ module Status : sig
   val code : t -> code
 
   val message : t -> string
+
+  type 'a result =
+    | Ok of 'a
+    | Error of t
+
+  val ok_exn : 'a result -> 'a
 end
 
 module Session : sig
   type t
-  type 'a result =
-    | Ok of 'a
-    | Error of Status.t
 
   val create
     :  ?session_options:Session_options.t
     -> unit
-    -> t result
+    -> t Status.result
 
   val extend_graph
     :  t
     -> Protobuf.t
-    -> unit result
+    -> unit Status.result
 
   val run
     :  ?inputs:(string * Tensor.p) list
     -> ?outputs:string list
     -> ?targets:string list
     -> t
-    -> Tensor.p list result
-
-  val ok_exn : 'a result -> 'a
+    -> Tensor.p list Status.result
 end

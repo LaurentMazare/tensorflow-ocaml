@@ -73,7 +73,7 @@ let prepare_graph t ~inputs ~targets ~outputs =
     Node_protobuf.of_nodes' ~already_exported_nodes:t.exported_nodes all_nodes_to_export
   in
   Option.iter protobuf ~f:(fun protobuf ->
-    Wrapper.Session.(extend_graph t.session protobuf |> ok_exn));
+    Wrapper.Session.extend_graph t.session protobuf |> Wrapper.Status.ok_exn);
   let node_names = List.map ~f:(fun (Node.P x) -> Node.unique_name x) in
   { inputs = node_names inputs
   ; targets = node_names targets
@@ -95,9 +95,9 @@ let run ?(inputs=[]) ?(outputs=[]) ?(targets=[]) t =
   (* Run variable init *)
   List.iter variables_to_initialize ~f:(fun targets ->
     Wrapper.Session.run t.session ~inputs:[] ~outputs:[] ~targets
-    |> Wrapper.Session.ok_exn
+    |> Wrapper.Status.ok_exn
     |> fun tensor_list -> assert (List.is_empty tensor_list));
-  Wrapper.Session.(run t.session ~inputs ~outputs ~targets |> ok_exn)
+  Wrapper.Session.run t.session ~inputs ~outputs ~targets |> Wrapper.Status.ok_exn
 
 module Input = struct
    type t =
