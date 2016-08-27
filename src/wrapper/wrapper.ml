@@ -470,6 +470,24 @@ module Graph = struct
 
   let set_attr_type (_, od) ~attr_name dtype =
     Tf_operationdescription.tf_setattrtype od attr_name (data_type_to_int dtype)
+
+  let set_attr_tensor (_, od) ~attr_name tensor =
+    let tensor = Tensor.c_tensor_of_tensor tensor in
+    let status = Status.create () in
+    Tf_operationdescription.tf_setattrtensor od attr_name tensor status;
+    Status.result_or_error status ()
+
+  let set_attr_tensors (_, od) ~attr_name tensors =
+    let tensors = List.map Tensor.c_tensor_of_tensor tensors in
+    let tensor_start = CArray.(of_list Tf_tensor.t tensors |> start) in
+    let status = Status.create () in
+    Tf_operationdescription.tf_setattrtensorlist
+      od
+      attr_name
+      tensor_start
+      (List.length tensors)
+      status;
+    Status.result_or_error status ()
 end
 
 module Tf_sessionoptions = struct

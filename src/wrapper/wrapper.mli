@@ -120,6 +120,18 @@ module Graph : sig
     -> attr_name:string
     -> data_type
     -> unit
+
+  val set_attr_tensor
+    :  operation_description
+    -> attr_name:string
+    -> Tensor.p
+    -> unit Status.result
+
+  val set_attr_tensors
+    :  operation_description
+    -> attr_name:string
+    -> Tensor.p list
+    -> unit Status.result
 end
 
 module Session_with_graph : sig

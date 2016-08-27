@@ -26,6 +26,16 @@ let add_attribute operation_description ~attr_name attr =
   | Type dtype ->
     let dtype = Node.Type.to_data_type dtype in
     Wrapper.Graph.set_attr_type operation_description ~attr_name dtype
+  | Tensor_float tensor ->
+    let shape =
+      match tensor.shape with
+      | [] -> [| List.length tensor.values |]
+      | shape -> Array.of_list shape
+    in
+    let tensor = Tensor.create Float32 shape in
+    (* TODO: set values... *)
+    Wrapper.Graph.set_attr_tensor operation_description ~attr_name (Tensor.P tensor)
+    |> Wrapper.Status.ok_exn
   | _ -> ()
 
 let rec build t node =
@@ -38,7 +48,7 @@ let rec build t node =
     let operation_description =
       Wrapper.Graph.new_operation t.graph
         ~op_name:(Node.op_name u_node |> Node.Op_name.to_string)
-        ~name:(Node.name u_node |> Node.Name.to_string)
+        ~name:(Node.unique_name u_node)
     in
     List.iter (Node.inputs u_node) ~f:(function
       | `single input ->
