@@ -42,6 +42,8 @@ module Type : sig
        | `dt_int64
        | `dt_string
        ]
+
+  val to_data_type : p -> Wrapper.data_type
 end
 
 module Tensor : sig

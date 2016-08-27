@@ -19,6 +19,15 @@ let create () =
 
 let default_session = lazy (create ())
 
+let add_attribute operation_description ~attr_name attr =
+  match (attr : Node.attr) with
+  | String str ->
+    Wrapper.Graph.set_attr_string operation_description ~attr_name str
+  | Type dtype ->
+    let dtype = Node.Type.to_data_type dtype in
+    Wrapper.Graph.set_attr_type operation_description ~attr_name dtype
+  | _ -> ()
+
 let rec build t node =
   let id = Node.packed_id node in
   match Hashtbl.find t.nodes id with
@@ -44,6 +53,8 @@ let rec build t node =
             build t input, index)
         in
         Wrapper.Graph.add_inputs operation_description inputs);
+    List.iter (Node.attributes u_node) ~f:(fun (attr_name, attr) ->
+      add_attribute operation_description ~attr_name attr);
     let operation =
       Wrapper.Graph.finish_operation operation_description
       |> Wrapper.Status.ok_exn

@@ -50,6 +50,16 @@ module Type = struct
     | `dt_string -> Some (P String)
     | _ -> None
 
+  let to_data_type = function
+    | P Unit -> assert false
+    | P Float -> Wrapper.TF_FLOAT
+    | P Double -> TF_DOUBLE
+    | P Int32 -> TF_INT32
+    | P Int64 -> TF_INT64
+    | P Complex64 -> TF_COMPLEX
+    | P Bool -> TF_BOOL
+    | P String -> TF_STRING
+
   let to_string = function
     | P Unit -> "Unit"
     | P Float -> "Float"

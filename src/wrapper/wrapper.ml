@@ -6,69 +6,69 @@ let from = Dl.dlopen ~filename:"libtensorflow-0.10.so" ~flags:[ RTLD_LAZY ]
 let verbose = false
 let force_full_major = false
 
+type data_type =
+  | TF_FLOAT
+  | TF_DOUBLE
+  | TF_INT32
+  | TF_UINT8
+  | TF_INT16
+  | TF_INT8
+  | TF_STRING
+  | TF_COMPLEX
+  | TF_INT64
+  | TF_BOOL
+  | TF_QINT8
+  | TF_QUINT8
+  | TF_QINT32
+  | TF_BFLOAT16
+  | TF_QINT16
+  | TF_QUINT16
+  | TF_UINT16
+  | Unknown of int
+
+let data_type_to_int = function
+  | TF_FLOAT -> 1
+  | TF_DOUBLE -> 2
+  | TF_INT32 -> 3
+  | TF_UINT8 -> 4
+  | TF_INT16 -> 5
+  | TF_INT8 -> 6
+  | TF_STRING -> 7
+  | TF_COMPLEX -> 8
+  | TF_INT64 -> 9
+  | TF_BOOL -> 10
+  | TF_QINT8 -> 11
+  | TF_QUINT8 -> 12
+  | TF_QINT32 -> 13
+  | TF_BFLOAT16 -> 14
+  | TF_QINT16 -> 15
+  | TF_QUINT16 -> 16
+  | TF_UINT16 -> 17
+  | Unknown n -> n
+
+let int_to_data_type = function
+  | 1 -> TF_FLOAT
+  | 2 -> TF_DOUBLE
+  | 3 -> TF_INT32
+  | 4 -> TF_UINT8
+  | 5 -> TF_INT16
+  | 6 -> TF_INT8
+  | 7 -> TF_STRING
+  | 8 -> TF_COMPLEX
+  | 9 -> TF_INT64
+  | 10 -> TF_BOOL
+  | 11 -> TF_QINT8
+  | 12 -> TF_QUINT8
+  | 13 -> TF_QINT32
+  | 14 -> TF_BFLOAT16
+  | 15 -> TF_QINT16
+  | 16 -> TF_QUINT16
+  | 17 -> TF_UINT16
+  | n -> Unknown n
+
 module Tf_tensor = struct
   type t = unit ptr
   let t : t typ = ptr void
-
-  type data_type =
-    | TF_FLOAT
-    | TF_DOUBLE
-    | TF_INT32
-    | TF_UINT8
-    | TF_INT16
-    | TF_INT8
-    | TF_STRING
-    | TF_COMPLEX
-    | TF_INT64
-    | TF_BOOL
-    | TF_QINT8
-    | TF_QUINT8
-    | TF_QINT32
-    | TF_BFLOAT16
-    | TF_QINT16
-    | TF_QUINT16
-    | TF_UINT16
-    | Unknown of int
-
-  let data_type_to_int = function
-    | TF_FLOAT -> 1
-    | TF_DOUBLE -> 2
-    | TF_INT32 -> 3
-    | TF_UINT8 -> 4
-    | TF_INT16 -> 5
-    | TF_INT8 -> 6
-    | TF_STRING -> 7
-    | TF_COMPLEX -> 8
-    | TF_INT64 -> 9
-    | TF_BOOL -> 10
-    | TF_QINT8 -> 11
-    | TF_QUINT8 -> 12
-    | TF_QINT32 -> 13
-    | TF_BFLOAT16 -> 14
-    | TF_QINT16 -> 15
-    | TF_QUINT16 -> 16
-    | TF_UINT16 -> 17
-    | Unknown n -> n
-
-  let int_to_data_type = function
-    | 1 -> TF_FLOAT
-    | 2 -> TF_DOUBLE
-    | 3 -> TF_INT32
-    | 4 -> TF_UINT8
-    | 5 -> TF_INT16
-    | 6 -> TF_INT8
-    | 7 -> TF_STRING
-    | 8 -> TF_COMPLEX
-    | 9 -> TF_INT64
-    | 10 -> TF_BOOL
-    | 11 -> TF_QINT8
-    | 12 -> TF_QUINT8
-    | 13 -> TF_QINT32
-    | 14 -> TF_BFLOAT16
-    | 15 -> TF_QINT16
-    | 16 -> TF_QUINT16
-    | 17 -> TF_UINT16
-    | n -> Unknown n
 
   let tf_newtensor =
     foreign "TF_NewTensor" ~from
@@ -358,7 +358,7 @@ module Tf_operationdescription = struct
 
   let tf_setattrstring =
     foreign "TF_SetAttrString" ~from
-      (t @-> string @-> ptr char @-> int @-> returning void)
+      (t @-> string @-> string @-> int @-> returning void)
 
   let tf_setattrstringlist =
     foreign "TF_SetAttrStringList" ~from
@@ -462,8 +462,14 @@ module Graph = struct
       |> CArray.of_list Tf_port.t
       |> CArray.start
     in
-    Tf_operationdescription.tf_addinputlist od ports;
+    Tf_operationdescription.tf_addinputlist od ports (List.length op_and_indexes);
     keep_alive graph
+
+  let set_attr_string (_, od) ~attr_name value =
+    Tf_operationdescription.tf_setattrstring od attr_name value (String.length value)
+
+  let set_attr_type (_, od) ~attr_name dtype =
+    Tf_operationdescription.tf_setattrtype od attr_name (data_type_to_int dtype)
 end
 
 module Tf_sessionoptions = struct
@@ -732,8 +738,7 @@ end
 
 let () =
   ignore
-    ( Tensor.data_type_to_int
-    , Tf_sessionoptions.tf_settarget
+    ( Tf_sessionoptions.tf_settarget
     , Tf_sessionoptions.tf_setconfig
     , Tf_tensor.tf_tensorbytesize
     , Status.set)
