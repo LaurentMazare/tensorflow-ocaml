@@ -57,3 +57,27 @@ module Session : sig
     -> t
     -> Tensor.p list Status.result
 end
+
+module Graph : sig
+  type t
+  type operation
+  type operation_description
+
+  val create : unit -> t
+
+  val new_operation
+    :  t
+    -> op_type:string
+    -> op_name:string
+    -> operation_description
+
+  val finish_operation
+    :  operation_description
+    -> operation Status.result
+
+  val add_input
+    :  operation_description
+    -> operation
+    -> index:int
+    -> unit
+end

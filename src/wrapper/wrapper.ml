@@ -310,7 +310,7 @@ end
 module Tf_port = struct
   type t
   let t : t structure typ = structure "TF_Port"
-  let oper = field t "oper" (ptr Tf_operation.t)
+  let oper = field t "oper" Tf_operation.t
   let index = field t "index" int
   let () = seal t
 end
@@ -324,15 +324,6 @@ module Tf_graph = struct
 
   let tf_deletegraph =
     foreign "TF_DeleteGraph" ~from (t @-> returning void)
-end
-
-module Graph = struct
-  include Tf_graph
-
-  let create () =
-    let t = tf_newgraph () in
-    Gc.finalise tf_deletegraph t;
-    t
 end
 
 module Tf_operationdescription = struct
@@ -422,25 +413,41 @@ module Tf_operationdescription = struct
       (t @-> string @-> ptr Tf_tensor.t @-> int @-> Tf_status.t @-> returning void)
 end
 
-module Operation = struct
-  type nonrec t = Tf_graph.t * Tf_operation.t
-end
+module Graph = struct
+  type t = Tf_graph.t
 
-module Operation_description = struct
+  let create () =
+    let t = Tf_graph.tf_newgraph () in
+    Gc.finalise Tf_graph.tf_deletegraph t;
+    t
+
+  let keep_alive t =
+    if to_voidp t = null
+    then failwith "null pointer"
+
+  type operation = Tf_graph.t * Tf_operation.t
+
   (* Keep a reference to the graph as it should not be deleted before tf_finishoperation
      has been succesfully called. *)
-  type nonrec t = Tf_graph.t * Tf_operationdescription.t
+  type operation_description = Tf_graph.t * Tf_operationdescription.t
 
-  let live_operations = Hashtbl.create 1024
+  let new_operation t ~op_type ~op_name =
+    let od = Tf_operationdescription.tf_newoperation t op_type op_name in
+    t, od
 
-  let new_operation graph ~op_type ~op_name =
-    let t = Tf_operationdescription.tf_newoperation graph op_type op_name in
-    graph, t
-
-  let finish_operation (graph, t) =
+  let finish_operation (graph, od) =
     let status = Status.create () in
-    let operation = Tf_operationdescription.tf_finishoperation t status in
-    Status.result_or_error status operation
+    let operation = Tf_operationdescription.tf_finishoperation od status in
+    Status.result_or_error status (graph, operation)
+
+  let add_input (graph, od) (graph', op) ~index =
+    if graph != graph'
+    then failwith "Calling add_input on different graphs.";
+    let port = make Tf_port.t in
+    setf port Tf_port.oper op;
+    setf port Tf_port.index index;
+    Tf_operationdescription.tf_addinput od port;
+    keep_alive graph
 end
 
 module Tf_sessionoptions = struct
@@ -589,7 +596,7 @@ module Session = struct
     in
     char_list_of_string (String.length s - 1) [ Char.chr 0 ]
 
-  (* [opaque_identity] is not available pre 4.03, this hack ensure that it
+  (* [opaque_identity] is not available pre 4.03, this hack ensures that it
      exists. *)
   let opaque_identity x = x
   let _ = opaque_identity
