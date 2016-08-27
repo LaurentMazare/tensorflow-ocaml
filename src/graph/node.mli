@@ -101,6 +101,7 @@ val name : _ t -> Name.t
 val op_name : _ t -> Op_name.t
 val output_type : 'a t -> 'a Type.t
 val inputs : _ t -> input list
+val flat_inputs : _ t -> p list
 val attributes : _ t -> (string * attr) list
 val output_idx : _ t -> int option
 val unique_name : _ t -> string
@@ -108,6 +109,7 @@ val unique_name : _ t -> string
 val packed_name : p -> Name.t
 val packed_op_name : p -> Op_name.t
 val packed_inputs : p -> input list
+val packed_flat_inputs : p -> p list
 val packed_is_real : p -> bool
 val packed_id : p -> Id.t
 val packed_output_idx : p -> int option

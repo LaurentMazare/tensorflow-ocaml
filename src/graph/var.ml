@@ -57,7 +57,7 @@ let get_all_vars node =
       Hash_set.add processed_nodes (Node.id node);
       if Node.Op_name.(=) (Node.op_name node) Ops.Op_names.variable
       then all_vars := (Node.P node) :: !all_vars
-      else List.iter (Node.inputs node) ~f:vars
+      else List.iter (Node.flat_inputs node) ~f:vars
     end
   in
   vars (Node.P node);

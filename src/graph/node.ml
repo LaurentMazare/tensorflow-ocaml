@@ -136,6 +136,11 @@ let name t = t.name
 let op_name t = t.op_name
 let output_type t = t.output_type
 let inputs t = t.inputs
+let flat_inputs t =
+  List.concat_map t.inputs ~f:(function
+    | `single p -> [ p ]
+    | `multi ps -> ps)
+
 let attributes t = t.attributes
 let output_idx t = t.output_idx
 let unique_name t =
@@ -143,6 +148,7 @@ let unique_name t =
 
 let packed_name (P t) = t.name
 let packed_inputs (P t) = t.inputs
+let packed_flat_inputs (P t) = flat_inputs t
 let packed_op_name (P t) = t.op_name
 let packed_is_real (P t) =
   match t.output_type with

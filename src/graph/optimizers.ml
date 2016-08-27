@@ -25,7 +25,7 @@ let get_all_vars node =
         | Node.Type.Float -> varsf := node :: !varsf
         | Node.Type.Double -> varsd := node :: !varsd
         | _ -> ()
-      else List.iter (Node.inputs node) ~f:vars
+      else List.iter (Node.flat_inputs node) ~f:vars
     end
   in
   vars (Node.P node);

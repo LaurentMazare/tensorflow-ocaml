@@ -19,7 +19,6 @@ let create () =
 
 let default_session = lazy (create ())
 
-(* TODO: make recursive. *)
 let rec build t node =
   let id = Node.packed_id node in
   match Hashtbl.find t.nodes id with
@@ -49,63 +48,25 @@ let rec build t node =
       Wrapper.Graph.finish_operation operation_description
       |> Wrapper.Status.ok_exn
     in
-    Hashtbl.set ~key:id ~data:operation;
+    Hashtbl.set t.nodes ~key:id ~data:operation;
     operation
-
-type node_names =
-  { inputs : string list
-  ; targets : string list
-  ; outputs : string list
-  ; variables_to_initialize : string list list
-  }
-
-let prepare_graph t ~inputs ~targets ~outputs =
-  let current_table = Node.Id.Table.create () in
-  let prep =
-    List.iter ~f:(fun node -> ignore (walk t node ~current_table : int))
-  in
-  prep inputs;
-  prep targets;
-  prep outputs;
-  let rec build_variables i =
-    match Hashtbl.find t.uninitialised_variables i with
-    | None -> []
-    | Some l -> l::build_variables (i + 1)
-  in
-  let uninitialised_variables = build_variables 0 in
-  Hashtbl.clear t.uninitialised_variables;
-  let all_nodes_to_export =
-    List.concat uninitialised_variables @ List.concat [ inputs; outputs; targets ]
-  in
-  let protobuf =
-    Node_protobuf.of_nodes' ~already_exported_nodes:t.exported_nodes all_nodes_to_export
-  in
-  Option.iter protobuf ~f:(fun protobuf ->
-    Wrapper.Session.extend_graph t.session protobuf |> Wrapper.Status.ok_exn);
-  let node_names = List.map ~f:(fun (Node.P x) -> Node.unique_name x) in
-  { inputs = node_names inputs
-  ; targets = node_names targets
-  ; outputs = node_names outputs
-  ; variables_to_initialize = List.map ~f:node_names uninitialised_variables
-  }
 
 let run ?(inputs=[]) ?(outputs=[]) ?(targets=[]) t =
   let inputs, input_tensors = List.unzip inputs in
-  let { inputs; targets; outputs; variables_to_initialize } =
-    prepare_graph t ~inputs ~targets ~outputs
+  let inputs =
+    List.map inputs ~f:(fun input ->
+      build t input
+      |> Wrapper.Graph.create_port ~index:0)
   in
-  (* add outputs to targets *)
+  let outputs = List.map outputs ~f:(build t) in
   let targets =
-    List.fold outputs ~init:(String.Set.of_list targets) ~f:Set.add
-    |> Set.to_list
+    List.map targets ~f:(build t) @ outputs
   in
+  let outputs = List.map outputs ~f:(fun op -> Wrapper.Graph.create_port op ~index:0) in
   let inputs = List.zip_exn inputs input_tensors in
-  (* Run variable init *)
-  List.iter variables_to_initialize ~f:(fun targets ->
-    Wrapper.Session.run t.session ~inputs:[] ~outputs:[] ~targets
-    |> Wrapper.Status.ok_exn
-    |> fun tensor_list -> assert (List.is_empty tensor_list));
-  Wrapper.Session.run t.session ~inputs ~outputs ~targets |> Wrapper.Status.ok_exn
+  (* TODO: Run variable init *)
+  Wrapper.Session_with_graph.run t.session ~inputs ~outputs ~targets
+  |> Wrapper.Status.ok_exn
 
 module Input = struct
    type t =
