@@ -1,48 +1,56 @@
 open Core_kernel.Std
-(* An higher level view of a session *)
 
-(* There is no uninitialised variables because I think we can initialize
-them last minute when someone call run, as there is no extend graph *)
 type t =
-  { session : Wrapper.Session.t
-  (* The nodes already in the graph of the session, with their name there *)
-  ; exported_nodes : Node.Id.Hash_set.t
-  (* To manage variable initialisation, each unitialised variable has a height.
-     If a variable init depends of no initialised variable, its height is 0.
-     If it depends of unitialised variable v1 ... vn, its height is max(height(vi)) + 1
-     Initialisation can be done one level after one level *)
-  ; uninitialised_variables : Node.p list Int.Table.t
-}
+  { session : Wrapper.Session_with_graph.t
+  ; graph : Wrapper.Graph.t
+  ; nodes : Wrapper.Graph.operation Node.Id.Table.t
+  }
 
 let create () =
-  match Wrapper.Session.create () with
+  let graph = Wrapper.Graph.create () in
+  match Wrapper.Session_with_graph.create graph with
   | Error status ->
     failwithf "Unable to generate session: %s" (Wrapper.Status.message status) ()
   | Ok session ->
     { session
-    ; exported_nodes = Node.Id.Hash_set.create ()
-    ; uninitialised_variables = Int.Table.create ()
+    ; graph
+    ; nodes = Node.Id.Table.create ()
     }
 
 let default_session = lazy (create ())
 
-(* [walk t node] walks through the graph and store the unitialized variables. *)
-let rec walk t node ~current_table =
+(* TODO: make recursive. *)
+let rec build t node =
   let id = Node.packed_id node in
-  if Hash_set.mem t.exported_nodes id
-  then 0 (* already exported before starting this run *)
-  else
-    Hashtbl.find_or_add current_table id ~default:(fun () ->
-      let Node.P u_node = node in
-      match Var.get_init u_node with
-      | None ->
-        List.fold (Node.inputs u_node) ~init:0 ~f:(fun acc_height input ->
-          max acc_height (walk t input ~current_table))
-      | Some init ->
-        let h = walk t (Node.P init) ~current_table in
-        let assign = Node.P (Ops.assign u_node init) in
-        Hashtbl.add_multi t.uninitialised_variables ~key:h ~data:assign;
-        h + 1)
+  match Hashtbl.find t.nodes id with
+  | Some op -> op
+  | None ->
+    let Node.P u_node = node in
+    (* TODO: [Var.get_init]. *)
+    let operation_description =
+      Wrapper.Graph.new_operation t.graph
+        ~op_name:(Node.op_name u_node |> Node.Op_name.to_string)
+        ~name:(Node.name u_node |> Node.Name.to_string)
+    in
+    List.iter (Node.inputs u_node) ~f:(function
+      | `single input ->
+        Wrapper.Graph.add_input
+          operation_description
+          (build t input)
+          ~index:(Node.packed_output_idx input |> Option.value ~default:0)
+      | `multi inputs ->
+        let inputs =
+          List.map inputs ~f:(fun input ->
+            let index = Node.packed_output_idx input |> Option.value ~default:0 in
+            build t input, index)
+        in
+        Wrapper.Graph.add_inputs operation_description inputs);
+    let operation =
+      Wrapper.Graph.finish_operation operation_description
+      |> Wrapper.Status.ok_exn
+    in
+    Hashtbl.set ~key:id ~data:operation;
+    operation
 
 type node_names =
   { inputs : string list

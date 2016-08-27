@@ -68,8 +68,8 @@ module Graph : sig
 
   val new_operation
     :  t
-    -> op_type:string
     -> op_name:string
+    -> name:string
     -> operation_description
 
   val finish_operation
@@ -80,6 +80,11 @@ module Graph : sig
     :  operation_description
     -> operation
     -> index:int
+    -> unit
+
+  val add_inputs
+    :  operation_description
+    -> (operation * int) list
     -> unit
 
   val create_port : operation -> index:int -> port

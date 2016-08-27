@@ -107,11 +107,12 @@ type 'a t =
   ; name : Name.t
   ; op_name : Op_name.t
   ; output_type : 'a Type.t
-  ; inputs : p list
+  ; inputs : input list
   ; attributes : (string * attr) list
   ; output_idx : int option (* Only used for multiple outputs. *)
   }
 and p = P : _ t -> p
+and input = [ `single of p | `multi of p list ]
 
 let create
       ~name

@@ -439,8 +439,8 @@ module Graph = struct
     setf port Tf_port.index index;
     port
 
-  let new_operation t ~op_type ~op_name =
-    let od = Tf_operationdescription.tf_newoperation t op_type op_name in
+  let new_operation t ~op_name ~name =
+    let od = Tf_operationdescription.tf_newoperation t op_name name in
     t, od
 
   let finish_operation (graph, od) =
@@ -453,6 +453,16 @@ module Graph = struct
     then failwith "Calling add_input on different graphs.";
     let port = create_port (graph, op) ~index in
     Tf_operationdescription.tf_addinput od port;
+    keep_alive graph
+
+  let add_inputs (graph, od) op_and_indexes =
+    let ports =
+      List.map (fun (op, index) -> create_port op ~index)
+        op_and_indexes
+      |> CArray.of_list Tf_port.t
+      |> CArray.start
+    in
+    Tf_operationdescription.tf_addinputlist od ports;
     keep_alive graph
 end
 
