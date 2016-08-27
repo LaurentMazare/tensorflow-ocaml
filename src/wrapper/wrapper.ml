@@ -431,6 +431,14 @@ module Graph = struct
      has been succesfully called. *)
   type operation_description = Tf_graph.t * Tf_operationdescription.t
 
+  type port = Tf_port.t structure
+
+  let create_port (_graph, op) ~index =
+    let port = make Tf_port.t in
+    setf port Tf_port.oper op;
+    setf port Tf_port.index index;
+    port
+
   let new_operation t ~op_type ~op_name =
     let od = Tf_operationdescription.tf_newoperation t op_type op_name in
     t, od
@@ -443,9 +451,7 @@ module Graph = struct
   let add_input (graph, od) (graph', op) ~index =
     if graph != graph'
     then failwith "Calling add_input on different graphs.";
-    let port = make Tf_port.t in
-    setf port Tf_port.oper op;
-    setf port Tf_port.index index;
+    let port = create_port (graph, op) ~index in
     Tf_operationdescription.tf_addinput od port;
     keep_alive graph
 end
@@ -652,6 +658,67 @@ module Session = struct
       Status.Ok output_tensors
     | Error _ as err -> err
 end
+
+module Session_with_graph = struct
+  type t = Tf_graph.t * Tf_sessionwithgraph.t
+
+  let create ?session_options graph =
+    let session_options =
+      match session_options with
+      | None -> Session_options.create ()
+      | Some session_options -> session_options
+    in
+    let status = Status.create () in
+    let session =
+      Tf_sessionwithgraph.tf_newsessionwithgraph graph session_options status
+    in
+    Gc.finalise
+      (fun session ->
+        Tf_sessionwithgraph.tf_closesessionwithgraph session status;
+        Tf_sessionwithgraph.tf_deletesessionwithgraph session status)
+      session;
+    Status.result_or_error status (graph, session)
+
+  let run ?(inputs = []) ?(outputs = []) ?(targets = []) (graph, t) =
+    let status = Status.create () in
+    let ninputs = List.length inputs in
+    let input_ports, input_tensors = List.split inputs in
+    let input_ports = CArray.(of_list Tf_port.t input_ports |> start) in
+    let input_tensors = List.map Tensor.c_tensor_of_tensor input_tensors in
+    let output_ports = CArray.(of_list Tf_port.t outputs |> start) in
+    let output_len = List.length outputs in
+    let output_tensors = CArray.make Tf_tensor.t output_len in
+    let input_tensor_start = CArray.(of_list Tf_tensor.t input_tensors |> start) in
+    let ntargets = List.length targets in
+    let targets = List.map snd targets in
+    let output_tensor_start = CArray.start output_tensors in
+    let target_operations = CArray.(of_list Tf_operation.t targets |> start) in
+    if force_full_major
+    then Gc.full_major ();
+    Tf_sessionwithgraph.tf_sessionrun
+      t
+      null
+      input_ports
+      input_tensor_start
+      ninputs
+      output_ports
+      output_tensor_start
+      output_len
+      target_operations
+      ntargets
+      null
+      status;
+    Graph.keep_alive graph;
+    match Status.result_or_error status () with
+    | Ok () ->
+      let output_tensors =
+        CArray.to_list output_tensors
+        |> List.map Tensor.tensor_of_c_tensor
+      in
+      Status.Ok output_tensors
+    | Error _ as err -> err
+end
+
 
 let () =
   ignore

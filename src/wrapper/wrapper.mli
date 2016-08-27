@@ -62,6 +62,7 @@ module Graph : sig
   type t
   type operation
   type operation_description
+  type port
 
   val create : unit -> t
 
@@ -80,4 +81,22 @@ module Graph : sig
     -> operation
     -> index:int
     -> unit
+
+  val create_port : operation -> index:int -> port
+end
+
+module Session_with_graph : sig
+  type t
+
+  val create
+    :  ?session_options:Session_options.t
+    -> Graph.t
+    -> t Status.result
+
+  val run
+    :  ?inputs:(Graph.port * Tensor.p) list
+    -> ?outputs:Graph.port list
+    -> ?targets:Graph.operation list
+    -> t
+    -> Tensor.p list Status.result
 end
