@@ -50,9 +50,11 @@ let add_attribute operation_description ~attr_name attr =
     Wrapper.Graph.set_attr_float operation_description ~attr_name f
   | Bool b ->
     Wrapper.Graph.set_attr_bool operation_description ~attr_name b
+  | Shape shape ->
+    let shape = List.map shape ~f:(fun dim -> dim.size) in
+    Wrapper.Graph.set_attr_shape operation_description ~attr_name shape
   | List _ -> failwith "List attributes are not supported yet."
   | Tensor_string _ -> failwith "Tensor_string attributes are not supported yet."
-  | Shape _ -> failwith "Shape attributes are not supported yet."
 
 let rec build t node =
   let id = Node.packed_id node in

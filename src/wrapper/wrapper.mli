@@ -150,6 +150,12 @@ module Graph : sig
     -> attr_name:string
     -> Tensor.p list
     -> unit Status.result
+
+  val set_attr_shape
+    :  operation_description
+    -> attr_name:string
+    -> int list
+    -> unit
 end
 
 module Session_with_graph : sig

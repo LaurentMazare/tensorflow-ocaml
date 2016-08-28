@@ -510,6 +510,12 @@ module Graph = struct
       (List.length tensors)
       status;
     Status.result_or_error status ()
+
+  let set_attr_shape (_, od) ~attr_name shape =
+    let num_dims = List.length shape in
+    let shape = List.map Int64.of_int shape in
+    let shape = CArray.(of_list int64_t shape |> start) in
+    Tf_operationdescription.tf_setattrshape od attr_name shape num_dims
 end
 
 module Tf_sessionoptions = struct
