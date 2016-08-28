@@ -109,6 +109,24 @@ module Graph : sig
 
   val create_port : operation -> index:int -> port
 
+  val set_attr_int
+    :  operation_description
+    -> attr_name:string
+    -> int
+    -> unit
+
+  val set_attr_float
+    :  operation_description
+    -> attr_name:string
+    -> float
+    -> unit
+
+  val set_attr_bool
+    :  operation_description
+    -> attr_name:string
+    -> bool
+    -> unit
+
   val set_attr_string
     :  operation_description
     -> attr_name:string

@@ -36,9 +36,12 @@ let add_attribute operation_description ~attr_name attr =
     Tensor.copy_elt_list tensor (List.map tensor_int.values ~f:Int32.of_int_exn);
     Wrapper.Graph.set_attr_tensor operation_description ~attr_name (Tensor.P tensor)
     |> Wrapper.Status.ok_exn
-  | Int _ -> assert false
-  | Float _ -> assert false
-  | Bool _ -> assert false
+  | Int i ->
+    Wrapper.Graph.set_attr_int operation_description ~attr_name i
+  | Float f ->
+    Wrapper.Graph.set_attr_float operation_description ~attr_name f
+  | Bool b ->
+    Wrapper.Graph.set_attr_bool operation_description ~attr_name b
   | List _ -> assert false
   | Tensor_string _ -> assert false
   | Shape _ -> assert false

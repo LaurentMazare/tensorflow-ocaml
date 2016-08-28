@@ -473,6 +473,20 @@ module Graph = struct
     Tf_operationdescription.tf_addinputlist od ports (List.length op_and_indexes);
     keep_alive graph
 
+  let set_attr_int (_, od) ~attr_name value =
+    Tf_operationdescription.tf_setattrint od attr_name (Int64.of_int value)
+
+  let set_attr_float (_, od) ~attr_name value =
+    Tf_operationdescription.tf_setattrfloat od attr_name value
+
+  let set_attr_bool (_, od) ~attr_name value =
+    let value =
+      if value
+      then Unsigned.UChar.one
+      else Unsigned.UChar.zero
+    in
+    Tf_operationdescription.tf_setattrbool od attr_name value
+
   let set_attr_string (_, od) ~attr_name value =
     Tf_operationdescription.tf_setattrstring od attr_name value (String.length value)
 
