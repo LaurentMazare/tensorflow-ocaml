@@ -1,103 +1,117 @@
 open Core_kernel.Std
-(* An higher level view of a session *)
 
-(* There is no uninitialised variables because I think we can initialize
-them last minute when someone call run, as there is no extend graph *)
 type t =
-  { session : Wrapper.Session.t
-  (* The nodes already in the graph of the session, with their name there *)
-  ; exported_nodes : Node.Id.Hash_set.t
-  (* To manage variable initialisation, each unitialised variable has a height.
-     If a variable init depends of no initialised variable, its height is 0.
-     If it depends of unitialised variable v1 ... vn, its height is max(height(vi)) + 1
-     Initialisation can be done one level after one level *)
-  ; uninitialised_variables : Node.p list Int.Table.t
-}
+  { session : Wrapper.Session_with_graph.t
+  ; graph : Wrapper.Graph.t
+  ; nodes : Wrapper.Graph.operation Node.Id.Table.t
+  }
 
 let create () =
-  match Wrapper.Session.create () with
+  let graph = Wrapper.Graph.create () in
+  match Wrapper.Session_with_graph.create graph with
   | Error status ->
     failwithf "Unable to generate session: %s" (Wrapper.Status.message status) ()
   | Ok session ->
     { session
-    ; exported_nodes = Node.Id.Hash_set.create ()
-    ; uninitialised_variables = Int.Table.create ()
+    ; graph
+    ; nodes = Node.Id.Table.create ()
     }
 
 let default_session = lazy (create ())
 
-(* [walk t node] walks through the graph and store the unitialized variables. *)
-let rec walk t node ~current_table =
+let add_attribute operation_description ~attr_name attr =
+  match (attr : Node.attr) with
+  | String str ->
+    Wrapper.Graph.set_attr_string operation_description ~attr_name str
+  | Type dtype ->
+    let dtype = Node.Type.to_data_type dtype in
+    Wrapper.Graph.set_attr_type operation_description ~attr_name dtype
+  | Tensor_float tensor_float ->
+    let set_attr kind =
+      let tensor = Tensor.create kind (Array.of_list tensor_float.shape) in
+      Tensor.copy_elt_list tensor tensor_float.values;
+      Wrapper.Graph.set_attr_tensor operation_description ~attr_name (Tensor.P tensor)
+      |> Wrapper.Status.ok_exn
+    in
+    begin
+      match tensor_float.type_ with
+      | Node.Type.P Node.Type.Float -> set_attr Float32
+      | Node.Type.P Node.Type.Double -> set_attr Float64
+      | Node.Type.P _ -> assert false
+    end
+  | Tensor_int tensor_int ->
+    let tensor = Tensor.create Int32 (Array.of_list tensor_int.shape) in
+    Tensor.copy_elt_list tensor (List.map tensor_int.values ~f:Int32.of_int_exn);
+    Wrapper.Graph.set_attr_tensor operation_description ~attr_name (Tensor.P tensor)
+    |> Wrapper.Status.ok_exn
+  | Int i ->
+    Wrapper.Graph.set_attr_int operation_description ~attr_name i
+  | Float f ->
+    Wrapper.Graph.set_attr_float operation_description ~attr_name f
+  | Bool b ->
+    Wrapper.Graph.set_attr_bool operation_description ~attr_name b
+  | Shape shape ->
+    let shape = List.map shape ~f:(fun dim -> dim.size) in
+    Wrapper.Graph.set_attr_shape operation_description ~attr_name shape
+  | List _ -> failwith "List attributes are not supported yet."
+  | Tensor_string _ -> failwith "Tensor_string attributes are not supported yet."
+
+let rec build t node ~variable_initializations =
   let id = Node.packed_id node in
-  if Hash_set.mem t.exported_nodes id
-  then 0 (* already exported before starting this run *)
-  else
-    Hashtbl.find_or_add current_table id ~default:(fun () ->
-      let Node.P u_node = node in
-      match Var.get_init u_node with
-      | None ->
-        List.fold (Node.inputs u_node) ~init:0 ~f:(fun acc_height input ->
-          max acc_height (walk t input ~current_table))
-      | Some init ->
-        let h = walk t (Node.P init) ~current_table in
-        let assign = Node.P (Ops.assign u_node init) in
-        Hashtbl.add_multi t.uninitialised_variables ~key:h ~data:assign;
-        h + 1)
-
-type node_names =
-  { inputs : string list
-  ; targets : string list
-  ; outputs : string list
-  ; variables_to_initialize : string list list
-  }
-
-let prepare_graph t ~inputs ~targets ~outputs =
-  let current_table = Node.Id.Table.create () in
-  let prep =
-    List.iter ~f:(fun node -> ignore (walk t node ~current_table : int))
-  in
-  prep inputs;
-  prep targets;
-  prep outputs;
-  let rec build_variables i =
-    match Hashtbl.find t.uninitialised_variables i with
-    | None -> []
-    | Some l -> l::build_variables (i + 1)
-  in
-  let uninitialised_variables = build_variables 0 in
-  Hashtbl.clear t.uninitialised_variables;
-  let all_nodes_to_export =
-    List.concat uninitialised_variables @ List.concat [ inputs; outputs; targets ]
-  in
-  let protobuf =
-    Node_protobuf.of_nodes' ~already_exported_nodes:t.exported_nodes all_nodes_to_export
-  in
-  Option.iter protobuf ~f:(fun protobuf ->
-    Wrapper.Session.(extend_graph t.session protobuf |> ok_exn));
-  let node_names = List.map ~f:(fun (Node.P x) -> Node.unique_name x) in
-  { inputs = node_names inputs
-  ; targets = node_names targets
-  ; outputs = node_names outputs
-  ; variables_to_initialize = List.map ~f:node_names uninitialised_variables
-  }
+  match Hashtbl.find t.nodes id with
+  | Some op -> op
+  | None ->
+    let Node.P u_node = node in
+    let operation_description =
+      Wrapper.Graph.new_operation t.graph
+        ~op_name:(Node.op_name u_node |> Node.Op_name.to_string)
+        ~name:(Node.unique_name u_node)
+    in
+    List.iter (Node.inputs u_node) ~f:(function
+      | `single input ->
+        Wrapper.Graph.add_input
+          operation_description
+          (build t input ~variable_initializations)
+          ~index:(Node.packed_output_idx input |> Option.value ~default:0)
+      | `multi inputs ->
+        let inputs =
+          List.map inputs ~f:(fun input ->
+            let index = Node.packed_output_idx input |> Option.value ~default:0 in
+            build t input ~variable_initializations, index)
+        in
+        Wrapper.Graph.add_inputs operation_description inputs);
+    List.iter (Node.attributes u_node) ~f:(fun (attr_name, attr) ->
+      add_attribute operation_description ~attr_name attr);
+    let operation =
+      Wrapper.Graph.finish_operation operation_description
+      |> Wrapper.Status.ok_exn
+    in
+    Hashtbl.set t.nodes ~key:id ~data:operation;
+    Option.iter (Var.get_init u_node) ~f:(fun init_node ->
+      let assign_node = Ops_generated.assign u_node init_node in
+      let assign_op = build t (P assign_node) ~variable_initializations in
+      variable_initializations := assign_op :: !variable_initializations);
+    operation
 
 let run ?(inputs=[]) ?(outputs=[]) ?(targets=[]) t =
-  let inputs, input_tensors = List.unzip inputs in
-  let { inputs; targets; outputs; variables_to_initialize } =
-    prepare_graph t ~inputs ~targets ~outputs
+  let variable_initializations = ref [] in
+  let inputs =
+    List.map inputs ~f:(fun (input, input_tensor) ->
+      let op = build t input ~variable_initializations in
+      Wrapper.Graph.create_port op ~index:0, input_tensor)
   in
-  (* add outputs to targets *)
+  let outputs = List.map outputs ~f:(build t ~variable_initializations) in
   let targets =
-    List.fold outputs ~init:(String.Set.of_list targets) ~f:Set.add
-    |> Set.to_list
+    List.map targets ~f:(build t ~variable_initializations) @ outputs
   in
-  let inputs = List.zip_exn inputs input_tensors in
-  (* Run variable init *)
-  List.iter variables_to_initialize ~f:(fun targets ->
-    Wrapper.Session.run t.session ~inputs:[] ~outputs:[] ~targets
-    |> Wrapper.Session.ok_exn
-    |> fun tensor_list -> assert (List.is_empty tensor_list));
-  Wrapper.Session.(run t.session ~inputs ~outputs ~targets |> ok_exn)
+  let outputs = List.map outputs ~f:(fun op -> Wrapper.Graph.create_port op ~index:0) in
+  (* [variable_initializations] is topologically sorted. *)
+  List.iter (List.rev !variable_initializations) ~f:(fun init_op ->
+    Wrapper.Session_with_graph.run t.session ~inputs ~outputs:[] ~targets:[ init_op ]
+    |> Wrapper.Status.ok_exn
+    |> fun l -> assert (List.is_empty l));
+  Wrapper.Session_with_graph.run t.session ~inputs ~outputs ~targets
+  |> Wrapper.Status.ok_exn
 
 module Input = struct
    type t =

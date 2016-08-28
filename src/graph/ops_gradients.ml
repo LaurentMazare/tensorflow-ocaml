@@ -14,8 +14,8 @@ let all = List.map ~f:Option.some
 let unary_wrapper_exn (type a) ~self ~(gradient : a N.t) ~t =
   let N.P x =
     match N.inputs self with
-    | [] | _ :: _ :: _ -> failwith "Not a unary function"
-    | [ node ] -> node
+    | [] | [ `multi _ ] | _ :: _ :: _ -> failwith "Not a unary function"
+    | [ `single node ] -> node
   in
   let output =
     match N.output_type x, N.output_type gradient with
@@ -30,7 +30,7 @@ let unary_wrapper_exn (type a) ~self ~(gradient : a N.t) ~t =
 let binary_extract_exn : type a . a N.t -> (a N.t * a N.t) = fun node ->
   let N.P lhs, N.P rhs =
     match N.inputs node with
-    | [ lhs; rhs ] -> lhs, rhs
+    | [ `single lhs; `single rhs ] -> lhs, rhs
     | _ -> failwith "Not a binary function"
   in
   match N.output_type lhs, N.output_type rhs, N.output_type node with
@@ -41,7 +41,7 @@ let binary_extract_exn : type a . a N.t -> (a N.t * a N.t) = fun node ->
 let add_gradient_ ~self ~gradient =
   let slhs, srhs =
     match N.inputs self with
-    | [ N.P lhs; N.P rhs ] -> Ops.shape lhs, Ops.shape rhs
+    | [ `single (N.P lhs); `single (N.P rhs) ] -> Ops.shape lhs, Ops.shape rhs
     | _ -> failwith "Not a binary function"
   in
   let rlhs, rrhs = Ops.broadcastGradientArgs slhs srhs in
@@ -152,7 +152,7 @@ let matmul_gradient ~self ~gradient =
 let reduce_gradient ~self =
   let N.P input, N.P indices =
     match N.inputs self with
-    | [ input; indices ] -> input, indices
+    | [ `single input; `single indices ] -> input, indices
     | _ -> failwith "Incorrect number of inputs"
   in
   let input_shape = Ops.shape input in
@@ -178,7 +178,7 @@ let sum_gradient ~self ~gradient =
 
 let mean_gradient ~self ~gradient =
   let sum_gradient = sum_gradient_ ~self ~gradient in
-  let N.P input = List.hd_exn (N.inputs self) in
+  let N.P input = List.hd_exn (N.flat_inputs self) in
   let input_shape = Ops.shape input in
   let output_shape = Ops.shape self in
   let factor = Ops.div (Ops.reduce_prod input_shape) (Ops.reduce_prod output_shape) in
@@ -187,7 +187,7 @@ let mean_gradient ~self ~gradient =
 
 let minmax_gradient ~self ~gradient =
   let input =
-    match N.inputs self with
+    match N.flat_inputs self with
     | [ input; _ ] -> Option.value_exn (N.extract input (N.output_type self))
     | _ -> failwith "Not a binary function"
   in
@@ -305,8 +305,8 @@ let maxpool_gradient : type a. self:a N.t -> gradient:a N.t -> N.p option list
     let padding = Option.value_exn (N.get_attr_string self "padding") in
     let input =
       match N.inputs self with
-      | [] | _ :: _ :: _ -> failwith "Not a unary function"
-      | [ N.P input ] ->
+      | [] | _ :: _ :: _ | [ `multi _ ] -> failwith "Not a unary function"
+      | [ `single (N.P input) ] ->
         match N.output_type input with
         | T.Float -> (input : [ `float ] N.t)
         | _ -> failwith "Inconsistent types"
@@ -326,7 +326,7 @@ let maxpool_gradient : type a. self:a N.t -> gradient:a N.t -> N.p option list
 let reshape_gradient ~self ~gradient =
   let input_shape =
     match N.inputs self with
-    | [ N.P input; _ ] -> Ops.shape input
+    | [ `single (N.P input); _ ] -> Ops.shape input
     | _ -> failwith "Not a binary function"
   in
   [ Some (N.P (Ops.reshape gradient input_shape)); None ]
@@ -339,9 +339,8 @@ let fill_gradient ~self:_ ~gradient =
 
 let concat_gradient ~self ~gradient =
   match N.inputs self with
-  | [] | [ _ ] -> failwith "Concat nodes have multiple inputs."
-  | [ _; _ ] -> [ None; Some (N.P gradient) ]
-  | concat_dim :: concat_inputs ->
+  | [ `single _; `multi [ _ ] ] -> [ None; Some (N.P gradient) ]
+  | [ `single concat_dim; `multi concat_inputs ] ->
     let concat_dim =
       match N.extract concat_dim Int32 with
       | None -> failwith "The first parameter of concat should have type int32."
@@ -360,10 +359,11 @@ let concat_gradient ~self ~gradient =
         N.P (Ops.slice gradient offset size))
     in
     None :: all concat_grads
+  | _ -> failwith "Concat nodes have multiple inputs."
 
 let split_gradient ~self ~gradients =
   match N.inputs self with
-  | [ split_dim; _ ] ->
+  | [ `single split_dim; _ ] ->
     let num_split = Option.value_exn (Node.get_attr_int self "num_split") in
     let all_gradients =
       List.init num_split ~f:(fun output_idx ->

@@ -42,6 +42,8 @@ module Type : sig
        | `dt_int64
        | `dt_string
        ]
+
+  val to_data_type : p -> Wrapper.data_type
 end
 
 module Tensor : sig
@@ -86,11 +88,13 @@ type attr =
 type 'a t
 type p = P : _ t -> p
 
+type input = [ `single of p | `multi of p list ]
+
 val create
   :  name:Name.t
   -> op_name:Op_name.t
   -> output_type:'a Type.t
-  -> inputs:p list
+  -> inputs:input list
   -> attributes:(string * attr) list
   -> output_idx:int option (* Only used for multiple outputs. *)
   -> 'a t
@@ -98,14 +102,16 @@ val create
 val name : _ t -> Name.t
 val op_name : _ t -> Op_name.t
 val output_type : 'a t -> 'a Type.t
-val inputs : _ t -> p list
+val inputs : _ t -> input list
+val flat_inputs : _ t -> p list
 val attributes : _ t -> (string * attr) list
 val output_idx : _ t -> int option
 val unique_name : _ t -> string
 
 val packed_name : p -> Name.t
 val packed_op_name : p -> Op_name.t
-val packed_inputs : p -> p list
+val packed_inputs : p -> input list
+val packed_flat_inputs : p -> p list
 val packed_is_real : p -> bool
 val packed_id : p -> Id.t
 val packed_output_idx : p -> int option

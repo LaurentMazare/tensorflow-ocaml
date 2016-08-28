@@ -144,7 +144,12 @@ let save_
     tensor_names
     tensors
   =
-  let inputs = Node.P filename :: Node.P tensor_names :: tensors in
+  let inputs =
+    [ `single (Node.P filename)
+    ; `single (Node.P tensor_names)
+    ; `multi tensors
+    ]
+  in
   let type_list =
     List.map tensors ~f:(fun (Node.P tensor) -> Node.Type.P (Node.output_type tensor))
   in

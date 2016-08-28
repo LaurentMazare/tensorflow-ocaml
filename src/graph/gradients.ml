@@ -22,7 +22,7 @@ let uses_per_node node with_respect_to =
       &&
         (  Option.is_some current_uses
         || Set.mem with_respect_to node_id
-        || List.map (Node.packed_inputs node) ~f:is_useful |> List.exists ~f:Fn.id)
+        || List.map (Node.packed_flat_inputs node) ~f:is_useful |> List.exists ~f:Fn.id)
     in
     if is_useful
     then
@@ -88,7 +88,7 @@ let gradient node ~with_respect_to =
           let op_name = Node.packed_op_name node in
           match gradients with
           | None ->
-            List.iter (Node.packed_inputs node) ~f:(add_contribution ~gradient:None)
+            List.iter (Node.packed_flat_inputs node) ~f:(add_contribution ~gradient:None)
           | Some gradients ->
             match Registered_gradients.find op_name with
             | None ->
@@ -100,7 +100,7 @@ let gradient node ~with_respect_to =
                   try
                     List.iter2_exn
                       (fn ~self:node ~gradients)
-                      (Node.packed_inputs node)
+                      (Node.packed_flat_inputs node)
                       ~f:(fun gradient input -> add_contribution input ~gradient)
                   with
                   | exn -> Exn.reraise exn (Node.Op_name.to_string op_name)
@@ -110,7 +110,7 @@ let gradient node ~with_respect_to =
                 let gradients = List.map gradients ~f:snd in
                 List.iter2_exn
                   (fn ~self:node ~gradient:(aggregate_contributions gradients))
-                  (Node.packed_inputs node)
+                  (Node.packed_flat_inputs node)
                   ~f:(fun gradient input -> add_contribution input ~gradient)
               with
               | exn -> Exn.reraise exn (Node.Op_name.to_string op_name)

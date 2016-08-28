@@ -1,3 +1,23 @@
+type data_type =
+  | TF_FLOAT
+  | TF_DOUBLE
+  | TF_INT32
+  | TF_UINT8
+  | TF_INT16
+  | TF_INT8
+  | TF_STRING
+  | TF_COMPLEX
+  | TF_INT64
+  | TF_BOOL
+  | TF_QINT8
+  | TF_QUINT8
+  | TF_QINT32
+  | TF_BFLOAT16
+  | TF_QINT16
+  | TF_QUINT16
+  | TF_UINT16
+  | Unknown of int
+
 module Session_options : sig
   type t
 
@@ -29,30 +49,127 @@ module Status : sig
   val code : t -> code
 
   val message : t -> string
+
+  type 'a result =
+    | Ok of 'a
+    | Error of t
+
+  val ok_exn : 'a result -> 'a
 end
 
 module Session : sig
   type t
-  type 'a result =
-    | Ok of 'a
-    | Error of Status.t
 
   val create
     :  ?session_options:Session_options.t
     -> unit
-    -> t result
+    -> t Status.result
 
   val extend_graph
     :  t
     -> Protobuf.t
-    -> unit result
+    -> unit Status.result
 
   val run
     :  ?inputs:(string * Tensor.p) list
     -> ?outputs:string list
     -> ?targets:string list
     -> t
-    -> Tensor.p list result
+    -> Tensor.p list Status.result
+end
 
-  val ok_exn : 'a result -> 'a
+module Graph : sig
+  type t
+  type operation
+  type operation_description
+  type port
+
+  val create : unit -> t
+
+  val new_operation
+    :  t
+    -> op_name:string
+    -> name:string
+    -> operation_description
+
+  val finish_operation
+    :  operation_description
+    -> operation Status.result
+
+  val add_input
+    :  operation_description
+    -> operation
+    -> index:int
+    -> unit
+
+  val add_inputs
+    :  operation_description
+    -> (operation * int) list
+    -> unit
+
+  val create_port : operation -> index:int -> port
+
+  val set_attr_int
+    :  operation_description
+    -> attr_name:string
+    -> int
+    -> unit
+
+  val set_attr_float
+    :  operation_description
+    -> attr_name:string
+    -> float
+    -> unit
+
+  val set_attr_bool
+    :  operation_description
+    -> attr_name:string
+    -> bool
+    -> unit
+
+  val set_attr_string
+    :  operation_description
+    -> attr_name:string
+    -> string
+    -> unit
+
+  val set_attr_type
+    :  operation_description
+    -> attr_name:string
+    -> data_type
+    -> unit
+
+  val set_attr_tensor
+    :  operation_description
+    -> attr_name:string
+    -> Tensor.p
+    -> unit Status.result
+
+  val set_attr_tensors
+    :  operation_description
+    -> attr_name:string
+    -> Tensor.p list
+    -> unit Status.result
+
+  val set_attr_shape
+    :  operation_description
+    -> attr_name:string
+    -> int list
+    -> unit
+end
+
+module Session_with_graph : sig
+  type t
+
+  val create
+    :  ?session_options:Session_options.t
+    -> Graph.t
+    -> t Status.result
+
+  val run
+    :  ?inputs:(Graph.port * Tensor.p) list
+    -> ?outputs:Graph.port list
+    -> ?targets:Graph.operation list
+    -> t
+    -> Tensor.p list Status.result
 end

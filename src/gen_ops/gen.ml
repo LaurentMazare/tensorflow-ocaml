@@ -380,19 +380,13 @@ let handle_one_op (op : Op.t) out_channel =
   p "  let name = Name.of_string name in";
   p "  let op_name = Op_names.%s in" (Op.caml_name op);
   let inputs =
-    if List.for_all op.inputs ~f:(fun input -> input.number_attr = None)
-    then
-      List.map op.inputs ~f:(fun input ->
-        sprintf "P %s" (Input.caml_name input))
-      |> String.concat ~sep:"; "
-      |> sprintf "[ %s ]"
-    else
-      List.map op.inputs ~f:(fun input ->
-        if input.number_attr = None
-        then sprintf "[ P %s ]" (Input.caml_name input)
-        else sprintf "List.map ~f:(fun n -> P n) %s" (Input.caml_name input)
-      )
-      |> String.concat ~sep:" @ "
+    List.map op.inputs ~f:(fun input ->
+      if input.number_attr = None
+      then sprintf "(`single (P %s))" (Input.caml_name input)
+      else sprintf "(`multi (List.map ~f:(fun n -> P n) %s))" (Input.caml_name input)
+    )
+    |> String.concat ~sep:"; "
+    |> sprintf "[ %s ]"
   in
   p "  let inputs = %s in" inputs;
   let multiple_outputs = 1 < List.length op.output_types in
