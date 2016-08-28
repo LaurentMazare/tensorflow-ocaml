@@ -27,10 +27,18 @@ let add_attribute operation_description ~attr_name attr =
     let dtype = Node.Type.to_data_type dtype in
     Wrapper.Graph.set_attr_type operation_description ~attr_name dtype
   | Tensor_float tensor_float ->
-    let tensor = Tensor.create Float32 (Array.of_list tensor_float.shape) in
-    Tensor.copy_elt_list tensor tensor_float.values;
-    Wrapper.Graph.set_attr_tensor operation_description ~attr_name (Tensor.P tensor)
-    |> Wrapper.Status.ok_exn
+    let set_attr kind =
+      let tensor = Tensor.create kind (Array.of_list tensor_float.shape) in
+      Tensor.copy_elt_list tensor tensor_float.values;
+      Wrapper.Graph.set_attr_tensor operation_description ~attr_name (Tensor.P tensor)
+      |> Wrapper.Status.ok_exn
+    in
+    begin
+      match tensor_float.type_ with
+      | Node.Type.P Node.Type.Float -> set_attr Float32
+      | Node.Type.P Node.Type.Double -> set_attr Float64
+      | Node.Type.P _ -> assert false
+    end
   | Tensor_int tensor_int ->
     let tensor = Tensor.create Int32 (Array.of_list tensor_int.shape) in
     Tensor.copy_elt_list tensor (List.map tensor_int.values ~f:Int32.of_int_exn);
