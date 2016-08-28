@@ -40,9 +40,19 @@ let add_attribute operation_description ~attr_name attr =
       | Node.Type.P _ -> assert false
     end
   | Tensor_int tensor_int ->
-    let tensor = Tensor.create Int32 (Array.of_list tensor_int.shape) in
-    Tensor.copy_elt_list tensor (List.map tensor_int.values ~f:Int32.of_int_exn);
-    Wrapper.Graph.set_attr_tensor operation_description ~attr_name (Tensor.P tensor)
+    let tensor =
+      match tensor_int.type_ with
+      | Node.Type.P Node.Type.Int32 ->
+        let tensor = Tensor.create Int32 (Array.of_list tensor_int.shape) in
+        Tensor.copy_elt_list tensor (List.map tensor_int.values ~f:Int32.of_int_exn);
+        Tensor.P tensor
+      | Node.Type.P Node.Type.Int64 ->
+        let tensor = Tensor.create Int64 (Array.of_list tensor_int.shape) in
+        Tensor.copy_elt_list tensor (List.map tensor_int.values ~f:Int64.of_int_exn);
+        Tensor.P tensor
+      | Node.Type.P _ -> assert false
+    in
+    Wrapper.Graph.set_attr_tensor operation_description ~attr_name tensor
     |> Wrapper.Status.ok_exn
   | Int i ->
     Wrapper.Graph.set_attr_int operation_description ~attr_name i
