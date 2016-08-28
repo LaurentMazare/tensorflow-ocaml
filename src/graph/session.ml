@@ -56,13 +56,12 @@ let add_attribute operation_description ~attr_name attr =
   | List _ -> failwith "List attributes are not supported yet."
   | Tensor_string _ -> failwith "Tensor_string attributes are not supported yet."
 
-let rec build t node =
+let rec build t node ~variable_initializations =
   let id = Node.packed_id node in
   match Hashtbl.find t.nodes id with
   | Some op -> op
   | None ->
     let Node.P u_node = node in
-    (* TODO: [Var.get_init]. *)
     let operation_description =
       Wrapper.Graph.new_operation t.graph
         ~op_name:(Node.op_name u_node |> Node.Op_name.to_string)
@@ -72,13 +71,13 @@ let rec build t node =
       | `single input ->
         Wrapper.Graph.add_input
           operation_description
-          (build t input)
+          (build t input ~variable_initializations)
           ~index:(Node.packed_output_idx input |> Option.value ~default:0)
       | `multi inputs ->
         let inputs =
           List.map inputs ~f:(fun input ->
             let index = Node.packed_output_idx input |> Option.value ~default:0 in
-            build t input, index)
+            build t input ~variable_initializations, index)
         in
         Wrapper.Graph.add_inputs operation_description inputs);
     List.iter (Node.attributes u_node) ~f:(fun (attr_name, attr) ->
@@ -88,22 +87,29 @@ let rec build t node =
       |> Wrapper.Status.ok_exn
     in
     Hashtbl.set t.nodes ~key:id ~data:operation;
+    Option.iter (Var.get_init u_node) ~f:(fun init_node ->
+      let assign_node = Ops_generated.assign u_node init_node in
+      let assign_op = build t (P assign_node) ~variable_initializations in
+      variable_initializations := assign_op :: !variable_initializations);
     operation
 
 let run ?(inputs=[]) ?(outputs=[]) ?(targets=[]) t =
-  let inputs, input_tensors = List.unzip inputs in
+  let variable_initializations = ref [] in
   let inputs =
-    List.map inputs ~f:(fun input ->
-      build t input
-      |> Wrapper.Graph.create_port ~index:0)
+    List.map inputs ~f:(fun (input, input_tensor) ->
+      let op = build t input ~variable_initializations in
+      Wrapper.Graph.create_port op ~index:0, input_tensor)
   in
-  let outputs = List.map outputs ~f:(build t) in
+  let outputs = List.map outputs ~f:(build t ~variable_initializations) in
   let targets =
-    List.map targets ~f:(build t) @ outputs
+    List.map targets ~f:(build t ~variable_initializations) @ outputs
   in
   let outputs = List.map outputs ~f:(fun op -> Wrapper.Graph.create_port op ~index:0) in
-  let inputs = List.zip_exn inputs input_tensors in
-  (* TODO: Run variable init *)
+  (* [variable_initializations] is topologically sorted. *)
+  List.iter (List.rev !variable_initializations) ~f:(fun init_op ->
+    Wrapper.Session_with_graph.run t.session ~inputs ~outputs:[] ~targets:[ init_op ]
+    |> Wrapper.Status.ok_exn
+    |> fun l -> assert (List.is_empty l));
   Wrapper.Session_with_graph.run t.session ~inputs ~outputs ~targets
   |> Wrapper.Status.ok_exn
 
