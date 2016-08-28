@@ -57,27 +57,6 @@ module Status : sig
   val ok_exn : 'a result -> 'a
 end
 
-module Session : sig
-  type t
-
-  val create
-    :  ?session_options:Session_options.t
-    -> unit
-    -> t Status.result
-
-  val extend_graph
-    :  t
-    -> Protobuf.t
-    -> unit Status.result
-
-  val run
-    :  ?inputs:(string * Tensor.p) list
-    -> ?outputs:string list
-    -> ?targets:string list
-    -> t
-    -> Tensor.p list Status.result
-end
-
 module Graph : sig
   type t
   type operation
@@ -158,7 +137,7 @@ module Graph : sig
     -> unit
 end
 
-module Session_with_graph : sig
+module Session : sig
   type t
 
   val create

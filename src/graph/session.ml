@@ -1,14 +1,14 @@
 open Core_kernel.Std
 
 type t =
-  { session : Wrapper.Session_with_graph.t
+  { session : Wrapper.Session.t
   ; graph : Wrapper.Graph.t
   ; nodes : Wrapper.Graph.operation Node.Id.Table.t
   }
 
 let create () =
   let graph = Wrapper.Graph.create () in
-  match Wrapper.Session_with_graph.create graph with
+  match Wrapper.Session.create graph with
   | Error status ->
     failwithf "Unable to generate session: %s" (Wrapper.Status.message status) ()
   | Ok session ->
@@ -107,10 +107,10 @@ let run ?(inputs=[]) ?(outputs=[]) ?(targets=[]) t =
   let outputs = List.map outputs ~f:(fun op -> Wrapper.Graph.create_port op ~index:0) in
   (* [variable_initializations] is topologically sorted. *)
   List.iter (List.rev !variable_initializations) ~f:(fun init_op ->
-    Wrapper.Session_with_graph.run t.session ~inputs ~outputs:[] ~targets:[ init_op ]
+    Wrapper.Session.run t.session ~inputs ~outputs:[] ~targets:[ init_op ]
     |> Wrapper.Status.ok_exn
     |> fun l -> assert (List.is_empty l));
-  Wrapper.Session_with_graph.run t.session ~inputs ~outputs ~targets
+  Wrapper.Session.run t.session ~inputs ~outputs ~targets
   |> Wrapper.Status.ok_exn
 
 module Input = struct
