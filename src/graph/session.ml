@@ -105,6 +105,8 @@ let rec build t node ~variable_initializations =
 
 let run ?(inputs=[]) ?(outputs=[]) ?(targets=[]) t =
   let variable_initializations = ref [] in
+  if List.contains_dup (List.map inputs ~f:fst)
+  then failwith "Session.run: duplicate entry in [inputs].";
   let inputs =
     List.map inputs ~f:(fun (input, input_tensor) ->
       let op = build t input ~variable_initializations in
