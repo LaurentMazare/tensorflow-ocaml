@@ -2,6 +2,8 @@ The tensorflow-ocaml project provides some [OCaml](http://ocaml.org) bindings fo
 
 These bindings are in an early stage of their development. Some operators are not supported and the API is likely to change in the future. That being said they already contain the necessary to train a convolution network using various optimizers.
 
+The bindings have just started using the new session API using `TF_Graph*` introduced in TensorFlow r0.10. Because of this some parts of the bindings may not work properly.
+
 ## Installation
 
 The easiest way is probably to use opam.
