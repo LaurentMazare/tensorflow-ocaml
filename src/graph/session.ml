@@ -26,17 +26,22 @@ let add_attribute operation_description ~attr_name attr =
   | Type dtype ->
     let dtype = Node.Type.to_data_type dtype in
     Wrapper.Graph.set_attr_type operation_description ~attr_name dtype
-  | Tensor_float tensor ->
-    let shape =
-      match tensor.shape with
-      | [] -> [| List.length tensor.values |]
-      | shape -> Array.of_list shape
-    in
-    let tensor = Tensor.create Float32 shape in
-    (* TODO: set values... *)
+  | Tensor_float tensor_float ->
+    let tensor = Tensor.create Float32 (Array.of_list tensor_float.shape) in
+    Tensor.copy_elt_list tensor tensor_float.values;
     Wrapper.Graph.set_attr_tensor operation_description ~attr_name (Tensor.P tensor)
     |> Wrapper.Status.ok_exn
-  | _ -> ()
+  | Tensor_int tensor_int ->
+    let tensor = Tensor.create Int32 (Array.of_list tensor_int.shape) in
+    Tensor.copy_elt_list tensor (List.map tensor_int.values ~f:Int32.of_int_exn);
+    Wrapper.Graph.set_attr_tensor operation_description ~attr_name (Tensor.P tensor)
+    |> Wrapper.Status.ok_exn
+  | Int _ -> assert false
+  | Float _ -> assert false
+  | Bool _ -> assert false
+  | List _ -> assert false
+  | Tensor_string _ -> assert false
+  | Shape _ -> assert false
 
 let rec build t node =
   let id = Node.packed_id node in

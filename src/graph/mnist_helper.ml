@@ -77,9 +77,17 @@ let read_files
   let train_labels = read_labels train_label_file in
   let test_images = read_images test_image_file in
   let test_labels = read_labels test_label_file in
-  { train_images = Bigarray.genarray_of_array2 train_images
+  let train_images =
+    Bigarray.genarray_of_array2 train_images
+    |> Tensor.of_bigarray ~scalar:false
+  in
+  let test_images =
+    Bigarray.genarray_of_array2 test_images
+    |> Tensor.of_bigarray ~scalar:false
+  in
+  { train_images
   ; train_labels = one_hot train_labels
-  ; test_images = Bigarray.genarray_of_array2 test_images
+  ; test_images
   ; test_labels = one_hot test_labels
   }
 
@@ -91,8 +99,8 @@ let train_batch { train_images; train_labels; _ } ~batch_size ~batch_idx =
   batch_images, batch_labels
 
 let accuracy ys ys' =
-  let ys = Bigarray.array2_of_genarray ys in
-  let ys' = Bigarray.array2_of_genarray ys' in
+  let ys = Bigarray.array2_of_genarray (Tensor.to_bigarray ys) in
+  let ys' = Bigarray.array2_of_genarray (Tensor.to_bigarray ys') in
   let nsamples = Bigarray.Array2.dim1 ys in
   let res = ref 0. in
   let find_best_idx ys n =

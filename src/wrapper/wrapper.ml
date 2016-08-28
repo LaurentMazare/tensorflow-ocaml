@@ -167,7 +167,10 @@ module Tensor = struct
     let size = Array.fold_left ( * ) 1 dim_array * sizeof data_type in
     Hashtbl.add live_tensors id packed_tensor;
     let num_dims = Tensor.num_dims tensor in
-    let start = bigarray_start genarray tensor |> to_voidp in
+    let start =
+      bigarray_start genarray (Tensor.to_bigarray tensor)
+      |> to_voidp
+    in
     if force_full_major
     then Gc.full_major ();
     tf_newtensor (data_type_to_int data_type)
@@ -181,11 +184,16 @@ module Tensor = struct
   let tensor_of_c_tensor c_tensor =
     let num_dims = tf_numdims c_tensor in
     let dims = Array.init num_dims (fun i -> tf_dim c_tensor i) in
+    let dims = (* Scalar hack: use a 1d bigarray as 0d bigarray are not supported. *)
+      if Array.length dims = 0
+      then [| 1 |]
+      else dims
+    in
     let apply_kind kind =
       let data = tf_tensordata c_tensor |> from_voidp (typ_of_bigarray_kind kind) in
       let data = bigarray_of_ptr genarray dims kind data in
       Gc.finalise (fun _data -> tf_deletetensor c_tensor) data;
-      Tensor.P data
+      Tensor.P (Tensor.of_bigarray data ~scalar:(num_dims = 0))
     in
     match tf_tensortype c_tensor |> int_to_data_type with
     | TF_FLOAT -> apply_kind Bigarray.float32
