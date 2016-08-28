@@ -650,4 +650,17 @@ let () =
     ( Tf_sessionoptions.tf_settarget
     , Tf_sessionoptions.tf_setconfig
     , Tf_tensor.tf_tensorbytesize
-    , Status.set)
+    , Status.set
+    , Tf_operation.tf_operationname
+    , Tf_operation.tf_operationoptype
+    , Tf_operation.tf_operationdevice
+    , Tf_operation.tf_operationnumoutputs
+    , Tf_operation.tf_operationnuminputs
+    , Tf_operationdescription.tf_addcontrolinput
+    , Tf_operationdescription.tf_setattrstringlist
+    , Tf_operationdescription.tf_setattrintlist
+    , Tf_operationdescription.tf_setattrfloatlist
+    , Tf_operationdescription.tf_setattrboollist
+    , Tf_operationdescription.tf_setattrtypelist
+    , Tf_operationdescription.tf_setattrshapelist
+    )
