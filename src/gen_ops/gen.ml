@@ -37,6 +37,7 @@ module Input = struct
   let caml_name t =
     match t.name with
     | "begin" -> "begin__"
+    | "end" -> "end__"
     | "in" -> "in__"
     | "inputs" -> "inputs__"
     | name -> name
@@ -64,7 +65,9 @@ module Attribute = struct
     }
 
   let caml_name t =
-    String.uncapitalize t.name
+    match String.uncapitalize t.name with
+    | "method" -> "method_"
+    | otherwise -> otherwise
 
   let caml_type = function
     | String -> "string"
@@ -303,12 +306,17 @@ let p out_channel s =
     Out_channel.output_string out_channel line;
     Out_channel.output_char out_channel '\n') s
 
+let escape_comment s =
+  String.substr_replace_all s ~pattern:"{|" ~with_:"{ |"
+  |> String.substr_replace_all ~pattern:"|}" ~with_:"| }"
+  |> String.tr ~target:'"' ~replacement:'\''
+
 let gen_mli ops =
   let out_channel = Out_channel.create (sprintf "%s.mli" output_file) in
   let p s = p out_channel s in
   let handle_one_op (op : Op.t) =
-    Option.iter op.summary ~f:(fun summary -> p "(* %s *)" summary);
-    Option.iter op.description ~f:(fun description -> p "(* %s *)" description);
+    Option.iter op.summary ~f:(fun summary -> p "(* %s *)" (escape_comment summary));
+    Option.iter op.description ~f:(fun description -> p "(* %s *)" (escape_comment description));
     p "val %s" (Op.caml_name op);
     p "  :  ?name:string";
     List.iteri op.output_types ~f:(fun idx output_type ->
