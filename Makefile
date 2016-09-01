@@ -1,6 +1,6 @@
 MNIST = examples/mnist
 MNIST_ALL = $(MNIST)/mnist_conv.native $(MNIST)/mnist_nn.native $(MNIST)/mnist_linear.native $(MNIST)/mnist_svm.native
-ALL = tensorflow.lib gen.native examples/load/load.native examples/basics/linear_regression.native examples/basics/forty_two.native examples/basics/save_and_load.native $(MNIST_ALL)
+ALL = tensorflow.lib gen.native examples/basics/linear_regression.native examples/basics/forty_two.native examples/basics/save_and_load.native examples/char_rnn/char_rnn.native $(MNIST_ALL)
 
 tensorflow.lib: .FORCE
 	ocamlbuild tensorflow.cmxa tensorflow.cma tensorflow.cmxs tensorflow.cmx
@@ -13,9 +13,6 @@ gen.native: .FORCE
 
 src/graph/ops_generated: gen.native
 	LD_LIBRARY_PATH=./lib:$(LD_LIBRARY_PATH) ./gen.native
-
-load: examples/load/load.native
-	LD_LIBRARY_PATH=./lib:$(LD_LIBRARY_PATH) ./load.native
 
 lr_gnuplot: examples/basics/linear_regression_gnuplot.native
 	LD_LIBRARY_PATH=./lib:$(LD_LIBRARY_PATH) ./linear_regression_gnuplot.native

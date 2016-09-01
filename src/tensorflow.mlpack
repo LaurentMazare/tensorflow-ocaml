@@ -3,7 +3,6 @@ Fnn
 Gradients
 Mnist_helper
 Piqirun
-Nn
 Node
 Ops
 Ops_generated
@@ -11,7 +10,6 @@ Ops_gradients
 Ops_manual
 Optimizers
 Registered_gradients
-Rnn
 Session
 Tensor
 Var
