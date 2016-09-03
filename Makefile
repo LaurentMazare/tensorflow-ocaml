@@ -26,6 +26,9 @@ rnn_gru_gnuplot: examples/basics/rnn_gru_gnuplot.native
 mnist_nn: examples/mnist/mnist_nn.native
 	LD_LIBRARY_PATH=./lib:$(LD_LIBRARY_PATH) ./mnist_nn.native
 
+mnist_resnet: examples/mnist/mnist_resnet.native
+	LD_LIBRARY_PATH=./lib:$(LD_LIBRARY_PATH) ./mnist_resnet.native
+
 mnist_linear: examples/mnist/mnist_linear.native
 	LD_LIBRARY_PATH=./lib:$(LD_LIBRARY_PATH) ./mnist_linear.native
 
