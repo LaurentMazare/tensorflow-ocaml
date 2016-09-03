@@ -25,18 +25,24 @@ let conv2d x ~filter ~row ~col =
   let conv = O.conv2D x w ~strides:[ 1; 2; 2; 1 ] ~padding:"SAME" in
   O.add conv b
 
-let build_model ~xs =
-  let xs = O.reshape xs (O.const_int ~type_:Int32 [ -1; 28; 28; 1 ]) in
-  (* 7x7 convolution. *)
-  let final = conv2d xs ~filter:64 ~row:7 ~col:7 in
+let max_pool_2x2 x =
+  O.maxPool x ~ksize:[ 1; 2; 2; 1 ] ~strides:[ 1; 2; 2; 1 ] ~padding:"SAME"
 
-  let output_dim = 14*14*64 in
-  let final = O.reshape final (O.const_int ~type_:Int32 [ -1; output_dim ]) in
+let build_model ~xs =
+  let layer = O.reshape xs (O.const_int ~type_:Int32 [ -1; 28; 28; 1 ]) in
+  (* 7x7 convolution + max-pool. *)
+  let layer = conv2d layer ~filter:64 ~row:7 ~col:7 in
+  let layer = max_pool_2x2 layer in
+  (* TODO: add the conv layers here. *)
+
+  (* Final dense layer. *)
+  let output_dim = 7*7*64 in
+  let layer = O.reshape layer (O.const_int ~type_:Int32 [ -1; output_dim ]) in
   let w1 = Var.normalf [ output_dim; hidden_nodes ] ~stddev:0.1 in
   let b1 = Var.f [ hidden_nodes ] 0. in
   let w2 = Var.normalf [ hidden_nodes; label_count ] ~stddev:0.1 in
   let b2 = Var.f [ label_count ] 0. in
-  O.(relu (final *^ w1 + b1) *^ w2 + b2) |> O.softmax
+  O.(relu (layer *^ w1 + b1) *^ w2 + b2) |> O.softmax
 
 let () =
   let keep_prob = O.placeholder [] ~type_:Float in
