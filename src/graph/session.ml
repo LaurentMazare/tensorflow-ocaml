@@ -63,7 +63,15 @@ let add_attribute operation_description ~attr_name attr =
   | Shape shape ->
     let shape = List.map shape ~f:(fun dim -> dim.size) in
     Wrapper.Graph.set_attr_shape operation_description ~attr_name shape
-  | List _ -> failwith "List attributes are not supported yet."
+  | List (Int is) ->
+    Wrapper.Graph.set_attr_int_list operation_description ~attr_name is
+  | List (Float fs) ->
+    Wrapper.Graph.set_attr_float_list operation_description ~attr_name fs
+  | List (Bool bs) ->
+    Wrapper.Graph.set_attr_bool_list operation_description ~attr_name bs
+  | List (String _) -> failwith "List String attributes are not supported yet."
+  | List (Type _) -> failwith "List Type attributes are not supported yet."
+  | List (Shape _) -> failwith "List Shape attributes are not supported yet."
   | Tensor_string _ -> failwith "Tensor_string attributes are not supported yet."
 
 let rec build t node ~variable_initializations =

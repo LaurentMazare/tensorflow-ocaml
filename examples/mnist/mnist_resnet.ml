@@ -8,10 +8,9 @@ module O = Ops
    Reference:
    - Deep Residual Learning for Image Recognition](https://arxiv.org/abs/1512.03385)
 *)
-let image_dim = Mnist_helper.image_dim
 let label_count = Mnist_helper.label_count
 let epochs = 10000
-let batch_size = 2048
+let batch_size = 1024
 
 let hidden_nodes = 512
 
@@ -20,15 +19,24 @@ let scalar_tensor f =
   Tensor.set array [| 0 |] f;
   array
 
+let conv2d x ~filter ~row ~col =
+  let w = Var.normalf [ row; col; 1; filter ] ~stddev:0.1 in
+  let b = Var.f [ filter ] 0. in
+  let conv = O.conv2D x w ~strides:[ 1; 2; 2; 1 ] ~padding:"SAME" in
+  O.add conv b
+
 let build_model ~xs =
   let xs = O.reshape xs (O.const_int ~type_:Int32 [ -1; 28; 28; 1 ]) in
-  (* TODO: apply the conv layers here... *)
-  let xs = O.reshape xs (O.const_int ~type_:Int32 [ -1; 28*28 ]) in
-  let w1 = Var.normalf [ image_dim; hidden_nodes ] ~stddev:0.1 in
+  (* 7x7 convolution. *)
+  let final = conv2d xs ~filter:64 ~row:7 ~col:7 in
+
+  let output_dim = 14*14*64 in
+  let final = O.reshape final (O.const_int ~type_:Int32 [ -1; output_dim ]) in
+  let w1 = Var.normalf [ output_dim; hidden_nodes ] ~stddev:0.1 in
   let b1 = Var.f [ hidden_nodes ] 0. in
   let w2 = Var.normalf [ hidden_nodes; label_count ] ~stddev:0.1 in
   let b2 = Var.f [ label_count ] 0. in
-  O.(relu (xs *^ w1 + b1) *^ w2 + b2) |> O.softmax
+  O.(relu (final *^ w1 + b1) *^ w2 + b2) |> O.softmax
 
 let () =
   let keep_prob = O.placeholder [] ~type_:Float in

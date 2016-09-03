@@ -94,16 +94,34 @@ module Graph : sig
     -> int
     -> unit
 
+  val set_attr_int_list
+    :  operation_description
+    -> attr_name:string
+    -> int list
+    -> unit
+
   val set_attr_float
     :  operation_description
     -> attr_name:string
     -> float
     -> unit
 
+  val set_attr_float_list
+    :  operation_description
+    -> attr_name:string
+    -> float list
+    -> unit
+
   val set_attr_bool
     :  operation_description
     -> attr_name:string
     -> bool
+    -> unit
+
+  val set_attr_bool_list
+    :  operation_description
+    -> attr_name:string
+    -> bool list
     -> unit
 
   val set_attr_string

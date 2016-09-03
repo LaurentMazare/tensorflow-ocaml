@@ -476,8 +476,19 @@ module Graph = struct
   let set_attr_int (_, od) ~attr_name value =
     Tf_operationdescription.tf_setattrint od attr_name (Int64.of_int value)
 
+  let set_attr_int_list (_, od) ~attr_name values =
+    let values = List.map Int64.of_int values in
+    Tf_operationdescription.tf_setattrintlist od attr_name
+      CArray.(of_list int64_t values |> start)
+      (List.length values)
+
   let set_attr_float (_, od) ~attr_name value =
     Tf_operationdescription.tf_setattrfloat od attr_name value
+
+  let set_attr_float_list (_, od) ~attr_name values =
+    Tf_operationdescription.tf_setattrfloatlist od attr_name
+      CArray.(of_list float values |> start)
+      (List.length values)
 
   let set_attr_bool (_, od) ~attr_name value =
     let value =
@@ -486,6 +497,18 @@ module Graph = struct
       else Unsigned.UChar.zero
     in
     Tf_operationdescription.tf_setattrbool od attr_name value
+
+  let set_attr_bool_list (_, od) ~attr_name values =
+    let values =
+      List.map
+        (function
+          | true -> Unsigned.UChar.one
+          | false -> Unsigned.UChar.zero)
+        values
+    in
+    Tf_operationdescription.tf_setattrboollist od attr_name
+      CArray.(of_list uchar values |> start)
+      (List.length values)
 
   let set_attr_string (_, od) ~attr_name value =
     Tf_operationdescription.tf_setattrstring od attr_name value (String.length value)
@@ -658,9 +681,6 @@ let () =
     , Tf_operation.tf_operationnuminputs
     , Tf_operationdescription.tf_addcontrolinput
     , Tf_operationdescription.tf_setattrstringlist
-    , Tf_operationdescription.tf_setattrintlist
-    , Tf_operationdescription.tf_setattrfloatlist
-    , Tf_operationdescription.tf_setattrboollist
     , Tf_operationdescription.tf_setattrtypelist
     , Tf_operationdescription.tf_setattrshapelist
     )
