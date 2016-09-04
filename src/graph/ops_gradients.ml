@@ -296,6 +296,29 @@ let conv2d_gradient ~self ~gradient =
   in
   all [ N.P gradient_input; N.P gradient_filter ]
 
+let avgpool_gradient : type a. self:a N.t -> gradient:a N.t -> N.p option list
+  = fun ~self ~gradient ->
+  match N.output_type self, N.output_type gradient with
+  | N.Type.Float, N.Type.Float ->
+    let ksize = Option.value_exn (N.get_attr_int_list self "ksize") in
+    let strides = Option.value_exn (N.get_attr_int_list self "strides") in
+    let padding = Option.value_exn (N.get_attr_string self "padding") in
+    let input_shape =
+      match N.inputs self with
+      | [] | _ :: _ :: _ | [ `multi _ ] -> failwith "Not a unary function"
+      | [ `single (N.P input) ] -> Ops.shape input
+    in
+    let gradient =
+      Ops.avgPoolGrad
+        input_shape
+        gradient
+        ~ksize
+        ~strides
+        ~padding
+    in
+    all [ N.P gradient ]
+  | _, _ -> failwith "Inconsistent types"
+
 let maxpool_gradient : type a. self:a N.t -> gradient:a N.t -> N.p option list
   = fun ~self ~gradient ->
   match N.output_type self, N.output_type gradient with
@@ -385,6 +408,7 @@ let register_all () =
     [ O.abs,     { Registered_gradients.f = abs_gradient }
     ; O.add,     { f = add_gradient }
     ; O.addN,    { f = addn_gradient }
+    ; O.avgPool, { f = avgpool_gradient }
     ; O.concat,  { f = concat_gradient }
     ; O.cos,     { f = cos_gradient }
     ; O.conv2D,  { f = conv2d_gradient }

@@ -12,29 +12,41 @@ let label_count = Mnist_helper.label_count
 let epochs = 10000
 let batch_size = 1024
 
-let hidden_nodes = 512
+let hidden_nodes = 64
 
 let scalar_tensor f =
   let array = Tensor.create1 Bigarray.float32 1 in
   Tensor.set array [| 0 |] f;
   array
 
-let conv2d x ~filter ~row ~col =
-  let w = Var.normalf [ row; col; 1; filter ] ~stddev:0.1 in
+let conv2d x ~filter ~stride:s ~kernel_size:k =
+  let w = Var.normalf [ k; k; 1; filter ] ~stddev:0.1 in
   let b = Var.f [ filter ] 0. in
-  let conv = O.conv2D x w ~strides:[ 1; 2; 2; 1 ] ~padding:"SAME" in
+  let conv = O.conv2D x w ~strides:[ 1; s; s; 1 ] ~padding:"SAME" in
   O.add conv b
 
-let max_pool_2x2 x =
-  O.maxPool x ~ksize:[ 1; 2; 2; 1 ] ~strides:[ 1; 2; 2; 1 ] ~padding:"SAME"
+let avg_pool x ~stride:s ~kernel_size:k =
+  O.avgPool x ~ksize:[ 1; k; k; 1 ] ~strides:[ 1; s; s; 1 ] ~padding:"SAME"
+
+let basic_block input_layer ~filter ~stride =
+  let layer = conv2d input_layer ~filter ~stride ~kernel_size:3 in
+  let layer = O.relu layer in
+  let layer = conv2d layer ~filter ~stride:1 ~kernel_size:1 in
+  let shortcut = conv2d input_layer ~filter ~stride ~kernel_size:1 in
+  let layer = O.add layer shortcut in
+  O.relu layer
 
 let build_model ~xs =
   let layer = O.reshape xs (O.const_int ~type_:Int32 [ -1; 28; 28; 1 ]) in
-  (* 7x7 convolution + max-pool. *)
-  let layer = conv2d layer ~filter:64 ~row:7 ~col:7 in
-  let layer = max_pool_2x2 layer in
-  (* TODO: add the conv layers here. *)
+  (* 3x3 convolution + max-pool. *)
+  let layer = conv2d layer ~filter:16 ~kernel_size:3 ~stride:1 in
+  let layer = O.relu layer in
 
+  let layer = basic_block layer ~filter:16 ~stride:1 in
+  let layer = basic_block layer ~filter:32 ~stride:2 in
+  let layer = basic_block layer ~filter:64 ~stride:2 in
+
+  let layer = avg_pool ~stride:1 ~kernel_size:8 layer in
   (* Final dense layer. *)
   let output_dim = 7*7*64 in
   let layer = O.reshape layer (O.const_int ~type_:Int32 [ -1; output_dim ]) in
