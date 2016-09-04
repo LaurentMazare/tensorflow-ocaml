@@ -12,6 +12,8 @@ let label_count = Mnist_helper.label_count
 let epochs = 10000
 let batch_size = 1024
 
+let depth = 20
+(* Number of hidden nodes in the final layer. *)
 let hidden_nodes = 64
 
 let scalar_tensor f =
@@ -36,17 +38,26 @@ let basic_block input_layer ~out_features ~in_features ~stride =
   |> O.add shortcut
   |> O.relu
 
+let block_stack layer ~out_features ~in_features ~stride =
+  let depth = (depth - 2) / 6 in
+  let layer = basic_block layer ~out_features ~in_features ~stride in
+  List.init (depth - 1) ~f:Fn.id
+  |> List.fold ~init:layer ~f:(fun layer _idx ->
+    basic_block layer ~out_features ~in_features:out_features ~stride:1)
+
 let build_model ~xs =
   let layer = O.reshape xs (O.const_int ~type_:Int32 [ -1; 28; 28; 1 ]) in
   (* 3x3 convolution + max-pool. *)
   let layer = conv2d layer ~out_features:16 ~in_features:1 ~kernel_size:3 ~stride:1 in
   let layer = O.relu layer in
 
-  let layer = basic_block layer ~out_features:16 ~in_features:16 ~stride:1 in
+  let layer = block_stack layer ~out_features:16 ~in_features:16 ~stride:1 in
+  let layer = block_stack layer ~out_features:32 ~in_features:16 ~stride:2 in
+  let layer = block_stack layer ~out_features:64 ~in_features:32 ~stride:2 in
 
   let layer = avg_pool ~stride:1 ~kernel_size:8 layer in
   (* Final dense layer. *)
-  let output_dim = 14*14*64 in
+  let output_dim = 7*7*64 in
   let layer = O.reshape layer (O.const_int ~type_:Int32 [ -1; output_dim ]) in
   let w1 = Var.normalf [ output_dim; hidden_nodes ] ~stddev:0.1 in
   let b1 = Var.f [ hidden_nodes ] 0. in
