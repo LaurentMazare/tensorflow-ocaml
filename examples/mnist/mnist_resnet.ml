@@ -19,36 +19,34 @@ let scalar_tensor f =
   Tensor.set array [| 0 |] f;
   array
 
-let conv2d x ~filter ~stride:s ~kernel_size:k =
-  let w = Var.normalf [ k; k; 1; filter ] ~stddev:0.1 in
-  let b = Var.f [ filter ] 0. in
+let conv2d x ~out_features ~in_features ~stride:s ~kernel_size:k =
+  let w = Var.normalf [ k; k; in_features; out_features ] ~stddev:0.1 in
+  let b = Var.f [ out_features ] 0. in
   let conv = O.conv2D x w ~strides:[ 1; s; s; 1 ] ~padding:"SAME" in
   O.add conv b
 
 let avg_pool x ~stride:s ~kernel_size:k =
   O.avgPool x ~ksize:[ 1; k; k; 1 ] ~strides:[ 1; s; s; 1 ] ~padding:"SAME"
 
-let basic_block input_layer ~filter ~stride =
-  let layer = conv2d input_layer ~filter ~stride ~kernel_size:3 in
-  let layer = O.relu layer in
-  let layer = conv2d layer ~filter ~stride:1 ~kernel_size:1 in
-  let shortcut = conv2d input_layer ~filter ~stride ~kernel_size:1 in
-  let layer = O.add layer shortcut in
-  O.relu layer
+let basic_block input_layer ~out_features ~in_features ~stride =
+  let shortcut = conv2d input_layer ~out_features ~in_features ~stride ~kernel_size:1 in
+  conv2d input_layer ~out_features ~in_features ~stride ~kernel_size:3
+  |> O.relu
+  |> conv2d ~out_features ~in_features:out_features ~stride:1 ~kernel_size:1
+  |> O.add shortcut
+  |> O.relu
 
 let build_model ~xs =
   let layer = O.reshape xs (O.const_int ~type_:Int32 [ -1; 28; 28; 1 ]) in
   (* 3x3 convolution + max-pool. *)
-  let layer = conv2d layer ~filter:16 ~kernel_size:3 ~stride:1 in
+  let layer = conv2d layer ~out_features:16 ~in_features:1 ~kernel_size:3 ~stride:1 in
   let layer = O.relu layer in
 
-  let layer = basic_block layer ~filter:16 ~stride:1 in
-  let layer = basic_block layer ~filter:32 ~stride:2 in
-  let layer = basic_block layer ~filter:64 ~stride:2 in
+  let layer = basic_block layer ~out_features:16 ~in_features:16 ~stride:1 in
 
   let layer = avg_pool ~stride:1 ~kernel_size:8 layer in
   (* Final dense layer. *)
-  let output_dim = 7*7*64 in
+  let output_dim = 14*14*64 in
   let layer = O.reshape layer (O.const_int ~type_:Int32 [ -1; output_dim ]) in
   let w1 = Var.normalf [ output_dim; hidden_nodes ] ~stddev:0.1 in
   let b1 = Var.f [ hidden_nodes ] 0. in
