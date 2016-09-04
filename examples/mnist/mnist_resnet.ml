@@ -3,7 +3,7 @@ open Tensorflow
 module O = Ops
 
 (* ResNet model for the mnist dataset.
-   This is mostly a work in progess for now.
+   This is mostly a work in progess for now. Batch normalization is not included.
 
    Reference:
    - Deep Residual Learning for Image Recognition](https://arxiv.org/abs/1512.03385)
@@ -15,11 +15,6 @@ let batch_size = 1024
 let depth = 20
 (* Number of hidden nodes in the final layer. *)
 let hidden_nodes = 64
-
-let scalar_tensor f =
-  let array = Tensor.create1 Bigarray.float32 1 in
-  Tensor.set array [| 0 |] f;
-  array
 
 let conv2d x ~out_features ~in_features ~stride:s ~kernel_size:k =
   let w = Var.normalf [ k; k; in_features; out_features ] ~stddev:0.1 in
@@ -66,7 +61,6 @@ let build_model ~xs =
   O.(relu (layer *^ w1 + b1) *^ w2 + b2) |> O.softmax
 
 let () =
-  let keep_prob = O.placeholder [] ~type_:Float in
   let mnist = Mnist_helper.read_files () in
   let xs = O.placeholder [] ~type_:Float in
   let ys = O.placeholder [] ~type_:Float in
@@ -80,11 +74,9 @@ let () =
   in
   let gd = Optimizers.adam_minimizer ~learning_rate:(O.f 1e-4) cross_entropy in
   let validation_inputs =
-    let one = scalar_tensor 1. in
     let validation_images = Tensor.sub_left mnist.test_images 0 1024 in
     let validation_labels = Tensor.sub_left mnist.test_labels 0 1024 in
-    Session.Input.
-      [ float xs validation_images; float ys validation_labels; float keep_prob one ]
+    Session.Input.[ float xs validation_images; float ys validation_labels ]
   in
   let print_err n ~train_inputs =
     let vaccuracy, vcross_entropy =
@@ -108,10 +100,7 @@ let () =
     let batch_images, batch_labels =
       Mnist_helper.train_batch mnist ~batch_size ~batch_idx
     in
-    let batch_inputs =
-      let half = scalar_tensor 0.5 in
-      Session.Input.[ float xs batch_images; float ys batch_labels; float keep_prob half ]
-    in
+    let batch_inputs = Session.Input.[ float xs batch_images; float ys batch_labels ] in
     if batch_idx % 25 = 0 then print_err batch_idx ~train_inputs:batch_inputs;
     Session.run
       ~inputs:batch_inputs
