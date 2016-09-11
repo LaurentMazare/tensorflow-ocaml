@@ -39,6 +39,8 @@ let test_scalar () =
               |> cast ~type_:Float)), 45.
     ; 0.,   O.(maximum (f 2.) (f 3.) - minimum (f 5.) (f (-5.))), 8.
     ; 1e-6, O.(matrixDeterminant (cf ~shape:[ 2; 2 ] [ 1.; 2.; 3.; 4. ])), -2.
+    ; 0.,   O.(moments (cf ~shape:[ 5 ] [ 1.; 2.; 3.; 4.; 5. ]) ~dims:[ 0 ]).mean, 3.
+    ; 0.,   O.(moments (cf ~shape:[ 5 ] [ 1.; 2.; 3.; 4.; 5. ]) ~dims:[ 0 ]).variance, 2.
     ]
 
 let test_vector () =
@@ -76,6 +78,12 @@ let test_vector () =
               ]
           | _ -> assert false)
       , [ 3.; 4.; 1.; 2. ]
+    ; 0., O.(moments (cd ~shape:[ 2; 5 ] [ 1.; 2.; 3.; 4.; 5.; 8.; 10.; 8.; 10.; 9. ])
+            ~dims:[ 1 ]).mean
+      , [ 3.; 9. ]
+    ; 1e-8, O.(moments (cd ~shape:[ 2; 5 ] [ 1.; 2.; 3.; 4.; 5.; 8.; 10.; 8.; 10.; 9. ])
+              ~dims:[ 1 ]).variance
+      , [ 2.; 0.8 ]
     ]
 
 let () =

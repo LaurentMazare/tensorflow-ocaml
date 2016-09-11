@@ -133,3 +133,18 @@ val cast
   -> 'srcT Node.t
   -> type_:'dstT Node.Type.t
   -> 'dstT Node.t
+
+val count
+  :  'a Node.t
+  -> dims:int list
+  -> [ `int32 ] Node.t
+
+type 'a moments =
+  { mean : 'a Node.t
+  ; variance : 'a Node.t
+  }
+
+val moments
+  :  ([< `double | `float ] as 'a) Node.t
+  -> dims:int list
+  -> 'a moments

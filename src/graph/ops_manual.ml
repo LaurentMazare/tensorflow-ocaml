@@ -187,3 +187,24 @@ let cast ?name (type a) (type b) (t : a Node.t) ~(type_ : b Node.Type.t) =
   match Node.output_type t, type_ with
   | Node.Type.Float, Node.Type.Float -> (t : b Node.t)
   | _ -> Ops_generated.cast ?name t ~type_
+
+let count t ~dims =
+  Ops_generated.gather
+    (Ops_generated.shape t)
+    (const_int ~type_:Int32 dims)
+  |> reduce_prod
+
+type 'a moments =
+  { mean : 'a Node.t
+  ; variance : 'a Node.t
+  }
+
+let moments t ~dims =
+  let divisor =
+    count t ~dims
+    |> Ops_generated.cast ~type_:(Node.output_type t)
+    |> Ops_generated.inv
+  in
+  let mean = reduce_sum ~dims t * divisor in
+  let square_sum = Ops_generated.square t |> reduce_sum ~dims in
+  { mean; variance = square_sum * divisor - Ops_generated.square mean }
