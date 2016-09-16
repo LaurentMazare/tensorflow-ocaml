@@ -208,3 +208,7 @@ let moments t ~dims =
   let mean = reduce_sum ~dims t * divisor in
   let square_sum = Ops_generated.square t |> reduce_sum ~dims in
   { mean; variance = square_sum * divisor - Ops_generated.square mean }
+
+let normalize ?(epsilon = 1e-12) t { mean; variance } =
+  let epsilon = scalar ~type_:(Node.output_type t) epsilon in
+  Ops_generated.rsqrt (variance + epsilon) * (t - mean)

@@ -148,3 +148,9 @@ val moments
   :  ([< `double | `float ] as 'a) Node.t
   -> dims:int list
   -> 'a moments
+
+val normalize
+  :  ?epsilon:float
+  -> ([< `double | `float ] as 'a) Node.t
+  -> 'a moments
+  -> 'a Node.t
