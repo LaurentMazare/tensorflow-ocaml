@@ -118,6 +118,7 @@ type 'a t =
   ; op_name : Op_name.t
   ; output_type : 'a Type.t
   ; inputs : input list
+  ; control_inputs : p list
   ; attributes : (string * attr) list
   ; output_idx : int option (* Only used for multiple outputs. *)
   }
@@ -129,6 +130,7 @@ let create
       ~op_name
       ~output_type
       ~inputs
+      ~control_inputs
       ~attributes
       ~output_idx
   =
@@ -137,6 +139,7 @@ let create
   ; op_name
   ; output_type
   ; inputs
+  ; control_inputs
   ; attributes
   ; output_idx
   }
@@ -151,6 +154,7 @@ let flat_inputs t =
     | `single p -> [ p ]
     | `multi ps -> ps)
 
+let control_inputs t = t.control_inputs
 let attributes t = t.attributes
 let output_idx t = t.output_idx
 let unique_name t =

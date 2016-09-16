@@ -411,6 +411,7 @@ end
 val abort
   :  ?name:string
   -> ?error_msg:string
+  -> ?control_inputs:Node.p list
   -> unit
   -> [ `unit ] t
 
@@ -420,12 +421,14 @@ value of each element in `x`. For example, if x is an input element and y is
 an output element, this operation computes \\(y = |x|\\). *)
 val abs
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int32 | `int64 ] as 't) t
   -> ([< `float | `double | `int32 | `int64 ] as 't) t
 
 (* Computes acos of x element-wise. *)
 val acos
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int32 | `int64 | `complex64 ] as 't) t
   -> ([< `float | `double | `int32 | `int64 | `complex64 ] as 't) t
 
@@ -434,6 +437,7 @@ val acos
 [here](http://docs.scipy.org/doc/numpy/user/basics.broadcasting.html) *)
 val add
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int32 | `int64 | `complex64 | `string ] as 't) t
   -> ([< `float | `double | `int32 | `int64 | `complex64 | `string ] as 't) t
   -> ([< `float | `double | `int32 | `int64 | `complex64 | `string ] as 't) t
@@ -441,12 +445,14 @@ val add
 (* Add all input tensors element wise. *)
 val addN
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t list
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
 
 (* Deprecated. Disallowed in GraphDef version >= 2. *)
 val adjustContrast
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> ([< `int32 | `int64 | `float | `double ] as 't) t
   -> [ `float ] t
   -> [ `float ] t
@@ -465,6 +471,7 @@ channel and then adjusts each component of each pixel to
 `(x - mean) * contrast_factor + mean`. *)
 val adjustContrastv2
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> [ `float ] t
   -> [ `float ] t
   -> [ `float ] t
@@ -477,6 +484,7 @@ retained with length 1. *)
 val all
   :  ?name:string
   -> ?keep_dims:bool
+  -> ?control_inputs:Node.p list
   -> [ `bool ] t
   -> [ `int32 ] t
   -> [ `bool ] t
@@ -498,6 +506,7 @@ val allCandidateSampler
   -> unique:bool
   -> ?seed:int
   -> ?seed2:int
+  -> ?control_inputs:Node.p list
   -> [ `int64 ] t
   -> [ `int64 ] t * [ `float ] t * [ `float ] t
 
@@ -509,6 +518,7 @@ retained with length 1. *)
 val any
   :  ?name:string
   -> ?keep_dims:bool
+  -> ?control_inputs:Node.p list
   -> [ `bool ] t
   -> [ `int32 ] t
   -> [ `bool ] t
@@ -521,6 +531,7 @@ var -= update; *)
 val applyAdadelta
   :  ?name:string
   -> ?use_locking:bool
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
@@ -536,6 +547,7 @@ var -= lr * grad * (1 / sqrt(accum)) *)
 val applyAdagrad
   :  ?name:string
   -> ?use_locking:bool
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
@@ -550,6 +562,7 @@ variable <- variable - lr_t * m_t / (sqrt(v_t) + epsilon) *)
 val applyAdam
   :  ?name:string
   -> ?use_locking:bool
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
@@ -571,6 +584,7 @@ accum = accum_new *)
 val applyFtrl
   :  ?name:string
   -> ?use_locking:bool
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
@@ -585,6 +599,7 @@ val applyFtrl
 val applyGradientDescent
   :  ?name:string
   -> ?use_locking:bool
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
@@ -599,6 +614,7 @@ val applyMomentum
   :  ?name:string
   -> ?use_locking:bool
   -> ?use_nesterov:bool
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
@@ -613,6 +629,7 @@ var = sign(prox_v)/(1+lr*l2) * max{ |prox_v|-lr*l1,0} *)
 val applyProximalAdagrad
   :  ?name:string
   -> ?use_locking:bool
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
@@ -627,6 +644,7 @@ var = sign(prox_v)/(1+alpha*l2) * max{ |prox_v|-alpha*l1,0} *)
 val applyProximalGradientDescent
   :  ?name:string
   -> ?use_locking:bool
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
@@ -648,6 +666,7 @@ var <- var - mom *)
 val applyRMSProp
   :  ?name:string
   -> ?use_locking:bool
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
@@ -661,6 +680,7 @@ val applyRMSProp
 (* Returns the index with the largest value across dimensions of a tensor. *)
 val argMax
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
   -> [ `int32 ] t
   -> [ `int64 ] t
@@ -668,6 +688,7 @@ val argMax
 (* Returns the index with the smallest value across dimensions of a tensor. *)
 val argMin
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
   -> [ `int32 ] t
   -> [ `int64 ] t
@@ -681,12 +702,14 @@ val asString
   -> ?shortest:bool
   -> ?width:int
   -> ?fill:string
+  -> ?control_inputs:Node.p list
   -> ([< `int32 | `int64 | `complex64 | `float | `double | `bool ] as 't) t
   -> [ `string ] t
 
 (* Computes asin of x element-wise. *)
 val asin
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int32 | `int64 | `complex64 ] as 't) t
   -> ([< `float | `double | `int32 | `int64 | `complex64 ] as 't) t
 
@@ -697,6 +720,7 @@ val assign
   :  ?name:string
   -> ?validate_shape:bool
   -> ?use_locking:bool
+  -> ?control_inputs:Node.p list
   -> 't t
   -> 't t
   -> 't t
@@ -707,6 +731,7 @@ This makes it easier to chain operations that need to use the reset value. *)
 val assignAdd
   :  ?name:string
   -> ?use_locking:bool
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
@@ -717,6 +742,7 @@ This makes it easier to chain operations that need to use the reset value. *)
 val assignSub
   :  ?name:string
   -> ?use_locking:bool
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
@@ -724,6 +750,7 @@ val assignSub
 (* Computes atan of x element-wise. *)
 val atan
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int32 | `int64 | `complex64 ] as 't) t
   -> ([< `float | `double | `int32 | `int64 | `complex64 ] as 't) t
 
@@ -743,6 +770,7 @@ val audioSummary
   :  ?name:string
   -> sample_rate:float
   -> ?max_outputs:int
+  -> ?control_inputs:Node.p list
   -> [ `string ] t
   -> [ `float ] t
   -> [ `string ] t
@@ -756,6 +784,7 @@ val avgPool
   -> strides:int list
   -> padding:string
   -> ?data_format:string
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double ] as 't) t
   -> ([< `float | `double ] as 't) t
 
@@ -765,6 +794,7 @@ val avgPool3D
   -> ksize:int list
   -> strides:int list
   -> padding:string
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
 
@@ -774,6 +804,7 @@ val avgPool3DGrad
   -> ksize:int list
   -> strides:int list
   -> padding:string
+  -> ?control_inputs:Node.p list
   -> [ `int32 ] t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
@@ -785,6 +816,7 @@ val avgPoolGrad
   -> strides:int list
   -> padding:string
   -> ?data_format:string
+  -> ?control_inputs:Node.p list
   -> [ `int32 ] t
   -> ([< `float | `double ] as 't) t
   -> ([< `float | `double ] as 't) t
@@ -805,6 +837,7 @@ val barrier
   -> ?capacity:int
   -> ?container:string
   -> ?shared_name:string
+  -> ?control_inputs:Node.p list
   -> unit
   -> [ `string ] t
 
@@ -818,12 +851,14 @@ Subsequent TakeMany operations that would block will fail immediately. *)
 val barrierClose
   :  ?name:string
   -> ?cancel_pending_enqueues:bool
+  -> ?control_inputs:Node.p list
   -> [ `string ] t
   -> [ `unit ] t
 
 (* Computes the number of incomplete elements in the given barrier. *)
 val barrierIncompleteSize
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> [ `string ] t
   -> [ `int32 ] t
 
@@ -835,6 +870,7 @@ INVALID_ARGUMENT, and leave the barrier in an undefined state. *)
 val barrierInsertMany
   :  ?name:string
   -> component_index:int
+  -> ?control_inputs:Node.p list
   -> [ `string ] t
   -> [ `string ] t
   -> 't t
@@ -843,6 +879,7 @@ val barrierInsertMany
 (* Computes the number of complete elements in the given barrier. *)
 val barrierReadySize
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> [ `string ] t
   -> [ `int32 ] t
 
@@ -853,6 +890,7 @@ decomposition above. The output is a tensor of the same shape as the input
 containing the Cholesky decompositions for all input submatrices `[..., :, :]`. *)
 val batchCholesky
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> ([< `double | `float ] as 't) t
   -> ([< `double | `float ] as 't) t
 
@@ -861,6 +899,7 @@ val batchCholesky
 Iain Murray http://arxiv.org/abs/1602.07527. *)
 val batchCholeskyGrad
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double ] as 't) t
   -> ([< `float | `double ] as 't) t
   -> ([< `float | `double ] as 't) t
@@ -869,6 +908,7 @@ val batchCholeskyGrad
 (* dimension of `input`. *)
 val batchFFT
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> [ `complex64 ] t
   -> [ `complex64 ] t
 
@@ -876,6 +916,7 @@ val batchFFT
 (* 2 dimensions of `input`. *)
 val batchFFT2D
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> [ `complex64 ] t
   -> [ `complex64 ] t
 
@@ -883,6 +924,7 @@ val batchFFT2D
 (* dimensions of `input`. *)
 val batchFFT3D
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> [ `complex64 ] t
   -> [ `complex64 ] t
 
@@ -890,6 +932,7 @@ val batchFFT3D
 (* dimension of `input`. *)
 val batchIFFT
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> [ `complex64 ] t
   -> [ `complex64 ] t
 
@@ -897,6 +940,7 @@ val batchIFFT
 (* 2 dimensions of `input`. *)
 val batchIFFT2D
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> [ `complex64 ] t
   -> [ `complex64 ] t
 
@@ -904,6 +948,7 @@ val batchIFFT2D
 (* 3 dimensions of `input`. *)
 val batchIFFT3D
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> [ `complex64 ] t
   -> [ `complex64 ] t
 
@@ -930,6 +975,7 @@ val batchMatMul
   :  ?name:string
   -> ?adj_x:bool
   -> ?adj_y:bool
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int32 | `complex64 ] as 't) t
   -> ([< `float | `double | `int32 | `complex64 ] as 't) t
   -> ([< `float | `double | `int32 | `complex64 ] as 't) t
@@ -975,6 +1021,7 @@ Useful special cases:
 ``` *)
 val batchMatrixBandPart
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> 't t
   -> [ `int64 ] t
   -> [ `int64 ] t
@@ -986,6 +1033,7 @@ form square matrices. The output is a tensor containing the determinants
 for all input submatrices `[..., :, :]`. *)
 val batchMatrixDeterminant
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double ] as 't) t
   -> ([< `float | `double ] as 't) t
 
@@ -1018,6 +1066,7 @@ which has shape (2, 4, 4)
 ``` *)
 val batchMatrixDiag
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> 't t
   -> 't t
 
@@ -1052,6 +1101,7 @@ which has shape (2, 4)
 ``` *)
 val batchMatrixDiagPart
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> 't t
   -> 't t
 
@@ -1070,6 +1120,7 @@ garbage result. *)
 val batchMatrixInverse
   :  ?name:string
   -> ?adjoint:bool
+  -> ?control_inputs:Node.p list
   -> ([< `double | `float ] as 't) t
   -> ([< `double | `float ] as 't) t
 
@@ -1089,6 +1140,7 @@ tensor of rank `k+1` with dimensions [I, J, K, ..., N, N]` where:
   * `output[i, j, k, ..., m, n] = input[i, j, k, ..., m, n]` for `m != n`. *)
 val batchMatrixSetDiag
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> 't t
   -> 't t
   -> 't t
@@ -1103,6 +1155,7 @@ matrix satisfies `adjoint(matrix[..., :, :]) * output[..., :, :] = rhs[..., :, :
 val batchMatrixSolve
   :  ?name:string
   -> ?adjoint:bool
+  -> ?control_inputs:Node.p list
   -> ([< `double | `float ] as 't) t
   -> ([< `double | `float ] as 't) t
   -> ([< `double | `float ] as 't) t
@@ -1143,6 +1196,7 @@ typically 6-7 times slower than the fast path. If `fast` is `False` then
 val batchMatrixSolveLs
   :  ?name:string
   -> ?fast:bool
+  -> ?control_inputs:Node.p list
   -> ([< `double | `float ] as 't) t
   -> ([< `double | `float ] as 't) t
   -> [ `double ] t
@@ -1168,6 +1222,7 @@ val batchMatrixTriangularSolve
   :  ?name:string
   -> ?lower:bool
   -> ?adjoint:bool
+  -> ?control_inputs:Node.p list
   -> ([< `double | `float ] as 't) t
   -> ([< `double | `float ] as 't) t
   -> ([< `double | `float ] as 't) t
@@ -1178,6 +1233,7 @@ val batchNormWithGlobalNormalization
   :  ?name:string
   -> variance_epsilon:float
   -> scale_after_normalization:bool
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
@@ -1191,6 +1247,7 @@ val batchNormWithGlobalNormalizationGrad
   :  ?name:string
   -> variance_epsilon:float
   -> scale_after_normalization:bool
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
@@ -1207,6 +1264,7 @@ The result is a [..., M+1, M] matrix with [..., 0,:] containing the
 eigenvalues, and subsequent [...,1:, :] containing the eigenvectors. *)
 val batchSelfAdjointEig
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> ([< `double | `float ] as 't) t
   -> ([< `double | `float ] as 't) t
 
@@ -1224,6 +1282,7 @@ e = batch_self_adjoint_eig(a, compute_v=False)
 val batchSelfAdjointEigV2
   :  ?name:string
   -> ?compute_v:bool
+  -> ?control_inputs:Node.p list
   -> ([< `double | `float ] as 't) t
   -> ([< `double | `float ] as 't) t * ([< `double | `float ] as 't) t
 
@@ -1243,6 +1302,7 @@ val batchSvd
   :  ?name:string
   -> ?compute_uv:bool
   -> ?full_matrices:bool
+  -> ?control_inputs:Node.p list
   -> ([< `double | `float ] as 't) t
   -> ([< `double | `float ] as 't) t * ([< `double | `float ] as 't) t * ([< `double | `float ] as 't) t
 
@@ -1255,6 +1315,7 @@ followed by cropping along the `height` and `width` dimensions. *)
 val batchToSpace
   :  ?name:string
   -> block_size:int
+  -> ?control_inputs:Node.p list
   -> 't t
   -> [ `int32 ] t
   -> 't t
@@ -1265,6 +1326,7 @@ Broadcasting is supported, so `value` may have any number of dimensions. *)
 val biasAdd
   :  ?name:string
   -> ?data_format:string
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
@@ -1276,6 +1338,7 @@ the feature dimension is the third-to-last. *)
 val biasAddGrad
   :  ?name:string
   -> ?data_format:string
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
 
@@ -1286,6 +1349,7 @@ This is a special case of `tf.add` where `bias` is restricted to be 1-D.
 Broadcasting is supported, so `value` may have any number of dimensions. *)
 val biasAddV1
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
@@ -1306,6 +1370,7 @@ endian orderings will give different results. *)
 val bitcast
   :  ?name:string
   -> type_:([< `float | `double | `int64 | `int32 | `complex64 ] as 'type__) Type.t
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 'type__) t
 
@@ -1313,6 +1378,7 @@ val bitcast
 (* This is typically used by gradient computations for a broadcasting operation. *)
 val broadcastGradientArgs
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> [ `int32 ] t
   -> [ `int32 ] t
   -> [ `int32 ] t * [ `int32 ] t
@@ -1330,6 +1396,7 @@ element is emitted. *)
 val cTCGreedyDecoder
   :  ?name:string
   -> ?merge_repeated:bool
+  -> ?control_inputs:Node.p list
   -> [ `float ] t
   -> [ `int32 ] t
   -> [ `int64 ] t * [ `int64 ] t * [ `int64 ] t * [ `float ] t
@@ -1341,6 +1408,7 @@ val cTCLoss
   :  ?name:string
   -> ?preprocess_collapse_repeated:bool
   -> ?ctc_merge_repeated:bool
+  -> ?control_inputs:Node.p list
   -> [ `float ] t
   -> [ `int64 ] t
   -> [ `int32 ] t
@@ -1351,12 +1419,14 @@ val cTCLoss
 val cast
   :  ?name:string
   -> type_:'dstT Type.t
+  -> ?control_inputs:Node.p list
   -> 'srcT t
   -> 'dstT t
 
 (* Returns element-wise smallest integer in not less than x. *)
 val ceil
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double ] as 't) t
   -> ([< `float | `double ] as 't) t
 
@@ -1366,6 +1436,7 @@ that are not a number (NaN) or infinity (Inf). Otherwise, passes `tensor` as-is.
 val checkNumerics
   :  ?name:string
   -> message:string
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double ] as 't) t
   -> ([< `float | `double ] as 't) t
 
@@ -1378,6 +1449,7 @@ The result is the lower-triangular matrix of the Cholesky decomposition of the
 input, `L`, so that `input = L L^*`. *)
 val cholesky
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> ([< `double | `float ] as 't) t
   -> ([< `double | `float ] as 't) t
 
@@ -1386,6 +1458,7 @@ val cholesky
 Iain Murray http://arxiv.org/abs/1602.07527. *)
 val choleskyGrad
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double ] as 't) t
   -> ([< `float | `double ] as 't) t
   -> ([< `float | `double ] as 't) t
@@ -1408,6 +1481,7 @@ tf.complex(real, imag) ==> [[2.25 + 4.75j], [3.25 + 5.75j]]
 val complex
   :  ?name:string
   -> type_:([< `complex64 ] as 'tout) Type.t
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double ] as 't) t
   -> ([< `float | `double ] as 't) t
   -> ([< `complex64 ] as 'tout) t
@@ -1427,6 +1501,7 @@ tf.complex_abs(x) ==> [5.25594902, 6.60492229]
 val complexAbs
   :  ?name:string
   -> type_:([< `float | `double ] as 'tout) Type.t
+  -> ?control_inputs:Node.p list
   -> ([< `complex64 ] as 't) t
   -> ([< `float | `double ] as 'tout) t
 
@@ -1440,6 +1515,7 @@ val computeAccidentalHits
   -> num_true:int
   -> ?seed:int
   -> ?seed2:int
+  -> ?control_inputs:Node.p list
   -> [ `int64 ] t
   -> [ `int64 ] t
   -> [ `int32 ] t * [ `int64 ] t * [ `float ] t
@@ -1447,6 +1523,7 @@ val computeAccidentalHits
 (* Concatenates tensors along one dimension. *)
 val concat
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> [ `int32 ] t
   -> 't t list
   -> 't t
@@ -1462,6 +1539,7 @@ concat_offset(2, [x, y, z]) => [0, 0, 0], [0, 2, 0], [0, 5, 0]
 ``` *)
 val concatOffset
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> [ `int32 ] t
   -> [ `int32 ] t list
   -> [ `int32 ] t list
@@ -1482,6 +1560,7 @@ tf.conj(input) ==> [-2.25 - 4.75j, 3.25 - 5.75j]
 ``` *)
 val conj
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> ([< `complex64 ] as 't) t
   -> ([< `complex64 ] as 't) t
 
@@ -1489,6 +1568,7 @@ val conj
 (* Only useful as a placeholder for control edges. *)
 val controlTrigger
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> unit
   -> [ `unit ] t
 
@@ -1520,6 +1600,7 @@ val conv2D
   -> ?use_cudnn_on_gpu:bool
   -> padding:string
   -> ?data_format:string
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double ] as 't) t
   -> ([< `float | `double ] as 't) t
   -> ([< `float | `double ] as 't) t
@@ -1531,6 +1612,7 @@ val conv2DBackpropFilter
   -> ?use_cudnn_on_gpu:bool
   -> padding:string
   -> ?data_format:string
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double ] as 't) t
   -> [ `int32 ] t
   -> ([< `float | `double ] as 't) t
@@ -1543,6 +1625,7 @@ val conv2DBackpropInput
   -> ?use_cudnn_on_gpu:bool
   -> padding:string
   -> ?data_format:string
+  -> ?control_inputs:Node.p list
   -> [ `int32 ] t
   -> ([< `float | `double ] as 't) t
   -> ([< `float | `double ] as 't) t
@@ -1558,6 +1641,7 @@ val conv3D
   :  ?name:string
   -> strides:int list
   -> padding:string
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
@@ -1567,6 +1651,7 @@ val conv3DBackpropFilter
   :  ?name:string
   -> strides:int list
   -> padding:string
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
@@ -1577,6 +1662,7 @@ val conv3DBackpropFilterV2
   :  ?name:string
   -> strides:int list
   -> padding:string
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
   -> [ `int32 ] t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
@@ -1587,6 +1673,7 @@ val conv3DBackpropInput
   :  ?name:string
   -> strides:int list
   -> padding:string
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
@@ -1597,6 +1684,7 @@ val conv3DBackpropInputV2
   :  ?name:string
   -> strides:int list
   -> padding:string
+  -> ?control_inputs:Node.p list
   -> [ `int32 ] t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
@@ -1611,6 +1699,7 @@ input or output. *)
 val copy
   :  ?name:string
   -> ?tensor_name:string
+  -> ?control_inputs:Node.p list
   -> 't t
   -> 't t
 
@@ -1621,12 +1710,14 @@ Unlike the Copy Op, this op has HostMemory constraint on its input or output. *)
 val copyHost
   :  ?name:string
   -> ?tensor_name:string
+  -> ?control_inputs:Node.p list
   -> 't t
   -> 't t
 
 (* Computes cos of x element-wise. *)
 val cos
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double | `complex64 ] as 't) t
   -> ([< `float | `double | `complex64 ] as 't) t
 
@@ -1636,6 +1727,7 @@ easier to chain operations that need to use the updated value. *)
 val countUpTo
   :  ?name:string
   -> limit:int
+  -> ?control_inputs:Node.p list
   -> ([< `int32 | `int64 ] as 't) t
   -> ([< `int32 | `int64 ] as 't) t
 
@@ -1652,6 +1744,7 @@ val cropAndResize
   :  ?name:string
   -> ?method_:string
   -> ?extrapolation_value:float
+  -> ?control_inputs:Node.p list
   -> ([< `int32 | `int64 | `float | `double ] as 't) t
   -> [ `float ] t
   -> [ `int32 ] t
@@ -1662,6 +1755,7 @@ val cropAndResize
 val cropAndResizeGradBoxes
   :  ?name:string
   -> ?method_:string
+  -> ?control_inputs:Node.p list
   -> [ `float ] t
   -> ([< `int32 | `int64 | `float | `double ] as 't) t
   -> [ `float ] t
@@ -1673,6 +1767,7 @@ val cropAndResizeGradImage
   :  ?name:string
   -> type_:([< `float | `double ] as 't) Type.t
   -> ?method_:string
+  -> ?control_inputs:Node.p list
   -> [ `float ] t
   -> [ `float ] t
   -> [ `int32 ] t
@@ -1685,6 +1780,7 @@ or any shape where the innermost dimension is 3. In the latter case, each pair
 of corresponding 3-element vectors is cross-multiplied independently. *)
 val cross
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int32 | `int64 ] as 't) t
   -> ([< `float | `double | `int32 | `int64 ] as 't) t
   -> ([< `float | `double | `int32 | `int64 ] as 't) t
@@ -1717,6 +1813,7 @@ val cumprod
   :  ?name:string
   -> ?exclusive:bool
   -> ?reverse:bool
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
   -> [ `int32 ] t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
@@ -1749,6 +1846,7 @@ val cumsum
   :  ?name:string
   -> ?exclusive:bool
   -> ?reverse:bool
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
   -> [ `int32 ] t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
@@ -1758,6 +1856,7 @@ val cumsum
 val debugIdentity
   :  ?name:string
   -> ?tensor_name:string
+  -> ?control_inputs:Node.p list
   -> 't t
   -> 't t
 
@@ -1766,6 +1865,7 @@ val debugIdentity
 val debugNanCount
   :  ?name:string
   -> ?tensor_name:string
+  -> ?control_inputs:Node.p list
   -> 't t
   -> [ `int64 ] t
 
@@ -1778,6 +1878,7 @@ buffers. The resulting tensor can then be fed to any of the other
 Example-parsing ops. *)
 val decodeJSONExample
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> [ `string ] t
   -> [ `string ] t
 
@@ -1798,6 +1899,7 @@ val decodePng
   :  ?name:string
   -> type_:'dtype Type.t
   -> ?channels:int
+  -> ?control_inputs:Node.p list
   -> [ `string ] t
   -> 'dtype t
 
@@ -1818,6 +1920,7 @@ val decodeGif
   :  ?name:string
   -> type_:'dtype Type.t
   -> ?channels:int
+  -> ?control_inputs:Node.p list
   -> [ `string ] t
   -> 'dtype t
 
@@ -1826,12 +1929,14 @@ val decodeRaw
   :  ?name:string
   -> type_:([< `float | `double | `int32 | `int64 ] as 'out_type) Type.t
   -> ?little_endian:bool
+  -> ?control_inputs:Node.p list
   -> [ `string ] t
   -> ([< `float | `double | `int32 | `int64 ] as 'out_type) t
 
 (* Delete the tensor specified by its handle in the session. *)
 val deleteSessionTensor
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> [ `string ] t
   -> [ `unit ] t
 
@@ -1917,6 +2022,7 @@ x = [[ [1],   [2],  [5],  [6]],
 val depthToSpace
   :  ?name:string
   -> block_size:int
+  -> ?control_inputs:Node.p list
   -> 't t
   -> 't t
 
@@ -1941,6 +2047,7 @@ val depthwiseConv2dNative
   :  ?name:string
   -> strides:int list
   -> padding:string
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double ] as 't) t
   -> ([< `float | `double ] as 't) t
   -> ([< `float | `double ] as 't) t
@@ -1950,6 +2057,7 @@ val depthwiseConv2dNativeBackpropFilter
   :  ?name:string
   -> strides:int list
   -> padding:string
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double ] as 't) t
   -> [ `int32 ] t
   -> ([< `float | `double ] as 't) t
@@ -1960,6 +2068,7 @@ val depthwiseConv2dNativeBackpropInput
   :  ?name:string
   -> strides:int list
   -> padding:string
+  -> ?control_inputs:Node.p list
   -> [ `int32 ] t
   -> ([< `float | `double ] as 't) t
   -> ([< `float | `double ] as 't) t
@@ -2010,6 +2119,7 @@ then the final deserialized `SparseTensor` will be:
 val deserializeManySparse
   :  ?name:string
   -> type_1:'dtype Type.t
+  -> ?control_inputs:Node.p list
   -> [ `string ] t
   -> [ `int64 ] t * 'dtype t * [ `int64 ] t
 
@@ -2024,6 +2134,7 @@ Outputs the final value of the tensor pointed to by 'ref'. *)
 val destroyTemporaryVariable
   :  ?name:string
   -> var_name:string
+  -> ?control_inputs:Node.p list
   -> 't t
   -> 't t
 
@@ -2047,6 +2158,7 @@ tf.diag(diagonal) ==> [[1, 0, 0, 0]
 ``` *)
 val diag
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int32 | `int64 | `complex64 ] as 't) t
   -> ([< `float | `double | `int32 | `int64 | `complex64 ] as 't) t
 
@@ -2071,6 +2183,7 @@ tf.diag_part(input) ==> [1, 2, 3, 4]
 ``` *)
 val diagPart
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int32 | `int64 | `complex64 ] as 't) t
   -> ([< `float | `double | `int32 | `int64 | `complex64 ] as 't) t
 
@@ -2078,6 +2191,7 @@ val diagPart
 (* `Gamma(x)`), element-wise. *)
 val digamma
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double ] as 't) t
   -> ([< `float | `double ] as 't) t
 
@@ -2110,6 +2224,7 @@ val dilation2D
   -> strides:int list
   -> rates:int list
   -> padding:string
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int32 | `int64 ] as 't) t
   -> ([< `float | `double | `int32 | `int64 ] as 't) t
   -> ([< `float | `double | `int32 | `int64 ] as 't) t
@@ -2120,6 +2235,7 @@ val dilation2DBackpropFilter
   -> strides:int list
   -> rates:int list
   -> padding:string
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int32 | `int64 ] as 't) t
   -> ([< `float | `double | `int32 | `int64 ] as 't) t
   -> ([< `float | `double | `int32 | `int64 ] as 't) t
@@ -2131,6 +2247,7 @@ val dilation2DBackpropInput
   -> strides:int list
   -> rates:int list
   -> padding:string
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int32 | `int64 ] as 't) t
   -> ([< `float | `double | `int32 | `int64 ] as 't) t
   -> ([< `float | `double | `int32 | `int64 ] as 't) t
@@ -2141,6 +2258,7 @@ val dilation2DBackpropInput
 [here](http://docs.scipy.org/doc/numpy/user/basics.broadcasting.html) *)
 val div
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int32 | `int64 | `complex64 ] as 't) t
   -> ([< `float | `double | `int32 | `int64 | `complex64 ] as 't) t
   -> ([< `float | `double | `int32 | `int64 | `complex64 ] as 't) t
@@ -2159,6 +2277,7 @@ bounding box will be `(10, 40)` to `(50, 180)`.
 Parts of the bounding box may fall outside the image. *)
 val drawBoundingBoxes
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> ([< `float ] as 't) t
   -> [ `float ] t
   -> ([< `float ] as 't) t
@@ -2198,6 +2317,7 @@ For example:
 val dynamicPartition
   :  ?name:string
   -> num_partitions:int
+  -> ?control_inputs:Node.p list
   -> 't t
   -> [ `int32 ] t
   -> 't t list
@@ -2242,6 +2362,7 @@ For example:
 </div> *)
 val dynamicStitch
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> [ `int32 ] t list
   -> 't t list
   -> 't t
@@ -2256,6 +2377,7 @@ The inputs are: *)
 val editDistance
   :  ?name:string
   -> ?normalize:bool
+  -> ?control_inputs:Node.p list
   -> [ `int64 ] t
   -> 't t
   -> [ `int64 ] t
@@ -2269,12 +2391,14 @@ val editDistance
 ](http://arxiv.org/abs/1511.07289) *)
 val elu
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double ] as 't) t
   -> ([< `float | `double ] as 't) t
 
 (* Computes gradients for the exponential linear (Elu) operation. *)
 val eluGrad
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double ] as 't) t
   -> ([< `float | `double ] as 't) t
   -> ([< `float | `double ] as 't) t
@@ -2294,6 +2418,7 @@ the smallest output, but is slower. *)
 val encodePng
   :  ?name:string
   -> ?compression:int
+  -> ?control_inputs:Node.p list
   -> 't t
   -> [ `string ] t
 
@@ -2308,6 +2433,7 @@ val enter
   -> frame_name:string
   -> ?is_constant:bool
   -> ?parallel_iterations:int
+  -> ?control_inputs:Node.p list
   -> 't t
   -> 't t
 
@@ -2316,6 +2442,7 @@ val enter
 [here](http://docs.scipy.org/doc/numpy/user/basics.broadcasting.html) *)
 val equal
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int32 | `int64 | `complex64 | `string | `bool ] as 't) t
   -> ([< `float | `double | `int32 | `int64 | `complex64 | `string | `bool ] as 't) t
   -> [ `bool ] t
@@ -2323,12 +2450,14 @@ val equal
 (* Computes the Gauss error function of `x` element-wise. *)
 val erf
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double ] as 't) t
   -> ([< `float | `double ] as 't) t
 
 (* Computes the complementary error function of `x` element-wise. *)
 val erfc
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double ] as 't) t
   -> ([< `float | `double ] as 't) t
 
@@ -2336,12 +2465,14 @@ val erfc
 (* Exit makes its input `data` available to the parent frame. *)
 val exit
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> 't t
   -> 't t
 
 (* Computes exponential of x element-wise.  \\(y = e^x\\). *)
 val exp
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double | `complex64 ] as 't) t
   -> ([< `float | `double | `complex64 ] as 't) t
 
@@ -2378,6 +2509,7 @@ This operation is related to `squeeze()`, which removes dimensions of
 size 1. *)
 val expandDims
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> 't t
   -> [ `int32 ] t
   -> 't t
@@ -2409,6 +2541,7 @@ val extractGlimpse
   -> ?centered:bool
   -> ?normalized:bool
   -> ?uniform_noise:bool
+  -> ?control_inputs:Node.p list
   -> [ `float ] t
   -> [ `int32 ] t
   -> [ `float ] t
@@ -2421,24 +2554,28 @@ val extractImagePatches
   -> strides:int list
   -> rates:int list
   -> padding:string
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int32 | `int64 ] as 't) t
   -> ([< `float | `double | `int32 | `int64 ] as 't) t
 
 (* Compute the 1-dimensional discrete Fourier Transform. *)
 val fFT
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> [ `complex64 ] t
   -> [ `complex64 ] t
 
 (* Compute the 2-dimensional discrete Fourier Transform. *)
 val fFT2D
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> [ `complex64 ] t
   -> [ `complex64 ] t
 
 (* Compute the 3-dimensional discrete Fourier Transform. *)
 val fFT3D
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> [ `complex64 ] t
   -> [ `complex64 ] t
 
@@ -2450,12 +2587,14 @@ val fIFOQueue
   -> ?capacity:int
   -> ?container:string
   -> ?shared_name:string
+  -> ?control_inputs:Node.p list
   -> unit
   -> [ `string ] t
 
 (* Output a fact about factorials. *)
 val fact
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> unit
   -> [ `string ] t
 
@@ -2471,6 +2610,7 @@ fill([2, 3], 9) ==> [[9, 9, 9]
 ``` *)
 val fill
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> [ `int32 ] t
   -> 't t
   -> 't t
@@ -2483,6 +2623,7 @@ val fixedLengthRecordReader
   -> ?footer_bytes:int
   -> ?container:string
   -> ?shared_name:string
+  -> ?control_inputs:Node.p list
   -> unit
   -> [ `string ] t
 
@@ -2515,12 +2656,14 @@ val fixedUnigramCandidateSampler
   -> ?unigrams:float list
   -> ?seed:int
   -> ?seed2:int
+  -> ?control_inputs:Node.p list
   -> [ `int64 ] t
   -> [ `int64 ] t * [ `float ] t * [ `float ] t
 
 (* Returns element-wise largest integer not greater than x. *)
 val floor
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double ] as 't) t
   -> ([< `float | `double ] as 't) t
 
@@ -2546,6 +2689,7 @@ this operation will permute `params` accordingly.
 val gather
   :  ?name:string
   -> ?validate_indices:bool
+  -> ?control_inputs:Node.p list
   -> 'tparams t
   -> ([< `int32 | `int64 ] as 'tindices) t
   -> 'tparams t
@@ -2631,6 +2775,7 @@ Batched indexing into a 3-tensor:
     output = [['b0', 'b1'], ['d0', 'c1']] *)
 val gatherNd
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> 'tparams t
   -> ([< `int32 | `int64 ] as 'tindices) t
   -> 'tparams t
@@ -2638,6 +2783,7 @@ val gatherNd
 (* Store the input tensor in the state of the current session. *)
 val getSessionHandle
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> 't t
   -> [ `string ] t
 
@@ -2645,6 +2791,7 @@ val getSessionHandle
 val getSessionTensor
   :  ?name:string
   -> type_:'dtype Type.t
+  -> ?control_inputs:Node.p list
   -> [ `string ] t
   -> 'dtype t
 
@@ -2653,6 +2800,7 @@ val getSessionTensor
 [here](http://docs.scipy.org/doc/numpy/user/basics.broadcasting.html) *)
 val greater
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int32 | `int64 ] as 't) t
   -> ([< `float | `double | `int32 | `int64 ] as 't) t
   -> [ `bool ] t
@@ -2662,6 +2810,7 @@ val greater
 [here](http://docs.scipy.org/doc/numpy/user/basics.broadcasting.html) *)
 val greaterEqual
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int32 | `int64 ] as 't) t
   -> ([< `float | `double | `int32 | `int64 ] as 't) t
   -> [ `bool ] t
@@ -2674,6 +2823,7 @@ are in `[0,1]`.
 See `rgb_to_hsv` for a description of the HSV encoding. *)
 val hSVToRGB
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double ] as 't) t
   -> ([< `float | `double ] as 't) t
 
@@ -2685,6 +2835,7 @@ val hashTable
   :  ?name:string
   -> ?container:string
   -> ?shared_name:string
+  -> ?control_inputs:Node.p list
   -> unit
   -> [ `string ] t
 
@@ -2696,6 +2847,7 @@ has one summary value containing a histogram for `values`.
 This op reports an `InvalidArgument` error if any value is not finite. *)
 val histogramSummary
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> [ `string ] t
   -> ([< `float | `double | `int32 | `int64 ] as 't) t
   -> [ `string ] t
@@ -2704,24 +2856,28 @@ val histogramSummary
 (* Compute the inverse 1-dimensional discrete Fourier Transform. *)
 val iFFT
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> [ `complex64 ] t
   -> [ `complex64 ] t
 
 (* Compute the inverse 2-dimensional discrete Fourier Transform. *)
 val iFFT2D
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> [ `complex64 ] t
   -> [ `complex64 ] t
 
 (* Compute the inverse 3-dimensional discrete Fourier Transform. *)
 val iFFT3D
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> [ `complex64 ] t
   -> [ `complex64 ] t
 
 (* Return a tensor with the same shape and contents as the input tensor or value. *)
 val identity
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> 't t
   -> 't t
 
@@ -2732,6 +2888,7 @@ val identityReader
   :  ?name:string
   -> ?container:string
   -> ?shared_name:string
+  -> ?control_inputs:Node.p list
   -> unit
   -> [ `string ] t
 
@@ -2751,6 +2908,7 @@ Note, above `Q(a, x)` (`Igammac`) is the upper regularized complete
 Gamma function. *)
 val igamma
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double ] as 't) t
   -> ([< `float | `double ] as 't) t
   -> ([< `float | `double ] as 't) t
@@ -2771,6 +2929,7 @@ Note, above `P(a, x)` (`Igamma`) is the lower regularized complete
 Gamma function. *)
 val igammac
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double ] as 't) t
   -> ([< `float | `double ] as 't) t
   -> ([< `float | `double ] as 't) t
@@ -2790,6 +2949,7 @@ tf.imag(input) ==> [4.75, 5.75]
 val imag
   :  ?name:string
   -> type_:([< `float | `double ] as 'tout) Type.t
+  -> ?control_inputs:Node.p list
   -> ([< `complex64 ] as 't) t
   -> ([< `float | `double ] as 'tout) t
 
@@ -2830,6 +2990,7 @@ red. *)
 val imageSummary
   :  ?name:string
   -> ?max_images:int
+  -> ?control_inputs:Node.p list
   -> [ `string ] t
   -> ([< `float ] as 't) t
   -> [ `string ] t
@@ -2841,6 +3002,7 @@ val immutableConst
   -> type_:'dtype Type.t
   -> shape:Dim.t list
   -> memory_region_name:string
+  -> ?control_inputs:Node.p list
   -> unit
   -> 'dtype t
 
@@ -2862,6 +3024,7 @@ $$out_i = predictions_{i, targets_i} \in TopKIncludingTies(predictions_i)$$ *)
 val inTopK
   :  ?name:string
   -> k:int
+  -> ?control_inputs:Node.p list
   -> [ `float ] t
   -> ([< `int32 | `int64 ] as 't) t
   -> [ `bool ] t
@@ -2869,6 +3032,7 @@ val inTopK
 (* Table initializer that takes two tensors for keys and values respectively. *)
 val initializeTable
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> [ `string ] t
   -> 'tkey t
   -> 'tval t
@@ -2891,6 +3055,7 @@ val initializeTableFromTextFile
   -> value_index:int
   -> ?vocab_size:int
   -> ?delimiter:string
+  -> ?control_inputs:Node.p list
   -> [ `string ] t
   -> [ `string ] t
   -> [ `unit ] t
@@ -2899,6 +3064,7 @@ val initializeTableFromTextFile
 (* I.e., \\(y = 1 / x\\). *)
 val inv
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int32 | `int64 | `complex64 ] as 't) t
   -> ([< `float | `double | `int32 | `int64 | `complex64 ] as 't) t
 
@@ -2920,24 +3086,28 @@ invert_permutation(x) ==> [2, 4, 3, 0, 1]
 ``` *)
 val invertPermutation
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> [ `int32 ] t
   -> [ `int32 ] t
 
 (* Returns which elements of x are finite. *)
 val isFinite
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double ] as 't) t
   -> [ `bool ] t
 
 (* Returns which elements of x are Inf. *)
 val isInf
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double ] as 't) t
   -> [ `bool ] t
 
 (* Returns which elements of x are NaN. *)
 val isNan
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double ] as 't) t
   -> [ `bool ] t
 
@@ -2945,6 +3115,7 @@ val isNan
 (* Outputs boolean scalar indicating whether the tensor has been initialized. *)
 val isVariableInitialized
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> 'dtype t
   -> [ `bool ] t
 
@@ -2954,6 +3125,7 @@ val isVariableInitialized
     output = sum(t ** 2) / 2 *)
 val l2Loss
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
 
@@ -2976,6 +3148,7 @@ val lRN
   -> ?bias:float
   -> ?alpha:float
   -> ?beta:float
+  -> ?control_inputs:Node.p list
   -> ([< `float ] as 't) t
   -> ([< `float ] as 't) t
 
@@ -2986,6 +3159,7 @@ val lRNGrad
   -> ?bias:float
   -> ?alpha:float
   -> ?beta:float
+  -> ?control_inputs:Node.p list
   -> ([< `float ] as 't) t
   -> ([< `float ] as 't) t
   -> ([< `float ] as 't) t
@@ -3009,6 +3183,7 @@ val learnedUnigramCandidateSampler
   -> range_max:int
   -> ?seed:int
   -> ?seed2:int
+  -> ?control_inputs:Node.p list
   -> [ `int64 ] t
   -> [ `int64 ] t * [ `float ] t * [ `float ] t
 
@@ -3017,6 +3192,7 @@ val learnedUnigramCandidateSampler
 [here](http://docs.scipy.org/doc/numpy/user/basics.broadcasting.html) *)
 val less
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int32 | `int64 ] as 't) t
   -> ([< `float | `double | `int32 | `int64 ] as 't) t
   -> [ `bool ] t
@@ -3026,6 +3202,7 @@ val less
 [here](http://docs.scipy.org/doc/numpy/user/basics.broadcasting.html) *)
 val lessEqual
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int32 | `int64 ] as 't) t
   -> ([< `float | `double | `int32 | `int64 ] as 't) t
   -> [ `bool ] t
@@ -3033,6 +3210,7 @@ val lessEqual
 (* Computes the log of the absolute value of `Gamma(x)` element-wise. *)
 val lgamma
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double ] as 't) t
   -> ([< `float | `double ] as 't) t
 
@@ -3048,6 +3226,7 @@ tf.linspace(10.0, 12.0, 3, name='linspace') => [ 10.0  11.0  12.0]
 ``` *)
 val linSpace
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double ] as 't) t
   -> ([< `float | `double ] as 't) t
   -> [ `int32 ] t
@@ -3077,6 +3256,7 @@ idx ==> [1, 3, 5]
 ``` *)
 val listDiff
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> 't t
   -> 't t
   -> 't t * [ `int32 ] t
@@ -3085,6 +3265,7 @@ val listDiff
 (* I.e., \\(y = \log_e x\\). *)
 val log
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double | `complex64 ] as 't) t
   -> ([< `float | `double | `complex64 ] as 't) t
 
@@ -3094,6 +3275,7 @@ val log
     logsoftmax[i, j] = logits[i, j] - log(sum(exp(logits[i]))) *)
 val logSoftmax
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double ] as 't) t
   -> ([< `float | `double ] as 't) t
 
@@ -3115,6 +3297,7 @@ val logUniformCandidateSampler
   -> range_max:int
   -> ?seed:int
   -> ?seed2:int
+  -> ?control_inputs:Node.p list
   -> [ `int64 ] t
   -> [ `int64 ] t * [ `float ] t * [ `float ] t
 
@@ -3123,6 +3306,7 @@ val logUniformCandidateSampler
 [here](http://docs.scipy.org/doc/numpy/user/basics.broadcasting.html) *)
 val logicalAnd
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> [ `bool ] t
   -> [ `bool ] t
   -> [ `bool ] t
@@ -3130,6 +3314,7 @@ val logicalAnd
 (* Returns the truth value of NOT x element-wise. *)
 val logicalNot
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> [ `bool ] t
   -> [ `bool ] t
 
@@ -3138,6 +3323,7 @@ val logicalNot
 [here](http://docs.scipy.org/doc/numpy/user/basics.broadcasting.html) *)
 val logicalOr
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> [ `bool ] t
   -> [ `bool ] t
   -> [ `bool ] t
@@ -3147,6 +3333,7 @@ val lookupTableExport
   :  ?name:string
   -> type_:'tkeys Type.t
   -> type_1:'tvalues Type.t
+  -> ?control_inputs:Node.p list
   -> [ `string ] t
   -> 'tkeys t * 'tvalues t
 
@@ -3158,6 +3345,7 @@ The scalar `default_value` is the value output for keys not present in the
 table. It must also be of the same type as the table values. *)
 val lookupTableFind
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> [ `string ] t
   -> 'tin t
   -> 'tout t
@@ -3168,6 +3356,7 @@ val lookupTableFind
 The tensor `values` must be of the type of the table values. *)
 val lookupTableImport
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> [ `string ] t
   -> 'tin t
   -> 'tout t
@@ -3178,6 +3367,7 @@ val lookupTableImport
 The tensor `values` must be of the type of the table values. *)
 val lookupTableInsert
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> [ `string ] t
   -> 'tin t
   -> 'tout t
@@ -3186,6 +3376,7 @@ val lookupTableInsert
 (* Computes the number of elements in the given table. *)
 val lookupTableSize
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> [ `string ] t
   -> [ `int64 ] t
 
@@ -3194,6 +3385,7 @@ val lookupTableSize
 'pivot' switches of a loop. *)
 val loopCond
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> [ `bool ] t
   -> [ `bool ] t
 
@@ -3209,6 +3401,7 @@ val matMul
   :  ?name:string
   -> ?transpose_a:bool
   -> ?transpose_b:bool
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int32 | `complex64 ] as 't) t
   -> ([< `float | `double | `int32 | `complex64 ] as 't) t
   -> ([< `float | `double | `int32 | `complex64 ] as 't) t
@@ -3218,12 +3411,14 @@ val matMul
 basename portion of the pattern, not in the directory portion. *)
 val matchingFiles
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> [ `string ] t
   -> [ `string ] t
 
 (* Computes the determinant of a square matrix. *)
 val matrixDeterminant
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double ] as 't) t
   -> ([< `float | `double ] as 't) t
 
@@ -3238,6 +3433,7 @@ garbage result. *)
 val matrixInverse
   :  ?name:string
   -> ?adjoint:bool
+  -> ?control_inputs:Node.p list
   -> ([< `double | `float ] as 't) t
   -> ([< `double | `float ] as 't) t
 
@@ -3245,6 +3441,7 @@ val matrixInverse
 val matrixSolve
   :  ?name:string
   -> ?adjoint:bool
+  -> ?control_inputs:Node.p list
   -> ([< `double | `float ] as 't) t
   -> ([< `double | `float ] as 't) t
   -> ([< `double | `float ] as 't) t
@@ -3279,6 +3476,7 @@ typically 6-7 times slower than the fast path. If `fast` is `False` then
 val matrixSolveLs
   :  ?name:string
   -> ?fast:bool
+  -> ?control_inputs:Node.p list
   -> ([< `double | `float ] as 't) t
   -> ([< `double | `float ] as 't) t
   -> [ `double ] t
@@ -3303,6 +3501,7 @@ val matrixTriangularSolve
   :  ?name:string
   -> ?lower:bool
   -> ?adjoint:bool
+  -> ?control_inputs:Node.p list
   -> ([< `double | `float ] as 't) t
   -> ([< `double | `float ] as 't) t
   -> ([< `double | `float ] as 't) t
@@ -3315,6 +3514,7 @@ retained with length 1. *)
 val max
   :  ?name:string
   -> ?keep_dims:bool
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
   -> [ `int32 ] t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
@@ -3326,6 +3526,7 @@ val maxPool
   -> strides:int list
   -> padding:string
   -> ?data_format:string
+  -> ?control_inputs:Node.p list
   -> ([< `float ] as 't) t
   -> ([< `float ] as 't) t
 
@@ -3335,6 +3536,7 @@ val maxPool3D
   -> ksize:int list
   -> strides:int list
   -> padding:string
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
 
@@ -3344,6 +3546,7 @@ val maxPool3DGrad
   -> ksize:int list
   -> strides:int list
   -> padding:string
+  -> ?control_inputs:Node.p list
   -> [ `float ] t
   -> [ `float ] t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
@@ -3356,6 +3559,7 @@ val maxPoolGrad
   -> strides:int list
   -> padding:string
   -> ?data_format:string
+  -> ?control_inputs:Node.p list
   -> ([< `float ] as 't) t
   -> ([< `float ] as 't) t
   -> ([< `float ] as 't) t
@@ -3367,6 +3571,7 @@ val maxPoolGradWithArgmax
   -> ksize:int list
   -> strides:int list
   -> padding:string
+  -> ?control_inputs:Node.p list
   -> ([< `float ] as 't) t
   -> ([< `float ] as 't) t
   -> ([< `int32 | `int64 ] as 'targmax) t
@@ -3382,6 +3587,7 @@ val maxPoolWithArgmax
   -> ksize:int list
   -> strides:int list
   -> padding:string
+  -> ?control_inputs:Node.p list
   -> ([< `float ] as 't) t
   -> ([< `float ] as 't) t * ([< `int32 | `int64 ] as 'targmax) t
 
@@ -3390,6 +3596,7 @@ val maxPoolWithArgmax
 [here](http://docs.scipy.org/doc/numpy/user/basics.broadcasting.html) *)
 val maximum
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int32 | `int64 ] as 't) t
   -> ([< `float | `double | `int32 | `int64 ] as 't) t
   -> ([< `float | `double | `int32 | `int64 ] as 't) t
@@ -3402,6 +3609,7 @@ retained with length 1. *)
 val mean
   :  ?name:string
   -> ?keep_dims:bool
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
   -> [ `int32 ] t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
@@ -3414,6 +3622,7 @@ It is usually combined with `Switch` to implement branching.
 `value_index` to its index in `inputs`. *)
 val merge
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> 't t list
   -> 't t * [ `int32 ] t
 
@@ -3427,6 +3636,7 @@ When the Op is run, it reports an `InvalidArgument` error if multiple values
 in the summaries to merge use the same tag. *)
 val mergeSummary
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> [ `string ] t list
   -> [ `string ] t
 
@@ -3438,6 +3648,7 @@ retained with length 1. *)
 val min
   :  ?name:string
   -> ?keep_dims:bool
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
   -> [ `int32 ] t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
@@ -3447,6 +3658,7 @@ val min
 [here](http://docs.scipy.org/doc/numpy/user/basics.broadcasting.html) *)
 val minimum
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int32 | `int64 ] as 't) t
   -> ([< `float | `double | `int32 | `int64 ] as 't) t
   -> ([< `float | `double | `int32 | `int64 ] as 't) t
@@ -3480,6 +3692,7 @@ pad(t, paddings) ==> [[2, 1, 1, 2, 3, 3, 2]
 val mirrorPad
   :  ?name:string
   -> mode:string
+  -> ?control_inputs:Node.p list
   -> 't t
   -> [ `int32 ] t
   -> 't t
@@ -3506,6 +3719,7 @@ pad(t, paddings) ==> [[ 1,  5]
 val mirrorPadGrad
   :  ?name:string
   -> mode:string
+  -> ?control_inputs:Node.p list
   -> 't t
   -> [ `int32 ] t
   -> 't t
@@ -3515,6 +3729,7 @@ val mirrorPadGrad
 [here](http://docs.scipy.org/doc/numpy/user/basics.broadcasting.html) *)
 val mod_
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> ([< `int32 | `int64 | `float | `double ] as 't) t
   -> ([< `int32 | `int64 | `float | `double ] as 't) t
   -> ([< `int32 | `int64 | `float | `double ] as 't) t
@@ -3524,6 +3739,7 @@ val mod_
 [here](http://docs.scipy.org/doc/numpy/user/basics.broadcasting.html) *)
 val mul
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int32 | `int64 | `complex64 ] as 't) t
   -> ([< `float | `double | `int32 | `int64 | `complex64 ] as 't) t
   -> ([< `float | `double | `int32 | `int64 | `complex64 ] as 't) t
@@ -3533,6 +3749,7 @@ val multinomial
   :  ?name:string
   -> ?seed:int
   -> ?seed2:int
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int32 | `int64 ] as 't) t
   -> [ `int32 ] t
   -> [ `int64 ] t
@@ -3545,6 +3762,7 @@ val mutableHashTable
   :  ?name:string
   -> ?container:string
   -> ?shared_name:string
+  -> ?control_inputs:Node.p list
   -> unit
   -> [ `string ] t
 
@@ -3557,6 +3775,7 @@ val mutableHashTableOfTensors
   -> ?container:string
   -> ?shared_name:string
   -> ?value_shape:Dim.t list
+  -> ?control_inputs:Node.p list
   -> unit
   -> [ `string ] t
 
@@ -3564,6 +3783,7 @@ val mutableHashTableOfTensors
 (* I.e., \\(y = -x\\). *)
 val neg
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int32 | `int64 | `complex64 ] as 't) t
   -> ([< `float | `double | `int32 | `int64 | `complex64 ] as 't) t
 
@@ -3572,6 +3792,7 @@ val negTrain
   :  ?name:string
   -> vocab_count:int list
   -> num_negative_samples:int
+  -> ?control_inputs:Node.p list
   -> [ `float ] t
   -> [ `float ] t
   -> [ `int32 ] t
@@ -3582,12 +3803,14 @@ val negTrain
 (* Makes its input available to the next iteration. *)
 val nextIteration
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> 't t
   -> 't t
 
 (* Does nothing. Only useful as a placeholder for control edges. *)
 val noOp
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> unit
   -> [ `unit ] t
 
@@ -3613,6 +3836,7 @@ using the tf.gather operation.  For example:
 val nonMaxSuppression
   :  ?name:string
   -> ?iou_threshold:float
+  -> ?control_inputs:Node.p list
   -> [ `float ] t
   -> [ `float ] t
   -> [ `int32 ] t
@@ -3623,6 +3847,7 @@ val nonMaxSuppression
 [here](http://docs.scipy.org/doc/numpy/user/basics.broadcasting.html) *)
 val notEqual
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int32 | `int64 | `complex64 | `string | `bool ] as 't) t
   -> ([< `float | `double | `int32 | `int64 | `complex64 | `string | `bool ] as 't) t
   -> [ `bool ] t
@@ -3719,6 +3944,7 @@ Then output is `[2 x 2 x 3]`:
 val oneHot
   :  ?name:string
   -> ?axis:int
+  -> ?control_inputs:Node.p list
   -> ([< `int32 | `int64 ] as 'tI) t
   -> [ `int32 ] t
   -> 't t
@@ -3748,6 +3974,7 @@ This is the opposite of `unpack`. *)
 val pack
   :  ?name:string
   -> ?axis:int
+  -> ?control_inputs:Node.p list
   -> 't t list
   -> 't t
 
@@ -3776,6 +4003,7 @@ pad(t, paddings) ==> [[0, 0, 0, 0, 0, 0]
 ``` *)
 val pad
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> 't t
   -> [ `int32 ] t
   -> 't t
@@ -3791,6 +4019,7 @@ val paddingFIFOQueue
   -> ?capacity:int
   -> ?container:string
   -> ?shared_name:string
+  -> ?control_inputs:Node.p list
   -> unit
   -> [ `string ] t
 
@@ -3801,6 +4030,7 @@ val parameterizedTruncatedNormal
   :  ?name:string
   -> ?seed:int
   -> ?seed2:int
+  -> ?control_inputs:Node.p list
   -> ([< `int32 | `int64 ] as 't) t
   -> ([< `float | `double ] as 'dtype) t
   -> ([< `float | `double ] as 'dtype) t
@@ -3812,6 +4042,7 @@ val parameterizedTruncatedNormal
 val parseTensor
   :  ?name:string
   -> type_:'out_type Type.t
+  -> ?control_inputs:Node.p list
   -> [ `string ] t
   -> 'out_type t
 
@@ -3823,6 +4054,7 @@ val placeholder
   :  ?name:string
   -> type_:'dtype Type.t
   -> ?shape:Dim.t list
+  -> ?control_inputs:Node.p list
   -> unit
   -> 'dtype t
 
@@ -3830,6 +4062,7 @@ val placeholder
 val placeholderWithDefault
   :  ?name:string
   -> shape:Dim.t list
+  -> ?control_inputs:Node.p list
   -> 'dtype t
   -> 'dtype t
 
@@ -3842,6 +4075,7 @@ val placeholderWithDefault
 where \\(\psi(x)\\) is the digamma function. *)
 val polygamma
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double ] as 't) t
   -> ([< `float | `double ] as 't) t
   -> ([< `float | `double ] as 't) t
@@ -3857,6 +4091,7 @@ tf.pow(x, y) ==> [[256, 65536], [9, 27]]
 ``` *)
 val pow
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int32 | `int64 | `complex64 ] as 't) t
   -> ([< `float | `double | `int32 | `int64 | `complex64 ] as 't) t
   -> ([< `float | `double | `int32 | `int64 | `complex64 ] as 't) t
@@ -3874,6 +4109,7 @@ val priorityQueue
   -> ?capacity:int
   -> ?container:string
   -> ?shared_name:string
+  -> ?control_inputs:Node.p list
   -> unit
   -> [ `string ] t
 
@@ -3885,6 +4121,7 @@ retained with length 1. *)
 val prod
   :  ?name:string
   -> ?keep_dims:bool
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
   -> [ `int32 ] t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
@@ -3946,6 +4183,7 @@ val quantizeAndDequantize
   -> ?range_given:bool
   -> ?input_min:float
   -> ?input_max:float
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double ] as 't) t
   -> ([< `float | `double ] as 't) t
 
@@ -3958,12 +4196,14 @@ operations that would block will fail immediately. *)
 val queueClose
   :  ?name:string
   -> ?cancel_pending_enqueues:bool
+  -> ?control_inputs:Node.p list
   -> [ `string ] t
   -> [ `unit ] t
 
 (* Computes the number of elements in the given queue. *)
 val queueSize
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> [ `string ] t
   -> [ `int32 ] t
 
@@ -3977,6 +4217,7 @@ are in `[0,1]`.
 corresponds to pure red, hue 1/3 is pure green, and 2/3 is pure blue. *)
 val rGBToHSV
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double ] as 't) t
   -> ([< `float | `double ] as 't) t
 
@@ -3991,6 +4232,7 @@ val randomCrop
   :  ?name:string
   -> ?seed:int
   -> ?seed2:int
+  -> ?control_inputs:Node.p list
   -> ([< `int32 | `int64 | `float | `double ] as 't) t
   -> [ `int64 ] t
   -> ([< `int32 | `int64 | `float | `double ] as 't) t
@@ -4003,6 +4245,7 @@ val randomGamma
   :  ?name:string
   -> ?seed:int
   -> ?seed2:int
+  -> ?control_inputs:Node.p list
   -> ([< `int32 | `int64 ] as 's) t
   -> ([< `float | `double ] as 't) t
   -> ([< `float | `double ] as 't) t
@@ -4021,6 +4264,7 @@ val randomShuffle
   :  ?name:string
   -> ?seed:int
   -> ?seed2:int
+  -> ?control_inputs:Node.p list
   -> 't t
   -> 't t
 
@@ -4035,6 +4279,7 @@ val randomShuffleQueue
   -> ?seed2:int
   -> ?container:string
   -> ?shared_name:string
+  -> ?control_inputs:Node.p list
   -> unit
   -> [ `string ] t
 
@@ -4045,6 +4290,7 @@ val randomStandardNormal
   -> type_:([< `float | `double ] as 'dtype) Type.t
   -> ?seed:int
   -> ?seed2:int
+  -> ?control_inputs:Node.p list
   -> ([< `int32 | `int64 ] as 't) t
   -> ([< `float | `double ] as 'dtype) t
 
@@ -4056,6 +4302,7 @@ val randomUniform
   -> type_:([< `float | `double ] as 'dtype) Type.t
   -> ?seed:int
   -> ?seed2:int
+  -> ?control_inputs:Node.p list
   -> ([< `int32 | `int64 ] as 't) t
   -> ([< `float | `double ] as 'dtype) t
 
@@ -4071,6 +4318,7 @@ val randomUniformInt
   :  ?name:string
   -> ?seed:int
   -> ?seed2:int
+  -> ?control_inputs:Node.p list
   -> ([< `int32 | `int64 ] as 't) t
   -> ([< `int32 | `int64 ] as 'tout) t
   -> ([< `int32 | `int64 ] as 'tout) t
@@ -4090,6 +4338,7 @@ tf.range(start, limit, delta) ==> [3, 6, 9, 12, 15]
 ``` *)
 val range
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> [ `int32 ] t
   -> [ `int32 ] t
   -> [ `int32 ] t
@@ -4111,12 +4360,14 @@ of a tensor is the number of indices required to uniquely select each element
 of the tensor. Rank is also known as 'order', 'degree', or 'ndims.' *)
 val rank
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> 't t
   -> [ `int32 ] t
 
 (* Reads and outputs the entire contents of the input filename. *)
 val readFile
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> [ `string ] t
   -> [ `string ] t
 
@@ -4125,12 +4376,14 @@ val readFile
 succeeded. *)
 val readerNumRecordsProduced
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> [ `string ] t
   -> [ `int64 ] t
 
 (* Returns the number of work units this Reader has finished processing. *)
 val readerNumWorkUnitsCompleted
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> [ `string ] t
   -> [ `int64 ] t
 
@@ -4140,6 +4393,7 @@ Reader needs to start reading from a new file since it has finished
 with the previous file). *)
 val readerRead
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> [ `string ] t
   -> [ `string ] t
   -> [ `string ] t * [ `string ] t
@@ -4151,6 +4405,7 @@ with the previous file).
 It may return less than `num_records` even before the last batch. *)
 val readerReadUpTo
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> [ `string ] t
   -> [ `string ] t
   -> [ `int64 ] t
@@ -4159,6 +4414,7 @@ val readerReadUpTo
 (* Restore a Reader to its initial clean state. *)
 val readerReset
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> [ `string ] t
   -> [ `unit ] t
 
@@ -4167,6 +4423,7 @@ val readerReset
 Unimplemented error. *)
 val readerRestoreState
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> [ `string ] t
   -> [ `string ] t
   -> [ `unit ] t
@@ -4176,6 +4433,7 @@ val readerRestoreState
 Unimplemented error. *)
 val readerSerializeState
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> [ `string ] t
   -> [ `string ] t
 
@@ -4194,6 +4452,7 @@ tf.real(input) ==> [-2.25, 3.25]
 val real
   :  ?name:string
   -> type_:([< `float | `double ] as 'tout) Type.t
+  -> ?control_inputs:Node.p list
   -> ([< `complex64 ] as 't) t
   -> ([< `float | `double ] as 'tout) t
 
@@ -4225,6 +4484,7 @@ val reduceJoin
   :  ?name:string
   -> ?keep_dims:bool
   -> ?separator:string
+  -> ?control_inputs:Node.p list
   -> [ `string ] t
   -> [ `int32 ] t
   -> [ `string ] t
@@ -4239,6 +4499,7 @@ val refEnter
   -> frame_name:string
   -> ?is_constant:bool
   -> ?parallel_iterations:int
+  -> ?control_inputs:Node.p list
   -> 't t
   -> 't t
 
@@ -4246,12 +4507,14 @@ val refEnter
 (* Exit makes its input `data` available to the parent frame. *)
 val refExit
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> 't t
   -> 't t
 
 (* Return the same ref tensor as the input ref tensor. *)
 val refIdentity
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> 't t
   -> 't t
 
@@ -4263,18 +4526,21 @@ It is usually combined with `Switch` to implement branching.
 `value_index` to its index in `inputs`. *)
 val refMerge
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> 't t list
   -> 't t * [ `int32 ] t
 
 (* Makes its input available to the next iteration. *)
 val refNextIteration
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> 't t
   -> 't t
 
 (* Forwards the `index`th element of `inputs` to `output`. *)
 val refSelect
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> [ `int32 ] t
   -> 't t list
   -> 't t
@@ -4286,6 +4552,7 @@ the data goes to `output_false`.
 See also `Switch` and `Merge`. *)
 val refSwitch
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> 't t
   -> [ `bool ] t
   -> 't t * 't t
@@ -4293,18 +4560,21 @@ val refSwitch
 (* Computes rectified linear: `max(features, 0)`. *)
 val relu
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int32 | `int64 ] as 't) t
   -> ([< `float | `double | `int32 | `int64 ] as 't) t
 
 (* Computes rectified linear 6: `min(max(features, 0), 6)`. *)
 val relu6
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int32 | `int64 ] as 't) t
   -> ([< `float | `double | `int32 | `int64 ] as 't) t
 
 (* Computes rectified linear 6 gradients for a Relu6 operation. *)
 val relu6Grad
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int32 | `int64 ] as 't) t
   -> ([< `float | `double | `int32 | `int64 ] as 't) t
   -> ([< `float | `double | `int32 | `int64 ] as 't) t
@@ -4312,6 +4582,7 @@ val relu6Grad
 (* Computes rectified linear gradients for a Relu operation. *)
 val reluGrad
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int32 | `int64 ] as 't) t
   -> ([< `float | `double | `int32 | `int64 ] as 't) t
   -> ([< `float | `double | `int32 | `int64 ] as 't) t
@@ -4375,6 +4646,7 @@ reshape(t, []) ==> 7
 ``` *)
 val reshape
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> 't t
   -> [ `int32 ] t
   -> 't t
@@ -4384,6 +4656,7 @@ val reshape
 val resizeArea
   :  ?name:string
   -> ?align_corners:bool
+  -> ?control_inputs:Node.p list
   -> ([< `int32 | `int64 | `float | `double ] as 't) t
   -> [ `int32 ] t
   -> [ `float ] t
@@ -4393,6 +4666,7 @@ val resizeArea
 val resizeBicubic
   :  ?name:string
   -> ?align_corners:bool
+  -> ?control_inputs:Node.p list
   -> ([< `int32 | `int64 | `float | `double ] as 't) t
   -> [ `int32 ] t
   -> [ `float ] t
@@ -4402,6 +4676,7 @@ val resizeBicubic
 val resizeBilinear
   :  ?name:string
   -> ?align_corners:bool
+  -> ?control_inputs:Node.p list
   -> ([< `int32 | `int64 | `float | `double ] as 't) t
   -> [ `int32 ] t
   -> [ `float ] t
@@ -4410,6 +4685,7 @@ val resizeBilinear
 val resizeBilinearGrad
   :  ?name:string
   -> ?align_corners:bool
+  -> ?control_inputs:Node.p list
   -> [ `float ] t
   -> ([< `float | `double ] as 't) t
   -> ([< `float | `double ] as 't) t
@@ -4418,6 +4694,7 @@ val resizeBilinearGrad
 val resizeNearestNeighbor
   :  ?name:string
   -> ?align_corners:bool
+  -> ?control_inputs:Node.p list
   -> ([< `int32 | `int64 | `float | `double ] as 't) t
   -> [ `int32 ] t
   -> ([< `int32 | `int64 | `float | `double ] as 't) t
@@ -4426,6 +4703,7 @@ val resizeNearestNeighbor
 val resizeNearestNeighborGrad
   :  ?name:string
   -> ?align_corners:bool
+  -> ?control_inputs:Node.p list
   -> ([< `int32 | `float | `double ] as 't) t
   -> [ `int32 ] t
   -> ([< `int32 | `float | `double ] as 't) t
@@ -4451,6 +4729,7 @@ val restore
   :  ?name:string
   -> type_:'dt Type.t
   -> ?preferred_shard:int
+  -> ?control_inputs:Node.p list
   -> [ `string ] t
   -> [ `string ] t
   -> 'dt t
@@ -4466,6 +4745,7 @@ val restoreSlice
   :  ?name:string
   -> type_:'dt Type.t
   -> ?preferred_shard:int
+  -> ?control_inputs:Node.p list
   -> [ `string ] t
   -> [ `string ] t
   -> [ `string ] t
@@ -4518,6 +4798,7 @@ reverse(t, dims) ==> [[[[8, 9, 10, 11],
 ``` *)
 val reverse
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> ([< `int32 | `int64 | `bool | `float | `double | `complex64 ] as 't) t
   -> [ `bool ] t
   -> ([< `int32 | `int64 | `bool | `float | `double | `complex64 ] as 't) t
@@ -4581,6 +4862,7 @@ val reverseSequence
   :  ?name:string
   -> seq_dim:int
   -> ?batch_dim:int
+  -> ?control_inputs:Node.p list
   -> 't t
   -> [ `int64 ] t
   -> 't t
@@ -4589,6 +4871,7 @@ val reverseSequence
 (* I.e., \\(y = 1 / \sqrt{x}\\). *)
 val rsqrt
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double | `complex64 ] as 't) t
   -> ([< `float | `double | `complex64 ] as 't) t
 
@@ -4638,6 +4921,7 @@ val sampleDistortedBoundingBox
   -> ?area_range:float list
   -> ?max_attempts:int
   -> ?use_image_if_no_bounding_boxes:bool
+  -> ?control_inputs:Node.p list
   -> ([< `int32 | `int64 ] as 't) t
   -> [ `float ] t
   -> ([< `int32 | `int64 ] as 't) t * ([< `int32 | `int64 ] as 't) t * [ `float ] t
@@ -4647,6 +4931,7 @@ val sampleDistortedBoundingBox
 has a summary value for each tag-value pair in `tags` and `values`. *)
 val scalarSummary
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> [ `string ] t
   -> ([< `float | `double | `int32 | `int64 ] as 't) t
   -> [ `string ] t
@@ -4677,6 +4962,7 @@ Requires `updates.shape = indices.shape + ref.shape[1:]`.
 val scatterAdd
   :  ?name:string
   -> ?use_locking:bool
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
   -> ([< `int32 | `int64 ] as 'tindices) t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
@@ -4706,6 +4992,7 @@ Requires `updates.shape = indices.shape + ref.shape[1:]`.
 val scatterSub
   :  ?name:string
   -> ?use_locking:bool
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
   -> ([< `int32 | `int64 ] as 'tindices) t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
@@ -4738,6 +5025,7 @@ Requires `updates.shape = indices.shape + ref.shape[1:]`.
 val scatterUpdate
   :  ?name:string
   -> ?use_locking:bool
+  -> ?control_inputs:Node.p list
   -> 't t
   -> ([< `int32 | `int64 ] as 'tindices) t
   -> 't t
@@ -4756,6 +5044,7 @@ that `segment_ids[j] == i`.
 </div> *)
 val segmentMax
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int32 | `int64 ] as 't) t
   -> ([< `int32 | `int64 ] as 'tindices) t
   -> ([< `float | `double | `int32 | `int64 ] as 't) t
@@ -4775,6 +5064,7 @@ values summed.
 </div> *)
 val segmentMean
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int32 | `int64 ] as 't) t
   -> ([< `int32 | `int64 ] as 'tindices) t
   -> ([< `float | `double | `int32 | `int64 ] as 't) t
@@ -4793,6 +5083,7 @@ that `segment_ids[j] == i`.
 </div> *)
 val segmentMin
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int32 | `int64 ] as 't) t
   -> ([< `int32 | `int64 ] as 'tindices) t
   -> ([< `float | `double | `int32 | `int64 ] as 't) t
@@ -4811,6 +5102,7 @@ that `segment_ids[j] == i`.
 </div> *)
 val segmentProd
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
   -> ([< `int32 | `int64 ] as 'tindices) t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
@@ -4828,6 +5120,7 @@ that `segment_ids[j] == i`.
 </div> *)
 val segmentSum
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
   -> ([< `int32 | `int64 ] as 'tindices) t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
@@ -4872,6 +5165,7 @@ select(condition, t, e) ==> [[1, 2],
 ``` *)
 val select
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> [ `bool ] t
   -> 't t
   -> 't t
@@ -4885,6 +5179,7 @@ The result is a M+1 x M matrix whose first row is the eigenvalues, and
 subsequent rows are eigenvectors. *)
 val selfAdjointEig
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> ([< `double | `float ] as 't) t
   -> ([< `double | `float ] as 't) t
 
@@ -4902,6 +5197,7 @@ e = self_adjoint_eig(a, compute_v=False)
 val selfAdjointEigV2
   :  ?name:string
   -> ?compute_v:bool
+  -> ?control_inputs:Node.p list
   -> ([< `double | `float ] as 't) t
   -> ([< `double | `float ] as 't) t * ([< `double | `float ] as 't) t
 
@@ -4915,6 +5211,7 @@ rank `R-1`.
 The minibatch size `N` is extracted from `sparse_shape[0]`. *)
 val serializeManySparse
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> [ `int64 ] t
   -> 't t
   -> [ `int64 ] t
@@ -4923,6 +5220,7 @@ val serializeManySparse
 (* Serialize a `SparseTensor` into a string 3-vector (1-D `Tensor`) object. *)
 val serializeSparse
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> [ `int64 ] t
   -> 't t
   -> [ `int64 ] t
@@ -4939,6 +5237,7 @@ shape(t) ==> [2, 2, 3]
 ``` *)
 val shape
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> 't t
   -> [ `int32 ] t
 
@@ -4946,6 +5245,7 @@ val shape
 (* This operation returns N 1-D integer tensors representing shape of `input[i]s`. *)
 val shapeN
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> 't t list
   -> [ `int32 ] t list
 
@@ -4953,6 +5253,7 @@ val shapeN
 (*    %s-%05d-of-%05d, basename, shard, num_shards. *)
 val shardedFilename
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> [ `string ] t
   -> [ `int32 ] t
   -> [ `int32 ] t
@@ -4961,6 +5262,7 @@ val shardedFilename
 (* Generate a glob pattern matching all sharded file names. *)
 val shardedFilespec
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> [ `string ] t
   -> [ `int32 ] t
   -> [ `string ] t
@@ -4969,6 +5271,7 @@ val shardedFilespec
 (* Specifically, `y = 1 / (1 + exp(-x))`. *)
 val sigmoid
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double | `complex64 ] as 't) t
   -> ([< `float | `double | `complex64 ] as 't) t
 
@@ -4977,6 +5280,7 @@ val sigmoid
 `dy` is the corresponding input gradient. *)
 val sigmoidGrad
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double | `complex64 ] as 't) t
   -> ([< `float | `double | `complex64 ] as 't) t
   -> ([< `float | `double | `complex64 ] as 't) t
@@ -4987,12 +5291,14 @@ val sigmoidGrad
 For complex numbers, `y = sign(x) = x / |x|` if `x != 0`, otherwise `y = 0`. *)
 val sign
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int32 | `int64 | `complex64 ] as 't) t
   -> ([< `float | `double | `int32 | `int64 | `complex64 ] as 't) t
 
 (* Computes sin of x element-wise. *)
 val sin
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double | `complex64 ] as 't) t
   -> ([< `float | `double | `complex64 ] as 't) t
 
@@ -5008,6 +5314,7 @@ size(t) ==> 12
 ``` *)
 val size
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> 't t
   -> [ `int32 ] t
 
@@ -5019,6 +5326,7 @@ val skipgram
   -> ?window_size:int
   -> ?min_count:int
   -> ?subsample:float
+  -> ?control_inputs:Node.p list
   -> unit
   -> [ `string ] t * [ `int32 ] t * [ `int64 ] t * [ `int32 ] t * [ `int64 ] t * [ `int32 ] t * [ `int32 ] t
 
@@ -5031,6 +5339,7 @@ whose values are extracted from 'input' starting at the offsets in
   0 <= begin[i] <= begin[i] + size[i] <= Di  for i in [0, n) *)
 val slice
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> 't t
   -> ([< `int32 | `int64 ] as 'index) t
   -> ([< `int32 | `int64 ] as 'index) t
@@ -5042,6 +5351,7 @@ val slice
     softmax[i, j] = exp(logits[i, j]) / sum_j(exp(logits[i, j])) *)
 val softmax
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double ] as 't) t
   -> ([< `float | `double ] as 't) t
 
@@ -5049,6 +5359,7 @@ val softmax
 (* Inputs are the logits, not probabilities. *)
 val softmaxCrossEntropyWithLogits
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double ] as 't) t
   -> ([< `float | `double ] as 't) t
   -> ([< `float | `double ] as 't) t * ([< `float | `double ] as 't) t
@@ -5056,12 +5367,14 @@ val softmaxCrossEntropyWithLogits
 (* Computes softplus: `log(exp(features) + 1)`. *)
 val softplus
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int32 | `int64 ] as 't) t
   -> ([< `float | `double | `int32 | `int64 ] as 't) t
 
 (* Computes softplus gradients for a softplus operation. *)
 val softplusGrad
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int32 | `int64 ] as 't) t
   -> ([< `float | `double | `int32 | `int64 ] as 't) t
   -> ([< `float | `double | `int32 | `int64 ] as 't) t
@@ -5069,12 +5382,14 @@ val softplusGrad
 (* Computes softsign: `features / (abs(features) + 1)`. *)
 val softsign
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int32 | `int64 ] as 't) t
   -> ([< `float | `double | `int32 | `int64 ] as 't) t
 
 (* Computes softsign gradients for a softsign operation. *)
 val softsignGrad
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int32 | `int64 ] as 't) t
   -> ([< `float | `double | `int32 | `int64 ] as 't) t
   -> ([< `float | `double | `int32 | `int64 ] as 't) t
@@ -5088,6 +5403,7 @@ block size. *)
 val spaceToBatch
   :  ?name:string
   -> block_size:int
+  -> ?control_inputs:Node.p list
   -> 't t
   -> [ `int32 ] t
   -> 't t
@@ -5167,6 +5483,7 @@ x = [[[[1, 2, 3, 4],
 val spaceToDepth
   :  ?name:string
   -> block_size:int
+  -> ?control_inputs:Node.p list
   -> 't t
   -> 't t
 
@@ -5186,6 +5503,7 @@ only for a positive value.
 In the following shapes, `nnz` is the count after taking `thresh` into account. *)
 val sparseAdd
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> [ `int64 ] t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
   -> [ `int64 ] t
@@ -5202,6 +5520,7 @@ non-empty values of the sum, and outputs the gradients w.r.t. the non-empty
 values of A and B. *)
 val sparseAddGrad
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
   -> [ `int64 ] t
   -> [ `int64 ] t
@@ -5212,6 +5531,7 @@ val sparseAddGrad
 val sparseApplyAdadelta
   :  ?name:string
   -> ?use_locking:bool
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
@@ -5229,6 +5549,7 @@ var -= lr * grad * (1 / sqrt(accum)) *)
 val sparseApplyAdagrad
   :  ?name:string
   -> ?use_locking:bool
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
@@ -5246,6 +5567,7 @@ accum = accum_new *)
 val sparseApplyFtrl
   :  ?name:string
   -> ?use_locking:bool
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
@@ -5268,6 +5590,7 @@ val sparseApplyMomentum
   :  ?name:string
   -> ?use_locking:bool
   -> ?use_nesterov:bool
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
@@ -5285,6 +5608,7 @@ var = sign(prox_v)/(1+lr*l2) * max{ |prox_v|-lr*l1,0} *)
 val sparseApplyProximalAdagrad
   :  ?name:string
   -> ?use_locking:bool
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
@@ -5301,6 +5625,7 @@ var = sign(prox_v)/(1+alpha*l2) * max{ |prox_v|-alpha*l1,0} *)
 val sparseApplyProximalGradientDescent
   :  ?name:string
   -> ?use_locking:bool
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
@@ -5323,6 +5648,7 @@ var <- var - mom *)
 val sparseApplyRMSProp
   :  ?name:string
   -> ?use_locking:bool
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
@@ -5379,6 +5705,7 @@ Graphically this is equivalent to doing
 val sparseConcat
   :  ?name:string
   -> concat_dim:int
+  -> ?control_inputs:Node.p list
   -> [ `int64 ] t list
   -> 't t list
   -> [ `int64 ] t list
@@ -5395,6 +5722,7 @@ indices and shape, but possibly with different non-zero values.  The output of
 this Op is the resultant non-zero values. *)
 val sparseDenseCwiseAdd
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> [ `int64 ] t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
   -> [ `int64 ] t
@@ -5406,6 +5734,7 @@ val sparseDenseCwiseAdd
 the other direction. *)
 val sparseDenseCwiseDiv
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> [ `int64 ] t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
   -> [ `int64 ] t
@@ -5421,6 +5750,7 @@ contents of the dense tensor (even if it's +/-INF and that INF*0 == NaN).
 the other direction. *)
 val sparseDenseCwiseMul
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> [ `int64 ] t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
   -> [ `int64 ] t
@@ -5438,6 +5768,7 @@ val sparseMatMul
   -> ?transpose_b:bool
   -> ?a_is_sparse:bool
   -> ?b_is_sparse:bool
+  -> ?control_inputs:Node.p list
   -> ([< `float ] as 'ta) t
   -> ([< `float ] as 'tb) t
   -> [ `float ] t
@@ -5458,6 +5789,7 @@ which are interpreted according to the indexing rules in Python. *)
 val sparseReduceSum
   :  ?name:string
   -> ?keep_dims:bool
+  -> ?control_inputs:Node.p list
   -> [ `int64 ] t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
   -> [ `int64 ] t
@@ -5475,6 +5807,7 @@ If the tensor has rank `R` and `N` non-empty values, `input_indices` has
 shape `[N, R]`, input_values has length `N`, and input_shape has length `R`. *)
 val sparseReorder
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> [ `int64 ] t
   -> 't t
   -> [ `int64 ] t
@@ -5498,6 +5831,7 @@ has length `R_out`, then `input_indices` has shape `[N, R_in]`,
 `output_shape` has length `R_out`. *)
 val sparseReshape
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> [ `int64 ] t
   -> [ `int64 ] t
   -> [ `int64 ] t
@@ -5512,6 +5846,7 @@ Like `SegmentMean`, but `segment_ids` can have rank less than `data`'s first
 dimension, selecting a subset of dimension 0, specified by `indices`. *)
 val sparseSegmentMean
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double ] as 't) t
   -> [ `int32 ] t
   -> [ `int32 ] t
@@ -5522,6 +5857,7 @@ val sparseSegmentMean
 value is output_dim0. *)
 val sparseSegmentMeanGrad
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double ] as 't) t
   -> [ `int32 ] t
   -> [ `int32 ] t
@@ -5536,6 +5872,7 @@ Segmentation](../../api_docs/python/math_ops.md#segmentation) for an explanation
 of segments. *)
 val sparseSegmentSqrtN
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double ] as 't) t
   -> [ `int32 ] t
   -> [ `int32 ] t
@@ -5546,6 +5883,7 @@ val sparseSegmentSqrtN
 value is output_dim0. *)
 val sparseSegmentSqrtNGrad
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double ] as 't) t
   -> [ `int32 ] t
   -> [ `int32 ] t
@@ -5584,6 +5922,7 @@ tf.segment_sum(c, tf.constant([0, 0, 1]))
 ``` *)
 val sparseSegmentSum
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int32 | `int64 ] as 't) t
   -> [ `int32 ] t
   -> [ `int32 ] t
@@ -5607,6 +5946,7 @@ Hence, the `SparseTensor` result has exactly the same non-zero indices and
 shape. *)
 val sparseSoftmax
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> [ `int64 ] t
   -> ([< `float | `double ] as 't) t
   -> [ `int64 ] t
@@ -5621,6 +5961,7 @@ given row.
 Inputs are the logits, not probabilities. *)
 val sparseSoftmaxCrossEntropyWithLogits
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double ] as 't) t
   -> ([< `int32 | `int64 ] as 'tlabels) t
   -> ([< `float | `double ] as 't) t * ([< `float | `double ] as 't) t
@@ -5629,6 +5970,7 @@ val sparseSoftmaxCrossEntropyWithLogits
 (* Assumes the two SparseTensors have the same shape, i.e., no broadcasting. *)
 val sparseSparseMaximum
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> [ `int64 ] t
   -> ([< `float | `double | `int32 | `int64 ] as 't) t
   -> [ `int64 ] t
@@ -5641,6 +5983,7 @@ val sparseSparseMaximum
 (* Assumes the two SparseTensors have the same shape, i.e., no broadcasting. *)
 val sparseSparseMinimum
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> [ `int64 ] t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
   -> [ `int64 ] t
@@ -5653,6 +5996,7 @@ val sparseSparseMinimum
 (* This Op does not require `a_indices` be sorted in standard lexicographic order. *)
 val sparseTensorDenseAdd
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> ([< `int32 | `int64 ] as 'tindices) t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
   -> ([< `int32 | `int64 ] as 'tindices) t
@@ -5673,6 +6017,7 @@ val sparseTensorDenseMatMul
   :  ?name:string
   -> ?adjoint_a:bool
   -> ?adjoint_b:bool
+  -> ?control_inputs:Node.p list
   -> [ `int64 ] t
   -> 't t
   -> [ `int64 ] t
@@ -5702,6 +6047,7 @@ are checked during execution. *)
 val sparseToDense
   :  ?name:string
   -> ?validate_indices:bool
+  -> ?control_inputs:Node.p list
   -> ([< `int32 | `int64 ] as 'tindices) t
   -> ([< `int32 | `int64 ] as 'tindices) t
   -> 't t
@@ -5712,6 +6058,7 @@ val sparseToDense
 val split
   :  ?name:string
   -> num_split:int
+  -> ?control_inputs:Node.p list
   -> [ `int32 ] t
   -> 't t
   -> 't t list
@@ -5720,6 +6067,7 @@ val split
 (* I.e., \\(y = \sqrt{x} = x^{1/2}\\). *)
 val sqrt
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double | `complex64 ] as 't) t
   -> ([< `float | `double | `complex64 ] as 't) t
 
@@ -5727,6 +6075,7 @@ val sqrt
 (* I.e., \\(y = x * x = x^2\\). *)
 val square
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int32 | `int64 | `complex64 ] as 't) t
   -> ([< `float | `double | `int32 | `int64 | `complex64 ] as 't) t
 
@@ -5735,6 +6084,7 @@ val square
 [here](http://docs.scipy.org/doc/numpy/user/basics.broadcasting.html) *)
 val squaredDifference
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int32 | `int64 | `complex64 ] as 't) t
   -> ([< `float | `double | `int32 | `int64 | `complex64 ] as 't) t
   -> ([< `float | `double | `int32 | `int64 | `complex64 ] as 't) t
@@ -5761,6 +6111,7 @@ shape(squeeze(t, [2, 4])) ==> [1, 2, 3, 1]
 val squeeze
   :  ?name:string
   -> ?squeeze_dims:int list
+  -> ?control_inputs:Node.p list
   -> 't t
   -> 't t
 
@@ -5768,12 +6119,14 @@ val squeeze
 val stack
   :  ?name:string
   -> ?stack_name:string
+  -> ?control_inputs:Node.p list
   -> unit
   -> [ `string ] t
 
 (* Delete the stack from its resource container. *)
 val stackClose
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> [ `string ] t
   -> [ `unit ] t
 
@@ -5781,6 +6134,7 @@ val stackClose
 val stackPop
   :  ?name:string
   -> type_:'elem_type Type.t
+  -> ?control_inputs:Node.p list
   -> [ `string ] t
   -> 'elem_type t
 
@@ -5788,6 +6142,7 @@ val stackPop
 val stackPush
   :  ?name:string
   -> ?swap_memory:bool
+  -> ?control_inputs:Node.p list
   -> [ `string ] t
   -> 't t
   -> 't t
@@ -5814,6 +6169,7 @@ to pretend that the value was a constant. Some examples include:
    example generation process. *)
 val stopGradient
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> 't t
   -> 't t
 
@@ -5834,6 +6190,7 @@ val stridedSlice
   -> ?ellipsis_mask:int
   -> ?new_axis_mask:int
   -> ?shrink_axis_mask:int
+  -> ?control_inputs:Node.p list
   -> 't t
   -> ([< `int32 | `int64 ] as 'index) t
   -> ([< `int32 | `int64 ] as 'index) t
@@ -5856,6 +6213,7 @@ val stridedSliceGrad
   -> ?ellipsis_mask:int
   -> ?new_axis_mask:int
   -> ?shrink_axis_mask:int
+  -> ?control_inputs:Node.p list
   -> ([< `int32 | `int64 ] as 'index) t
   -> ([< `int32 | `int64 ] as 'index) t
   -> ([< `int32 | `int64 ] as 'index) t
@@ -5868,6 +6226,7 @@ val stridedSliceGrad
 val stringJoin
   :  ?name:string
   -> ?separator:string
+  -> ?control_inputs:Node.p list
   -> [ `string ] t list
   -> [ `string ] t
 
@@ -5892,6 +6251,7 @@ For example:
   values = ['hello', 'world', 'a', 'b', 'c'] *)
 val stringSplit
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> [ `string ] t
   -> [ `string ] t
   -> [ `int64 ] t * [ `string ] t * [ `int64 ] t
@@ -5906,6 +6266,7 @@ This functionality will be deprecated and it's recommended to use
 val stringToHashBucket
   :  ?name:string
   -> num_buckets:int
+  -> ?control_inputs:Node.p list
   -> [ `string ] t
   -> [ `int64 ] t
 
@@ -5919,6 +6280,7 @@ to the same bucket. To prevent this problem, use a strong hash function with
 val stringToHashBucketFast
   :  ?name:string
   -> num_buckets:int
+  -> ?control_inputs:Node.p list
   -> [ `string ] t
   -> [ `int64 ] t
 
@@ -5937,6 +6299,7 @@ val stringToHashBucketStrong
   :  ?name:string
   -> num_buckets:int
   -> key:int list
+  -> ?control_inputs:Node.p list
   -> [ `string ] t
   -> [ `int64 ] t
 
@@ -5946,6 +6309,7 @@ results in a rounded value.) *)
 val stringToNumber
   :  ?name:string
   -> type_:([< `float | `int32 ] as 'out_type) Type.t
+  -> ?control_inputs:Node.p list
   -> [ `string ] t
   -> ([< `float | `int32 ] as 'out_type) t
 
@@ -5954,6 +6318,7 @@ val stringToNumber
 [here](http://docs.scipy.org/doc/numpy/user/basics.broadcasting.html) *)
 val sub
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int32 | `int64 | `complex64 ] as 't) t
   -> ([< `float | `double | `int32 | `int64 | `complex64 ] as 't) t
   -> ([< `float | `double | `int32 | `int64 | `complex64 ] as 't) t
@@ -5966,6 +6331,7 @@ retained with length 1. *)
 val sum
   :  ?name:string
   -> ?keep_dims:bool
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
   -> [ `int32 ] t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
@@ -5985,6 +6351,7 @@ val svd
   :  ?name:string
   -> ?compute_uv:bool
   -> ?full_matrices:bool
+  -> ?control_inputs:Node.p list
   -> ([< `double | `float ] as 't) t
   -> ([< `double | `float ] as 't) t * ([< `double | `float ] as 't) t * ([< `double | `float ] as 't) t
 
@@ -5995,6 +6362,7 @@ the data goes to `output_false`.
 See also `RefSwitch` and `Merge`. *)
 val switch
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> 't t
   -> [ `bool ] t
   -> 't t * 't t
@@ -6005,18 +6373,21 @@ val tFRecordReader
   -> ?container:string
   -> ?shared_name:string
   -> ?compression_type:string
+  -> ?control_inputs:Node.p list
   -> unit
   -> [ `string ] t
 
 (* Computes tan of x element-wise. *)
 val tan
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int32 | `int64 | `complex64 ] as 't) t
   -> ([< `float | `double | `int32 | `int64 | `complex64 ] as 't) t
 
 (* Computes hyperbolic tangent of `x` element-wise. *)
 val tanh
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double | `complex64 ] as 't) t
   -> ([< `float | `double | `complex64 ] as 't) t
 
@@ -6025,6 +6396,7 @@ val tanh
 is the corresponding input gradient. *)
 val tanhGrad
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double | `complex64 ] as 't) t
   -> ([< `float | `double | `complex64 ] as 't) t
   -> ([< `float | `double | `complex64 ] as 't) t
@@ -6049,6 +6421,7 @@ val temporaryVariable
   -> type_:'dtype Type.t
   -> shape:Dim.t list
   -> ?var_name:string
+  -> ?control_inputs:Node.p list
   -> unit
   -> 'dtype t
 
@@ -6059,6 +6432,7 @@ val tensorArray
   -> ?dynamic_size:bool
   -> ?clear_after_read:bool
   -> ?tensor_array_name:string
+  -> ?control_inputs:Node.p list
   -> [ `int32 ] t
   -> [ `string ] t
 
@@ -6066,6 +6440,7 @@ val tensorArray
 (* the user to close and release the resource in the middle of a step/run. *)
 val tensorArrayClose
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> [ `string ] t
   -> [ `unit ] t
 
@@ -6085,6 +6460,7 @@ val tensorArrayConcat
   :  ?name:string
   -> type_:'dtype Type.t
   -> ?element_shape_except0:Dim.t list
+  -> ?control_inputs:Node.p list
   -> [ `string ] t
   -> [ `float ] t
   -> 'dtype t * [ `int64 ] t
@@ -6129,6 +6505,7 @@ calculation gets its own TensorArray accumulator. *)
 val tensorArrayGrad
   :  ?name:string
   -> source:string
+  -> ?control_inputs:Node.p list
   -> [ `string ] t
   -> [ `float ] t
   -> [ `string ] t
@@ -6139,6 +6516,7 @@ val tensorArrayPack
   :  ?name:string
   -> type_:'dtype Type.t
   -> ?element_shape:Dim.t list
+  -> ?control_inputs:Node.p list
   -> [ `string ] t
   -> [ `float ] t
   -> 'dtype t
@@ -6147,6 +6525,7 @@ val tensorArrayPack
 val tensorArrayRead
   :  ?name:string
   -> type_:'dtype Type.t
+  -> ?control_inputs:Node.p list
   -> [ `string ] t
   -> [ `int32 ] t
   -> [ `float ] t
@@ -6155,6 +6534,7 @@ val tensorArrayRead
 (* Get the current size of the TensorArray. *)
 val tensorArraySize
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> [ `string ] t
   -> [ `float ] t
   -> [ `int32 ] t
@@ -6179,6 +6559,7 @@ and having size
   ```nt x d0 x d1 x ...``` *)
 val tensorArraySplit
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> [ `string ] t
   -> 't t
   -> [ `int64 ] t
@@ -6188,6 +6569,7 @@ val tensorArraySplit
 (* Unpack the data from the input value into TensorArray elements. *)
 val tensorArrayUnpack
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> [ `string ] t
   -> 't t
   -> [ `float ] t
@@ -6196,6 +6578,7 @@ val tensorArrayUnpack
 (* Push an element onto the tensor_array. *)
 val tensorArrayWrite
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> [ `string ] t
   -> [ `int32 ] t
   -> 't t
@@ -6207,6 +6590,7 @@ val tensorSummary
   :  ?name:string
   -> display_name:string
   -> ?description:string
+  -> ?control_inputs:Node.p list
   -> 't t
   -> [ `string ] t
 
@@ -6216,6 +6600,7 @@ val textLineReader
   -> ?skip_header_lines:int
   -> ?container:string
   -> ?shared_name:string
+  -> ?control_inputs:Node.p list
   -> unit
   -> [ `string ] t
 
@@ -6237,6 +6622,7 @@ val threadUnsafeUnigramCandidateSampler
   -> range_max:int
   -> ?seed:int
   -> ?seed2:int
+  -> ?control_inputs:Node.p list
   -> [ `int64 ] t
   -> [ `int64 ] t * [ `float ] t * [ `float ] t
 
@@ -6248,6 +6634,7 @@ dimension. For example, tiling `[a b c d]` by `[2]` produces
 `[a b c d a b c d]`. *)
 val tile
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> 't t
   -> [ `int32 ] t
   -> 't t
@@ -6258,6 +6645,7 @@ along each dimension, `TileGrad` takes in `multiples` and aggregates
 each repeated tile of `input` into `output`. *)
 val tileGrad
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> 't t
   -> [ `int32 ] t
   -> 't t
@@ -6279,6 +6667,7 @@ val topK
   :  ?name:string
   -> k:int
   -> ?sorted:bool
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int32 | `int64 ] as 't) t
   -> ([< `float | `double | `int32 | `int64 ] as 't) t * [ `int32 ] t
 
@@ -6298,6 +6687,7 @@ This is the same as `TopK`, but takes `k` as in input rather than an attr. *)
 val topKV2
   :  ?name:string
   -> ?sorted:bool
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int32 | `int64 ] as 't) t
   -> [ `int32 ] t
   -> ([< `float | `double | `int32 | `int64 ] as 't) t * [ `int32 ] t
@@ -6307,6 +6697,7 @@ val topKV2
   `y.shape[i] == x.shape[perm[i]] for i in [0, 1, ..., rank(x) - 1]` *)
 val transpose
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> 't t
   -> [ `int32 ] t
   -> 't t
@@ -6320,6 +6711,7 @@ val truncatedNormal
   -> type_:([< `float | `double ] as 'dtype) Type.t
   -> ?seed:int
   -> ?seed2:int
+  -> ?control_inputs:Node.p list
   -> ([< `int32 | `int64 ] as 't) t
   -> ([< `float | `double ] as 'dtype) t
 
@@ -6341,6 +6733,7 @@ val uniformCandidateSampler
   -> range_max:int
   -> ?seed:int
   -> ?seed2:int
+  -> ?control_inputs:Node.p list
   -> [ `int64 ] t
   -> [ `int64 ] t * [ `float ] t * [ `float ] t
 
@@ -6362,6 +6755,7 @@ idx ==> [0, 0, 1, 2, 2, 2, 3, 4, 4]
 ``` *)
 val unique
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> 't t
   -> 't t * [ `int32 ] t
 
@@ -6385,6 +6779,7 @@ count ==> [2, 1, 3, 1, 2]
 ``` *)
 val uniqueWithCounts
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> 't t
   -> 't t * [ `int32 ] t * [ `int32 ] t
 
@@ -6405,6 +6800,7 @@ val unpack
   :  ?name:string
   -> num:int
   -> ?axis:int
+  -> ?control_inputs:Node.p list
   -> 't t
   -> 't t list
 
@@ -6428,6 +6824,7 @@ If the sum is empty for a given segment ID `i`, `output[i] = 0`.
 </div> *)
 val unsortedSegmentSum
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
   -> ([< `int32 | `int64 ] as 'tindices) t
   -> [ `int32 ] t
@@ -6443,6 +6840,7 @@ val variable
   -> shape:Dim.t list
   -> ?container:string
   -> ?shared_name:string
+  -> ?control_inputs:Node.p list
   -> unit
   -> 'dtype t
 
@@ -6480,6 +6878,7 @@ where(input) ==> [[0, 0, 0],
 ``` *)
 val where
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> [ `bool ] t
   -> [ `int64 ] t
 
@@ -6490,12 +6889,14 @@ val wholeFileReader
   :  ?name:string
   -> ?container:string
   -> ?shared_name:string
+  -> ?control_inputs:Node.p list
   -> unit
   -> [ `string ] t
 
 (* Returns a tensor of zeros with the same shape and type as x. *)
 val zerosLike
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> 't t
   -> 't t
 
@@ -6507,6 +6908,7 @@ val zerosLike
 ``` *)
 val zeta
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> ([< `float | `double ] as 't) t
   -> ([< `float | `double ] as 't) t
   -> ([< `float | `double ] as 't) t

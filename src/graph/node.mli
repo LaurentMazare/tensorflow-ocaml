@@ -95,6 +95,7 @@ val create
   -> op_name:Op_name.t
   -> output_type:'a Type.t
   -> inputs:input list
+  -> control_inputs:p list
   -> attributes:(string * attr) list
   -> output_idx:int option (* Only used for multiple outputs. *)
   -> 'a t
@@ -104,6 +105,7 @@ val op_name : _ t -> Op_name.t
 val output_type : 'a t -> 'a Type.t
 val inputs : _ t -> input list
 val flat_inputs : _ t -> p list
+val control_inputs : _ t -> p list
 val attributes : _ t -> (string * attr) list
 val output_idx : _ t -> int option
 val unique_name : _ t -> string

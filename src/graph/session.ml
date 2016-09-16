@@ -85,6 +85,9 @@ let rec build t node ~variable_initializations =
         ~op_name:(Node.op_name u_node |> Node.Op_name.to_string)
         ~name:(Node.unique_name u_node)
     in
+    List.iter (Node.control_inputs u_node) ~f:(fun control_input ->
+      Wrapper.Graph.add_control_input operation_description
+        (build t control_input ~variable_initializations));
     List.iter (Node.inputs u_node) ~f:(function
       | `single input ->
         Wrapper.Graph.add_input

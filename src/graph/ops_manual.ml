@@ -28,6 +28,7 @@ let const_float
     ~op_name:(Op_name.of_string "Const")
     ~output_type:type_
     ~inputs:[]
+    ~control_inputs:[]
     ~attributes:[
       "dtype", Type (P type_);
       "value", Tensor_float { type_ = P type_; shape; values };
@@ -46,6 +47,7 @@ let const_int
     ~op_name:(Op_name.of_string "Const")
     ~output_type:type_
     ~inputs:[]
+    ~control_inputs:[]
     ~attributes:[
       "dtype", Type (P type_);
       "value", Tensor_int { type_ = P type_; shape; values };
@@ -63,6 +65,7 @@ let const_string
     ~op_name:(Op_name.of_string "Const")
     ~output_type:String
     ~inputs:[]
+    ~control_inputs:[]
     ~attributes:[
       "dtype", Type (P String);
       "value", Tensor_string { type_ = P String; shape; values };
@@ -77,11 +80,11 @@ let scalar ?empty_shape ~type_ f =
 
 type 't b =  ?name:string -> 't Node.t -> 't Node.t -> 't Node.t
 
-let (+) = Ops_generated.add
-let (-) = Ops_generated.sub
-let ( * ) = Ops_generated.mul
-let ( *^ ) = Ops_generated.matMul ~transpose_a:false ~transpose_b:false
-let (/) = Ops_generated.div
+let (+) = Ops_generated.add ~control_inputs:[]
+let (-) = Ops_generated.sub ~control_inputs:[]
+let ( * ) = Ops_generated.mul ~control_inputs:[]
+let ( *^ ) = Ops_generated.matMul ~control_inputs:[] ~transpose_a:false ~transpose_b:false
+let (/) = Ops_generated.div ~control_inputs:[]
 
 let f_or_d ?shape ~type_ x =
   let scalar = const_float ~type_ ~shape:[] [ x ] in
@@ -158,6 +161,7 @@ let save_
     ~op_name:(Op_name.of_string "Save")
     ~output_type:Unit
     ~inputs
+    ~control_inputs:[]
     ~attributes:[ "T", List (Type type_list) ]
     ~output_idx:None
 

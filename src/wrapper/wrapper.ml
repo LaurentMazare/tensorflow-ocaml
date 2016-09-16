@@ -456,6 +456,9 @@ module Graph = struct
     let operation = Tf_operationdescription.tf_finishoperation od status in
     Status.result_or_error status (graph, operation)
 
+  let add_control_input (_, od) (graph', _)=
+    Tf_operationdescription.tf_addcontrolinput od graph'
+
   let add_input (graph, od) (graph', op) ~index =
     if graph != graph'
     then failwith "Calling add_input on different graphs.";
@@ -679,7 +682,6 @@ let () =
     , Tf_operation.tf_operationdevice
     , Tf_operation.tf_operationnumoutputs
     , Tf_operation.tf_operationnuminputs
-    , Tf_operationdescription.tf_addcontrolinput
     , Tf_operationdescription.tf_setattrstringlist
     , Tf_operationdescription.tf_setattrtypelist
     , Tf_operationdescription.tf_setattrshapelist

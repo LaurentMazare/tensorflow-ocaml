@@ -75,6 +75,11 @@ module Graph : sig
     :  operation_description
     -> operation Status.result
 
+  val add_control_input
+    :  operation_description
+    -> operation
+    -> unit
+
   val add_input
     :  operation_description
     -> operation

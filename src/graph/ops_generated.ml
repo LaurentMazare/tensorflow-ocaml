@@ -410,6 +410,7 @@ end
 let abort
     ?(name = "Abort")
     ?error_msg
+    ?(control_inputs = [])
     ()
   =
   let attributes = [] in
@@ -424,11 +425,13 @@ let abort
     ~op_name
     ~output_type:Type.Unit
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let abs
     ?(name = "Abs")
+    ?(control_inputs = [])
     (x : ([< `float | `double | `int32 | `int64 ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type x)) ] in
@@ -440,11 +443,13 @@ let abs
     ~op_name
     ~output_type:(Node.output_type x)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let acos
     ?(name = "Acos")
+    ?(control_inputs = [])
     (x : ([< `float | `double | `int32 | `int64 | `complex64 ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type x)) ] in
@@ -456,11 +461,13 @@ let acos
     ~op_name
     ~output_type:(Node.output_type x)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let add
     ?(name = "Add")
+    ?(control_inputs = [])
     (x : ([< `float | `double | `int32 | `int64 | `complex64 | `string ] as 't) t)
     (y : ([< `float | `double | `int32 | `int64 | `complex64 | `string ] as 't) t)
   =
@@ -473,11 +480,13 @@ let add
     ~op_name
     ~output_type:(Node.output_type x)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let addN
     ?(name = "AddN")
+    ?(control_inputs = [])
     (inputs__ : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t list)
   =
   let attributes = [ "T", Type (P (Node.output_type (List.hd_exn inputs__))) ] in
@@ -492,11 +501,13 @@ let addN
     ~op_name
     ~output_type:(Node.output_type (List.hd_exn inputs__))
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let adjustContrast
     ?(name = "AdjustContrast")
+    ?(control_inputs = [])
     (images : ([< `int32 | `int64 | `float | `double ] as 't) t)
     (contrast_factor : [ `float ] t)
     (min_value : [ `float ] t)
@@ -511,11 +522,13 @@ let adjustContrast
     ~op_name
     ~output_type:Type.Float
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let adjustContrastv2
     ?(name = "AdjustContrastv2")
+    ?(control_inputs = [])
     (images : [ `float ] t)
     (contrast_factor : [ `float ] t)
   =
@@ -528,12 +541,14 @@ let adjustContrastv2
     ~op_name
     ~output_type:Type.Float
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let all
     ?(name = "All")
     ?keep_dims
+    ?(control_inputs = [])
     (input : [ `bool ] t)
     (reduction_indices : [ `int32 ] t)
   =
@@ -549,6 +564,7 @@ let all
     ~op_name
     ~output_type:Type.Bool
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
@@ -559,6 +575,7 @@ let allCandidateSampler
     ~unique
     ?seed
     ?seed2
+    ?(control_inputs = [])
     (true_classes : [ `int64 ] t)
   =
   let attributes = [] in
@@ -585,6 +602,7 @@ let allCandidateSampler
     ~op_name
     ~output_type:Type.Int64
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 0)
   ,
@@ -593,6 +611,7 @@ let allCandidateSampler
     ~op_name
     ~output_type:Type.Float
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 1)
   ,
@@ -601,12 +620,14 @@ let allCandidateSampler
     ~op_name
     ~output_type:Type.Float
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 2)
 
 let any
     ?(name = "Any")
     ?keep_dims
+    ?(control_inputs = [])
     (input : [ `bool ] t)
     (reduction_indices : [ `int32 ] t)
   =
@@ -622,12 +643,14 @@ let any
     ~op_name
     ~output_type:Type.Bool
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let applyAdadelta
     ?(name = "ApplyAdadelta")
     ?use_locking
+    ?(control_inputs = [])
     (var : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (accum : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (accum_update : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
@@ -648,12 +671,14 @@ let applyAdadelta
     ~op_name
     ~output_type:(Node.output_type var)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let applyAdagrad
     ?(name = "ApplyAdagrad")
     ?use_locking
+    ?(control_inputs = [])
     (var : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (accum : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (lr : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
@@ -671,12 +696,14 @@ let applyAdagrad
     ~op_name
     ~output_type:(Node.output_type var)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let applyAdam
     ?(name = "ApplyAdam")
     ?use_locking
+    ?(control_inputs = [])
     (var : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (m : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (v : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
@@ -700,12 +727,14 @@ let applyAdam
     ~op_name
     ~output_type:(Node.output_type var)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let applyFtrl
     ?(name = "ApplyFtrl")
     ?use_locking
+    ?(control_inputs = [])
     (var : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (accum : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (linear : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
@@ -727,12 +756,14 @@ let applyFtrl
     ~op_name
     ~output_type:(Node.output_type var)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let applyGradientDescent
     ?(name = "ApplyGradientDescent")
     ?use_locking
+    ?(control_inputs = [])
     (var : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (alpha : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (delta : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
@@ -749,6 +780,7 @@ let applyGradientDescent
     ~op_name
     ~output_type:(Node.output_type var)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
@@ -756,6 +788,7 @@ let applyMomentum
     ?(name = "ApplyMomentum")
     ?use_locking
     ?use_nesterov
+    ?(control_inputs = [])
     (var : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (accum : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (lr : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
@@ -777,12 +810,14 @@ let applyMomentum
     ~op_name
     ~output_type:(Node.output_type var)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let applyProximalAdagrad
     ?(name = "ApplyProximalAdagrad")
     ?use_locking
+    ?(control_inputs = [])
     (var : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (accum : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (lr : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
@@ -802,12 +837,14 @@ let applyProximalAdagrad
     ~op_name
     ~output_type:(Node.output_type var)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let applyProximalGradientDescent
     ?(name = "ApplyProximalGradientDescent")
     ?use_locking
+    ?(control_inputs = [])
     (var : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (alpha : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (l1 : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
@@ -826,12 +863,14 @@ let applyProximalGradientDescent
     ~op_name
     ~output_type:(Node.output_type var)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let applyRMSProp
     ?(name = "ApplyRMSProp")
     ?use_locking
+    ?(control_inputs = [])
     (var : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (ms : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (mom : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
@@ -853,11 +892,13 @@ let applyRMSProp
     ~op_name
     ~output_type:(Node.output_type var)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let argMax
     ?(name = "ArgMax")
+    ?(control_inputs = [])
     (input : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (dimension : [ `int32 ] t)
   =
@@ -870,11 +911,13 @@ let argMax
     ~op_name
     ~output_type:Type.Int64
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let argMin
     ?(name = "ArgMin")
+    ?(control_inputs = [])
     (input : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (dimension : [ `int32 ] t)
   =
@@ -887,6 +930,7 @@ let argMin
     ~op_name
     ~output_type:Type.Int64
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
@@ -897,6 +941,7 @@ let asString
     ?shortest
     ?width
     ?fill
+    ?(control_inputs = [])
     (input : ([< `int32 | `int64 | `complex64 | `float | `double | `bool ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type input)) ] in
@@ -923,11 +968,13 @@ let asString
     ~op_name
     ~output_type:Type.String
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let asin
     ?(name = "Asin")
+    ?(control_inputs = [])
     (x : ([< `float | `double | `int32 | `int64 | `complex64 ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type x)) ] in
@@ -939,6 +986,7 @@ let asin
     ~op_name
     ~output_type:(Node.output_type x)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
@@ -946,6 +994,7 @@ let assign
     ?(name = "Assign")
     ?validate_shape
     ?use_locking
+    ?(control_inputs = [])
     (ref : 't t)
     (value : 't t)
   =
@@ -964,12 +1013,14 @@ let assign
     ~op_name
     ~output_type:(Node.output_type ref)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let assignAdd
     ?(name = "AssignAdd")
     ?use_locking
+    ?(control_inputs = [])
     (ref : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (value : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
   =
@@ -985,12 +1036,14 @@ let assignAdd
     ~op_name
     ~output_type:(Node.output_type ref)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let assignSub
     ?(name = "AssignSub")
     ?use_locking
+    ?(control_inputs = [])
     (ref : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (value : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
   =
@@ -1006,11 +1059,13 @@ let assignSub
     ~op_name
     ~output_type:(Node.output_type ref)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let atan
     ?(name = "Atan")
+    ?(control_inputs = [])
     (x : ([< `float | `double | `int32 | `int64 | `complex64 ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type x)) ] in
@@ -1022,6 +1077,7 @@ let atan
     ~op_name
     ~output_type:(Node.output_type x)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
@@ -1029,6 +1085,7 @@ let audioSummary
     ?(name = "AudioSummary")
     ~sample_rate
     ?max_outputs
+    ?(control_inputs = [])
     (tag : [ `string ] t)
     (tensor : [ `float ] t)
   =
@@ -1047,6 +1104,7 @@ let audioSummary
     ~op_name
     ~output_type:Type.String
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
@@ -1056,6 +1114,7 @@ let avgPool
     ~strides
     ~padding
     ?data_format
+    ?(control_inputs = [])
     (value : ([< `float | `double ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type value)) ] in
@@ -1079,6 +1138,7 @@ let avgPool
     ~op_name
     ~output_type:(Node.output_type value)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
@@ -1087,6 +1147,7 @@ let avgPool3D
     ~ksize
     ~strides
     ~padding
+    ?(control_inputs = [])
     (input : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type input)) ] in
@@ -1107,6 +1168,7 @@ let avgPool3D
     ~op_name
     ~output_type:(Node.output_type input)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
@@ -1115,6 +1177,7 @@ let avgPool3DGrad
     ~ksize
     ~strides
     ~padding
+    ?(control_inputs = [])
     (orig_input_shape : [ `int32 ] t)
     (grad : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
   =
@@ -1136,6 +1199,7 @@ let avgPool3DGrad
     ~op_name
     ~output_type:(Node.output_type grad)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
@@ -1145,6 +1209,7 @@ let avgPoolGrad
     ~strides
     ~padding
     ?data_format
+    ?(control_inputs = [])
     (orig_input_shape : [ `int32 ] t)
     (grad : ([< `float | `double ] as 't) t)
   =
@@ -1169,6 +1234,7 @@ let avgPoolGrad
     ~op_name
     ~output_type:(Node.output_type grad)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
@@ -1179,6 +1245,7 @@ let barrier
     ?capacity
     ?container
     ?shared_name
+    ?(control_inputs = [])
     ()
   =
   let attributes = [] in
@@ -1205,12 +1272,14 @@ let barrier
     ~op_name
     ~output_type:Type.String
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let barrierClose
     ?(name = "BarrierClose")
     ?cancel_pending_enqueues
+    ?(control_inputs = [])
     (handle : [ `string ] t)
   =
   let attributes = [] in
@@ -1225,11 +1294,13 @@ let barrierClose
     ~op_name
     ~output_type:Type.Unit
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let barrierIncompleteSize
     ?(name = "BarrierIncompleteSize")
+    ?(control_inputs = [])
     (handle : [ `string ] t)
   =
   let attributes = [] in
@@ -1241,12 +1312,14 @@ let barrierIncompleteSize
     ~op_name
     ~output_type:Type.Int32
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let barrierInsertMany
     ?(name = "BarrierInsertMany")
     ~component_index
+    ?(control_inputs = [])
     (handle : [ `string ] t)
     (keys : [ `string ] t)
     (values : 't t)
@@ -1263,11 +1336,13 @@ let barrierInsertMany
     ~op_name
     ~output_type:Type.Unit
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let barrierReadySize
     ?(name = "BarrierReadySize")
+    ?(control_inputs = [])
     (handle : [ `string ] t)
   =
   let attributes = [] in
@@ -1279,11 +1354,13 @@ let barrierReadySize
     ~op_name
     ~output_type:Type.Int32
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let batchCholesky
     ?(name = "BatchCholesky")
+    ?(control_inputs = [])
     (input : ([< `double | `float ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type input)) ] in
@@ -1295,11 +1372,13 @@ let batchCholesky
     ~op_name
     ~output_type:(Node.output_type input)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let batchCholeskyGrad
     ?(name = "BatchCholeskyGrad")
+    ?(control_inputs = [])
     (l : ([< `float | `double ] as 't) t)
     (grad : ([< `float | `double ] as 't) t)
   =
@@ -1312,11 +1391,13 @@ let batchCholeskyGrad
     ~op_name
     ~output_type:(Node.output_type l)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let batchFFT
     ?(name = "BatchFFT")
+    ?(control_inputs = [])
     (input : [ `complex64 ] t)
   =
   let attributes = [] in
@@ -1328,11 +1409,13 @@ let batchFFT
     ~op_name
     ~output_type:Type.Complex64
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let batchFFT2D
     ?(name = "BatchFFT2D")
+    ?(control_inputs = [])
     (input : [ `complex64 ] t)
   =
   let attributes = [] in
@@ -1344,11 +1427,13 @@ let batchFFT2D
     ~op_name
     ~output_type:Type.Complex64
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let batchFFT3D
     ?(name = "BatchFFT3D")
+    ?(control_inputs = [])
     (input : [ `complex64 ] t)
   =
   let attributes = [] in
@@ -1360,11 +1445,13 @@ let batchFFT3D
     ~op_name
     ~output_type:Type.Complex64
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let batchIFFT
     ?(name = "BatchIFFT")
+    ?(control_inputs = [])
     (input : [ `complex64 ] t)
   =
   let attributes = [] in
@@ -1376,11 +1463,13 @@ let batchIFFT
     ~op_name
     ~output_type:Type.Complex64
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let batchIFFT2D
     ?(name = "BatchIFFT2D")
+    ?(control_inputs = [])
     (input : [ `complex64 ] t)
   =
   let attributes = [] in
@@ -1392,11 +1481,13 @@ let batchIFFT2D
     ~op_name
     ~output_type:Type.Complex64
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let batchIFFT3D
     ?(name = "BatchIFFT3D")
+    ?(control_inputs = [])
     (input : [ `complex64 ] t)
   =
   let attributes = [] in
@@ -1408,6 +1499,7 @@ let batchIFFT3D
     ~op_name
     ~output_type:Type.Complex64
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
@@ -1415,6 +1507,7 @@ let batchMatMul
     ?(name = "BatchMatMul")
     ?adj_x
     ?adj_y
+    ?(control_inputs = [])
     (x : ([< `float | `double | `int32 | `complex64 ] as 't) t)
     (y : ([< `float | `double | `int32 | `complex64 ] as 't) t)
   =
@@ -1433,11 +1526,13 @@ let batchMatMul
     ~op_name
     ~output_type:(Node.output_type x)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let batchMatrixBandPart
     ?(name = "BatchMatrixBandPart")
+    ?(control_inputs = [])
     (input : 't t)
     (num_lower : [ `int64 ] t)
     (num_upper : [ `int64 ] t)
@@ -1451,11 +1546,13 @@ let batchMatrixBandPart
     ~op_name
     ~output_type:(Node.output_type input)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let batchMatrixDeterminant
     ?(name = "BatchMatrixDeterminant")
+    ?(control_inputs = [])
     (input : ([< `float | `double ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type input)) ] in
@@ -1467,11 +1564,13 @@ let batchMatrixDeterminant
     ~op_name
     ~output_type:(Node.output_type input)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let batchMatrixDiag
     ?(name = "BatchMatrixDiag")
+    ?(control_inputs = [])
     (diagonal : 't t)
   =
   let attributes = [ "T", Type (P (Node.output_type diagonal)) ] in
@@ -1483,11 +1582,13 @@ let batchMatrixDiag
     ~op_name
     ~output_type:(Node.output_type diagonal)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let batchMatrixDiagPart
     ?(name = "BatchMatrixDiagPart")
+    ?(control_inputs = [])
     (input : 't t)
   =
   let attributes = [ "T", Type (P (Node.output_type input)) ] in
@@ -1499,12 +1600,14 @@ let batchMatrixDiagPart
     ~op_name
     ~output_type:(Node.output_type input)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let batchMatrixInverse
     ?(name = "BatchMatrixInverse")
     ?adjoint
+    ?(control_inputs = [])
     (input : ([< `double | `float ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type input)) ] in
@@ -1519,11 +1622,13 @@ let batchMatrixInverse
     ~op_name
     ~output_type:(Node.output_type input)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let batchMatrixSetDiag
     ?(name = "BatchMatrixSetDiag")
+    ?(control_inputs = [])
     (input : 't t)
     (diagonal : 't t)
   =
@@ -1536,12 +1641,14 @@ let batchMatrixSetDiag
     ~op_name
     ~output_type:(Node.output_type input)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let batchMatrixSolve
     ?(name = "BatchMatrixSolve")
     ?adjoint
+    ?(control_inputs = [])
     (matrix : ([< `double | `float ] as 't) t)
     (rhs : ([< `double | `float ] as 't) t)
   =
@@ -1557,12 +1664,14 @@ let batchMatrixSolve
     ~op_name
     ~output_type:(Node.output_type matrix)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let batchMatrixSolveLs
     ?(name = "BatchMatrixSolveLs")
     ?fast
+    ?(control_inputs = [])
     (matrix : ([< `double | `float ] as 't) t)
     (rhs : ([< `double | `float ] as 't) t)
     (l2_regularizer : [ `double ] t)
@@ -1579,6 +1688,7 @@ let batchMatrixSolveLs
     ~op_name
     ~output_type:(Node.output_type matrix)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
@@ -1586,6 +1696,7 @@ let batchMatrixTriangularSolve
     ?(name = "BatchMatrixTriangularSolve")
     ?lower
     ?adjoint
+    ?(control_inputs = [])
     (matrix : ([< `double | `float ] as 't) t)
     (rhs : ([< `double | `float ] as 't) t)
   =
@@ -1604,6 +1715,7 @@ let batchMatrixTriangularSolve
     ~op_name
     ~output_type:(Node.output_type matrix)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
@@ -1611,6 +1723,7 @@ let batchNormWithGlobalNormalization
     ?(name = "BatchNormWithGlobalNormalization")
     ~variance_epsilon
     ~scale_after_normalization
+    ?(control_inputs = [])
     (t : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (m : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (v : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
@@ -1632,6 +1745,7 @@ let batchNormWithGlobalNormalization
     ~op_name
     ~output_type:(Node.output_type t)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
@@ -1639,6 +1753,7 @@ let batchNormWithGlobalNormalizationGrad
     ?(name = "BatchNormWithGlobalNormalizationGrad")
     ~variance_epsilon
     ~scale_after_normalization
+    ?(control_inputs = [])
     (t : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (m : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (v : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
@@ -1660,6 +1775,7 @@ let batchNormWithGlobalNormalizationGrad
     ~op_name
     ~output_type:(Node.output_type t)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 0)
   ,
@@ -1668,6 +1784,7 @@ let batchNormWithGlobalNormalizationGrad
     ~op_name
     ~output_type:(Node.output_type t)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 1)
   ,
@@ -1676,6 +1793,7 @@ let batchNormWithGlobalNormalizationGrad
     ~op_name
     ~output_type:(Node.output_type t)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 2)
   ,
@@ -1684,6 +1802,7 @@ let batchNormWithGlobalNormalizationGrad
     ~op_name
     ~output_type:(Node.output_type t)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 3)
   ,
@@ -1692,11 +1811,13 @@ let batchNormWithGlobalNormalizationGrad
     ~op_name
     ~output_type:(Node.output_type t)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 4)
 
 let batchSelfAdjointEig
     ?(name = "BatchSelfAdjointEig")
+    ?(control_inputs = [])
     (input : ([< `double | `float ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type input)) ] in
@@ -1708,12 +1829,14 @@ let batchSelfAdjointEig
     ~op_name
     ~output_type:(Node.output_type input)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let batchSelfAdjointEigV2
     ?(name = "BatchSelfAdjointEigV2")
     ?compute_v
+    ?(control_inputs = [])
     (input : ([< `double | `float ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type input)) ;  "T", Type (P (Node.output_type input)) ] in
@@ -1728,6 +1851,7 @@ let batchSelfAdjointEigV2
     ~op_name
     ~output_type:(Node.output_type input)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 0)
   ,
@@ -1736,6 +1860,7 @@ let batchSelfAdjointEigV2
     ~op_name
     ~output_type:(Node.output_type input)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 1)
 
@@ -1743,6 +1868,7 @@ let batchSvd
     ?(name = "BatchSvd")
     ?compute_uv
     ?full_matrices
+    ?(control_inputs = [])
     (input : ([< `double | `float ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type input)) ;  "T", Type (P (Node.output_type input)) ;  "T", Type (P (Node.output_type input)) ] in
@@ -1760,6 +1886,7 @@ let batchSvd
     ~op_name
     ~output_type:(Node.output_type input)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 0)
   ,
@@ -1768,6 +1895,7 @@ let batchSvd
     ~op_name
     ~output_type:(Node.output_type input)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 1)
   ,
@@ -1776,12 +1904,14 @@ let batchSvd
     ~op_name
     ~output_type:(Node.output_type input)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 2)
 
 let batchToSpace
     ?(name = "BatchToSpace")
     ~block_size
+    ?(control_inputs = [])
     (input : 't t)
     (crops : [ `int32 ] t)
   =
@@ -1797,12 +1927,14 @@ let batchToSpace
     ~op_name
     ~output_type:(Node.output_type input)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let biasAdd
     ?(name = "BiasAdd")
     ?data_format
+    ?(control_inputs = [])
     (value : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (bias : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
   =
@@ -1818,12 +1950,14 @@ let biasAdd
     ~op_name
     ~output_type:(Node.output_type value)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let biasAddGrad
     ?(name = "BiasAddGrad")
     ?data_format
+    ?(control_inputs = [])
     (out_backprop : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type out_backprop)) ] in
@@ -1838,11 +1972,13 @@ let biasAddGrad
     ~op_name
     ~output_type:(Node.output_type out_backprop)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let biasAddV1
     ?(name = "BiasAddV1")
+    ?(control_inputs = [])
     (value : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (bias : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
   =
@@ -1855,12 +1991,14 @@ let biasAddV1
     ~op_name
     ~output_type:(Node.output_type value)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let bitcast
     ?(name = "Bitcast")
     ~type_
+    ?(control_inputs = [])
     (input : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type input)) ;  "type", Type (P type_) ] in
@@ -1872,11 +2010,13 @@ let bitcast
     ~op_name
     ~output_type:type_
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let broadcastGradientArgs
     ?(name = "BroadcastGradientArgs")
+    ?(control_inputs = [])
     (s0 : [ `int32 ] t)
     (s1 : [ `int32 ] t)
   =
@@ -1889,6 +2029,7 @@ let broadcastGradientArgs
     ~op_name
     ~output_type:Type.Int32
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 0)
   ,
@@ -1897,12 +2038,14 @@ let broadcastGradientArgs
     ~op_name
     ~output_type:Type.Int32
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 1)
 
 let cTCGreedyDecoder
     ?(name = "CTCGreedyDecoder")
     ?merge_repeated
+    ?(control_inputs = [])
     (inputs__ : [ `float ] t)
     (sequence_length : [ `int32 ] t)
   =
@@ -1918,6 +2061,7 @@ let cTCGreedyDecoder
     ~op_name
     ~output_type:Type.Int64
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 0)
   ,
@@ -1926,6 +2070,7 @@ let cTCGreedyDecoder
     ~op_name
     ~output_type:Type.Int64
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 1)
   ,
@@ -1934,6 +2079,7 @@ let cTCGreedyDecoder
     ~op_name
     ~output_type:Type.Int64
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 2)
   ,
@@ -1942,6 +2088,7 @@ let cTCGreedyDecoder
     ~op_name
     ~output_type:Type.Float
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 3)
 
@@ -1949,6 +2096,7 @@ let cTCLoss
     ?(name = "CTCLoss")
     ?preprocess_collapse_repeated
     ?ctc_merge_repeated
+    ?(control_inputs = [])
     (inputs__ : [ `float ] t)
     (labels_indices : [ `int64 ] t)
     (labels_values : [ `int32 ] t)
@@ -1969,6 +2117,7 @@ let cTCLoss
     ~op_name
     ~output_type:Type.Float
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 0)
   ,
@@ -1977,12 +2126,14 @@ let cTCLoss
     ~op_name
     ~output_type:Type.Float
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 1)
 
 let cast
     ?(name = "Cast")
     ~type_
+    ?(control_inputs = [])
     (x : 'srcT t)
   =
   let attributes = [ "SrcT", Type (P (Node.output_type x)) ;  "DstT", Type (P type_) ] in
@@ -1994,11 +2145,13 @@ let cast
     ~op_name
     ~output_type:type_
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let ceil
     ?(name = "Ceil")
+    ?(control_inputs = [])
     (x : ([< `float | `double ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type x)) ] in
@@ -2010,12 +2163,14 @@ let ceil
     ~op_name
     ~output_type:(Node.output_type x)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let checkNumerics
     ?(name = "CheckNumerics")
     ~message
+    ?(control_inputs = [])
     (tensor : ([< `float | `double ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type tensor)) ] in
@@ -2030,11 +2185,13 @@ let checkNumerics
     ~op_name
     ~output_type:(Node.output_type tensor)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let cholesky
     ?(name = "Cholesky")
+    ?(control_inputs = [])
     (input : ([< `double | `float ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type input)) ] in
@@ -2046,11 +2203,13 @@ let cholesky
     ~op_name
     ~output_type:(Node.output_type input)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let choleskyGrad
     ?(name = "CholeskyGrad")
+    ?(control_inputs = [])
     (l : ([< `float | `double ] as 't) t)
     (grad : ([< `float | `double ] as 't) t)
   =
@@ -2063,12 +2222,14 @@ let choleskyGrad
     ~op_name
     ~output_type:(Node.output_type l)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let complex
     ?(name = "Complex")
     ~type_
+    ?(control_inputs = [])
     (real : ([< `float | `double ] as 't) t)
     (imag : ([< `float | `double ] as 't) t)
   =
@@ -2081,12 +2242,14 @@ let complex
     ~op_name
     ~output_type:type_
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let complexAbs
     ?(name = "ComplexAbs")
     ~type_
+    ?(control_inputs = [])
     (x : ([< `complex64 ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type x)) ;  "Tout", Type (P type_) ] in
@@ -2098,6 +2261,7 @@ let complexAbs
     ~op_name
     ~output_type:type_
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
@@ -2106,6 +2270,7 @@ let computeAccidentalHits
     ~num_true
     ?seed
     ?seed2
+    ?(control_inputs = [])
     (true_classes : [ `int64 ] t)
     (sampled_candidates : [ `int64 ] t)
   =
@@ -2127,6 +2292,7 @@ let computeAccidentalHits
     ~op_name
     ~output_type:Type.Int32
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 0)
   ,
@@ -2135,6 +2301,7 @@ let computeAccidentalHits
     ~op_name
     ~output_type:Type.Int64
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 1)
   ,
@@ -2143,11 +2310,13 @@ let computeAccidentalHits
     ~op_name
     ~output_type:Type.Float
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 2)
 
 let concat
     ?(name = "Concat")
+    ?(control_inputs = [])
     (concat_dim : [ `int32 ] t)
     (values : 't t list)
   =
@@ -2163,11 +2332,13 @@ let concat
     ~op_name
     ~output_type:(Node.output_type (List.hd_exn values))
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let concatOffset
     ?(name = "ConcatOffset")
+    ?(control_inputs = [])
     (concat_dim : [ `int32 ] t)
     (shape : [ `int32 ] t list)
   =
@@ -2184,6 +2355,7 @@ let concatOffset
       ~op_name
       ~output_type:Type.Int32
       ~inputs
+      ~control_inputs
       ~attributes
       ~output_idx:None
   in
@@ -2192,6 +2364,7 @@ let concatOffset
 
 let conj
     ?(name = "Conj")
+    ?(control_inputs = [])
     (input : ([< `complex64 ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type input)) ] in
@@ -2203,11 +2376,13 @@ let conj
     ~op_name
     ~output_type:(Node.output_type input)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let controlTrigger
     ?(name = "ControlTrigger")
+    ?(control_inputs = [])
     ()
   =
   let attributes = [] in
@@ -2219,6 +2394,7 @@ let controlTrigger
     ~op_name
     ~output_type:Type.Unit
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
@@ -2228,6 +2404,7 @@ let conv2D
     ?use_cudnn_on_gpu
     ~padding
     ?data_format
+    ?(control_inputs = [])
     (input : ([< `float | `double ] as 't) t)
     (filter : ([< `float | `double ] as 't) t)
   =
@@ -2252,6 +2429,7 @@ let conv2D
     ~op_name
     ~output_type:(Node.output_type input)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
@@ -2261,6 +2439,7 @@ let conv2DBackpropFilter
     ?use_cudnn_on_gpu
     ~padding
     ?data_format
+    ?(control_inputs = [])
     (input : ([< `float | `double ] as 't) t)
     (filter_sizes : [ `int32 ] t)
     (out_backprop : ([< `float | `double ] as 't) t)
@@ -2286,6 +2465,7 @@ let conv2DBackpropFilter
     ~op_name
     ~output_type:(Node.output_type input)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
@@ -2295,6 +2475,7 @@ let conv2DBackpropInput
     ?use_cudnn_on_gpu
     ~padding
     ?data_format
+    ?(control_inputs = [])
     (input_sizes : [ `int32 ] t)
     (filter : ([< `float | `double ] as 't) t)
     (out_backprop : ([< `float | `double ] as 't) t)
@@ -2320,6 +2501,7 @@ let conv2DBackpropInput
     ~op_name
     ~output_type:(Node.output_type filter)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
@@ -2327,6 +2509,7 @@ let conv3D
     ?(name = "Conv3D")
     ~strides
     ~padding
+    ?(control_inputs = [])
     (input : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (filter : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
   =
@@ -2345,6 +2528,7 @@ let conv3D
     ~op_name
     ~output_type:(Node.output_type input)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
@@ -2352,6 +2536,7 @@ let conv3DBackpropFilter
     ?(name = "Conv3DBackpropFilter")
     ~strides
     ~padding
+    ?(control_inputs = [])
     (input : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (filter : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (out_backprop : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
@@ -2371,6 +2556,7 @@ let conv3DBackpropFilter
     ~op_name
     ~output_type:(Node.output_type input)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
@@ -2378,6 +2564,7 @@ let conv3DBackpropFilterV2
     ?(name = "Conv3DBackpropFilterV2")
     ~strides
     ~padding
+    ?(control_inputs = [])
     (input : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (filter_sizes : [ `int32 ] t)
     (out_backprop : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
@@ -2397,6 +2584,7 @@ let conv3DBackpropFilterV2
     ~op_name
     ~output_type:(Node.output_type input)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
@@ -2404,6 +2592,7 @@ let conv3DBackpropInput
     ?(name = "Conv3DBackpropInput")
     ~strides
     ~padding
+    ?(control_inputs = [])
     (input : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (filter : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (out_backprop : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
@@ -2423,6 +2612,7 @@ let conv3DBackpropInput
     ~op_name
     ~output_type:(Node.output_type input)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
@@ -2430,6 +2620,7 @@ let conv3DBackpropInputV2
     ?(name = "Conv3DBackpropInputV2")
     ~strides
     ~padding
+    ?(control_inputs = [])
     (input_sizes : [ `int32 ] t)
     (filter : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (out_backprop : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
@@ -2449,12 +2640,14 @@ let conv3DBackpropInputV2
     ~op_name
     ~output_type:(Node.output_type filter)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let copy
     ?(name = "Copy")
     ?tensor_name
+    ?(control_inputs = [])
     (input : 't t)
   =
   let attributes = [ "T", Type (P (Node.output_type input)) ] in
@@ -2469,12 +2662,14 @@ let copy
     ~op_name
     ~output_type:(Node.output_type input)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let copyHost
     ?(name = "CopyHost")
     ?tensor_name
+    ?(control_inputs = [])
     (input : 't t)
   =
   let attributes = [ "T", Type (P (Node.output_type input)) ] in
@@ -2489,11 +2684,13 @@ let copyHost
     ~op_name
     ~output_type:(Node.output_type input)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let cos
     ?(name = "Cos")
+    ?(control_inputs = [])
     (x : ([< `float | `double | `complex64 ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type x)) ] in
@@ -2505,12 +2702,14 @@ let cos
     ~op_name
     ~output_type:(Node.output_type x)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let countUpTo
     ?(name = "CountUpTo")
     ~limit
+    ?(control_inputs = [])
     (ref : ([< `int32 | `int64 ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type ref)) ] in
@@ -2525,6 +2724,7 @@ let countUpTo
     ~op_name
     ~output_type:(Node.output_type ref)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
@@ -2532,6 +2732,7 @@ let cropAndResize
     ?(name = "CropAndResize")
     ?method_
     ?extrapolation_value
+    ?(control_inputs = [])
     (image : ([< `int32 | `int64 | `float | `double ] as 't) t)
     (boxes : [ `float ] t)
     (box_ind : [ `int32 ] t)
@@ -2552,12 +2753,14 @@ let cropAndResize
     ~op_name
     ~output_type:Type.Float
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let cropAndResizeGradBoxes
     ?(name = "CropAndResizeGradBoxes")
     ?method_
+    ?(control_inputs = [])
     (grads : [ `float ] t)
     (image : ([< `int32 | `int64 | `float | `double ] as 't) t)
     (boxes : [ `float ] t)
@@ -2575,6 +2778,7 @@ let cropAndResizeGradBoxes
     ~op_name
     ~output_type:Type.Float
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
@@ -2582,6 +2786,7 @@ let cropAndResizeGradImage
     ?(name = "CropAndResizeGradImage")
     ~type_
     ?method_
+    ?(control_inputs = [])
     (grads : [ `float ] t)
     (boxes : [ `float ] t)
     (box_ind : [ `int32 ] t)
@@ -2599,11 +2804,13 @@ let cropAndResizeGradImage
     ~op_name
     ~output_type:type_
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let cross
     ?(name = "Cross")
+    ?(control_inputs = [])
     (a : ([< `float | `double | `int32 | `int64 ] as 't) t)
     (b : ([< `float | `double | `int32 | `int64 ] as 't) t)
   =
@@ -2616,6 +2823,7 @@ let cross
     ~op_name
     ~output_type:(Node.output_type a)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
@@ -2623,6 +2831,7 @@ let cumprod
     ?(name = "Cumprod")
     ?exclusive
     ?reverse
+    ?(control_inputs = [])
     (x : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (axis : [ `int32 ] t)
   =
@@ -2641,6 +2850,7 @@ let cumprod
     ~op_name
     ~output_type:(Node.output_type x)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
@@ -2648,6 +2858,7 @@ let cumsum
     ?(name = "Cumsum")
     ?exclusive
     ?reverse
+    ?(control_inputs = [])
     (x : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (axis : [ `int32 ] t)
   =
@@ -2666,12 +2877,14 @@ let cumsum
     ~op_name
     ~output_type:(Node.output_type x)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let debugIdentity
     ?(name = "DebugIdentity")
     ?tensor_name
+    ?(control_inputs = [])
     (input : 't t)
   =
   let attributes = [ "T", Type (P (Node.output_type input)) ] in
@@ -2686,12 +2899,14 @@ let debugIdentity
     ~op_name
     ~output_type:(Node.output_type input)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let debugNanCount
     ?(name = "DebugNanCount")
     ?tensor_name
+    ?(control_inputs = [])
     (input : 't t)
   =
   let attributes = [ "T", Type (P (Node.output_type input)) ] in
@@ -2706,11 +2921,13 @@ let debugNanCount
     ~op_name
     ~output_type:Type.Int64
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let decodeJSONExample
     ?(name = "DecodeJSONExample")
+    ?(control_inputs = [])
     (json_examples : [ `string ] t)
   =
   let attributes = [] in
@@ -2722,6 +2939,7 @@ let decodeJSONExample
     ~op_name
     ~output_type:Type.String
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
@@ -2729,6 +2947,7 @@ let decodePng
     ?(name = "DecodePng")
     ~type_
     ?channels
+    ?(control_inputs = [])
     (contents : [ `string ] t)
   =
   let attributes = [ "dtype", Type (P type_) ] in
@@ -2743,6 +2962,7 @@ let decodePng
     ~op_name
     ~output_type:type_
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
@@ -2750,6 +2970,7 @@ let decodeGif
     ?(name = "DecodeGif")
     ~type_
     ?channels
+    ?(control_inputs = [])
     (contents : [ `string ] t)
   =
   let attributes = [ "dtype", Type (P type_) ] in
@@ -2764,6 +2985,7 @@ let decodeGif
     ~op_name
     ~output_type:type_
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
@@ -2771,6 +2993,7 @@ let decodeRaw
     ?(name = "DecodeRaw")
     ~type_
     ?little_endian
+    ?(control_inputs = [])
     (bytes : [ `string ] t)
   =
   let attributes = [ "out_type", Type (P type_) ] in
@@ -2785,11 +3008,13 @@ let decodeRaw
     ~op_name
     ~output_type:type_
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let deleteSessionTensor
     ?(name = "DeleteSessionTensor")
+    ?(control_inputs = [])
     (handle : [ `string ] t)
   =
   let attributes = [] in
@@ -2801,12 +3026,14 @@ let deleteSessionTensor
     ~op_name
     ~output_type:Type.Unit
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let depthToSpace
     ?(name = "DepthToSpace")
     ~block_size
+    ?(control_inputs = [])
     (input : 't t)
   =
   let attributes = [ "T", Type (P (Node.output_type input)) ] in
@@ -2821,6 +3048,7 @@ let depthToSpace
     ~op_name
     ~output_type:(Node.output_type input)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
@@ -2828,6 +3056,7 @@ let depthwiseConv2dNative
     ?(name = "DepthwiseConv2dNative")
     ~strides
     ~padding
+    ?(control_inputs = [])
     (input : ([< `float | `double ] as 't) t)
     (filter : ([< `float | `double ] as 't) t)
   =
@@ -2846,6 +3075,7 @@ let depthwiseConv2dNative
     ~op_name
     ~output_type:(Node.output_type input)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
@@ -2853,6 +3083,7 @@ let depthwiseConv2dNativeBackpropFilter
     ?(name = "DepthwiseConv2dNativeBackpropFilter")
     ~strides
     ~padding
+    ?(control_inputs = [])
     (input : ([< `float | `double ] as 't) t)
     (filter_sizes : [ `int32 ] t)
     (out_backprop : ([< `float | `double ] as 't) t)
@@ -2872,6 +3103,7 @@ let depthwiseConv2dNativeBackpropFilter
     ~op_name
     ~output_type:(Node.output_type input)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
@@ -2879,6 +3111,7 @@ let depthwiseConv2dNativeBackpropInput
     ?(name = "DepthwiseConv2dNativeBackpropInput")
     ~strides
     ~padding
+    ?(control_inputs = [])
     (input_sizes : [ `int32 ] t)
     (filter : ([< `float | `double ] as 't) t)
     (out_backprop : ([< `float | `double ] as 't) t)
@@ -2898,12 +3131,14 @@ let depthwiseConv2dNativeBackpropInput
     ~op_name
     ~output_type:(Node.output_type filter)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let deserializeManySparse
     ?(name = "DeserializeManySparse")
     ~type_1
+    ?(control_inputs = [])
     (serialized_sparse : [ `string ] t)
   =
   let attributes = [ "dtype", Type (P type_1) ] in
@@ -2915,6 +3150,7 @@ let deserializeManySparse
     ~op_name
     ~output_type:Type.Int64
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 0)
   ,
@@ -2923,6 +3159,7 @@ let deserializeManySparse
     ~op_name
     ~output_type:type_1
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 1)
   ,
@@ -2931,12 +3168,14 @@ let deserializeManySparse
     ~op_name
     ~output_type:Type.Int64
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 2)
 
 let destroyTemporaryVariable
     ?(name = "DestroyTemporaryVariable")
     ~var_name
+    ?(control_inputs = [])
     (ref : 't t)
   =
   let attributes = [ "T", Type (P (Node.output_type ref)) ] in
@@ -2951,11 +3190,13 @@ let destroyTemporaryVariable
     ~op_name
     ~output_type:(Node.output_type ref)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let diag
     ?(name = "Diag")
+    ?(control_inputs = [])
     (diagonal : ([< `float | `double | `int32 | `int64 | `complex64 ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type diagonal)) ] in
@@ -2967,11 +3208,13 @@ let diag
     ~op_name
     ~output_type:(Node.output_type diagonal)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let diagPart
     ?(name = "DiagPart")
+    ?(control_inputs = [])
     (input : ([< `float | `double | `int32 | `int64 | `complex64 ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type input)) ] in
@@ -2983,11 +3226,13 @@ let diagPart
     ~op_name
     ~output_type:(Node.output_type input)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let digamma
     ?(name = "Digamma")
+    ?(control_inputs = [])
     (x : ([< `float | `double ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type x)) ] in
@@ -2999,6 +3244,7 @@ let digamma
     ~op_name
     ~output_type:(Node.output_type x)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
@@ -3007,6 +3253,7 @@ let dilation2D
     ~strides
     ~rates
     ~padding
+    ?(control_inputs = [])
     (input : ([< `float | `double | `int32 | `int64 ] as 't) t)
     (filter : ([< `float | `double | `int32 | `int64 ] as 't) t)
   =
@@ -3028,6 +3275,7 @@ let dilation2D
     ~op_name
     ~output_type:(Node.output_type input)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
@@ -3036,6 +3284,7 @@ let dilation2DBackpropFilter
     ~strides
     ~rates
     ~padding
+    ?(control_inputs = [])
     (input : ([< `float | `double | `int32 | `int64 ] as 't) t)
     (filter : ([< `float | `double | `int32 | `int64 ] as 't) t)
     (out_backprop : ([< `float | `double | `int32 | `int64 ] as 't) t)
@@ -3058,6 +3307,7 @@ let dilation2DBackpropFilter
     ~op_name
     ~output_type:(Node.output_type input)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
@@ -3066,6 +3316,7 @@ let dilation2DBackpropInput
     ~strides
     ~rates
     ~padding
+    ?(control_inputs = [])
     (input : ([< `float | `double | `int32 | `int64 ] as 't) t)
     (filter : ([< `float | `double | `int32 | `int64 ] as 't) t)
     (out_backprop : ([< `float | `double | `int32 | `int64 ] as 't) t)
@@ -3088,11 +3339,13 @@ let dilation2DBackpropInput
     ~op_name
     ~output_type:(Node.output_type input)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let div
     ?(name = "Div")
+    ?(control_inputs = [])
     (x : ([< `float | `double | `int32 | `int64 | `complex64 ] as 't) t)
     (y : ([< `float | `double | `int32 | `int64 | `complex64 ] as 't) t)
   =
@@ -3105,11 +3358,13 @@ let div
     ~op_name
     ~output_type:(Node.output_type x)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let drawBoundingBoxes
     ?(name = "DrawBoundingBoxes")
+    ?(control_inputs = [])
     (images : ([< `float ] as 't) t)
     (boxes : [ `float ] t)
   =
@@ -3122,12 +3377,14 @@ let drawBoundingBoxes
     ~op_name
     ~output_type:(Node.output_type images)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let dynamicPartition
     ?(name = "DynamicPartition")
     ~num_partitions
+    ?(control_inputs = [])
     (data : 't t)
     (partitions : [ `int32 ] t)
   =
@@ -3144,6 +3401,7 @@ let dynamicPartition
       ~op_name
       ~output_type:(Node.output_type data)
       ~inputs
+      ~control_inputs
       ~attributes
       ~output_idx:None
   in
@@ -3152,6 +3410,7 @@ let dynamicPartition
 
 let dynamicStitch
     ?(name = "DynamicStitch")
+    ?(control_inputs = [])
     (indices : [ `int32 ] t list)
     (data : 't t list)
   =
@@ -3167,12 +3426,14 @@ let dynamicStitch
     ~op_name
     ~output_type:(Node.output_type (List.hd_exn data))
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let editDistance
     ?(name = "EditDistance")
     ?normalize
+    ?(control_inputs = [])
     (hypothesis_indices : [ `int64 ] t)
     (hypothesis_values : 't t)
     (hypothesis_shape : [ `int64 ] t)
@@ -3192,11 +3453,13 @@ let editDistance
     ~op_name
     ~output_type:Type.Float
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let elu
     ?(name = "Elu")
+    ?(control_inputs = [])
     (features : ([< `float | `double ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type features)) ] in
@@ -3208,11 +3471,13 @@ let elu
     ~op_name
     ~output_type:(Node.output_type features)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let eluGrad
     ?(name = "EluGrad")
+    ?(control_inputs = [])
     (gradients : ([< `float | `double ] as 't) t)
     (outputs : ([< `float | `double ] as 't) t)
   =
@@ -3225,12 +3490,14 @@ let eluGrad
     ~op_name
     ~output_type:(Node.output_type gradients)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let encodePng
     ?(name = "EncodePng")
     ?compression
+    ?(control_inputs = [])
     (image : 't t)
   =
   let attributes = [ "T", Type (P (Node.output_type image)) ] in
@@ -3245,6 +3512,7 @@ let encodePng
     ~op_name
     ~output_type:Type.String
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
@@ -3253,6 +3521,7 @@ let enter
     ~frame_name
     ?is_constant
     ?parallel_iterations
+    ?(control_inputs = [])
     (data : 't t)
   =
   let attributes = [ "T", Type (P (Node.output_type data)) ] in
@@ -3273,11 +3542,13 @@ let enter
     ~op_name
     ~output_type:(Node.output_type data)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let equal
     ?(name = "Equal")
+    ?(control_inputs = [])
     (x : ([< `float | `double | `int32 | `int64 | `complex64 | `string | `bool ] as 't) t)
     (y : ([< `float | `double | `int32 | `int64 | `complex64 | `string | `bool ] as 't) t)
   =
@@ -3290,11 +3561,13 @@ let equal
     ~op_name
     ~output_type:Type.Bool
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let erf
     ?(name = "Erf")
+    ?(control_inputs = [])
     (x : ([< `float | `double ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type x)) ] in
@@ -3306,11 +3579,13 @@ let erf
     ~op_name
     ~output_type:(Node.output_type x)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let erfc
     ?(name = "Erfc")
+    ?(control_inputs = [])
     (x : ([< `float | `double ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type x)) ] in
@@ -3322,11 +3597,13 @@ let erfc
     ~op_name
     ~output_type:(Node.output_type x)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let exit
     ?(name = "Exit")
+    ?(control_inputs = [])
     (data : 't t)
   =
   let attributes = [ "T", Type (P (Node.output_type data)) ] in
@@ -3338,11 +3615,13 @@ let exit
     ~op_name
     ~output_type:(Node.output_type data)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let exp
     ?(name = "Exp")
+    ?(control_inputs = [])
     (x : ([< `float | `double | `complex64 ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type x)) ] in
@@ -3354,11 +3633,13 @@ let exp
     ~op_name
     ~output_type:(Node.output_type x)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let expandDims
     ?(name = "ExpandDims")
+    ?(control_inputs = [])
     (input : 't t)
     (dim : [ `int32 ] t)
   =
@@ -3371,6 +3652,7 @@ let expandDims
     ~op_name
     ~output_type:(Node.output_type input)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
@@ -3379,6 +3661,7 @@ let extractGlimpse
     ?centered
     ?normalized
     ?uniform_noise
+    ?(control_inputs = [])
     (input : [ `float ] t)
     (size : [ `int32 ] t)
     (offsets : [ `float ] t)
@@ -3401,6 +3684,7 @@ let extractGlimpse
     ~op_name
     ~output_type:Type.Float
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
@@ -3410,6 +3694,7 @@ let extractImagePatches
     ~strides
     ~rates
     ~padding
+    ?(control_inputs = [])
     (images : ([< `float | `double | `int32 | `int64 ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type images)) ] in
@@ -3433,11 +3718,13 @@ let extractImagePatches
     ~op_name
     ~output_type:(Node.output_type images)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let fFT
     ?(name = "FFT")
+    ?(control_inputs = [])
     (input : [ `complex64 ] t)
   =
   let attributes = [] in
@@ -3449,11 +3736,13 @@ let fFT
     ~op_name
     ~output_type:Type.Complex64
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let fFT2D
     ?(name = "FFT2D")
+    ?(control_inputs = [])
     (input : [ `complex64 ] t)
   =
   let attributes = [] in
@@ -3465,11 +3754,13 @@ let fFT2D
     ~op_name
     ~output_type:Type.Complex64
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let fFT3D
     ?(name = "FFT3D")
+    ?(control_inputs = [])
     (input : [ `complex64 ] t)
   =
   let attributes = [] in
@@ -3481,6 +3772,7 @@ let fFT3D
     ~op_name
     ~output_type:Type.Complex64
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
@@ -3491,6 +3783,7 @@ let fIFOQueue
     ?capacity
     ?container
     ?shared_name
+    ?(control_inputs = [])
     ()
   =
   let attributes = [] in
@@ -3517,11 +3810,13 @@ let fIFOQueue
     ~op_name
     ~output_type:Type.String
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let fact
     ?(name = "Fact")
+    ?(control_inputs = [])
     ()
   =
   let attributes = [] in
@@ -3533,11 +3828,13 @@ let fact
     ~op_name
     ~output_type:Type.String
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let fill
     ?(name = "Fill")
+    ?(control_inputs = [])
     (dims : [ `int32 ] t)
     (value : 't t)
   =
@@ -3550,6 +3847,7 @@ let fill
     ~op_name
     ~output_type:(Node.output_type value)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
@@ -3560,6 +3858,7 @@ let fixedLengthRecordReader
     ?footer_bytes
     ?container
     ?shared_name
+    ?(control_inputs = [])
     ()
   =
   let attributes = [] in
@@ -3586,6 +3885,7 @@ let fixedLengthRecordReader
     ~op_name
     ~output_type:Type.String
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
@@ -3603,6 +3903,7 @@ let fixedUnigramCandidateSampler
     ?unigrams
     ?seed
     ?seed2
+    ?(control_inputs = [])
     (true_classes : [ `int64 ] t)
   =
   let attributes = [] in
@@ -3650,6 +3951,7 @@ let fixedUnigramCandidateSampler
     ~op_name
     ~output_type:Type.Int64
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 0)
   ,
@@ -3658,6 +3960,7 @@ let fixedUnigramCandidateSampler
     ~op_name
     ~output_type:Type.Float
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 1)
   ,
@@ -3666,11 +3969,13 @@ let fixedUnigramCandidateSampler
     ~op_name
     ~output_type:Type.Float
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 2)
 
 let floor
     ?(name = "Floor")
+    ?(control_inputs = [])
     (x : ([< `float | `double ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type x)) ] in
@@ -3682,12 +3987,14 @@ let floor
     ~op_name
     ~output_type:(Node.output_type x)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let gather
     ?(name = "Gather")
     ?validate_indices
+    ?(control_inputs = [])
     (params : 'tparams t)
     (indices : ([< `int32 | `int64 ] as 'tindices) t)
   =
@@ -3703,11 +4010,13 @@ let gather
     ~op_name
     ~output_type:(Node.output_type params)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let gatherNd
     ?(name = "GatherNd")
+    ?(control_inputs = [])
     (params : 'tparams t)
     (indices : ([< `int32 | `int64 ] as 'tindices) t)
   =
@@ -3720,11 +4029,13 @@ let gatherNd
     ~op_name
     ~output_type:(Node.output_type params)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let getSessionHandle
     ?(name = "GetSessionHandle")
+    ?(control_inputs = [])
     (value : 't t)
   =
   let attributes = [ "T", Type (P (Node.output_type value)) ] in
@@ -3736,12 +4047,14 @@ let getSessionHandle
     ~op_name
     ~output_type:Type.String
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let getSessionTensor
     ?(name = "GetSessionTensor")
     ~type_
+    ?(control_inputs = [])
     (handle : [ `string ] t)
   =
   let attributes = [ "dtype", Type (P type_) ] in
@@ -3753,11 +4066,13 @@ let getSessionTensor
     ~op_name
     ~output_type:type_
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let greater
     ?(name = "Greater")
+    ?(control_inputs = [])
     (x : ([< `float | `double | `int32 | `int64 ] as 't) t)
     (y : ([< `float | `double | `int32 | `int64 ] as 't) t)
   =
@@ -3770,11 +4085,13 @@ let greater
     ~op_name
     ~output_type:Type.Bool
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let greaterEqual
     ?(name = "GreaterEqual")
+    ?(control_inputs = [])
     (x : ([< `float | `double | `int32 | `int64 ] as 't) t)
     (y : ([< `float | `double | `int32 | `int64 ] as 't) t)
   =
@@ -3787,11 +4104,13 @@ let greaterEqual
     ~op_name
     ~output_type:Type.Bool
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let hSVToRGB
     ?(name = "HSVToRGB")
+    ?(control_inputs = [])
     (images : ([< `float | `double ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type images)) ] in
@@ -3803,6 +4122,7 @@ let hSVToRGB
     ~op_name
     ~output_type:(Node.output_type images)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
@@ -3810,6 +4130,7 @@ let hashTable
     ?(name = "HashTable")
     ?container
     ?shared_name
+    ?(control_inputs = [])
     ()
   =
   let attributes = [] in
@@ -3827,11 +4148,13 @@ let hashTable
     ~op_name
     ~output_type:Type.String
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let histogramSummary
     ?(name = "HistogramSummary")
+    ?(control_inputs = [])
     (tag : [ `string ] t)
     (values : ([< `float | `double | `int32 | `int64 ] as 't) t)
   =
@@ -3844,11 +4167,13 @@ let histogramSummary
     ~op_name
     ~output_type:Type.String
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let iFFT
     ?(name = "IFFT")
+    ?(control_inputs = [])
     (input : [ `complex64 ] t)
   =
   let attributes = [] in
@@ -3860,11 +4185,13 @@ let iFFT
     ~op_name
     ~output_type:Type.Complex64
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let iFFT2D
     ?(name = "IFFT2D")
+    ?(control_inputs = [])
     (input : [ `complex64 ] t)
   =
   let attributes = [] in
@@ -3876,11 +4203,13 @@ let iFFT2D
     ~op_name
     ~output_type:Type.Complex64
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let iFFT3D
     ?(name = "IFFT3D")
+    ?(control_inputs = [])
     (input : [ `complex64 ] t)
   =
   let attributes = [] in
@@ -3892,11 +4221,13 @@ let iFFT3D
     ~op_name
     ~output_type:Type.Complex64
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let identity
     ?(name = "Identity")
+    ?(control_inputs = [])
     (input : 't t)
   =
   let attributes = [ "T", Type (P (Node.output_type input)) ] in
@@ -3908,6 +4239,7 @@ let identity
     ~op_name
     ~output_type:(Node.output_type input)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
@@ -3915,6 +4247,7 @@ let identityReader
     ?(name = "IdentityReader")
     ?container
     ?shared_name
+    ?(control_inputs = [])
     ()
   =
   let attributes = [] in
@@ -3932,11 +4265,13 @@ let identityReader
     ~op_name
     ~output_type:Type.String
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let igamma
     ?(name = "Igamma")
+    ?(control_inputs = [])
     (a : ([< `float | `double ] as 't) t)
     (x : ([< `float | `double ] as 't) t)
   =
@@ -3949,11 +4284,13 @@ let igamma
     ~op_name
     ~output_type:(Node.output_type a)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let igammac
     ?(name = "Igammac")
+    ?(control_inputs = [])
     (a : ([< `float | `double ] as 't) t)
     (x : ([< `float | `double ] as 't) t)
   =
@@ -3966,12 +4303,14 @@ let igammac
     ~op_name
     ~output_type:(Node.output_type a)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let imag
     ?(name = "Imag")
     ~type_
+    ?(control_inputs = [])
     (input : ([< `complex64 ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type input)) ;  "Tout", Type (P type_) ] in
@@ -3983,12 +4322,14 @@ let imag
     ~op_name
     ~output_type:type_
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let imageSummary
     ?(name = "ImageSummary")
     ?max_images
+    ?(control_inputs = [])
     (tag : [ `string ] t)
     (tensor : ([< `float ] as 't) t)
   =
@@ -4004,6 +4345,7 @@ let imageSummary
     ~op_name
     ~output_type:Type.String
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
@@ -4012,6 +4354,7 @@ let immutableConst
     ~type_
     ~shape
     ~memory_region_name
+    ?(control_inputs = [])
     ()
   =
   let attributes = [ "dtype", Type (P type_) ] in
@@ -4029,12 +4372,14 @@ let immutableConst
     ~op_name
     ~output_type:type_
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let inTopK
     ?(name = "InTopK")
     ~k
+    ?(control_inputs = [])
     (predictions : [ `float ] t)
     (targets : ([< `int32 | `int64 ] as 't) t)
   =
@@ -4050,11 +4395,13 @@ let inTopK
     ~op_name
     ~output_type:Type.Bool
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let initializeTable
     ?(name = "InitializeTable")
+    ?(control_inputs = [])
     (table_handle : [ `string ] t)
     (keys : 'tkey t)
     (values : 'tval t)
@@ -4068,6 +4415,7 @@ let initializeTable
     ~op_name
     ~output_type:Type.Unit
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
@@ -4077,6 +4425,7 @@ let initializeTableFromTextFile
     ~value_index
     ?vocab_size
     ?delimiter
+    ?(control_inputs = [])
     (table_handle : [ `string ] t)
     (filename : [ `string ] t)
   =
@@ -4101,11 +4450,13 @@ let initializeTableFromTextFile
     ~op_name
     ~output_type:Type.Unit
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let inv
     ?(name = "Inv")
+    ?(control_inputs = [])
     (x : ([< `float | `double | `int32 | `int64 | `complex64 ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type x)) ] in
@@ -4117,11 +4468,13 @@ let inv
     ~op_name
     ~output_type:(Node.output_type x)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let invertPermutation
     ?(name = "InvertPermutation")
+    ?(control_inputs = [])
     (x : [ `int32 ] t)
   =
   let attributes = [] in
@@ -4133,11 +4486,13 @@ let invertPermutation
     ~op_name
     ~output_type:Type.Int32
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let isFinite
     ?(name = "IsFinite")
+    ?(control_inputs = [])
     (x : ([< `float | `double ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type x)) ] in
@@ -4149,11 +4504,13 @@ let isFinite
     ~op_name
     ~output_type:Type.Bool
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let isInf
     ?(name = "IsInf")
+    ?(control_inputs = [])
     (x : ([< `float | `double ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type x)) ] in
@@ -4165,11 +4522,13 @@ let isInf
     ~op_name
     ~output_type:Type.Bool
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let isNan
     ?(name = "IsNan")
+    ?(control_inputs = [])
     (x : ([< `float | `double ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type x)) ] in
@@ -4181,11 +4540,13 @@ let isNan
     ~op_name
     ~output_type:Type.Bool
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let isVariableInitialized
     ?(name = "IsVariableInitialized")
+    ?(control_inputs = [])
     (ref : 'dtype t)
   =
   let attributes = [ "dtype", Type (P (Node.output_type ref)) ] in
@@ -4197,11 +4558,13 @@ let isVariableInitialized
     ~op_name
     ~output_type:Type.Bool
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let l2Loss
     ?(name = "L2Loss")
+    ?(control_inputs = [])
     (t : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type t)) ] in
@@ -4213,6 +4576,7 @@ let l2Loss
     ~op_name
     ~output_type:(Node.output_type t)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
@@ -4222,6 +4586,7 @@ let lRN
     ?bias
     ?alpha
     ?beta
+    ?(control_inputs = [])
     (input : ([< `float ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type input)) ] in
@@ -4245,6 +4610,7 @@ let lRN
     ~op_name
     ~output_type:(Node.output_type input)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
@@ -4254,6 +4620,7 @@ let lRNGrad
     ?bias
     ?alpha
     ?beta
+    ?(control_inputs = [])
     (input_grads : ([< `float ] as 't) t)
     (input_image : ([< `float ] as 't) t)
     (output_image : ([< `float ] as 't) t)
@@ -4279,6 +4646,7 @@ let lRNGrad
     ~op_name
     ~output_type:(Node.output_type input_grads)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
@@ -4290,6 +4658,7 @@ let learnedUnigramCandidateSampler
     ~range_max
     ?seed
     ?seed2
+    ?(control_inputs = [])
     (true_classes : [ `int64 ] t)
   =
   let attributes = [] in
@@ -4319,6 +4688,7 @@ let learnedUnigramCandidateSampler
     ~op_name
     ~output_type:Type.Int64
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 0)
   ,
@@ -4327,6 +4697,7 @@ let learnedUnigramCandidateSampler
     ~op_name
     ~output_type:Type.Float
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 1)
   ,
@@ -4335,11 +4706,13 @@ let learnedUnigramCandidateSampler
     ~op_name
     ~output_type:Type.Float
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 2)
 
 let less
     ?(name = "Less")
+    ?(control_inputs = [])
     (x : ([< `float | `double | `int32 | `int64 ] as 't) t)
     (y : ([< `float | `double | `int32 | `int64 ] as 't) t)
   =
@@ -4352,11 +4725,13 @@ let less
     ~op_name
     ~output_type:Type.Bool
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let lessEqual
     ?(name = "LessEqual")
+    ?(control_inputs = [])
     (x : ([< `float | `double | `int32 | `int64 ] as 't) t)
     (y : ([< `float | `double | `int32 | `int64 ] as 't) t)
   =
@@ -4369,11 +4744,13 @@ let lessEqual
     ~op_name
     ~output_type:Type.Bool
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let lgamma
     ?(name = "Lgamma")
+    ?(control_inputs = [])
     (x : ([< `float | `double ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type x)) ] in
@@ -4385,11 +4762,13 @@ let lgamma
     ~op_name
     ~output_type:(Node.output_type x)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let linSpace
     ?(name = "LinSpace")
+    ?(control_inputs = [])
     (start : ([< `float | `double ] as 't) t)
     (stop : ([< `float | `double ] as 't) t)
     (num : [ `int32 ] t)
@@ -4403,11 +4782,13 @@ let linSpace
     ~op_name
     ~output_type:(Node.output_type start)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let listDiff
     ?(name = "ListDiff")
+    ?(control_inputs = [])
     (x : 't t)
     (y : 't t)
   =
@@ -4420,6 +4801,7 @@ let listDiff
     ~op_name
     ~output_type:(Node.output_type x)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 0)
   ,
@@ -4428,11 +4810,13 @@ let listDiff
     ~op_name
     ~output_type:Type.Int32
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 1)
 
 let log
     ?(name = "Log")
+    ?(control_inputs = [])
     (x : ([< `float | `double | `complex64 ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type x)) ] in
@@ -4444,11 +4828,13 @@ let log
     ~op_name
     ~output_type:(Node.output_type x)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let logSoftmax
     ?(name = "LogSoftmax")
+    ?(control_inputs = [])
     (logits : ([< `float | `double ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type logits)) ] in
@@ -4460,6 +4846,7 @@ let logSoftmax
     ~op_name
     ~output_type:(Node.output_type logits)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
@@ -4471,6 +4858,7 @@ let logUniformCandidateSampler
     ~range_max
     ?seed
     ?seed2
+    ?(control_inputs = [])
     (true_classes : [ `int64 ] t)
   =
   let attributes = [] in
@@ -4500,6 +4888,7 @@ let logUniformCandidateSampler
     ~op_name
     ~output_type:Type.Int64
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 0)
   ,
@@ -4508,6 +4897,7 @@ let logUniformCandidateSampler
     ~op_name
     ~output_type:Type.Float
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 1)
   ,
@@ -4516,11 +4906,13 @@ let logUniformCandidateSampler
     ~op_name
     ~output_type:Type.Float
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 2)
 
 let logicalAnd
     ?(name = "LogicalAnd")
+    ?(control_inputs = [])
     (x : [ `bool ] t)
     (y : [ `bool ] t)
   =
@@ -4533,11 +4925,13 @@ let logicalAnd
     ~op_name
     ~output_type:Type.Bool
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let logicalNot
     ?(name = "LogicalNot")
+    ?(control_inputs = [])
     (x : [ `bool ] t)
   =
   let attributes = [] in
@@ -4549,11 +4943,13 @@ let logicalNot
     ~op_name
     ~output_type:Type.Bool
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let logicalOr
     ?(name = "LogicalOr")
+    ?(control_inputs = [])
     (x : [ `bool ] t)
     (y : [ `bool ] t)
   =
@@ -4566,6 +4962,7 @@ let logicalOr
     ~op_name
     ~output_type:Type.Bool
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
@@ -4573,6 +4970,7 @@ let lookupTableExport
     ?(name = "LookupTableExport")
     ~type_
     ~type_1
+    ?(control_inputs = [])
     (table_handle : [ `string ] t)
   =
   let attributes = [ "Tkeys", Type (P type_) ;  "Tvalues", Type (P type_1) ] in
@@ -4584,6 +4982,7 @@ let lookupTableExport
     ~op_name
     ~output_type:type_
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 0)
   ,
@@ -4592,11 +4991,13 @@ let lookupTableExport
     ~op_name
     ~output_type:type_1
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 1)
 
 let lookupTableFind
     ?(name = "LookupTableFind")
+    ?(control_inputs = [])
     (table_handle : [ `string ] t)
     (keys : 'tin t)
     (default_value : 'tout t)
@@ -4610,11 +5011,13 @@ let lookupTableFind
     ~op_name
     ~output_type:(Node.output_type default_value)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let lookupTableImport
     ?(name = "LookupTableImport")
+    ?(control_inputs = [])
     (table_handle : [ `string ] t)
     (keys : 'tin t)
     (values : 'tout t)
@@ -4628,11 +5031,13 @@ let lookupTableImport
     ~op_name
     ~output_type:Type.Unit
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let lookupTableInsert
     ?(name = "LookupTableInsert")
+    ?(control_inputs = [])
     (table_handle : [ `string ] t)
     (keys : 'tin t)
     (values : 'tout t)
@@ -4646,11 +5051,13 @@ let lookupTableInsert
     ~op_name
     ~output_type:Type.Unit
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let lookupTableSize
     ?(name = "LookupTableSize")
+    ?(control_inputs = [])
     (table_handle : [ `string ] t)
   =
   let attributes = [] in
@@ -4662,11 +5069,13 @@ let lookupTableSize
     ~op_name
     ~output_type:Type.Int64
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let loopCond
     ?(name = "LoopCond")
+    ?(control_inputs = [])
     (input : [ `bool ] t)
   =
   let attributes = [] in
@@ -4678,6 +5087,7 @@ let loopCond
     ~op_name
     ~output_type:Type.Bool
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
@@ -4685,6 +5095,7 @@ let matMul
     ?(name = "MatMul")
     ?transpose_a
     ?transpose_b
+    ?(control_inputs = [])
     (a : ([< `float | `double | `int32 | `complex64 ] as 't) t)
     (b : ([< `float | `double | `int32 | `complex64 ] as 't) t)
   =
@@ -4703,11 +5114,13 @@ let matMul
     ~op_name
     ~output_type:(Node.output_type a)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let matchingFiles
     ?(name = "MatchingFiles")
+    ?(control_inputs = [])
     (pattern : [ `string ] t)
   =
   let attributes = [] in
@@ -4719,11 +5132,13 @@ let matchingFiles
     ~op_name
     ~output_type:Type.String
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let matrixDeterminant
     ?(name = "MatrixDeterminant")
+    ?(control_inputs = [])
     (input : ([< `float | `double ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type input)) ] in
@@ -4735,12 +5150,14 @@ let matrixDeterminant
     ~op_name
     ~output_type:(Node.output_type input)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let matrixInverse
     ?(name = "MatrixInverse")
     ?adjoint
+    ?(control_inputs = [])
     (input : ([< `double | `float ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type input)) ] in
@@ -4755,12 +5172,14 @@ let matrixInverse
     ~op_name
     ~output_type:(Node.output_type input)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let matrixSolve
     ?(name = "MatrixSolve")
     ?adjoint
+    ?(control_inputs = [])
     (matrix : ([< `double | `float ] as 't) t)
     (rhs : ([< `double | `float ] as 't) t)
   =
@@ -4776,12 +5195,14 @@ let matrixSolve
     ~op_name
     ~output_type:(Node.output_type matrix)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let matrixSolveLs
     ?(name = "MatrixSolveLs")
     ?fast
+    ?(control_inputs = [])
     (matrix : ([< `double | `float ] as 't) t)
     (rhs : ([< `double | `float ] as 't) t)
     (l2_regularizer : [ `double ] t)
@@ -4798,6 +5219,7 @@ let matrixSolveLs
     ~op_name
     ~output_type:(Node.output_type matrix)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
@@ -4805,6 +5227,7 @@ let matrixTriangularSolve
     ?(name = "MatrixTriangularSolve")
     ?lower
     ?adjoint
+    ?(control_inputs = [])
     (matrix : ([< `double | `float ] as 't) t)
     (rhs : ([< `double | `float ] as 't) t)
   =
@@ -4823,12 +5246,14 @@ let matrixTriangularSolve
     ~op_name
     ~output_type:(Node.output_type matrix)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let max
     ?(name = "Max")
     ?keep_dims
+    ?(control_inputs = [])
     (input : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (reduction_indices : [ `int32 ] t)
   =
@@ -4844,6 +5269,7 @@ let max
     ~op_name
     ~output_type:(Node.output_type input)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
@@ -4853,6 +5279,7 @@ let maxPool
     ~strides
     ~padding
     ?data_format
+    ?(control_inputs = [])
     (input : ([< `float ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type input)) ] in
@@ -4876,6 +5303,7 @@ let maxPool
     ~op_name
     ~output_type:(Node.output_type input)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
@@ -4884,6 +5312,7 @@ let maxPool3D
     ~ksize
     ~strides
     ~padding
+    ?(control_inputs = [])
     (input : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type input)) ] in
@@ -4904,6 +5333,7 @@ let maxPool3D
     ~op_name
     ~output_type:(Node.output_type input)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
@@ -4912,6 +5342,7 @@ let maxPool3DGrad
     ~ksize
     ~strides
     ~padding
+    ?(control_inputs = [])
     (orig_input : [ `float ] t)
     (orig_output : [ `float ] t)
     (grad : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
@@ -4934,6 +5365,7 @@ let maxPool3DGrad
     ~op_name
     ~output_type:(Node.output_type grad)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
@@ -4943,6 +5375,7 @@ let maxPoolGrad
     ~strides
     ~padding
     ?data_format
+    ?(control_inputs = [])
     (orig_input : ([< `float ] as 't) t)
     (orig_output : ([< `float ] as 't) t)
     (grad : ([< `float ] as 't) t)
@@ -4968,6 +5401,7 @@ let maxPoolGrad
     ~op_name
     ~output_type:(Node.output_type orig_input)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
@@ -4976,6 +5410,7 @@ let maxPoolGradWithArgmax
     ~ksize
     ~strides
     ~padding
+    ?(control_inputs = [])
     (input : ([< `float ] as 't) t)
     (grad : ([< `float ] as 't) t)
     (argmax : ([< `int32 | `int64 ] as 'targmax) t)
@@ -4998,6 +5433,7 @@ let maxPoolGradWithArgmax
     ~op_name
     ~output_type:(Node.output_type input)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
@@ -5007,6 +5443,7 @@ let maxPoolWithArgmax
     ~ksize
     ~strides
     ~padding
+    ?(control_inputs = [])
     (input : ([< `float ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type input)) ;  "Targmax", Type (P type_1) ] in
@@ -5027,6 +5464,7 @@ let maxPoolWithArgmax
     ~op_name
     ~output_type:(Node.output_type input)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 0)
   ,
@@ -5035,11 +5473,13 @@ let maxPoolWithArgmax
     ~op_name
     ~output_type:type_1
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 1)
 
 let maximum
     ?(name = "Maximum")
+    ?(control_inputs = [])
     (x : ([< `float | `double | `int32 | `int64 ] as 't) t)
     (y : ([< `float | `double | `int32 | `int64 ] as 't) t)
   =
@@ -5052,12 +5492,14 @@ let maximum
     ~op_name
     ~output_type:(Node.output_type x)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let mean
     ?(name = "Mean")
     ?keep_dims
+    ?(control_inputs = [])
     (input : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (reduction_indices : [ `int32 ] t)
   =
@@ -5073,11 +5515,13 @@ let mean
     ~op_name
     ~output_type:(Node.output_type input)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let merge
     ?(name = "Merge")
+    ?(control_inputs = [])
     (inputs__ : 't t list)
   =
   let attributes = [ "T", Type (P (Node.output_type (List.hd_exn inputs__))) ] in
@@ -5092,6 +5536,7 @@ let merge
     ~op_name
     ~output_type:(Node.output_type (List.hd_exn inputs__))
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 0)
   ,
@@ -5100,11 +5545,13 @@ let merge
     ~op_name
     ~output_type:Type.Int32
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 1)
 
 let mergeSummary
     ?(name = "MergeSummary")
+    ?(control_inputs = [])
     (inputs__ : [ `string ] t list)
   =
   let attributes = [] in
@@ -5119,12 +5566,14 @@ let mergeSummary
     ~op_name
     ~output_type:Type.String
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let min
     ?(name = "Min")
     ?keep_dims
+    ?(control_inputs = [])
     (input : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (reduction_indices : [ `int32 ] t)
   =
@@ -5140,11 +5589,13 @@ let min
     ~op_name
     ~output_type:(Node.output_type input)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let minimum
     ?(name = "Minimum")
+    ?(control_inputs = [])
     (x : ([< `float | `double | `int32 | `int64 ] as 't) t)
     (y : ([< `float | `double | `int32 | `int64 ] as 't) t)
   =
@@ -5157,12 +5608,14 @@ let minimum
     ~op_name
     ~output_type:(Node.output_type x)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let mirrorPad
     ?(name = "MirrorPad")
     ~mode
+    ?(control_inputs = [])
     (input : 't t)
     (paddings : [ `int32 ] t)
   =
@@ -5178,12 +5631,14 @@ let mirrorPad
     ~op_name
     ~output_type:(Node.output_type input)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let mirrorPadGrad
     ?(name = "MirrorPadGrad")
     ~mode
+    ?(control_inputs = [])
     (input : 't t)
     (paddings : [ `int32 ] t)
   =
@@ -5199,11 +5654,13 @@ let mirrorPadGrad
     ~op_name
     ~output_type:(Node.output_type input)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let mod_
     ?(name = "Mod")
+    ?(control_inputs = [])
     (x : ([< `int32 | `int64 | `float | `double ] as 't) t)
     (y : ([< `int32 | `int64 | `float | `double ] as 't) t)
   =
@@ -5216,11 +5673,13 @@ let mod_
     ~op_name
     ~output_type:(Node.output_type x)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let mul
     ?(name = "Mul")
+    ?(control_inputs = [])
     (x : ([< `float | `double | `int32 | `int64 | `complex64 ] as 't) t)
     (y : ([< `float | `double | `int32 | `int64 | `complex64 ] as 't) t)
   =
@@ -5233,6 +5692,7 @@ let mul
     ~op_name
     ~output_type:(Node.output_type x)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
@@ -5240,6 +5700,7 @@ let multinomial
     ?(name = "Multinomial")
     ?seed
     ?seed2
+    ?(control_inputs = [])
     (logits : ([< `float | `double | `int32 | `int64 ] as 't) t)
     (num_samples : [ `int32 ] t)
   =
@@ -5258,6 +5719,7 @@ let multinomial
     ~op_name
     ~output_type:Type.Int64
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
@@ -5265,6 +5727,7 @@ let mutableHashTable
     ?(name = "MutableHashTable")
     ?container
     ?shared_name
+    ?(control_inputs = [])
     ()
   =
   let attributes = [] in
@@ -5282,6 +5745,7 @@ let mutableHashTable
     ~op_name
     ~output_type:Type.String
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
@@ -5290,6 +5754,7 @@ let mutableHashTableOfTensors
     ?container
     ?shared_name
     ?value_shape
+    ?(control_inputs = [])
     ()
   =
   let attributes = [] in
@@ -5310,11 +5775,13 @@ let mutableHashTableOfTensors
     ~op_name
     ~output_type:Type.String
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let neg
     ?(name = "Neg")
+    ?(control_inputs = [])
     (x : ([< `float | `double | `int32 | `int64 | `complex64 ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type x)) ] in
@@ -5326,6 +5793,7 @@ let neg
     ~op_name
     ~output_type:(Node.output_type x)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
@@ -5333,6 +5801,7 @@ let negTrain
     ?(name = "NegTrain")
     ~vocab_count
     ~num_negative_samples
+    ?(control_inputs = [])
     (w_in : [ `float ] t)
     (w_out : [ `float ] t)
     (examples : [ `int32 ] t)
@@ -5354,11 +5823,13 @@ let negTrain
     ~op_name
     ~output_type:Type.Unit
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let nextIteration
     ?(name = "NextIteration")
+    ?(control_inputs = [])
     (data : 't t)
   =
   let attributes = [ "T", Type (P (Node.output_type data)) ] in
@@ -5370,11 +5841,13 @@ let nextIteration
     ~op_name
     ~output_type:(Node.output_type data)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let noOp
     ?(name = "NoOp")
+    ?(control_inputs = [])
     ()
   =
   let attributes = [] in
@@ -5386,12 +5859,14 @@ let noOp
     ~op_name
     ~output_type:Type.Unit
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let nonMaxSuppression
     ?(name = "NonMaxSuppression")
     ?iou_threshold
+    ?(control_inputs = [])
     (boxes : [ `float ] t)
     (scores : [ `float ] t)
     (max_output_size : [ `int32 ] t)
@@ -5408,11 +5883,13 @@ let nonMaxSuppression
     ~op_name
     ~output_type:Type.Int32
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let notEqual
     ?(name = "NotEqual")
+    ?(control_inputs = [])
     (x : ([< `float | `double | `int32 | `int64 | `complex64 | `string | `bool ] as 't) t)
     (y : ([< `float | `double | `int32 | `int64 | `complex64 | `string | `bool ] as 't) t)
   =
@@ -5425,12 +5902,14 @@ let notEqual
     ~op_name
     ~output_type:Type.Bool
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let oneHot
     ?(name = "OneHot")
     ?axis
+    ?(control_inputs = [])
     (indices : ([< `int32 | `int64 ] as 'tI) t)
     (depth : [ `int32 ] t)
     (on_value : 't t)
@@ -5448,12 +5927,14 @@ let oneHot
     ~op_name
     ~output_type:(Node.output_type on_value)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let pack
     ?(name = "Pack")
     ?axis
+    ?(control_inputs = [])
     (values : 't t list)
   =
   let attributes = [ "T", Type (P (Node.output_type (List.hd_exn values))) ] in
@@ -5471,11 +5952,13 @@ let pack
     ~op_name
     ~output_type:(Node.output_type (List.hd_exn values))
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let pad
     ?(name = "Pad")
+    ?(control_inputs = [])
     (input : 't t)
     (paddings : [ `int32 ] t)
   =
@@ -5488,6 +5971,7 @@ let pad
     ~op_name
     ~output_type:(Node.output_type input)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
@@ -5498,6 +5982,7 @@ let paddingFIFOQueue
     ?capacity
     ?container
     ?shared_name
+    ?(control_inputs = [])
     ()
   =
   let attributes = [] in
@@ -5524,6 +6009,7 @@ let paddingFIFOQueue
     ~op_name
     ~output_type:Type.String
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
@@ -5531,6 +6017,7 @@ let parameterizedTruncatedNormal
     ?(name = "ParameterizedTruncatedNormal")
     ?seed
     ?seed2
+    ?(control_inputs = [])
     (shape : ([< `int32 | `int64 ] as 't) t)
     (means : ([< `float | `double ] as 'dtype) t)
     (stdevs : ([< `float | `double ] as 'dtype) t)
@@ -5552,12 +6039,14 @@ let parameterizedTruncatedNormal
     ~op_name
     ~output_type:(Node.output_type means)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let parseTensor
     ?(name = "ParseTensor")
     ~type_
+    ?(control_inputs = [])
     (serialized : [ `string ] t)
   =
   let attributes = [ "out_type", Type (P type_) ] in
@@ -5569,6 +6058,7 @@ let parseTensor
     ~op_name
     ~output_type:type_
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
@@ -5576,6 +6066,7 @@ let placeholder
     ?(name = "Placeholder")
     ~type_
     ?shape
+    ?(control_inputs = [])
     ()
   =
   let attributes = [ "dtype", Type (P type_) ] in
@@ -5590,12 +6081,14 @@ let placeholder
     ~op_name
     ~output_type:type_
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let placeholderWithDefault
     ?(name = "PlaceholderWithDefault")
     ~shape
+    ?(control_inputs = [])
     (input : 'dtype t)
   =
   let attributes = [ "dtype", Type (P (Node.output_type input)) ] in
@@ -5610,11 +6103,13 @@ let placeholderWithDefault
     ~op_name
     ~output_type:(Node.output_type input)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let polygamma
     ?(name = "Polygamma")
+    ?(control_inputs = [])
     (a : ([< `float | `double ] as 't) t)
     (x : ([< `float | `double ] as 't) t)
   =
@@ -5627,11 +6122,13 @@ let polygamma
     ~op_name
     ~output_type:(Node.output_type a)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let pow
     ?(name = "Pow")
+    ?(control_inputs = [])
     (x : ([< `float | `double | `int32 | `int64 | `complex64 ] as 't) t)
     (y : ([< `float | `double | `int32 | `int64 | `complex64 ] as 't) t)
   =
@@ -5644,6 +6141,7 @@ let pow
     ~op_name
     ~output_type:(Node.output_type x)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
@@ -5654,6 +6152,7 @@ let priorityQueue
     ?capacity
     ?container
     ?shared_name
+    ?(control_inputs = [])
     ()
   =
   let attributes = [] in
@@ -5680,12 +6179,14 @@ let priorityQueue
     ~op_name
     ~output_type:Type.String
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let prod
     ?(name = "Prod")
     ?keep_dims
+    ?(control_inputs = [])
     (input : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (reduction_indices : [ `int32 ] t)
   =
@@ -5701,6 +6202,7 @@ let prod
     ~op_name
     ~output_type:(Node.output_type input)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
@@ -5711,6 +6213,7 @@ let quantizeAndDequantize
     ?range_given
     ?input_min
     ?input_max
+    ?(control_inputs = [])
     (input : ([< `float | `double ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type input)) ] in
@@ -5737,12 +6240,14 @@ let quantizeAndDequantize
     ~op_name
     ~output_type:(Node.output_type input)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let queueClose
     ?(name = "QueueClose")
     ?cancel_pending_enqueues
+    ?(control_inputs = [])
     (handle : [ `string ] t)
   =
   let attributes = [] in
@@ -5757,11 +6262,13 @@ let queueClose
     ~op_name
     ~output_type:Type.Unit
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let queueSize
     ?(name = "QueueSize")
+    ?(control_inputs = [])
     (handle : [ `string ] t)
   =
   let attributes = [] in
@@ -5773,11 +6280,13 @@ let queueSize
     ~op_name
     ~output_type:Type.Int32
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let rGBToHSV
     ?(name = "RGBToHSV")
+    ?(control_inputs = [])
     (images : ([< `float | `double ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type images)) ] in
@@ -5789,6 +6298,7 @@ let rGBToHSV
     ~op_name
     ~output_type:(Node.output_type images)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
@@ -5796,6 +6306,7 @@ let randomCrop
     ?(name = "RandomCrop")
     ?seed
     ?seed2
+    ?(control_inputs = [])
     (image : ([< `int32 | `int64 | `float | `double ] as 't) t)
     (size : [ `int64 ] t)
   =
@@ -5814,6 +6325,7 @@ let randomCrop
     ~op_name
     ~output_type:(Node.output_type image)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
@@ -5821,6 +6333,7 @@ let randomGamma
     ?(name = "RandomGamma")
     ?seed
     ?seed2
+    ?(control_inputs = [])
     (shape : ([< `int32 | `int64 ] as 's) t)
     (alpha : ([< `float | `double ] as 't) t)
   =
@@ -5839,6 +6352,7 @@ let randomGamma
     ~op_name
     ~output_type:(Node.output_type alpha)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
@@ -5846,6 +6360,7 @@ let randomShuffle
     ?(name = "RandomShuffle")
     ?seed
     ?seed2
+    ?(control_inputs = [])
     (value : 't t)
   =
   let attributes = [ "T", Type (P (Node.output_type value)) ] in
@@ -5863,6 +6378,7 @@ let randomShuffle
     ~op_name
     ~output_type:(Node.output_type value)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
@@ -5876,6 +6392,7 @@ let randomShuffleQueue
     ?seed2
     ?container
     ?shared_name
+    ?(control_inputs = [])
     ()
   =
   let attributes = [] in
@@ -5911,6 +6428,7 @@ let randomShuffleQueue
     ~op_name
     ~output_type:Type.String
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
@@ -5919,6 +6437,7 @@ let randomStandardNormal
     ~type_
     ?seed
     ?seed2
+    ?(control_inputs = [])
     (shape : ([< `int32 | `int64 ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type shape)) ;  "dtype", Type (P type_) ] in
@@ -5936,6 +6455,7 @@ let randomStandardNormal
     ~op_name
     ~output_type:type_
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
@@ -5944,6 +6464,7 @@ let randomUniform
     ~type_
     ?seed
     ?seed2
+    ?(control_inputs = [])
     (shape : ([< `int32 | `int64 ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type shape)) ;  "dtype", Type (P type_) ] in
@@ -5961,6 +6482,7 @@ let randomUniform
     ~op_name
     ~output_type:type_
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
@@ -5968,6 +6490,7 @@ let randomUniformInt
     ?(name = "RandomUniformInt")
     ?seed
     ?seed2
+    ?(control_inputs = [])
     (shape : ([< `int32 | `int64 ] as 't) t)
     (minval : ([< `int32 | `int64 ] as 'tout) t)
     (maxval : ([< `int32 | `int64 ] as 'tout) t)
@@ -5987,11 +6510,13 @@ let randomUniformInt
     ~op_name
     ~output_type:(Node.output_type minval)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let range
     ?(name = "Range")
+    ?(control_inputs = [])
     (start : [ `int32 ] t)
     (limit : [ `int32 ] t)
     (delta : [ `int32 ] t)
@@ -6005,11 +6530,13 @@ let range
     ~op_name
     ~output_type:Type.Int32
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let rank
     ?(name = "Rank")
+    ?(control_inputs = [])
     (input : 't t)
   =
   let attributes = [ "T", Type (P (Node.output_type input)) ] in
@@ -6021,11 +6548,13 @@ let rank
     ~op_name
     ~output_type:Type.Int32
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let readFile
     ?(name = "ReadFile")
+    ?(control_inputs = [])
     (filename : [ `string ] t)
   =
   let attributes = [] in
@@ -6037,11 +6566,13 @@ let readFile
     ~op_name
     ~output_type:Type.String
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let readerNumRecordsProduced
     ?(name = "ReaderNumRecordsProduced")
+    ?(control_inputs = [])
     (reader_handle : [ `string ] t)
   =
   let attributes = [] in
@@ -6053,11 +6584,13 @@ let readerNumRecordsProduced
     ~op_name
     ~output_type:Type.Int64
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let readerNumWorkUnitsCompleted
     ?(name = "ReaderNumWorkUnitsCompleted")
+    ?(control_inputs = [])
     (reader_handle : [ `string ] t)
   =
   let attributes = [] in
@@ -6069,11 +6602,13 @@ let readerNumWorkUnitsCompleted
     ~op_name
     ~output_type:Type.Int64
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let readerRead
     ?(name = "ReaderRead")
+    ?(control_inputs = [])
     (reader_handle : [ `string ] t)
     (queue_handle : [ `string ] t)
   =
@@ -6086,6 +6621,7 @@ let readerRead
     ~op_name
     ~output_type:Type.String
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 0)
   ,
@@ -6094,11 +6630,13 @@ let readerRead
     ~op_name
     ~output_type:Type.String
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 1)
 
 let readerReadUpTo
     ?(name = "ReaderReadUpTo")
+    ?(control_inputs = [])
     (reader_handle : [ `string ] t)
     (queue_handle : [ `string ] t)
     (num_records : [ `int64 ] t)
@@ -6112,6 +6650,7 @@ let readerReadUpTo
     ~op_name
     ~output_type:Type.String
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 0)
   ,
@@ -6120,11 +6659,13 @@ let readerReadUpTo
     ~op_name
     ~output_type:Type.String
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 1)
 
 let readerReset
     ?(name = "ReaderReset")
+    ?(control_inputs = [])
     (reader_handle : [ `string ] t)
   =
   let attributes = [] in
@@ -6136,11 +6677,13 @@ let readerReset
     ~op_name
     ~output_type:Type.Unit
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let readerRestoreState
     ?(name = "ReaderRestoreState")
+    ?(control_inputs = [])
     (reader_handle : [ `string ] t)
     (state : [ `string ] t)
   =
@@ -6153,11 +6696,13 @@ let readerRestoreState
     ~op_name
     ~output_type:Type.Unit
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let readerSerializeState
     ?(name = "ReaderSerializeState")
+    ?(control_inputs = [])
     (reader_handle : [ `string ] t)
   =
   let attributes = [] in
@@ -6169,12 +6714,14 @@ let readerSerializeState
     ~op_name
     ~output_type:Type.String
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let real
     ?(name = "Real")
     ~type_
+    ?(control_inputs = [])
     (input : ([< `complex64 ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type input)) ;  "Tout", Type (P type_) ] in
@@ -6186,6 +6733,7 @@ let real
     ~op_name
     ~output_type:type_
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
@@ -6193,6 +6741,7 @@ let reduceJoin
     ?(name = "ReduceJoin")
     ?keep_dims
     ?separator
+    ?(control_inputs = [])
     (inputs__ : [ `string ] t)
     (reduction_indices : [ `int32 ] t)
   =
@@ -6211,6 +6760,7 @@ let reduceJoin
     ~op_name
     ~output_type:Type.String
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
@@ -6219,6 +6769,7 @@ let refEnter
     ~frame_name
     ?is_constant
     ?parallel_iterations
+    ?(control_inputs = [])
     (data : 't t)
   =
   let attributes = [ "T", Type (P (Node.output_type data)) ] in
@@ -6239,11 +6790,13 @@ let refEnter
     ~op_name
     ~output_type:(Node.output_type data)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let refExit
     ?(name = "RefExit")
+    ?(control_inputs = [])
     (data : 't t)
   =
   let attributes = [ "T", Type (P (Node.output_type data)) ] in
@@ -6255,11 +6808,13 @@ let refExit
     ~op_name
     ~output_type:(Node.output_type data)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let refIdentity
     ?(name = "RefIdentity")
+    ?(control_inputs = [])
     (input : 't t)
   =
   let attributes = [ "T", Type (P (Node.output_type input)) ] in
@@ -6271,11 +6826,13 @@ let refIdentity
     ~op_name
     ~output_type:(Node.output_type input)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let refMerge
     ?(name = "RefMerge")
+    ?(control_inputs = [])
     (inputs__ : 't t list)
   =
   let attributes = [ "T", Type (P (Node.output_type (List.hd_exn inputs__))) ] in
@@ -6290,6 +6847,7 @@ let refMerge
     ~op_name
     ~output_type:(Node.output_type (List.hd_exn inputs__))
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 0)
   ,
@@ -6298,11 +6856,13 @@ let refMerge
     ~op_name
     ~output_type:Type.Int32
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 1)
 
 let refNextIteration
     ?(name = "RefNextIteration")
+    ?(control_inputs = [])
     (data : 't t)
   =
   let attributes = [ "T", Type (P (Node.output_type data)) ] in
@@ -6314,11 +6874,13 @@ let refNextIteration
     ~op_name
     ~output_type:(Node.output_type data)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let refSelect
     ?(name = "RefSelect")
+    ?(control_inputs = [])
     (index : [ `int32 ] t)
     (inputs__ : 't t list)
   =
@@ -6334,11 +6896,13 @@ let refSelect
     ~op_name
     ~output_type:(Node.output_type (List.hd_exn inputs__))
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let refSwitch
     ?(name = "RefSwitch")
+    ?(control_inputs = [])
     (data : 't t)
     (pred : [ `bool ] t)
   =
@@ -6351,6 +6915,7 @@ let refSwitch
     ~op_name
     ~output_type:(Node.output_type data)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 0)
   ,
@@ -6359,11 +6924,13 @@ let refSwitch
     ~op_name
     ~output_type:(Node.output_type data)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 1)
 
 let relu
     ?(name = "Relu")
+    ?(control_inputs = [])
     (features : ([< `float | `double | `int32 | `int64 ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type features)) ] in
@@ -6375,11 +6942,13 @@ let relu
     ~op_name
     ~output_type:(Node.output_type features)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let relu6
     ?(name = "Relu6")
+    ?(control_inputs = [])
     (features : ([< `float | `double | `int32 | `int64 ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type features)) ] in
@@ -6391,11 +6960,13 @@ let relu6
     ~op_name
     ~output_type:(Node.output_type features)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let relu6Grad
     ?(name = "Relu6Grad")
+    ?(control_inputs = [])
     (gradients : ([< `float | `double | `int32 | `int64 ] as 't) t)
     (features : ([< `float | `double | `int32 | `int64 ] as 't) t)
   =
@@ -6408,11 +6979,13 @@ let relu6Grad
     ~op_name
     ~output_type:(Node.output_type gradients)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let reluGrad
     ?(name = "ReluGrad")
+    ?(control_inputs = [])
     (gradients : ([< `float | `double | `int32 | `int64 ] as 't) t)
     (features : ([< `float | `double | `int32 | `int64 ] as 't) t)
   =
@@ -6425,11 +6998,13 @@ let reluGrad
     ~op_name
     ~output_type:(Node.output_type gradients)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let reshape
     ?(name = "Reshape")
+    ?(control_inputs = [])
     (tensor : 't t)
     (shape : [ `int32 ] t)
   =
@@ -6442,12 +7017,14 @@ let reshape
     ~op_name
     ~output_type:(Node.output_type tensor)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let resizeArea
     ?(name = "ResizeArea")
     ?align_corners
+    ?(control_inputs = [])
     (images : ([< `int32 | `int64 | `float | `double ] as 't) t)
     (size : [ `int32 ] t)
   =
@@ -6463,12 +7040,14 @@ let resizeArea
     ~op_name
     ~output_type:Type.Float
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let resizeBicubic
     ?(name = "ResizeBicubic")
     ?align_corners
+    ?(control_inputs = [])
     (images : ([< `int32 | `int64 | `float | `double ] as 't) t)
     (size : [ `int32 ] t)
   =
@@ -6484,12 +7063,14 @@ let resizeBicubic
     ~op_name
     ~output_type:Type.Float
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let resizeBilinear
     ?(name = "ResizeBilinear")
     ?align_corners
+    ?(control_inputs = [])
     (images : ([< `int32 | `int64 | `float | `double ] as 't) t)
     (size : [ `int32 ] t)
   =
@@ -6505,12 +7086,14 @@ let resizeBilinear
     ~op_name
     ~output_type:Type.Float
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let resizeBilinearGrad
     ?(name = "ResizeBilinearGrad")
     ?align_corners
+    ?(control_inputs = [])
     (grads : [ `float ] t)
     (original_image : ([< `float | `double ] as 't) t)
   =
@@ -6526,12 +7109,14 @@ let resizeBilinearGrad
     ~op_name
     ~output_type:(Node.output_type original_image)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let resizeNearestNeighbor
     ?(name = "ResizeNearestNeighbor")
     ?align_corners
+    ?(control_inputs = [])
     (images : ([< `int32 | `int64 | `float | `double ] as 't) t)
     (size : [ `int32 ] t)
   =
@@ -6547,12 +7132,14 @@ let resizeNearestNeighbor
     ~op_name
     ~output_type:(Node.output_type images)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let resizeNearestNeighborGrad
     ?(name = "ResizeNearestNeighborGrad")
     ?align_corners
+    ?(control_inputs = [])
     (grads : ([< `int32 | `float | `double ] as 't) t)
     (size : [ `int32 ] t)
   =
@@ -6568,6 +7155,7 @@ let resizeNearestNeighborGrad
     ~op_name
     ~output_type:(Node.output_type grads)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
@@ -6575,6 +7163,7 @@ let restore
     ?(name = "Restore")
     ~type_
     ?preferred_shard
+    ?(control_inputs = [])
     (file_pattern : [ `string ] t)
     (tensor_name : [ `string ] t)
   =
@@ -6590,6 +7179,7 @@ let restore
     ~op_name
     ~output_type:type_
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
@@ -6597,6 +7187,7 @@ let restoreSlice
     ?(name = "RestoreSlice")
     ~type_
     ?preferred_shard
+    ?(control_inputs = [])
     (file_pattern : [ `string ] t)
     (tensor_name : [ `string ] t)
     (shape_and_slice : [ `string ] t)
@@ -6613,11 +7204,13 @@ let restoreSlice
     ~op_name
     ~output_type:type_
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let reverse
     ?(name = "Reverse")
+    ?(control_inputs = [])
     (tensor : ([< `int32 | `int64 | `bool | `float | `double | `complex64 ] as 't) t)
     (dims : [ `bool ] t)
   =
@@ -6630,6 +7223,7 @@ let reverse
     ~op_name
     ~output_type:(Node.output_type tensor)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
@@ -6637,6 +7231,7 @@ let reverseSequence
     ?(name = "ReverseSequence")
     ~seq_dim
     ?batch_dim
+    ?(control_inputs = [])
     (input : 't t)
     (seq_lengths : [ `int64 ] t)
   =
@@ -6655,11 +7250,13 @@ let reverseSequence
     ~op_name
     ~output_type:(Node.output_type input)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let rsqrt
     ?(name = "Rsqrt")
+    ?(control_inputs = [])
     (x : ([< `float | `double | `complex64 ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type x)) ] in
@@ -6671,6 +7268,7 @@ let rsqrt
     ~op_name
     ~output_type:(Node.output_type x)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
@@ -6683,6 +7281,7 @@ let sampleDistortedBoundingBox
     ?area_range
     ?max_attempts
     ?use_image_if_no_bounding_boxes
+    ?(control_inputs = [])
     (image_size : ([< `int32 | `int64 ] as 't) t)
     (bounding_boxes : [ `float ] t)
   =
@@ -6716,6 +7315,7 @@ let sampleDistortedBoundingBox
     ~op_name
     ~output_type:(Node.output_type image_size)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 0)
   ,
@@ -6724,6 +7324,7 @@ let sampleDistortedBoundingBox
     ~op_name
     ~output_type:(Node.output_type image_size)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 1)
   ,
@@ -6732,11 +7333,13 @@ let sampleDistortedBoundingBox
     ~op_name
     ~output_type:Type.Float
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 2)
 
 let scalarSummary
     ?(name = "ScalarSummary")
+    ?(control_inputs = [])
     (tags : [ `string ] t)
     (values : ([< `float | `double | `int32 | `int64 ] as 't) t)
   =
@@ -6749,12 +7352,14 @@ let scalarSummary
     ~op_name
     ~output_type:Type.String
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let scatterAdd
     ?(name = "ScatterAdd")
     ?use_locking
+    ?(control_inputs = [])
     (ref : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (indices : ([< `int32 | `int64 ] as 'tindices) t)
     (updates : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
@@ -6771,12 +7376,14 @@ let scatterAdd
     ~op_name
     ~output_type:(Node.output_type ref)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let scatterSub
     ?(name = "ScatterSub")
     ?use_locking
+    ?(control_inputs = [])
     (ref : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (indices : ([< `int32 | `int64 ] as 'tindices) t)
     (updates : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
@@ -6793,12 +7400,14 @@ let scatterSub
     ~op_name
     ~output_type:(Node.output_type ref)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let scatterUpdate
     ?(name = "ScatterUpdate")
     ?use_locking
+    ?(control_inputs = [])
     (ref : 't t)
     (indices : ([< `int32 | `int64 ] as 'tindices) t)
     (updates : 't t)
@@ -6815,11 +7424,13 @@ let scatterUpdate
     ~op_name
     ~output_type:(Node.output_type ref)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let segmentMax
     ?(name = "SegmentMax")
+    ?(control_inputs = [])
     (data : ([< `float | `double | `int32 | `int64 ] as 't) t)
     (segment_ids : ([< `int32 | `int64 ] as 'tindices) t)
   =
@@ -6832,11 +7443,13 @@ let segmentMax
     ~op_name
     ~output_type:(Node.output_type data)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let segmentMean
     ?(name = "SegmentMean")
+    ?(control_inputs = [])
     (data : ([< `float | `double | `int32 | `int64 ] as 't) t)
     (segment_ids : ([< `int32 | `int64 ] as 'tindices) t)
   =
@@ -6849,11 +7462,13 @@ let segmentMean
     ~op_name
     ~output_type:(Node.output_type data)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let segmentMin
     ?(name = "SegmentMin")
+    ?(control_inputs = [])
     (data : ([< `float | `double | `int32 | `int64 ] as 't) t)
     (segment_ids : ([< `int32 | `int64 ] as 'tindices) t)
   =
@@ -6866,11 +7481,13 @@ let segmentMin
     ~op_name
     ~output_type:(Node.output_type data)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let segmentProd
     ?(name = "SegmentProd")
+    ?(control_inputs = [])
     (data : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (segment_ids : ([< `int32 | `int64 ] as 'tindices) t)
   =
@@ -6883,11 +7500,13 @@ let segmentProd
     ~op_name
     ~output_type:(Node.output_type data)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let segmentSum
     ?(name = "SegmentSum")
+    ?(control_inputs = [])
     (data : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (segment_ids : ([< `int32 | `int64 ] as 'tindices) t)
   =
@@ -6900,11 +7519,13 @@ let segmentSum
     ~op_name
     ~output_type:(Node.output_type data)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let select
     ?(name = "Select")
+    ?(control_inputs = [])
     (condition : [ `bool ] t)
     (t : 't t)
     (e : 't t)
@@ -6918,11 +7539,13 @@ let select
     ~op_name
     ~output_type:(Node.output_type t)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let selfAdjointEig
     ?(name = "SelfAdjointEig")
+    ?(control_inputs = [])
     (input : ([< `double | `float ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type input)) ] in
@@ -6934,12 +7557,14 @@ let selfAdjointEig
     ~op_name
     ~output_type:(Node.output_type input)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let selfAdjointEigV2
     ?(name = "SelfAdjointEigV2")
     ?compute_v
+    ?(control_inputs = [])
     (input : ([< `double | `float ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type input)) ;  "T", Type (P (Node.output_type input)) ] in
@@ -6954,6 +7579,7 @@ let selfAdjointEigV2
     ~op_name
     ~output_type:(Node.output_type input)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 0)
   ,
@@ -6962,11 +7588,13 @@ let selfAdjointEigV2
     ~op_name
     ~output_type:(Node.output_type input)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 1)
 
 let serializeManySparse
     ?(name = "SerializeManySparse")
+    ?(control_inputs = [])
     (sparse_indices : [ `int64 ] t)
     (sparse_values : 't t)
     (sparse_shape : [ `int64 ] t)
@@ -6980,11 +7608,13 @@ let serializeManySparse
     ~op_name
     ~output_type:Type.String
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let serializeSparse
     ?(name = "SerializeSparse")
+    ?(control_inputs = [])
     (sparse_indices : [ `int64 ] t)
     (sparse_values : 't t)
     (sparse_shape : [ `int64 ] t)
@@ -6998,11 +7628,13 @@ let serializeSparse
     ~op_name
     ~output_type:Type.String
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let shape
     ?(name = "Shape")
+    ?(control_inputs = [])
     (input : 't t)
   =
   let attributes = [ "T", Type (P (Node.output_type input)) ] in
@@ -7014,11 +7646,13 @@ let shape
     ~op_name
     ~output_type:Type.Int32
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let shapeN
     ?(name = "ShapeN")
+    ?(control_inputs = [])
     (input : 't t list)
   =
   let attributes = [ "T", Type (P (Node.output_type (List.hd_exn input))) ] in
@@ -7034,6 +7668,7 @@ let shapeN
       ~op_name
       ~output_type:Type.Int32
       ~inputs
+      ~control_inputs
       ~attributes
       ~output_idx:None
   in
@@ -7042,6 +7677,7 @@ let shapeN
 
 let shardedFilename
     ?(name = "ShardedFilename")
+    ?(control_inputs = [])
     (basename : [ `string ] t)
     (shard : [ `int32 ] t)
     (num_shards : [ `int32 ] t)
@@ -7055,11 +7691,13 @@ let shardedFilename
     ~op_name
     ~output_type:Type.String
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let shardedFilespec
     ?(name = "ShardedFilespec")
+    ?(control_inputs = [])
     (basename : [ `string ] t)
     (num_shards : [ `int32 ] t)
   =
@@ -7072,11 +7710,13 @@ let shardedFilespec
     ~op_name
     ~output_type:Type.String
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let sigmoid
     ?(name = "Sigmoid")
+    ?(control_inputs = [])
     (x : ([< `float | `double | `complex64 ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type x)) ] in
@@ -7088,11 +7728,13 @@ let sigmoid
     ~op_name
     ~output_type:(Node.output_type x)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let sigmoidGrad
     ?(name = "SigmoidGrad")
+    ?(control_inputs = [])
     (x : ([< `float | `double | `complex64 ] as 't) t)
     (y : ([< `float | `double | `complex64 ] as 't) t)
   =
@@ -7105,11 +7747,13 @@ let sigmoidGrad
     ~op_name
     ~output_type:(Node.output_type x)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let sign
     ?(name = "Sign")
+    ?(control_inputs = [])
     (x : ([< `float | `double | `int32 | `int64 | `complex64 ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type x)) ] in
@@ -7121,11 +7765,13 @@ let sign
     ~op_name
     ~output_type:(Node.output_type x)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let sin
     ?(name = "Sin")
+    ?(control_inputs = [])
     (x : ([< `float | `double | `complex64 ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type x)) ] in
@@ -7137,11 +7783,13 @@ let sin
     ~op_name
     ~output_type:(Node.output_type x)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let size
     ?(name = "Size")
+    ?(control_inputs = [])
     (input : 't t)
   =
   let attributes = [ "T", Type (P (Node.output_type input)) ] in
@@ -7153,6 +7801,7 @@ let size
     ~op_name
     ~output_type:Type.Int32
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
@@ -7163,6 +7812,7 @@ let skipgram
     ?window_size
     ?min_count
     ?subsample
+    ?(control_inputs = [])
     ()
   =
   let attributes = [] in
@@ -7189,6 +7839,7 @@ let skipgram
     ~op_name
     ~output_type:Type.String
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 0)
   ,
@@ -7197,6 +7848,7 @@ let skipgram
     ~op_name
     ~output_type:Type.Int32
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 1)
   ,
@@ -7205,6 +7857,7 @@ let skipgram
     ~op_name
     ~output_type:Type.Int64
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 2)
   ,
@@ -7213,6 +7866,7 @@ let skipgram
     ~op_name
     ~output_type:Type.Int32
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 3)
   ,
@@ -7221,6 +7875,7 @@ let skipgram
     ~op_name
     ~output_type:Type.Int64
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 4)
   ,
@@ -7229,6 +7884,7 @@ let skipgram
     ~op_name
     ~output_type:Type.Int32
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 5)
   ,
@@ -7237,11 +7893,13 @@ let skipgram
     ~op_name
     ~output_type:Type.Int32
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 6)
 
 let slice
     ?(name = "Slice")
+    ?(control_inputs = [])
     (input : 't t)
     (begin__ : ([< `int32 | `int64 ] as 'index) t)
     (size : ([< `int32 | `int64 ] as 'index) t)
@@ -7255,11 +7913,13 @@ let slice
     ~op_name
     ~output_type:(Node.output_type input)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let softmax
     ?(name = "Softmax")
+    ?(control_inputs = [])
     (logits : ([< `float | `double ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type logits)) ] in
@@ -7271,11 +7931,13 @@ let softmax
     ~op_name
     ~output_type:(Node.output_type logits)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let softmaxCrossEntropyWithLogits
     ?(name = "SoftmaxCrossEntropyWithLogits")
+    ?(control_inputs = [])
     (features : ([< `float | `double ] as 't) t)
     (labels : ([< `float | `double ] as 't) t)
   =
@@ -7288,6 +7950,7 @@ let softmaxCrossEntropyWithLogits
     ~op_name
     ~output_type:(Node.output_type features)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 0)
   ,
@@ -7296,11 +7959,13 @@ let softmaxCrossEntropyWithLogits
     ~op_name
     ~output_type:(Node.output_type features)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 1)
 
 let softplus
     ?(name = "Softplus")
+    ?(control_inputs = [])
     (features : ([< `float | `double | `int32 | `int64 ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type features)) ] in
@@ -7312,11 +7977,13 @@ let softplus
     ~op_name
     ~output_type:(Node.output_type features)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let softplusGrad
     ?(name = "SoftplusGrad")
+    ?(control_inputs = [])
     (gradients : ([< `float | `double | `int32 | `int64 ] as 't) t)
     (features : ([< `float | `double | `int32 | `int64 ] as 't) t)
   =
@@ -7329,11 +7996,13 @@ let softplusGrad
     ~op_name
     ~output_type:(Node.output_type gradients)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let softsign
     ?(name = "Softsign")
+    ?(control_inputs = [])
     (features : ([< `float | `double | `int32 | `int64 ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type features)) ] in
@@ -7345,11 +8014,13 @@ let softsign
     ~op_name
     ~output_type:(Node.output_type features)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let softsignGrad
     ?(name = "SoftsignGrad")
+    ?(control_inputs = [])
     (gradients : ([< `float | `double | `int32 | `int64 ] as 't) t)
     (features : ([< `float | `double | `int32 | `int64 ] as 't) t)
   =
@@ -7362,12 +8033,14 @@ let softsignGrad
     ~op_name
     ~output_type:(Node.output_type gradients)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let spaceToBatch
     ?(name = "SpaceToBatch")
     ~block_size
+    ?(control_inputs = [])
     (input : 't t)
     (paddings : [ `int32 ] t)
   =
@@ -7383,12 +8056,14 @@ let spaceToBatch
     ~op_name
     ~output_type:(Node.output_type input)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let spaceToDepth
     ?(name = "SpaceToDepth")
     ~block_size
+    ?(control_inputs = [])
     (input : 't t)
   =
   let attributes = [ "T", Type (P (Node.output_type input)) ] in
@@ -7403,11 +8078,13 @@ let spaceToDepth
     ~op_name
     ~output_type:(Node.output_type input)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let sparseAdd
     ?(name = "SparseAdd")
+    ?(control_inputs = [])
     (a_indices : [ `int64 ] t)
     (a_values : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (a_shape : [ `int64 ] t)
@@ -7425,6 +8102,7 @@ let sparseAdd
     ~op_name
     ~output_type:Type.Int64
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 0)
   ,
@@ -7433,6 +8111,7 @@ let sparseAdd
     ~op_name
     ~output_type:(Node.output_type a_values)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 1)
   ,
@@ -7441,11 +8120,13 @@ let sparseAdd
     ~op_name
     ~output_type:Type.Int64
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 2)
 
 let sparseAddGrad
     ?(name = "SparseAddGrad")
+    ?(control_inputs = [])
     (backprop_val_grad : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (a_indices : [ `int64 ] t)
     (b_indices : [ `int64 ] t)
@@ -7460,6 +8141,7 @@ let sparseAddGrad
     ~op_name
     ~output_type:(Node.output_type backprop_val_grad)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 0)
   ,
@@ -7468,12 +8150,14 @@ let sparseAddGrad
     ~op_name
     ~output_type:(Node.output_type backprop_val_grad)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 1)
 
 let sparseApplyAdadelta
     ?(name = "SparseApplyAdadelta")
     ?use_locking
+    ?(control_inputs = [])
     (var : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (accum : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (accum_update : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
@@ -7495,12 +8179,14 @@ let sparseApplyAdadelta
     ~op_name
     ~output_type:(Node.output_type var)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let sparseApplyAdagrad
     ?(name = "SparseApplyAdagrad")
     ?use_locking
+    ?(control_inputs = [])
     (var : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (accum : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (lr : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
@@ -7519,12 +8205,14 @@ let sparseApplyAdagrad
     ~op_name
     ~output_type:(Node.output_type var)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let sparseApplyFtrl
     ?(name = "SparseApplyFtrl")
     ?use_locking
+    ?(control_inputs = [])
     (var : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (accum : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (linear : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
@@ -7547,6 +8235,7 @@ let sparseApplyFtrl
     ~op_name
     ~output_type:(Node.output_type var)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
@@ -7554,6 +8243,7 @@ let sparseApplyMomentum
     ?(name = "SparseApplyMomentum")
     ?use_locking
     ?use_nesterov
+    ?(control_inputs = [])
     (var : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (accum : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (lr : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
@@ -7576,12 +8266,14 @@ let sparseApplyMomentum
     ~op_name
     ~output_type:(Node.output_type var)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let sparseApplyProximalAdagrad
     ?(name = "SparseApplyProximalAdagrad")
     ?use_locking
+    ?(control_inputs = [])
     (var : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (accum : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (lr : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
@@ -7602,12 +8294,14 @@ let sparseApplyProximalAdagrad
     ~op_name
     ~output_type:(Node.output_type var)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let sparseApplyProximalGradientDescent
     ?(name = "SparseApplyProximalGradientDescent")
     ?use_locking
+    ?(control_inputs = [])
     (var : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (alpha : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (l1 : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
@@ -7627,12 +8321,14 @@ let sparseApplyProximalGradientDescent
     ~op_name
     ~output_type:(Node.output_type var)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let sparseApplyRMSProp
     ?(name = "SparseApplyRMSProp")
     ?use_locking
+    ?(control_inputs = [])
     (var : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (ms : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (mom : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
@@ -7655,12 +8351,14 @@ let sparseApplyRMSProp
     ~op_name
     ~output_type:(Node.output_type var)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let sparseConcat
     ?(name = "SparseConcat")
     ~concat_dim
+    ?(control_inputs = [])
     (indices : [ `int64 ] t list)
     (values : 't t list)
     (shapes : [ `int64 ] t list)
@@ -7680,6 +8378,7 @@ let sparseConcat
     ~op_name
     ~output_type:Type.Int64
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 0)
   ,
@@ -7688,6 +8387,7 @@ let sparseConcat
     ~op_name
     ~output_type:(Node.output_type (List.hd_exn values))
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 1)
   ,
@@ -7696,11 +8396,13 @@ let sparseConcat
     ~op_name
     ~output_type:Type.Int64
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 2)
 
 let sparseDenseCwiseAdd
     ?(name = "SparseDenseCwiseAdd")
+    ?(control_inputs = [])
     (sp_indices : [ `int64 ] t)
     (sp_values : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (sp_shape : [ `int64 ] t)
@@ -7715,11 +8417,13 @@ let sparseDenseCwiseAdd
     ~op_name
     ~output_type:(Node.output_type sp_values)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let sparseDenseCwiseDiv
     ?(name = "SparseDenseCwiseDiv")
+    ?(control_inputs = [])
     (sp_indices : [ `int64 ] t)
     (sp_values : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (sp_shape : [ `int64 ] t)
@@ -7734,11 +8438,13 @@ let sparseDenseCwiseDiv
     ~op_name
     ~output_type:(Node.output_type sp_values)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let sparseDenseCwiseMul
     ?(name = "SparseDenseCwiseMul")
+    ?(control_inputs = [])
     (sp_indices : [ `int64 ] t)
     (sp_values : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (sp_shape : [ `int64 ] t)
@@ -7753,6 +8459,7 @@ let sparseDenseCwiseMul
     ~op_name
     ~output_type:(Node.output_type sp_values)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
@@ -7762,6 +8469,7 @@ let sparseMatMul
     ?transpose_b
     ?a_is_sparse
     ?b_is_sparse
+    ?(control_inputs = [])
     (a : ([< `float ] as 'ta) t)
     (b : ([< `float ] as 'tb) t)
   =
@@ -7786,12 +8494,14 @@ let sparseMatMul
     ~op_name
     ~output_type:Type.Float
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let sparseReduceSum
     ?(name = "SparseReduceSum")
     ?keep_dims
+    ?(control_inputs = [])
     (input_indices : [ `int64 ] t)
     (input_values : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (input_shape : [ `int64 ] t)
@@ -7809,11 +8519,13 @@ let sparseReduceSum
     ~op_name
     ~output_type:(Node.output_type input_values)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let sparseReorder
     ?(name = "SparseReorder")
+    ?(control_inputs = [])
     (input_indices : [ `int64 ] t)
     (input_values : 't t)
     (input_shape : [ `int64 ] t)
@@ -7827,6 +8539,7 @@ let sparseReorder
     ~op_name
     ~output_type:Type.Int64
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 0)
   ,
@@ -7835,11 +8548,13 @@ let sparseReorder
     ~op_name
     ~output_type:(Node.output_type input_values)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 1)
 
 let sparseReshape
     ?(name = "SparseReshape")
+    ?(control_inputs = [])
     (input_indices : [ `int64 ] t)
     (input_shape : [ `int64 ] t)
     (new_shape : [ `int64 ] t)
@@ -7853,6 +8568,7 @@ let sparseReshape
     ~op_name
     ~output_type:Type.Int64
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 0)
   ,
@@ -7861,11 +8577,13 @@ let sparseReshape
     ~op_name
     ~output_type:Type.Int64
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 1)
 
 let sparseSegmentMean
     ?(name = "SparseSegmentMean")
+    ?(control_inputs = [])
     (data : ([< `float | `double ] as 't) t)
     (indices : [ `int32 ] t)
     (segment_ids : [ `int32 ] t)
@@ -7879,11 +8597,13 @@ let sparseSegmentMean
     ~op_name
     ~output_type:(Node.output_type data)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let sparseSegmentMeanGrad
     ?(name = "SparseSegmentMeanGrad")
+    ?(control_inputs = [])
     (grad : ([< `float | `double ] as 't) t)
     (indices : [ `int32 ] t)
     (segment_ids : [ `int32 ] t)
@@ -7898,11 +8618,13 @@ let sparseSegmentMeanGrad
     ~op_name
     ~output_type:(Node.output_type grad)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let sparseSegmentSqrtN
     ?(name = "SparseSegmentSqrtN")
+    ?(control_inputs = [])
     (data : ([< `float | `double ] as 't) t)
     (indices : [ `int32 ] t)
     (segment_ids : [ `int32 ] t)
@@ -7916,11 +8638,13 @@ let sparseSegmentSqrtN
     ~op_name
     ~output_type:(Node.output_type data)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let sparseSegmentSqrtNGrad
     ?(name = "SparseSegmentSqrtNGrad")
+    ?(control_inputs = [])
     (grad : ([< `float | `double ] as 't) t)
     (indices : [ `int32 ] t)
     (segment_ids : [ `int32 ] t)
@@ -7935,11 +8659,13 @@ let sparseSegmentSqrtNGrad
     ~op_name
     ~output_type:(Node.output_type grad)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let sparseSegmentSum
     ?(name = "SparseSegmentSum")
+    ?(control_inputs = [])
     (data : ([< `float | `double | `int32 | `int64 ] as 't) t)
     (indices : [ `int32 ] t)
     (segment_ids : [ `int32 ] t)
@@ -7953,11 +8679,13 @@ let sparseSegmentSum
     ~op_name
     ~output_type:(Node.output_type data)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let sparseSoftmax
     ?(name = "SparseSoftmax")
+    ?(control_inputs = [])
     (sp_indices : [ `int64 ] t)
     (sp_values : ([< `float | `double ] as 't) t)
     (sp_shape : [ `int64 ] t)
@@ -7971,11 +8699,13 @@ let sparseSoftmax
     ~op_name
     ~output_type:(Node.output_type sp_values)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let sparseSoftmaxCrossEntropyWithLogits
     ?(name = "SparseSoftmaxCrossEntropyWithLogits")
+    ?(control_inputs = [])
     (features : ([< `float | `double ] as 't) t)
     (labels : ([< `int32 | `int64 ] as 'tlabels) t)
   =
@@ -7988,6 +8718,7 @@ let sparseSoftmaxCrossEntropyWithLogits
     ~op_name
     ~output_type:(Node.output_type features)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 0)
   ,
@@ -7996,11 +8727,13 @@ let sparseSoftmaxCrossEntropyWithLogits
     ~op_name
     ~output_type:(Node.output_type features)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 1)
 
 let sparseSparseMaximum
     ?(name = "SparseSparseMaximum")
+    ?(control_inputs = [])
     (a_indices : [ `int64 ] t)
     (a_values : ([< `float | `double | `int32 | `int64 ] as 't) t)
     (a_shape : [ `int64 ] t)
@@ -8017,6 +8750,7 @@ let sparseSparseMaximum
     ~op_name
     ~output_type:Type.Int64
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 0)
   ,
@@ -8025,11 +8759,13 @@ let sparseSparseMaximum
     ~op_name
     ~output_type:(Node.output_type a_values)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 1)
 
 let sparseSparseMinimum
     ?(name = "SparseSparseMinimum")
+    ?(control_inputs = [])
     (a_indices : [ `int64 ] t)
     (a_values : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (a_shape : [ `int64 ] t)
@@ -8046,6 +8782,7 @@ let sparseSparseMinimum
     ~op_name
     ~output_type:Type.Int64
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 0)
   ,
@@ -8054,11 +8791,13 @@ let sparseSparseMinimum
     ~op_name
     ~output_type:(Node.output_type a_values)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 1)
 
 let sparseTensorDenseAdd
     ?(name = "SparseTensorDenseAdd")
+    ?(control_inputs = [])
     (a_indices : ([< `int32 | `int64 ] as 'tindices) t)
     (a_values : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (a_shape : ([< `int32 | `int64 ] as 'tindices) t)
@@ -8073,6 +8812,7 @@ let sparseTensorDenseAdd
     ~op_name
     ~output_type:(Node.output_type a_values)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
@@ -8080,6 +8820,7 @@ let sparseTensorDenseMatMul
     ?(name = "SparseTensorDenseMatMul")
     ?adjoint_a
     ?adjoint_b
+    ?(control_inputs = [])
     (a_indices : [ `int64 ] t)
     (a_values : 't t)
     (a_shape : [ `int64 ] t)
@@ -8100,12 +8841,14 @@ let sparseTensorDenseMatMul
     ~op_name
     ~output_type:(Node.output_type a_values)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let sparseToDense
     ?(name = "SparseToDense")
     ?validate_indices
+    ?(control_inputs = [])
     (sparse_indices : ([< `int32 | `int64 ] as 'tindices) t)
     (output_shape : ([< `int32 | `int64 ] as 'tindices) t)
     (sparse_values : 't t)
@@ -8123,12 +8866,14 @@ let sparseToDense
     ~op_name
     ~output_type:(Node.output_type sparse_values)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let split
     ?(name = "Split")
     ~num_split
+    ?(control_inputs = [])
     (split_dim : [ `int32 ] t)
     (value : 't t)
   =
@@ -8145,6 +8890,7 @@ let split
       ~op_name
       ~output_type:(Node.output_type value)
       ~inputs
+      ~control_inputs
       ~attributes
       ~output_idx:None
   in
@@ -8153,6 +8899,7 @@ let split
 
 let sqrt
     ?(name = "Sqrt")
+    ?(control_inputs = [])
     (x : ([< `float | `double | `complex64 ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type x)) ] in
@@ -8164,11 +8911,13 @@ let sqrt
     ~op_name
     ~output_type:(Node.output_type x)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let square
     ?(name = "Square")
+    ?(control_inputs = [])
     (x : ([< `float | `double | `int32 | `int64 | `complex64 ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type x)) ] in
@@ -8180,11 +8929,13 @@ let square
     ~op_name
     ~output_type:(Node.output_type x)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let squaredDifference
     ?(name = "SquaredDifference")
+    ?(control_inputs = [])
     (x : ([< `float | `double | `int32 | `int64 | `complex64 ] as 't) t)
     (y : ([< `float | `double | `int32 | `int64 | `complex64 ] as 't) t)
   =
@@ -8197,12 +8948,14 @@ let squaredDifference
     ~op_name
     ~output_type:(Node.output_type x)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let squeeze
     ?(name = "Squeeze")
     ?squeeze_dims
+    ?(control_inputs = [])
     (input : 't t)
   =
   let attributes = [ "T", Type (P (Node.output_type input)) ] in
@@ -8217,12 +8970,14 @@ let squeeze
     ~op_name
     ~output_type:(Node.output_type input)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let stack
     ?(name = "Stack")
     ?stack_name
+    ?(control_inputs = [])
     ()
   =
   let attributes = [] in
@@ -8237,11 +8992,13 @@ let stack
     ~op_name
     ~output_type:Type.String
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let stackClose
     ?(name = "StackClose")
+    ?(control_inputs = [])
     (handle : [ `string ] t)
   =
   let attributes = [] in
@@ -8253,12 +9010,14 @@ let stackClose
     ~op_name
     ~output_type:Type.Unit
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let stackPop
     ?(name = "StackPop")
     ~type_
+    ?(control_inputs = [])
     (handle : [ `string ] t)
   =
   let attributes = [ "elem_type", Type (P type_) ] in
@@ -8270,12 +9029,14 @@ let stackPop
     ~op_name
     ~output_type:type_
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let stackPush
     ?(name = "StackPush")
     ?swap_memory
+    ?(control_inputs = [])
     (handle : [ `string ] t)
     (elem : 't t)
   =
@@ -8291,11 +9052,13 @@ let stackPush
     ~op_name
     ~output_type:(Node.output_type elem)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let stopGradient
     ?(name = "StopGradient")
+    ?(control_inputs = [])
     (input : 't t)
   =
   let attributes = [ "T", Type (P (Node.output_type input)) ] in
@@ -8307,6 +9070,7 @@ let stopGradient
     ~op_name
     ~output_type:(Node.output_type input)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
@@ -8317,6 +9081,7 @@ let stridedSlice
     ?ellipsis_mask
     ?new_axis_mask
     ?shrink_axis_mask
+    ?(control_inputs = [])
     (input : 't t)
     (begin__ : ([< `int32 | `int64 ] as 'index) t)
     (end__ : ([< `int32 | `int64 ] as 'index) t)
@@ -8346,6 +9111,7 @@ let stridedSlice
     ~op_name
     ~output_type:(Node.output_type input)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
@@ -8356,6 +9122,7 @@ let stridedSliceGrad
     ?ellipsis_mask
     ?new_axis_mask
     ?shrink_axis_mask
+    ?(control_inputs = [])
     (shape : ([< `int32 | `int64 ] as 'index) t)
     (begin__ : ([< `int32 | `int64 ] as 'index) t)
     (end__ : ([< `int32 | `int64 ] as 'index) t)
@@ -8386,12 +9153,14 @@ let stridedSliceGrad
     ~op_name
     ~output_type:(Node.output_type dy)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let stringJoin
     ?(name = "StringJoin")
     ?separator
+    ?(control_inputs = [])
     (inputs__ : [ `string ] t list)
   =
   let attributes = [] in
@@ -8409,11 +9178,13 @@ let stringJoin
     ~op_name
     ~output_type:Type.String
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let stringSplit
     ?(name = "StringSplit")
+    ?(control_inputs = [])
     (input : [ `string ] t)
     (delimiter : [ `string ] t)
   =
@@ -8426,6 +9197,7 @@ let stringSplit
     ~op_name
     ~output_type:Type.Int64
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 0)
   ,
@@ -8434,6 +9206,7 @@ let stringSplit
     ~op_name
     ~output_type:Type.String
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 1)
   ,
@@ -8442,12 +9215,14 @@ let stringSplit
     ~op_name
     ~output_type:Type.Int64
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 2)
 
 let stringToHashBucket
     ?(name = "StringToHashBucket")
     ~num_buckets
+    ?(control_inputs = [])
     (string_tensor : [ `string ] t)
   =
   let attributes = [] in
@@ -8462,12 +9237,14 @@ let stringToHashBucket
     ~op_name
     ~output_type:Type.Int64
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let stringToHashBucketFast
     ?(name = "StringToHashBucketFast")
     ~num_buckets
+    ?(control_inputs = [])
     (input : [ `string ] t)
   =
   let attributes = [] in
@@ -8482,6 +9259,7 @@ let stringToHashBucketFast
     ~op_name
     ~output_type:Type.Int64
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
@@ -8489,6 +9267,7 @@ let stringToHashBucketStrong
     ?(name = "StringToHashBucketStrong")
     ~num_buckets
     ~key
+    ?(control_inputs = [])
     (input : [ `string ] t)
   =
   let attributes = [] in
@@ -8506,12 +9285,14 @@ let stringToHashBucketStrong
     ~op_name
     ~output_type:Type.Int64
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let stringToNumber
     ?(name = "StringToNumber")
     ~type_
+    ?(control_inputs = [])
     (string_tensor : [ `string ] t)
   =
   let attributes = [ "out_type", Type (P type_) ] in
@@ -8523,11 +9304,13 @@ let stringToNumber
     ~op_name
     ~output_type:type_
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let sub
     ?(name = "Sub")
+    ?(control_inputs = [])
     (x : ([< `float | `double | `int32 | `int64 | `complex64 ] as 't) t)
     (y : ([< `float | `double | `int32 | `int64 | `complex64 ] as 't) t)
   =
@@ -8540,12 +9323,14 @@ let sub
     ~op_name
     ~output_type:(Node.output_type x)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let sum
     ?(name = "Sum")
     ?keep_dims
+    ?(control_inputs = [])
     (input : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (reduction_indices : [ `int32 ] t)
   =
@@ -8561,6 +9346,7 @@ let sum
     ~op_name
     ~output_type:(Node.output_type input)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
@@ -8568,6 +9354,7 @@ let svd
     ?(name = "Svd")
     ?compute_uv
     ?full_matrices
+    ?(control_inputs = [])
     (input : ([< `double | `float ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type input)) ;  "T", Type (P (Node.output_type input)) ;  "T", Type (P (Node.output_type input)) ] in
@@ -8585,6 +9372,7 @@ let svd
     ~op_name
     ~output_type:(Node.output_type input)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 0)
   ,
@@ -8593,6 +9381,7 @@ let svd
     ~op_name
     ~output_type:(Node.output_type input)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 1)
   ,
@@ -8601,11 +9390,13 @@ let svd
     ~op_name
     ~output_type:(Node.output_type input)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 2)
 
 let switch
     ?(name = "Switch")
+    ?(control_inputs = [])
     (data : 't t)
     (pred : [ `bool ] t)
   =
@@ -8618,6 +9409,7 @@ let switch
     ~op_name
     ~output_type:(Node.output_type data)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 0)
   ,
@@ -8626,6 +9418,7 @@ let switch
     ~op_name
     ~output_type:(Node.output_type data)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 1)
 
@@ -8634,6 +9427,7 @@ let tFRecordReader
     ?container
     ?shared_name
     ?compression_type
+    ?(control_inputs = [])
     ()
   =
   let attributes = [] in
@@ -8654,11 +9448,13 @@ let tFRecordReader
     ~op_name
     ~output_type:Type.String
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let tan
     ?(name = "Tan")
+    ?(control_inputs = [])
     (x : ([< `float | `double | `int32 | `int64 | `complex64 ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type x)) ] in
@@ -8670,11 +9466,13 @@ let tan
     ~op_name
     ~output_type:(Node.output_type x)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let tanh
     ?(name = "Tanh")
+    ?(control_inputs = [])
     (x : ([< `float | `double | `complex64 ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type x)) ] in
@@ -8686,11 +9484,13 @@ let tanh
     ~op_name
     ~output_type:(Node.output_type x)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let tanhGrad
     ?(name = "TanhGrad")
+    ?(control_inputs = [])
     (x : ([< `float | `double | `complex64 ] as 't) t)
     (y : ([< `float | `double | `complex64 ] as 't) t)
   =
@@ -8703,6 +9503,7 @@ let tanhGrad
     ~op_name
     ~output_type:(Node.output_type x)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
@@ -8711,6 +9512,7 @@ let temporaryVariable
     ~type_
     ~shape
     ?var_name
+    ?(control_inputs = [])
     ()
   =
   let attributes = [ "dtype", Type (P type_) ] in
@@ -8728,6 +9530,7 @@ let temporaryVariable
     ~op_name
     ~output_type:type_
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
@@ -8736,6 +9539,7 @@ let tensorArray
     ?dynamic_size
     ?clear_after_read
     ?tensor_array_name
+    ?(control_inputs = [])
     (size : [ `int32 ] t)
   =
   let attributes = [] in
@@ -8756,11 +9560,13 @@ let tensorArray
     ~op_name
     ~output_type:Type.String
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let tensorArrayClose
     ?(name = "TensorArrayClose")
+    ?(control_inputs = [])
     (handle : [ `string ] t)
   =
   let attributes = [] in
@@ -8772,6 +9578,7 @@ let tensorArrayClose
     ~op_name
     ~output_type:Type.Unit
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
@@ -8779,6 +9586,7 @@ let tensorArrayConcat
     ?(name = "TensorArrayConcat")
     ~type_
     ?element_shape_except0
+    ?(control_inputs = [])
     (handle : [ `string ] t)
     (flow_in : [ `float ] t)
   =
@@ -8794,6 +9602,7 @@ let tensorArrayConcat
     ~op_name
     ~output_type:type_
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 0)
   ,
@@ -8802,12 +9611,14 @@ let tensorArrayConcat
     ~op_name
     ~output_type:Type.Int64
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 1)
 
 let tensorArrayGrad
     ?(name = "TensorArrayGrad")
     ~source
+    ?(control_inputs = [])
     (handle : [ `string ] t)
     (flow_in : [ `float ] t)
   =
@@ -8823,6 +9634,7 @@ let tensorArrayGrad
     ~op_name
     ~output_type:Type.String
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
@@ -8830,6 +9642,7 @@ let tensorArrayPack
     ?(name = "TensorArrayPack")
     ~type_
     ?element_shape
+    ?(control_inputs = [])
     (handle : [ `string ] t)
     (flow_in : [ `float ] t)
   =
@@ -8845,12 +9658,14 @@ let tensorArrayPack
     ~op_name
     ~output_type:type_
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let tensorArrayRead
     ?(name = "TensorArrayRead")
     ~type_
+    ?(control_inputs = [])
     (handle : [ `string ] t)
     (index : [ `int32 ] t)
     (flow_in : [ `float ] t)
@@ -8864,11 +9679,13 @@ let tensorArrayRead
     ~op_name
     ~output_type:type_
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let tensorArraySize
     ?(name = "TensorArraySize")
+    ?(control_inputs = [])
     (handle : [ `string ] t)
     (flow_in : [ `float ] t)
   =
@@ -8881,11 +9698,13 @@ let tensorArraySize
     ~op_name
     ~output_type:Type.Int32
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let tensorArraySplit
     ?(name = "TensorArraySplit")
+    ?(control_inputs = [])
     (handle : [ `string ] t)
     (value : 't t)
     (lengths : [ `int64 ] t)
@@ -8900,11 +9719,13 @@ let tensorArraySplit
     ~op_name
     ~output_type:Type.Float
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let tensorArrayUnpack
     ?(name = "TensorArrayUnpack")
+    ?(control_inputs = [])
     (handle : [ `string ] t)
     (value : 't t)
     (flow_in : [ `float ] t)
@@ -8918,11 +9739,13 @@ let tensorArrayUnpack
     ~op_name
     ~output_type:Type.Float
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let tensorArrayWrite
     ?(name = "TensorArrayWrite")
+    ?(control_inputs = [])
     (handle : [ `string ] t)
     (index : [ `int32 ] t)
     (value : 't t)
@@ -8937,6 +9760,7 @@ let tensorArrayWrite
     ~op_name
     ~output_type:Type.Float
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
@@ -8944,6 +9768,7 @@ let tensorSummary
     ?(name = "TensorSummary")
     ~display_name
     ?description
+    ?(control_inputs = [])
     (tensor : 't t)
   =
   let attributes = [ "T", Type (P (Node.output_type tensor)) ] in
@@ -8961,6 +9786,7 @@ let tensorSummary
     ~op_name
     ~output_type:Type.String
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
@@ -8969,6 +9795,7 @@ let textLineReader
     ?skip_header_lines
     ?container
     ?shared_name
+    ?(control_inputs = [])
     ()
   =
   let attributes = [] in
@@ -8989,6 +9816,7 @@ let textLineReader
     ~op_name
     ~output_type:Type.String
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
@@ -9000,6 +9828,7 @@ let threadUnsafeUnigramCandidateSampler
     ~range_max
     ?seed
     ?seed2
+    ?(control_inputs = [])
     (true_classes : [ `int64 ] t)
   =
   let attributes = [] in
@@ -9029,6 +9858,7 @@ let threadUnsafeUnigramCandidateSampler
     ~op_name
     ~output_type:Type.Int64
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 0)
   ,
@@ -9037,6 +9867,7 @@ let threadUnsafeUnigramCandidateSampler
     ~op_name
     ~output_type:Type.Float
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 1)
   ,
@@ -9045,11 +9876,13 @@ let threadUnsafeUnigramCandidateSampler
     ~op_name
     ~output_type:Type.Float
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 2)
 
 let tile
     ?(name = "Tile")
+    ?(control_inputs = [])
     (input : 't t)
     (multiples : [ `int32 ] t)
   =
@@ -9062,11 +9895,13 @@ let tile
     ~op_name
     ~output_type:(Node.output_type input)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let tileGrad
     ?(name = "TileGrad")
+    ?(control_inputs = [])
     (input : 't t)
     (multiples : [ `int32 ] t)
   =
@@ -9079,6 +9914,7 @@ let tileGrad
     ~op_name
     ~output_type:(Node.output_type input)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
@@ -9086,6 +9922,7 @@ let topK
     ?(name = "TopK")
     ~k
     ?sorted
+    ?(control_inputs = [])
     (input : ([< `float | `double | `int32 | `int64 ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type input)) ] in
@@ -9103,6 +9940,7 @@ let topK
     ~op_name
     ~output_type:(Node.output_type input)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 0)
   ,
@@ -9111,12 +9949,14 @@ let topK
     ~op_name
     ~output_type:Type.Int32
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 1)
 
 let topKV2
     ?(name = "TopKV2")
     ?sorted
+    ?(control_inputs = [])
     (input : ([< `float | `double | `int32 | `int64 ] as 't) t)
     (k : [ `int32 ] t)
   =
@@ -9132,6 +9972,7 @@ let topKV2
     ~op_name
     ~output_type:(Node.output_type input)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 0)
   ,
@@ -9140,11 +9981,13 @@ let topKV2
     ~op_name
     ~output_type:Type.Int32
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 1)
 
 let transpose
     ?(name = "Transpose")
+    ?(control_inputs = [])
     (x : 't t)
     (perm : [ `int32 ] t)
   =
@@ -9157,6 +10000,7 @@ let transpose
     ~op_name
     ~output_type:(Node.output_type x)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
@@ -9165,6 +10009,7 @@ let truncatedNormal
     ~type_
     ?seed
     ?seed2
+    ?(control_inputs = [])
     (shape : ([< `int32 | `int64 ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type shape)) ;  "dtype", Type (P type_) ] in
@@ -9182,6 +10027,7 @@ let truncatedNormal
     ~op_name
     ~output_type:type_
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
@@ -9193,6 +10039,7 @@ let uniformCandidateSampler
     ~range_max
     ?seed
     ?seed2
+    ?(control_inputs = [])
     (true_classes : [ `int64 ] t)
   =
   let attributes = [] in
@@ -9222,6 +10069,7 @@ let uniformCandidateSampler
     ~op_name
     ~output_type:Type.Int64
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 0)
   ,
@@ -9230,6 +10078,7 @@ let uniformCandidateSampler
     ~op_name
     ~output_type:Type.Float
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 1)
   ,
@@ -9238,11 +10087,13 @@ let uniformCandidateSampler
     ~op_name
     ~output_type:Type.Float
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 2)
 
 let unique
     ?(name = "Unique")
+    ?(control_inputs = [])
     (x : 't t)
   =
   let attributes = [ "T", Type (P (Node.output_type x)) ] in
@@ -9254,6 +10105,7 @@ let unique
     ~op_name
     ~output_type:(Node.output_type x)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 0)
   ,
@@ -9262,11 +10114,13 @@ let unique
     ~op_name
     ~output_type:Type.Int32
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 1)
 
 let uniqueWithCounts
     ?(name = "UniqueWithCounts")
+    ?(control_inputs = [])
     (x : 't t)
   =
   let attributes = [ "T", Type (P (Node.output_type x)) ] in
@@ -9278,6 +10132,7 @@ let uniqueWithCounts
     ~op_name
     ~output_type:(Node.output_type x)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 0)
   ,
@@ -9286,6 +10141,7 @@ let uniqueWithCounts
     ~op_name
     ~output_type:Type.Int32
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 1)
   ,
@@ -9294,6 +10150,7 @@ let uniqueWithCounts
     ~op_name
     ~output_type:Type.Int32
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:(Some 2)
 
@@ -9301,6 +10158,7 @@ let unpack
     ?(name = "Unpack")
     ~num
     ?axis
+    ?(control_inputs = [])
     (value : 't t)
   =
   let attributes = [ "T", Type (P (Node.output_type value)) ] in
@@ -9319,6 +10177,7 @@ let unpack
       ~op_name
       ~output_type:(Node.output_type value)
       ~inputs
+      ~control_inputs
       ~attributes
       ~output_idx:None
   in
@@ -9327,6 +10186,7 @@ let unpack
 
 let unsortedSegmentSum
     ?(name = "UnsortedSegmentSum")
+    ?(control_inputs = [])
     (data : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
     (segment_ids : ([< `int32 | `int64 ] as 'tindices) t)
     (num_segments : [ `int32 ] t)
@@ -9340,6 +10200,7 @@ let unsortedSegmentSum
     ~op_name
     ~output_type:(Node.output_type data)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
@@ -9349,6 +10210,7 @@ let variable
     ~shape
     ?container
     ?shared_name
+    ?(control_inputs = [])
     ()
   =
   let attributes = [ "dtype", Type (P type_) ] in
@@ -9369,11 +10231,13 @@ let variable
     ~op_name
     ~output_type:type_
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let where
     ?(name = "Where")
+    ?(control_inputs = [])
     (input : [ `bool ] t)
   =
   let attributes = [] in
@@ -9385,6 +10249,7 @@ let where
     ~op_name
     ~output_type:Type.Int64
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
@@ -9392,6 +10257,7 @@ let wholeFileReader
     ?(name = "WholeFileReader")
     ?container
     ?shared_name
+    ?(control_inputs = [])
     ()
   =
   let attributes = [] in
@@ -9409,11 +10275,13 @@ let wholeFileReader
     ~op_name
     ~output_type:Type.String
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let zerosLike
     ?(name = "ZerosLike")
+    ?(control_inputs = [])
     (x : 't t)
   =
   let attributes = [ "T", Type (P (Node.output_type x)) ] in
@@ -9425,11 +10293,13 @@ let zerosLike
     ~op_name
     ~output_type:(Node.output_type x)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 
 let zeta
     ?(name = "Zeta")
+    ?(control_inputs = [])
     (x : ([< `float | `double ] as 't) t)
     (q : ([< `float | `double ] as 't) t)
   =
@@ -9442,6 +10312,7 @@ let zeta
     ~op_name
     ~output_type:(Node.output_type x)
     ~inputs
+    ~control_inputs
     ~attributes
     ~output_idx:None
 

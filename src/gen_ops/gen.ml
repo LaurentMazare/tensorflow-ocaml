@@ -324,6 +324,7 @@ let gen_mli ops =
       then p "  -> %s:%s Type.t" (type_variable ~idx) (Type.to_string output_type.type_));
     List.iter op.attributes ~f:(fun attribute ->
       Attribute.mli attribute p);
+    p "  -> ?control_inputs:Node.p list";
     List.iter op.inputs ~f:(fun input ->
       let maybe_list = if Option.is_some input.number_attr then " list" else "" in
       p "  -> %s t%s" (Type.to_string input.type_) maybe_list);
@@ -355,6 +356,7 @@ let handle_one_op (op : Op.t) out_channel =
     then p "    ~%s" (type_variable ~idx));
   List.iter op.attributes ~f:(fun attribute ->
     Attribute.ml_def attribute p);
+  p "    ?(control_inputs = [])";
   List.iter op.inputs ~f:(fun input ->
     let name = Input.caml_name input in
     let maybe_list = if Option.is_some input.number_attr then " list" else "" in
@@ -416,6 +418,7 @@ let handle_one_op (op : Op.t) out_channel =
       p "      ~op_name";
       p "      ~output_type:%s" output_type_string;
       p "      ~inputs";
+      p "      ~control_inputs";
       p "      ~attributes";
       p "      ~output_idx:None";
       p "  in";
@@ -430,6 +433,7 @@ let handle_one_op (op : Op.t) out_channel =
         p "    ~op_name";
         p "    ~output_type:%s" output_type_string;
         p "    ~inputs";
+        p "    ~control_inputs";
         p "    ~attributes";
         p "    ~output_idx:%s" (if multiple_outputs then sprintf "(Some %d)" idx else "None");
       );
