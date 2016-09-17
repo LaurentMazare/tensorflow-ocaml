@@ -402,6 +402,23 @@ let split_gradient ~self ~gradients =
     [ None; Some (N.P (Ops.concat split_dim all_gradients)) ]
   | _ -> failwith "split must have two arguments"
 
+let select_gradient ~self ~gradient =
+  let N.P cond =
+    match N.inputs self with
+    | [ `single cond; `single _lhs; `single _rhs ] -> cond
+    | _ -> failwith "Unexpected arity for select"
+  in
+  match N.output_type cond with
+  | T.Bool ->
+    let zeros = Ops.zerosLike gradient in
+    let lhs_gradient = Ops.select cond gradient zeros in
+    let rhs_gradient = Ops.select cond zeros gradient in
+    [ None; Some (N.P lhs_gradient); Some (N.P rhs_gradient) ]
+  | _ -> failwith "Unexpected type for condition of select"
+
+let identity_gradient ~self:_ ~gradient =
+  [ Some (N.P gradient) ]
+
 let register_all () =
   let module O = Ops.Op_names in
   List.iter ~f:(fun (name, f) -> Registered_gradients.add name f)
@@ -418,6 +435,7 @@ let register_all () =
     ; O.exp,     { f = exp_gradient }
     ; O.fill,    { f = fill_gradient }
     ; O.floor,   { f = none }
+    ; O.identity,{ f = identity_gradient }
     ; O.inv,     { f = inv_gradient }
     ; O.log,     { f = log_gradient }
     ; O.matMul,  { f = matmul_gradient }
@@ -431,6 +449,7 @@ let register_all () =
     ; O.relu,    { f = relu_gradient }
     ; O.reshape, { f = reshape_gradient }
     ; O.rsqrt,   { f = rsqrt_gradient }
+    ; O.select,  { f = select_gradient }
     ; O.sigmoid, { f = sigmoid_gradient }
     ; O.sign,    { f = sign_gradient }
     ; O.sin,     { f = sin_gradient }
