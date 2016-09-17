@@ -109,19 +109,19 @@ module Tensor = struct
     | TF_INT32 -> 4
     | TF_UINT16
     | TF_INT16 -> 2
+    | TF_BOOL
     | TF_UINT8
     | TF_INT8 -> 1
     | TF_INT64 -> 8
     | TF_STRING
     | TF_COMPLEX
-    | TF_BOOL
     | TF_QINT8
     | TF_QUINT8
     | TF_QINT32
     | TF_BFLOAT16
     | TF_QINT16
     | TF_QUINT16
-    | Unknown _ -> failwith "Unsupported tensor type"
+    | Unknown _ -> failwith "Unsupported tensor type (sizeof)"
 
   let data_type_of_kind (type a) (type b) (kind : (a, b) Bigarray.kind) =
     match kind with
@@ -129,6 +129,7 @@ module Tensor = struct
     | Bigarray.Float64 -> TF_DOUBLE
     | Bigarray.Int64 -> TF_INT64
     | Bigarray.Int32 -> TF_INT32
+    | Bigarray.Int8_unsigned -> TF_BOOL
     | _ -> failwith "Unsupported yet"
 
   module Id : sig
@@ -200,6 +201,7 @@ module Tensor = struct
     | TF_DOUBLE -> apply_kind Bigarray.float64
     | TF_INT32 -> apply_kind Bigarray.int32
     | TF_INT64 -> apply_kind Bigarray.int64
+    | TF_BOOL -> apply_kind Bigarray.int8_unsigned
     | _ -> failwith "Unsupported tensor type"
 end
 
