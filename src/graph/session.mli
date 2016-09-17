@@ -6,6 +6,7 @@ module Input : sig
   type t
   val float  : [ `float ] Ops.Placeholder.t -> (float, Bigarray.float32_elt) Tensor.t -> t
   val double : [ `double ] Ops.Placeholder.t -> (float, Bigarray.float64_elt) Tensor.t -> t
+  val bool   : [ `bool ] Ops.Placeholder.t -> (int, Bigarray.int8_unsigned_elt) Tensor.t -> t
 end
 
 module Output : sig

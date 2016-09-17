@@ -6,7 +6,7 @@ module O = Ops
    This is mostly a work in progess for now. Batch normalization is not included.
 
    Reference:
-   - Deep Residual Learning for Image Recognition](https://arxiv.org/abs/1512.03385)
+     - Deep Residual Learning for Image Recognition](https://arxiv.org/abs/1512.03385)
 *)
 let label_count = Mnist_helper.label_count
 let epochs = 10000
@@ -25,30 +25,32 @@ let conv2d x ~out_features ~in_features ~stride:s ~kernel_size:k =
 let avg_pool x ~stride:s ~kernel_size:k =
   O.avgPool x ~ksize:[ 1; k; k; 1 ] ~strides:[ 1; s; s; 1 ] ~padding:"SAME"
 
-let basic_block input_layer ~out_features ~in_features ~stride =
+let basic_block input_layer ~out_features ~in_features ~stride ~testing =
   let shortcut = conv2d input_layer ~out_features ~in_features ~stride ~kernel_size:1 in
   conv2d input_layer ~out_features ~in_features ~stride ~kernel_size:3
+  |> Layer.batch_normalization ~testing ~dims:3 ~feature_count:out_features
   |> O.relu
   |> conv2d ~out_features ~in_features:out_features ~stride:1 ~kernel_size:1
   |> O.add shortcut
-  |> O.relu
+  |> Layer.batch_normalization ~testing ~dims:3 ~feature_count:out_features
+  (* No ReLU after the add as per http://torch.ch/blog/2016/02/04/resnets.html *)
 
-let block_stack layer ~out_features ~in_features ~stride =
+let block_stack layer ~out_features ~in_features ~stride ~testing =
   let depth = (depth - 2) / 6 in
-  let layer = basic_block layer ~out_features ~in_features ~stride in
+  let layer = basic_block layer ~out_features ~in_features ~stride ~testing in
   List.init (depth - 1) ~f:Fn.id
   |> List.fold ~init:layer ~f:(fun layer _idx ->
-    basic_block layer ~out_features ~in_features:out_features ~stride:1)
+    basic_block layer ~out_features ~in_features:out_features ~stride:1 ~testing)
 
-let build_model ~xs =
+let build_model ~xs ~testing =
   let layer = O.reshape xs (O.const_int ~type_:Int32 [ -1; 28; 28; 1 ]) in
   (* 3x3 convolution + max-pool. *)
   let layer = conv2d layer ~out_features:16 ~in_features:1 ~kernel_size:3 ~stride:1 in
   let layer = O.relu layer in
 
-  let layer = block_stack layer ~out_features:16 ~in_features:16 ~stride:1 in
-  let layer = block_stack layer ~out_features:32 ~in_features:16 ~stride:2 in
-  let layer = block_stack layer ~out_features:64 ~in_features:32 ~stride:2 in
+  let layer = block_stack layer ~out_features:16 ~in_features:16 ~stride:1 ~testing in
+  let layer = block_stack layer ~out_features:32 ~in_features:16 ~stride:2 ~testing in
+  let layer = block_stack layer ~out_features:64 ~in_features:32 ~stride:2 ~testing in
 
   let layer = avg_pool ~stride:1 ~kernel_size:8 layer in
   (* Final dense layer. *)
@@ -64,8 +66,11 @@ let () =
   let mnist = Mnist_helper.read_files () in
   let xs = O.placeholder [] ~type_:Float in
   let ys = O.placeholder [] ~type_:Float in
+  let testing = O.placeholder [] ~type_:Bool in
   let ys_node = O.Placeholder.to_node ys in
-  let ys_ = build_model ~xs:(O.Placeholder.to_node xs) in
+  let ys_ =
+    build_model ~xs:(O.Placeholder.to_node xs) ~testing:(O.Placeholder.to_node testing)
+  in
   let cross_entropy = O.(neg (reduce_mean (ys_node * log ys_))) in
   let accuracy =
     O.(equal (argMax ys_ one32) (argMax ys_node one32))
@@ -73,10 +78,18 @@ let () =
     |> O.reduce_mean
   in
   let gd = Optimizers.adam_minimizer ~learning_rate:(O.f 1e-4) cross_entropy in
+  let true_tensor = Tensor.create Bigarray.int8_unsigned [||] in
+  Tensor.set true_tensor [||] 1;
+  let false_tensor = Tensor.create Bigarray.int8_unsigned [||] in
+  Tensor.set false_tensor [||] 0;
   let validation_inputs =
     let validation_images = Tensor.sub_left mnist.test_images 0 1024 in
     let validation_labels = Tensor.sub_left mnist.test_labels 0 1024 in
-    Session.Input.[ float xs validation_images; float ys validation_labels ]
+    Session.Input.
+      [ float xs validation_images
+      ; float ys validation_labels
+      ; bool testing true_tensor
+      ]
   in
   let print_err n ~train_inputs =
     let vaccuracy, vcross_entropy =
@@ -100,7 +113,13 @@ let () =
     let batch_images, batch_labels =
       Mnist_helper.train_batch mnist ~batch_size ~batch_idx
     in
-    let batch_inputs = Session.Input.[ float xs batch_images; float ys batch_labels ] in
+    let batch_inputs =
+      Session.Input.
+        [ float xs batch_images
+        ; float ys batch_labels
+        ; bool testing false_tensor
+        ]
+    in
     if batch_idx % 25 = 0 then print_err batch_idx ~train_inputs:batch_inputs;
     Session.run
       ~inputs:batch_inputs

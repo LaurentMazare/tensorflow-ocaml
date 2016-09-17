@@ -151,6 +151,12 @@ module Input = struct
         (tensor : (float, Bigarray.float64_elt) Tensor.t)
     =
     I (node, tensor)
+
+  let bool
+        (node : [ `bool ] Ops.Placeholder.t)
+        (tensor : (int, Bigarray.int8_unsigned_elt) Tensor.t)
+    =
+    I (node, tensor)
  end
 
 module Output = struct
