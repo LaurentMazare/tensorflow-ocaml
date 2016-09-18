@@ -154,3 +154,9 @@ val normalize
   -> ([< `double | `float ] as 'a) Node.t
   -> 'a moments
   -> 'a Node.t
+
+val cond
+  :  [ `bool ] Node.t
+  -> if_true:'a Node.t
+  -> if_false:'a Node.t
+  -> 'a Node.t

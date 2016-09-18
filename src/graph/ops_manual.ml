@@ -216,3 +216,16 @@ let moments t ~dims =
 let normalize ?(epsilon = 1e-12) t { mean; variance } =
   let epsilon = scalar ~type_:(Node.output_type t) epsilon in
   Ops_generated.rsqrt (variance + epsilon) * (t - mean)
+
+let cond t ~if_true ~if_false =
+  let t_false, t_true = Ops_generated.switch t t in
+  let if_true =
+    Ops_generated.identity if_true
+      ~control_inputs:[ Node.P t_true ]
+  in
+  let if_false =
+    Ops_generated.identity if_false
+      ~control_inputs:[ Node.P t_false ]
+  in
+  Ops_generated.merge [ if_true; if_false ]
+  |> fst
