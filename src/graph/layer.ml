@@ -1,6 +1,8 @@
 open Core_kernel.Std
 
 let batch_normalization ?(decay = 0.99) t ~testing ~dims ~feature_count =
+  (* TODO: use testing in a cond to not modify the beta/gamma vars in this setting. *)
+  ignore testing;
   let type_ = Node.output_type t in
   let zero = Ops.const_float ~type_ (List.init feature_count ~f:(fun _ -> 0.)) in
   let one = Ops.const_float ~type_ (List.init feature_count ~f:(fun _ -> 1.)) in
@@ -15,10 +17,7 @@ let batch_normalization ?(decay = 0.99) t ~testing ~dims ~feature_count =
         beta
         Ops.(one_minus_decay * (beta - batch_moments.mean))
     in
-    Ops.select ~name:"select-beta"
-      testing
-      beta
-      (Ops.identity ~control_inputs:[ Node.P update_beta ] beta)
+    Ops.identity ~control_inputs:[ Node.P update_beta ] beta
   in
   let gamma =
       (* EWMA update. *)
@@ -27,9 +26,6 @@ let batch_normalization ?(decay = 0.99) t ~testing ~dims ~feature_count =
         gamma
         Ops.(one_minus_decay * (gamma - batch_moments.variance))
     in
-    Ops.select ~name:"select-gamma"
-      testing
-      gamma
-      (Ops.identity ~control_inputs:[ Node.P update_gamma ] gamma)
+    Ops.identity ~control_inputs:[ Node.P update_gamma ] gamma
   in
   Ops.normalize t { mean = beta; variance = gamma }
