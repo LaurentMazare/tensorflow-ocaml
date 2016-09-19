@@ -125,6 +125,12 @@ val get_attr_int_list : _ t -> string -> int list option
 val get_shape : _ t -> Dim.t list option
 
 val set_output_idx : 'a t -> int option -> 'a t
+(* This is a very unsafe function to use. *)
+val set_output_idx_and_output_type
+  :  'b t
+  -> int option
+  -> type_:'a Type.t
+  -> 'a t
 
 val id : _ t -> Id.t
 

@@ -419,6 +419,22 @@ let select_gradient ~self ~gradient =
 let identity_gradient ~self:_ ~gradient =
   [ Some (N.P gradient) ]
 
+let merge_gradient ~self ~gradients =
+  match N.inputs self with
+  | [ `multi inputs ] ->
+    let output_index =
+      N.set_output_idx_and_output_type self (Some 1) ~type_:Int32
+    in
+    let gradient = Map.find_exn gradients 0 in
+    List.mapi inputs ~f:(fun index _input ->
+      let equal =
+        Ops.const_int ~shape:[] ~type_:Int32 [ index ]
+        |> Ops.equal output_index
+      in
+      let _, gradient = Ops.switch gradient equal in
+      Some (N.P gradient))
+  | _ -> failwith "merge should have a multi inputs"
+
 let register_all () =
   let module O = Ops.Op_names in
   List.iter ~f:(fun (name, f) -> Registered_gradients.add name f)
@@ -462,4 +478,5 @@ let register_all () =
     ];
   List.iter ~f:(fun (name, g) -> Registered_gradients.add_multi name g)
     [ O.split,   { Registered_gradients.g = split_gradient }
+    ; O.merge,   { Registered_gradients.g = merge_gradient }
     ]
