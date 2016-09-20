@@ -92,39 +92,55 @@ let test_vector () =
 
 let test_batch_normalization () =
   let batch = Ops.placeholder ~type_:Double [ 3; 4 ] in
-  let testing = Ops.placeholder ~type_:Bool [] in
+  let testing = Ops.placeholder ~type_:Bool [ 1 ] in
   let ops =
     Layer.batch_normalization
       (Ops.Placeholder.to_node batch)
-      ~decay:0.
-      ~update_moments:`always
+      ~decay:0.5
+      ~update_moments:(`not_in_testing (Ops.Placeholder.to_node testing))
       ~dims:1
       ~feature_count:4
+    |> Ops.reduce_sum ~dims:[ 0 ]
   in
   let batch_tensor = Tensor.create2 Float64 3 4 in
   let testing_tensor = Tensor.create0 Int8_unsigned in
   Tensor.copy_elt_list testing_tensor [ 0 ];
-  let tensor =
-    Tensor.copy_elt_list batch_tensor
-      [ 0.; 4.; 0.; 8.
-      ; 0.; 4.; 9.; 8.
-      ; 0.; 4.; 3.; 3.
-      ];
-    Session.run Session.Output.(double ops)
-      ~inputs:
-        [ Session.Input.double batch batch_tensor
-        ; Session.Input.bool testing testing_tensor
-        ]
-  in
-  Tensor.print (Tensor.P tensor)
+  for i = 0 to 4 do
+    if i >= 3
+    then Tensor.copy_elt_list testing_tensor [ 1 ];
+    let tensor =
+      Tensor.copy_elt_list batch_tensor
+        [ 0.; 4.; 0.; 8.
+        ; 0.; 4.; 9.; 8.
+        ; 0.; 4.; 3.; 3.
+        ];
+      Session.run Session.Output.(double ops)
+        ~inputs:
+          [ Session.Input.double batch batch_tensor
+          ; Session.Input.bool testing testing_tensor
+          ]
+    in
+    let blessed_values =
+      if i = 0 then       [ 0.; 12.; 12.; 19. ]
+      else if i = 1 then [ 0.; 8.485281; 2.190890; 5.247275 ]
+      else if i = 2 then [ 0.; 6.000000; 0.914991; 2.260197 ]
+      else if i = 3 then [ 0.; 4.242641; 0.426401; 1.063611 ]
+      else if i = 4 then [ 0.; 4.242641; 0.426401; 1.063611 ]
+      else assert false
+    in
+    assert_vector tensor ~expected_value:blessed_values ~tol:1e-6
+  done
 
 let test_cond true_false =
   let testing = Ops.placeholder ~type_:Bool [ 1 ] in
   let true_false = if true_false then 1 else 0 in
+  let int32_with_control_inputs ~control_inputs v =
+    Ops.const_int ~shape:[] ~type_:Int32 ~control_inputs [ v ]
+  in
   let cond =
-    Ops.cond (Ops.Placeholder.to_node testing)
-      ~if_true:Ops.one32
-      ~if_false:Ops.zero32
+    Ops.cond_with_control_inputs (Ops.Placeholder.to_node testing)
+      ~if_true:(int32_with_control_inputs 1)
+      ~if_false:(int32_with_control_inputs 0)
   in
   let testing_tensor = Tensor.create0 Int8_unsigned in
   Tensor.copy_elt_list testing_tensor [ true_false ];
@@ -147,6 +163,6 @@ let test_cond true_false =
 let () =
   test_scalar ();
   test_vector ();
+  test_batch_normalization ();
   test_cond true;
-  test_cond false;
-  test_batch_normalization ()
+  test_cond false

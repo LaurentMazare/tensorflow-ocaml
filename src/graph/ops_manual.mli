@@ -35,6 +35,7 @@ val cd : ?shape:int list -> float list -> [ `double ] Node.t
 (* Some more refined constant creation functions. *)
 val const_float
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> ?shape:int list
   -> type_:([< `float | `double ] as 'dtype) Node.Type.t
   -> float list
@@ -42,6 +43,7 @@ val const_float
 
 val const_int
   :  ?name:string
+  -> ?control_inputs:Node.p list
   -> ?shape:int list
   -> type_:([< `int32 | `int64 ] as 'dtype) Node.Type.t
   -> int list
@@ -155,6 +157,16 @@ val normalize
   -> 'a moments
   -> 'a Node.t
 
+(* If [if_true] and [if_false] use their [control_input] argument to build a node
+   this node will only be evaluated if necessary. *)
+val cond_with_control_inputs
+  :  [ `bool ] Node.t
+  -> if_true:(control_inputs:Node.p list -> 'a Node.t)
+  -> if_false:(control_inputs:Node.p list -> 'a Node.t)
+  -> 'a Node.t
+
+(* [if_true] and [if_false] will always be evaluated because of the 'not-so lazy'
+   behavior of TensorFlow switch. *)
 val cond
   :  [ `bool ] Node.t
   -> if_true:'a Node.t

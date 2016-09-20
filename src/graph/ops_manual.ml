@@ -18,6 +18,7 @@ let get_shape ?shape values =
 
 let const_float
     ?(name = "Const")
+    ?(control_inputs = [])
     ?shape
     ~type_
     values
@@ -28,7 +29,7 @@ let const_float
     ~op_name:(Op_name.of_string "Const")
     ~output_type:type_
     ~inputs:[]
-    ~control_inputs:[]
+    ~control_inputs
     ~attributes:[
       "dtype", Type (P type_);
       "value", Tensor_float { type_ = P type_; shape; values };
@@ -37,6 +38,7 @@ let const_float
 
 let const_int
     ?(name = "Const")
+    ?(control_inputs = [])
     ?shape
     ~type_
     values
@@ -47,7 +49,7 @@ let const_int
     ~op_name:(Op_name.of_string "Const")
     ~output_type:type_
     ~inputs:[]
-    ~control_inputs:[]
+    ~control_inputs
     ~attributes:[
       "dtype", Type (P type_);
       "value", Tensor_int { type_ = P type_; shape; values };
@@ -217,19 +219,24 @@ let normalize ?(epsilon = 1e-12) t { mean; variance } =
   let epsilon = scalar ~type_:(Node.output_type t) epsilon in
   Ops_generated.rsqrt (variance + epsilon) * (t - mean)
 
-let cond t ~if_true ~if_false =
+let cond_with_control_inputs t ~if_true ~if_false =
   let t_false, t_true = Ops_generated.switch t t in
   let if_true =
-    Ops_generated.identity if_true
+    if_true
       (* It is important to keep the [identity] below as control inputs do not handle
          ports. *)
       ~control_inputs:[ Node.P (Ops_generated.identity t_true) ]
   in
   let if_false =
-    Ops_generated.identity if_false
+    if_false
       (* It is important to keep the [identity] below as control inputs do not handle
          ports. *)
       ~control_inputs:[ Node.P (Ops_generated.identity t_false) ]
   in
   Ops_generated.merge [ if_true; if_false ]
   |> fst
+
+let cond t ~if_true ~if_false =
+  cond_with_control_inputs t
+    ~if_true:(fun ~control_inputs -> Ops_generated.identity ~control_inputs if_true)
+    ~if_false:(fun ~control_inputs -> Ops_generated.identity ~control_inputs if_false)
