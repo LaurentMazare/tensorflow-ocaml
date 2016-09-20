@@ -26,13 +26,14 @@ let avg_pool x ~stride:s ~kernel_size:k =
   O.avgPool x ~ksize:[ 1; k; k; 1 ] ~strides:[ 1; s; s; 1 ] ~padding:"SAME"
 
 let basic_block input_layer ~out_features ~in_features ~stride ~testing =
+  ignore testing;
   let shortcut = conv2d input_layer ~out_features ~in_features ~stride ~kernel_size:1 in
   conv2d input_layer ~out_features ~in_features ~stride ~kernel_size:3
-  |> Layer.batch_normalization ~testing ~dims:3 ~feature_count:out_features
+  |> Layer.batch_normalization ~update_moments:`always ~dims:3 ~feature_count:out_features
   |> O.relu
   |> conv2d ~out_features ~in_features:out_features ~stride:1 ~kernel_size:1
   |> O.add shortcut
-  |> Layer.batch_normalization ~testing ~dims:3 ~feature_count:out_features
+  |> Layer.batch_normalization ~update_moments:`always ~dims:3 ~feature_count:out_features
   (* No ReLU after the add as per http://torch.ch/blog/2016/02/04/resnets.html *)
 
 let block_stack layer ~out_features ~in_features ~stride ~testing =

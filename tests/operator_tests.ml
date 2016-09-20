@@ -92,7 +92,8 @@ let test_batch_normalization () =
   let ops =
     Layer.batch_normalization
       (Ops.Placeholder.to_node batch)
-      ~testing:(Ops.Placeholder.to_node testing)
+      ~decay:0.
+      ~update_moments:`always
       ~dims:1
       ~feature_count:4
   in
@@ -101,11 +102,11 @@ let test_batch_normalization () =
   Tensor.copy_elt_list testing_tensor [ 0 ];
   let tensor =
     Tensor.copy_elt_list batch_tensor
-      [ 1.; 2.; 3.; 4.
-      ; 0.; 0.; 0.; 0.
-      ; 9.; 1.; 1.; 9.
+      [ 0.; 4.; 0.; 8.
+      ; 0.; 4.; 9.; 8.
+      ; 0.; 4.; 3.; 3.
       ];
-    Session.run (Session.Output.double ops)
+    Session.run Session.Output.(double ops)
       ~inputs:
         [ Session.Input.double batch batch_tensor
         ; Session.Input.bool testing testing_tensor
