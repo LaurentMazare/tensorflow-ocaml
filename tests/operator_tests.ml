@@ -86,6 +86,34 @@ let test_vector () =
       , [ 2.; 0.8 ]
     ]
 
+let test_batch_normalization () =
+  let batch = Ops.placeholder ~type_:Double [ 3; 4 ] in
+  let testing = Ops.placeholder ~type_:Bool [] in
+  let ops =
+    Layer.batch_normalization
+      (Ops.Placeholder.to_node batch)
+      ~testing:(Ops.Placeholder.to_node testing)
+      ~dims:1
+      ~feature_count:4
+  in
+  let batch_tensor = Tensor.create2 Float64 3 4 in
+  let testing_tensor = Tensor.create0 Int8_unsigned in
+  Tensor.copy_elt_list testing_tensor [ 0 ];
+  let tensor =
+    Tensor.copy_elt_list batch_tensor
+      [ 1.; 2.; 3.; 4.
+      ; 0.; 0.; 0.; 0.
+      ; 9.; 1.; 1.; 9.
+      ];
+    Session.run (Session.Output.double ops)
+      ~inputs:
+        [ Session.Input.double batch batch_tensor
+        ; Session.Input.bool testing testing_tensor
+        ]
+  in
+  Tensor.print (Tensor.P tensor)
+
 let () =
   test_scalar ();
-  test_vector ()
+  test_vector ();
+  test_batch_normalization ()
