@@ -2,6 +2,10 @@ open Core_kernel.Std
 open Tensorflow
 module O = Ops
 
+let assert_equal_int value ~expected_value =
+  if value <> expected_value
+  then failwithf "Got %d, expected %d" value expected_value ()
+
 let assert_equal value ~expected_value ~tol =
   if Float.abs (value -. expected_value) > tol
   then failwithf "Got %f, expected %f" value expected_value ()
@@ -114,7 +118,35 @@ let test_batch_normalization () =
   in
   Tensor.print (Tensor.P tensor)
 
+let test_cond true_false =
+  let testing = Ops.placeholder ~type_:Bool [ 1 ] in
+  let true_false = if true_false then 1 else 0 in
+  let cond =
+    Ops.cond (Ops.Placeholder.to_node testing)
+      ~if_true:Ops.one32
+      ~if_false:Ops.zero32
+  in
+  let testing_tensor = Tensor.create0 Int8_unsigned in
+  Tensor.copy_elt_list testing_tensor [ true_false ];
+  let tensor =
+    Session.run Session.Output.(int32 cond)
+      ~inputs:
+        [ Session.Input.bool testing testing_tensor
+        ]
+  in
+  let index =
+    match Tensor.dims tensor with
+    | [||] -> [||]
+    | [| 1 |] -> [| 0 |]
+    | [| n |] -> failwithf "Single dimension tensor with %d elements" n ()
+    | _ -> failwith "Multi-dimensional tensor."
+  in
+  let value = Tensor.get tensor index |> Int32.to_int_exn in
+  assert_equal_int value ~expected_value:true_false
+
 let () =
   test_scalar ();
   test_vector ();
+  test_cond true;
+  test_cond false;
   test_batch_normalization ()

@@ -221,11 +221,15 @@ let cond t ~if_true ~if_false =
   let t_false, t_true = Ops_generated.switch t t in
   let if_true =
     Ops_generated.identity if_true
-      ~control_inputs:[ Node.P t_true ]
+      (* It is important to keep the [identity] below as control inputs do not handle
+         ports. *)
+      ~control_inputs:[ Node.P (Ops_generated.identity t_true) ]
   in
   let if_false =
     Ops_generated.identity if_false
-      ~control_inputs:[ Node.P t_false ]
+      (* It is important to keep the [identity] below as control inputs do not handle
+         ports. *)
+      ~control_inputs:[ Node.P (Ops_generated.identity t_false) ]
   in
   Ops_generated.merge [ if_true; if_false ]
   |> fst
