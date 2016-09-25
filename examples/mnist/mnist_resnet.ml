@@ -78,7 +78,7 @@ let () =
     |> O.cast ~type_:Float
     |> O.reduce_mean
   in
-  let gd = Optimizers.adam_minimizer ~learning_rate:(O.f 1e-4) cross_entropy in
+  let gd = Optimizers.adam_minimizer ~learning_rate:(O.f 1e-5) cross_entropy in
   let true_tensor = Tensor.create Bigarray.int8_unsigned [||] in
   Tensor.set true_tensor [||] 1;
   let false_tensor = Tensor.create Bigarray.int8_unsigned [||] in

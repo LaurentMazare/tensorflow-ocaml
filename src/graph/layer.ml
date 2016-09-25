@@ -25,7 +25,8 @@ let batch_normalization ?(decay = 0.9) t ~update_moments ~dims ~feature_count =
   let beta, gamma =
     match update_moments with
     | `always ->
-      beta_with_update ~control_inputs:[], gamma_with_update ~control_inputs:[]
+      Ops.identity beta ~control_inputs:[ Node.P (beta_with_update ~control_inputs:[]) ],
+      Ops.identity gamma ~control_inputs:[ Node.P (gamma_with_update ~control_inputs:[]) ]
     | `not_in_testing testing ->
       let beta ~control_inputs:_ = beta in
       let gamma ~control_inputs:_ = gamma in
