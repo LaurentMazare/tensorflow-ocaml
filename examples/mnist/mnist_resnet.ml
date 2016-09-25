@@ -9,8 +9,8 @@ module O = Ops
      - Deep Residual Learning for Image Recognition](https://arxiv.org/abs/1512.03385)
 *)
 let label_count = Mnist_helper.label_count
-let epochs = 10000
-let batch_size = 1024
+let epochs = 100_000
+let batch_size = 50
 
 let depth = 20
 (* Number of hidden nodes in the final layer. *)
@@ -72,13 +72,17 @@ let () =
   let ys_ =
     build_model ~xs:(O.Placeholder.to_node xs) ~testing:(O.Placeholder.to_node testing)
   in
-  let cross_entropy = O.(neg (reduce_mean (ys_node * log ys_))) in
+  let cross_entropy = O.(neg (reduce_sum (ys_node * log (ys_ + f 1e-9)))) in
   let accuracy =
     O.(equal (argMax ys_ one32) (argMax ys_node one32))
     |> O.cast ~type_:Float
     |> O.reduce_mean
   in
-  let gd = Optimizers.adam_minimizer ~learning_rate:(O.f 1e-5) cross_entropy in
+  let learning_rate = O.placeholder [] ~type_:Float in
+  let gd =
+    Optimizers.adam_minimizer cross_entropy
+      ~learning_rate:(O.Placeholder.to_node learning_rate)
+  in
   let true_tensor = Tensor.create Bigarray.int8_unsigned [||] in
   Tensor.set true_tensor [||] 1;
   let false_tensor = Tensor.create Bigarray.int8_unsigned [||] in
@@ -110,7 +114,11 @@ let () =
       (100. *. vaccuracy)
       vcross_entropy
   in
+  let learning_rate_tensor = Tensor.create Bigarray.float32 [||] in
+  Tensor.set learning_rate_tensor [||] 5e-5;
   for batch_idx = 1 to epochs do
+    if batch_idx = 10_000
+    then Tensor.set learning_rate_tensor [||] 1e-5;
     let batch_images, batch_labels =
       Mnist_helper.train_batch mnist ~batch_size ~batch_idx
     in
@@ -119,6 +127,7 @@ let () =
         [ float xs batch_images
         ; float ys batch_labels
         ; bool testing false_tensor
+        ; float learning_rate learning_rate_tensor
         ]
     in
     if batch_idx % 25 = 0 then print_err batch_idx ~train_inputs:batch_inputs;
