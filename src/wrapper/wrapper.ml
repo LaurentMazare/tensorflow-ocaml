@@ -343,8 +343,8 @@ module Tf_operationdescription = struct
   let tf_newoperation =
     foreign "TF_NewOperation" ~from
       (Tf_graph.t
-      @-> string
-      @-> string
+      @-> ptr char
+      @-> ptr char
       @-> returning t)
 
   let tf_finishoperation =
@@ -368,59 +368,59 @@ module Tf_operationdescription = struct
 
   let tf_setattrstring =
     foreign "TF_SetAttrString" ~from
-      (t @-> string @-> string @-> int @-> returning void)
+      (t @-> ptr char @-> ptr char @-> int @-> returning void)
 
   let tf_setattrstringlist =
     foreign "TF_SetAttrStringList" ~from
-      (t @-> string @-> ptr (ptr char) @-> ptr int @-> int @-> returning void)
+      (t @-> ptr char @-> ptr (ptr char) @-> ptr int @-> int @-> returning void)
 
   let tf_setattrint =
     foreign "TF_SetAttrInt" ~from
-      (t @-> string @-> int64_t @-> returning void)
+      (t @-> ptr char @-> int64_t @-> returning void)
 
   let tf_setattrintlist =
     foreign "TF_SetAttrIntList" ~from
-      (t @-> string @-> ptr int64_t @-> int @-> returning void)
+      (t @-> ptr char @-> ptr int64_t @-> int @-> returning void)
 
   let tf_setattrfloat =
     foreign "TF_SetAttrFloat" ~from
-      (t @-> string @-> float @-> returning void)
+      (t @-> ptr char @-> float @-> returning void)
 
   let tf_setattrfloatlist =
     foreign "TF_SetAttrFloatList" ~from
-      (t @-> string @-> ptr float @-> int @-> returning void)
+      (t @-> ptr char @-> ptr float @-> int @-> returning void)
 
   let tf_setattrbool =
     foreign "TF_SetAttrBool" ~from
-      (t @-> string @-> uchar @-> returning void)
+      (t @-> ptr char @-> uchar @-> returning void)
 
   let tf_setattrboollist =
     foreign "TF_SetAttrBoolList" ~from
-      (t @-> string @-> ptr uchar @-> int @-> returning void)
+      (t @-> ptr char @-> ptr uchar @-> int @-> returning void)
 
   let tf_setattrtype =
     foreign "TF_SetAttrType" ~from
-      (t @-> string @-> int @-> returning void)
+      (t @-> ptr char @-> int @-> returning void)
 
   let tf_setattrtypelist =
     foreign "TF_SetAttrTypeList" ~from
-      (t @-> string @-> ptr int @-> int @-> returning void)
+      (t @-> ptr char @-> ptr int @-> int @-> returning void)
 
   let tf_setattrshape =
     foreign "TF_SetAttrShape" ~from
-      (t @-> string @-> ptr int64_t @-> int @-> returning void)
+      (t @-> ptr char @-> ptr int64_t @-> int @-> returning void)
 
   let tf_setattrshapelist =
     foreign "TF_SetAttrShapeList" ~from
-      (t @-> string @-> ptr (ptr int64_t) @-> ptr int @-> int @-> returning void)
+      (t @-> ptr char @-> ptr (ptr int64_t) @-> ptr int @-> int @-> returning void)
 
   let tf_setattrtensor =
     foreign "TF_SetAttrTensor" ~from
-      (t @-> string @-> Tf_tensor.t @-> Tf_status.t @-> returning void)
+      (t @-> ptr char @-> Tf_tensor.t @-> Tf_status.t @-> returning void)
 
   let tf_setattrtensorlist =
     foreign "TF_SetAttrTensorList" ~from
-      (t @-> string @-> ptr Tf_tensor.t @-> int @-> Tf_status.t @-> returning void)
+      (t @-> ptr char @-> ptr Tf_tensor.t @-> int @-> Tf_status.t @-> returning void)
 end
 
 module Graph = struct
@@ -443,6 +443,16 @@ module Graph = struct
 
   type port = Tf_port.t structure
 
+  let live_strings = ref []
+
+  let ptr_of_string str =
+    let len = String.length str in
+    let carray = CArray.make Ctypes.char (1 + len) in
+    live_strings := carray :: !live_strings;
+    String.iteri (fun i char -> CArray.set carray i char) str;
+    CArray.set carray len '\x00';
+    CArray.start carray
+
   let create_port (_graph, op) ~index =
     let port = make Tf_port.t in
     setf port Tf_port.oper op;
@@ -450,7 +460,12 @@ module Graph = struct
     port
 
   let new_operation t ~op_name ~name =
-    let od = Tf_operationdescription.tf_newoperation t op_name name in
+    let od =
+      Tf_operationdescription.tf_newoperation
+        t
+        (ptr_of_string op_name)
+        (ptr_of_string name)
+    in
     t, od
 
   let finish_operation (graph, od) =
@@ -482,19 +497,29 @@ module Graph = struct
     keep_alive graph
 
   let set_attr_int (_, od) ~attr_name value =
-    Tf_operationdescription.tf_setattrint od attr_name (Int64.of_int value)
+    Tf_operationdescription.tf_setattrint
+      od
+      (ptr_of_string attr_name)
+      (Int64.of_int value)
 
   let set_attr_int_list (_, od) ~attr_name values =
     let values = List.map Int64.of_int values in
-    Tf_operationdescription.tf_setattrintlist od attr_name
+    Tf_operationdescription.tf_setattrintlist
+      od
+      (ptr_of_string attr_name)
       CArray.(of_list int64_t values |> start)
       (List.length values)
 
   let set_attr_float (_, od) ~attr_name value =
-    Tf_operationdescription.tf_setattrfloat od attr_name value
+    Tf_operationdescription.tf_setattrfloat
+      od
+      (ptr_of_string attr_name)
+      value
 
   let set_attr_float_list (_, od) ~attr_name values =
-    Tf_operationdescription.tf_setattrfloatlist od attr_name
+    Tf_operationdescription.tf_setattrfloatlist
+      od
+      (ptr_of_string attr_name)
       CArray.(of_list float values |> start)
       (List.length values)
 
@@ -504,7 +529,10 @@ module Graph = struct
       then Unsigned.UChar.one
       else Unsigned.UChar.zero
     in
-    Tf_operationdescription.tf_setattrbool od attr_name value
+    Tf_operationdescription.tf_setattrbool
+      od
+      (ptr_of_string attr_name)
+      value
 
   let set_attr_bool_list (_, od) ~attr_name values =
     let values =
@@ -514,20 +542,33 @@ module Graph = struct
           | false -> Unsigned.UChar.zero)
         values
     in
-    Tf_operationdescription.tf_setattrboollist od attr_name
+    Tf_operationdescription.tf_setattrboollist
+      od
+      (ptr_of_string attr_name)
       CArray.(of_list uchar values |> start)
       (List.length values)
 
   let set_attr_string (_, od) ~attr_name value =
-    Tf_operationdescription.tf_setattrstring od attr_name value (String.length value)
+    Tf_operationdescription.tf_setattrstring
+      od
+      (ptr_of_string attr_name)
+      (ptr_of_string value)
+      (String.length value)
 
   let set_attr_type (_, od) ~attr_name dtype =
-    Tf_operationdescription.tf_setattrtype od attr_name (data_type_to_int dtype)
+    Tf_operationdescription.tf_setattrtype
+      od
+      (ptr_of_string attr_name)
+      (data_type_to_int dtype)
 
   let set_attr_tensor (_, od) ~attr_name tensor =
     let tensor = Tensor.c_tensor_of_tensor tensor in
     let status = Status.create () in
-    Tf_operationdescription.tf_setattrtensor od attr_name tensor status;
+    Tf_operationdescription.tf_setattrtensor
+      od
+      (ptr_of_string attr_name)
+      tensor
+      status;
     Status.result_or_error status ()
 
   let set_attr_tensors (_, od) ~attr_name tensors =
@@ -536,7 +577,7 @@ module Graph = struct
     let status = Status.create () in
     Tf_operationdescription.tf_setattrtensorlist
       od
-      attr_name
+      (ptr_of_string attr_name)
       tensor_start
       (List.length tensors)
       status;
@@ -546,7 +587,11 @@ module Graph = struct
     let num_dims = List.length shape in
     let shape = List.map Int64.of_int shape in
     let shape = CArray.(of_list int64_t shape |> start) in
-    Tf_operationdescription.tf_setattrshape od attr_name shape num_dims
+    Tf_operationdescription.tf_setattrshape
+      od
+      (ptr_of_string attr_name)
+      shape
+      num_dims
 end
 
 module Tf_sessionoptions = struct

@@ -122,10 +122,10 @@ let () =
       vcross_entropy
   in
   let learning_rate_tensor = Tensor.create Bigarray.float32 [||] in
-  Tensor.set learning_rate_tensor [||] 1e-4;
+  Tensor.set learning_rate_tensor [||] 1e-3;
   for batch_idx = 1 to epochs do
     if batch_idx = 2_000
-    then Tensor.set learning_rate_tensor [||] 5e-5;
+    then Tensor.set learning_rate_tensor [||] 5e-4;
     let batch_images, batch_labels =
       Mnist_helper.train_batch mnist ~batch_size ~batch_idx
     in
