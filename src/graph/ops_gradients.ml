@@ -435,6 +435,25 @@ let merge_gradient ~self ~gradients =
       Some (N.P gradient))
   | _ -> failwith "merge should have a multi inputs"
 
+let pad_gradient ~self ~gradient =
+  match N.inputs self with
+  | [ `single (Node.P x); `single padding ] ->
+    let padding = N.extract_exn padding Int32 in
+    let pad_before =
+      Ops.slice
+        padding
+        (Ops.const_int ~shape:[ 2 ] ~type_:Int32 [ 0; 0 ])
+        (Ops.pack [ Ops.rank x; Ops.one32 ])
+    in
+    let gradient =
+      Ops.slice
+        gradient
+        (Ops.reshape pad_before (Ops.const_int ~shape:[ 1 ] ~type_:Int32 [ -1 ]))
+        (Ops.shape x)
+    in
+    [ Some (N.P gradient); None ]
+  | _ -> failwith "pad should have two single inputs"
+
 let register_all () =
   let module O = Ops.Op_names in
   List.iter ~f:(fun (name, f) -> Registered_gradients.add name f)
@@ -461,6 +480,7 @@ let register_all () =
     ; O.min,     { f = minmax_gradient }
     ; O.mul,     { f = mul_gradient }
     ; O.neg,     { f = neg_gradient }
+    ; O.pad,     { f = pad_gradient }
     ; O.pow,     { f = pow_gradient }
     ; O.relu,    { f = relu_gradient }
     ; O.reshape, { f = reshape_gradient }

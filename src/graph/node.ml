@@ -224,6 +224,9 @@ let extract : type a . p -> a Type.t -> a t option = fun p type_ ->
   | Type.Double, Type.Double -> Some t
   | _, _ -> None
 
+let extract_exn p type_ =
+  Option.value_exn (extract p type_)
+
 (* CR noury: actually make weak *)
 module Weak_table = struct
   type 'a node = 'a t

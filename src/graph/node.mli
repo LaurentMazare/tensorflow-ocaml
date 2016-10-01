@@ -135,6 +135,7 @@ val set_output_idx_and_output_type
 val id : _ t -> Id.t
 
 val extract : p -> 'a Type.t -> 'a t option
+val extract_exn : p -> 'a Type.t -> 'a t
 
 module Weak_table : sig
   type 'a node = 'a t
