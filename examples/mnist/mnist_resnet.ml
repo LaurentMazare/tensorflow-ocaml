@@ -10,7 +10,7 @@ module O = Ops
 *)
 let label_count = Mnist_helper.label_count
 let epochs = 100_000
-let batch_size = 50
+let batch_size = 128
 
 let depth = 20
 (* Number of hidden nodes in the final layer. *)
@@ -22,12 +22,19 @@ let conv2d x ~out_features ~in_features ~stride:s ~kernel_size:k =
   let conv = O.conv2D x w ~strides:[ 1; s; s; 1 ] ~padding:"SAME" in
   O.add conv b
 
-let avg_pool x ~stride:s ~kernel_size:k =
-  O.avgPool x ~ksize:[ 1; k; k; 1 ] ~strides:[ 1; s; s; 1 ] ~padding:"SAME"
+let avg_pool x ~stride:s =
+  O.avgPool x ~ksize:[ 1; s; s; 1 ] ~strides:[ 1; s; s; 1 ] ~padding:"VALID"
 
 let basic_block input_layer ~out_features ~in_features ~stride ~testing =
   ignore testing;
-  let shortcut = conv2d input_layer ~out_features ~in_features ~stride ~kernel_size:1 in
+  let shortcut =
+    if stride = 1
+    then input_layer
+    else
+      let half_diff = (out_features - in_features) / 2 in
+      O.pad (avg_pool input_layer ~stride)
+        (O.const_int ~shape:[ 4; 2 ] ~type_:Int32 [ 0; 0; 0; 0; 0; 0; half_diff; half_diff ])
+  in
   conv2d input_layer ~out_features ~in_features ~stride ~kernel_size:3
   |> Layer.batch_normalization ~update_moments:`always ~dims:3 ~feature_count:out_features
   |> O.relu
@@ -53,9 +60,9 @@ let build_model ~xs ~testing =
   let layer = block_stack layer ~out_features:32 ~in_features:16 ~stride:2 ~testing in
   let layer = block_stack layer ~out_features:64 ~in_features:32 ~stride:2 ~testing in
 
-  let layer = avg_pool ~stride:1 ~kernel_size:8 layer in
+  let layer = O.reduce_mean layer ~dims:[ 1; 2 ] in
   (* Final dense layer. *)
-  let output_dim = 7*7*64 in
+  let output_dim = 64 in
   let layer = O.reshape layer (O.const_int ~type_:Int32 [ -1; output_dim ]) in
   let w1 = Var.normalf [ output_dim; hidden_nodes ] ~stddev:0.1 in
   let b1 = Var.f [ hidden_nodes ] 0. in
@@ -72,7 +79,7 @@ let () =
   let ys_ =
     build_model ~xs:(O.Placeholder.to_node xs) ~testing:(O.Placeholder.to_node testing)
   in
-  let cross_entropy = O.(neg (reduce_sum (ys_node * log (ys_ + f 1e-9)))) in
+  let cross_entropy = O.(neg (reduce_mean (ys_node * log (ys_ + f 1e-9)))) in
   let accuracy =
     O.(equal (argMax ys_ one32) (argMax ys_node one32))
     |> O.cast ~type_:Float
@@ -115,10 +122,10 @@ let () =
       vcross_entropy
   in
   let learning_rate_tensor = Tensor.create Bigarray.float32 [||] in
-  Tensor.set learning_rate_tensor [||] 5e-5;
+  Tensor.set learning_rate_tensor [||] 1e-4;
   for batch_idx = 1 to epochs do
-    if batch_idx = 10_000
-    then Tensor.set learning_rate_tensor [||] 1e-5;
+    if batch_idx = 2_000
+    then Tensor.set learning_rate_tensor [||] 5e-5;
     let batch_images, batch_labels =
       Mnist_helper.train_batch mnist ~batch_size ~batch_idx
     in
