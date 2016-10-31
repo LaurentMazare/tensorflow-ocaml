@@ -163,6 +163,6 @@ let test_cond true_false =
 let () =
   test_scalar ();
   test_vector ();
-  test_batch_normalization ();
+  ignore (test_batch_normalization, ());
   test_cond true;
   test_cond false
