@@ -2,8 +2,6 @@ The tensorflow-ocaml project provides some [OCaml](http://ocaml.org) bindings fo
 
 These bindings are in an early stage of their development. Some operators are not supported and the API is likely to change in the future. That being said they already contain the necessary to train a convolution network using various optimizers.
 
-The bindings have just started using the new session API using `TF_Graph*` introduced in TensorFlow r0.10. Because of this some parts of the bindings may not work properly.
-
 ## Installation
 
 The easiest way is probably to use opam.
@@ -12,7 +10,7 @@ The easiest way is probably to use opam.
 opam install tensorflow
 ```
 
-After that you have to get/build the TensorFlow library `libtensorflow-0.10.so`. The opam packages starting from version 0.0.x as well as the current tip use TensorFlow release 0.10. There are two possibilities to obtain it:
+After that you have to get/build the TensorFlow library `libtensorflow-0.10.so`. The opam packages starting from version 0.0.6 use TensorFlow release 0.10, the current tip uses release 0.11 (for which you need to build `libtensorflow-0.11.so`. There are two possibilities to obtain it:
 
 * You can build it from source by following these steps:
     1. [Install the Bazel build system](http://bazel.io/docs/install.html)

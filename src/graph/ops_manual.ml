@@ -138,9 +138,11 @@ let placeholder ?name ~type_ shape =
 
 let dropout node ~keep_prob =
   let type_ = Node.output_type node in
-  (keep_prob + Ops_generated.randomUniform ~type_ (Ops_generated.shape node))
-  |> Ops_generated.floor
-  |> fun binary_tensor -> node * (Ops_generated.inv keep_prob) * binary_tensor
+  let random =
+    Ops_generated.randomUniform ~type_ (Ops_generated.shape node ~type_:Int32)
+  in
+  Ops_generated.floor (keep_prob + random)
+  |> fun binary_tensor -> node * Ops_generated.inv keep_prob * binary_tensor
 
 
 let save_
@@ -196,7 +198,7 @@ let cast ?name (type a) (type b) (t : a Node.t) ~(type_ : b Node.Type.t) =
 
 let count t ~dims =
   Ops_generated.gather
-    (Ops_generated.shape t)
+    (Ops_generated.shape t ~type_:Int32)
     (const_int ~type_:Int32 dims)
   |> reduce_prod
 
@@ -240,3 +242,5 @@ let cond t ~if_true ~if_false =
   cond_with_control_inputs t
     ~if_true:(fun ~control_inputs -> Ops_generated.identity ~control_inputs if_true)
     ~if_false:(fun ~control_inputs -> Ops_generated.identity ~control_inputs if_false)
+
+let shape32 = Ops_generated.shape ~type_:Int32

@@ -64,7 +64,7 @@ let general_minimizer t ?varsf ?varsd target =
   let apply gradients vars =
     List.map2_exn gradients vars ~f:(fun gradient var ->
       check_var var;
-      let gradient = Ops.reshape gradient (Ops.shape var) in
+      let gradient = Ops.reshape gradient (Ops.shape32 var) in
       Node.P (t.apply ~gradient ~var ~type_:(Node.output_type var)))
   in
   let gdf =
@@ -132,7 +132,7 @@ let adam_minimizer
 
 let adagrad_minimizer ?(init = Ops.f 0.1) ~learning_rate ?varsf ?varsd target =
   let apply ~gradient ~var ~type_ =
-    let var_shape = Ops.shape var in
+    let var_shape = Ops.shape32 var in
     let init = Ops.fill var_shape (maybe_cast init ~type_) in
     let accum = Var.create (get_shape var) ~type_ ~init in
     Ops.applyAdagrad var accum (maybe_cast learning_rate ~type_) gradient

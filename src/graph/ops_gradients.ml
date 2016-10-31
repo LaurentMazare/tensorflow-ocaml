@@ -41,7 +41,7 @@ let binary_extract_exn : type a . a N.t -> (a N.t * a N.t) = fun node ->
 let add_gradient_ ~self ~gradient =
   let slhs, srhs =
     match N.inputs self with
-    | [ `single (N.P lhs); `single (N.P rhs) ] -> Ops.shape lhs, Ops.shape rhs
+    | [ `single (N.P lhs); `single (N.P rhs) ] -> Ops.shape32 lhs, Ops.shape32 rhs
     | _ -> failwith "Not a binary function"
   in
   let rlhs, rrhs = Ops.broadcastGradientArgs slhs srhs in
@@ -59,8 +59,8 @@ let sub_gradient ~self ~gradient =
 
 let mul_gradient ~self ~gradient =
   let lhs, rhs = binary_extract_exn self in
-  let shape_lhs = Ops.shape lhs in
-  let shape_rhs = Ops.shape rhs in
+  let shape_lhs = Ops.shape32 lhs in
+  let shape_rhs = Ops.shape32 rhs in
   let rlhs, rrhs = Ops.broadcastGradientArgs shape_lhs shape_rhs in
   let lhs_gradient = Ops.reshape (Ops.sum Ops.(gradient * rhs) rlhs) shape_lhs in
   let rhs_gradient = Ops.reshape (Ops.sum Ops.(lhs * gradient) rrhs) shape_rhs in
@@ -68,8 +68,8 @@ let mul_gradient ~self ~gradient =
 
 let div_gradient ~self ~gradient =
   let lhs, rhs = binary_extract_exn self in
-  let shape_lhs = Ops.shape lhs in
-  let shape_rhs = Ops.shape rhs in
+  let shape_lhs = Ops.shape32 lhs in
+  let shape_rhs = Ops.shape32 rhs in
   let rlhs, rrhs = Ops.broadcastGradientArgs shape_lhs shape_rhs in
   let lhs_gradient = Ops.reshape (Ops.sum Ops.(gradient / rhs) rlhs) shape_lhs in
   let rhs_gradient =
@@ -79,8 +79,8 @@ let div_gradient ~self ~gradient =
 
 let pow_gradient ~self ~gradient =
   let lhs, rhs = binary_extract_exn self in
-  let shape_lhs = Ops.shape lhs in
-  let shape_rhs = Ops.shape rhs in
+  let shape_lhs = Ops.shape32 lhs in
+  let shape_rhs = Ops.shape32 rhs in
   let rlhs, rrhs = Ops.broadcastGradientArgs shape_lhs shape_rhs in
   let one = Ops.const_float ~type_:(N.output_type self) [ 1. ] in
   let lhs_gradient =
@@ -155,9 +155,9 @@ let reduce_gradient ~self =
     | [ `single input; `single indices ] -> input, indices
     | _ -> failwith "Incorrect number of inputs"
   in
-  let input_shape = Ops.shape input in
+  let input_shape = Ops.shape32 input in
   let input_rank = Ops.rank input in
-  let indices_shape = Ops.shape indices in
+  let indices_shape = Ops.shape32 indices in
   let indices =
     N.extract (N.P indices) Int32
   in
@@ -179,8 +179,8 @@ let sum_gradient ~self ~gradient =
 let mean_gradient ~self ~gradient =
   let sum_gradient = sum_gradient_ ~self ~gradient in
   let N.P input = List.hd_exn (N.flat_inputs self) in
-  let input_shape = Ops.shape input in
-  let output_shape = Ops.shape self in
+  let input_shape = Ops.shape32 input in
+  let output_shape = Ops.shape32 self in
   let factor = Ops.div (Ops.reduce_prod input_shape) (Ops.reduce_prod output_shape) in
   let gradient = Ops.div sum_gradient (Ops.cast factor ~type_:(N.output_type sum_gradient)) in
   [ Some (N.P gradient); None ]
@@ -278,7 +278,7 @@ let conv2d_gradient ~self ~gradient =
   let padding = Option.value_exn (N.get_attr_string self "padding") in
   let gradient_input =
     Ops.conv2DBackpropInput
-      (Ops.shape inputs0)
+      (Ops.shape32 inputs0)
       inputs1
       gradient
       ~strides
@@ -288,7 +288,7 @@ let conv2d_gradient ~self ~gradient =
   let gradient_filter =
     Ops.conv2DBackpropFilter
       inputs0
-      (Ops.shape inputs1)
+      (Ops.shape32 inputs1)
       gradient
       ~strides
       ?use_cudnn_on_gpu
@@ -306,7 +306,7 @@ let avgpool_gradient : type a. self:a N.t -> gradient:a N.t -> N.p option list
     let input_shape =
       match N.inputs self with
       | [] | _ :: _ :: _ | [ `multi _ ] -> failwith "Not a unary function"
-      | [ `single (N.P input) ] -> Ops.shape input
+      | [ `single (N.P input) ] -> Ops.shape32 input
     in
     let gradient =
       Ops.avgPoolGrad
@@ -349,7 +349,7 @@ let maxpool_gradient : type a. self:a N.t -> gradient:a N.t -> N.p option list
 let reshape_gradient ~self ~gradient =
   let input_shape =
     match N.inputs self with
-    | [ `single (N.P input); _ ] -> Ops.shape input
+    | [ `single (N.P input); _ ] -> Ops.shape32 input
     | _ -> failwith "Not a binary function"
   in
   [ Some (N.P (Ops.reshape gradient input_shape)); None ]
@@ -375,7 +375,7 @@ let concat_gradient ~self ~gradient =
         | None -> failwith "All the concatenated inputs should have the same type."
         | Some concat_input -> concat_input)
     in
-    let sizes = Ops.shapeN concat_inputs in
+    let sizes = Ops.shapeN concat_inputs ~type_:Int32 in
     let offsets = Ops.concatOffset concat_dim sizes in
     let concat_grads =
       List.map2_exn sizes offsets ~f:(fun size offset ->
@@ -449,7 +449,7 @@ let pad_gradient ~self ~gradient =
       Ops.slice
         gradient
         (Ops.reshape pad_before (Ops.const_int ~shape:[ 1 ] ~type_:Int32 [ -1 ]))
-        (Ops.shape x)
+        (Ops.shape32 x)
     in
     [ Some (N.P gradient); None ]
   | _ -> failwith "pad should have two single inputs"

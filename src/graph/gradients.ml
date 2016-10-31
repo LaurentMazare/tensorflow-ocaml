@@ -120,7 +120,7 @@ let gradient node ~with_respect_to =
       ~shape:[]
       ~type_:(Node.output_type node)
       [ 1. ]
-    |> Ops.fill (Ops.shape node)
+    |> Ops.fill (Ops.shape node ~type_:Int32)
   in
   add_contribution (P node) ~gradient:(Some (Node.P one));
   output_gradients

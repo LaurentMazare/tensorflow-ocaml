@@ -172,3 +172,9 @@ val cond
   -> if_true:'a Node.t
   -> if_false:'a Node.t
   -> 'a Node.t
+
+val shape32
+  :  ?name:string
+  -> ?control_inputs:Node.p list
+  -> 't Node.t
+  -> [ `int32 ] Node.t

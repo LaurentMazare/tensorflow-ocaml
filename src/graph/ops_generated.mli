@@ -14,6 +14,7 @@ module Op_names : sig
   val any : Op_name.t
   val applyAdadelta : Op_name.t
   val applyAdagrad : Op_name.t
+  val applyAdagradDA : Op_name.t
   val applyAdam : Op_name.t
   val applyFtrl : Op_name.t
   val applyGradientDescent : Op_name.t
@@ -63,6 +64,8 @@ module Op_names : sig
   val batchSelfAdjointEigV2 : Op_name.t
   val batchSvd : Op_name.t
   val batchToSpace : Op_name.t
+  val batchToSpaceND : Op_name.t
+  val betainc : Op_name.t
   val biasAdd : Op_name.t
   val biasAddGrad : Op_name.t
   val biasAddV1 : Op_name.t
@@ -102,9 +105,9 @@ module Op_names : sig
   val cumsum : Op_name.t
   val debugIdentity : Op_name.t
   val debugNanCount : Op_name.t
+  val decodeBase64 : Op_name.t
   val decodeJSONExample : Op_name.t
   val decodePng : Op_name.t
-  val decodeGif : Op_name.t
   val decodeRaw : Op_name.t
   val deleteSessionTensor : Op_name.t
   val depthToSpace : Op_name.t
@@ -126,6 +129,7 @@ module Op_names : sig
   val editDistance : Op_name.t
   val elu : Op_name.t
   val eluGrad : Op_name.t
+  val encodeBase64 : Op_name.t
   val encodePng : Op_name.t
   val enter : Op_name.t
   val equal : Op_name.t
@@ -145,6 +149,11 @@ module Op_names : sig
   val fixedLengthRecordReader : Op_name.t
   val fixedUnigramCandidateSampler : Op_name.t
   val floor : Op_name.t
+  val fractionalAvgPool : Op_name.t
+  val fractionalAvgPoolGrad : Op_name.t
+  val fractionalMaxPool : Op_name.t
+  val fractionalMaxPoolGrad : Op_name.t
+  val fusedResizeAndPadConv2D : Op_name.t
   val gather : Op_name.t
   val gatherNd : Op_name.t
   val getSessionHandle : Op_name.t
@@ -168,6 +177,7 @@ module Op_names : sig
   val initializeTable : Op_name.t
   val initializeTableFromTextFile : Op_name.t
   val inv : Op_name.t
+  val invGrad : Op_name.t
   val invertPermutation : Op_name.t
   val isFinite : Op_name.t
   val isInf : Op_name.t
@@ -196,8 +206,12 @@ module Op_names : sig
   val loopCond : Op_name.t
   val matMul : Op_name.t
   val matchingFiles : Op_name.t
+  val matrixBandPart : Op_name.t
   val matrixDeterminant : Op_name.t
+  val matrixDiag : Op_name.t
+  val matrixDiagPart : Op_name.t
   val matrixInverse : Op_name.t
+  val matrixSetDiag : Op_name.t
   val matrixSolve : Op_name.t
   val matrixSolveLs : Op_name.t
   val matrixTriangularSolve : Op_name.t
@@ -285,9 +299,12 @@ module Op_names : sig
   val reverse : Op_name.t
   val reverseSequence : Op_name.t
   val rsqrt : Op_name.t
+  val rsqrtGrad : Op_name.t
   val sampleDistortedBoundingBox : Op_name.t
   val scalarSummary : Op_name.t
   val scatterAdd : Op_name.t
+  val scatterDiv : Op_name.t
+  val scatterMul : Op_name.t
   val scatterSub : Op_name.t
   val scatterUpdate : Op_name.t
   val segmentMax : Op_name.t
@@ -318,11 +335,13 @@ module Op_names : sig
   val softsign : Op_name.t
   val softsignGrad : Op_name.t
   val spaceToBatch : Op_name.t
+  val spaceToBatchND : Op_name.t
   val spaceToDepth : Op_name.t
   val sparseAdd : Op_name.t
   val sparseAddGrad : Op_name.t
   val sparseApplyAdadelta : Op_name.t
   val sparseApplyAdagrad : Op_name.t
+  val sparseApplyAdagradDA : Op_name.t
   val sparseApplyFtrl : Op_name.t
   val sparseApplyMomentum : Op_name.t
   val sparseApplyProximalAdagrad : Op_name.t
@@ -334,6 +353,7 @@ module Op_names : sig
   val sparseDenseCwiseMul : Op_name.t
   val sparseMatMul : Op_name.t
   val sparseReduceSum : Op_name.t
+  val sparseReduceSumSparse : Op_name.t
   val sparseReorder : Op_name.t
   val sparseReshape : Op_name.t
   val sparseSegmentMean : Op_name.t
@@ -350,6 +370,7 @@ module Op_names : sig
   val sparseToDense : Op_name.t
   val split : Op_name.t
   val sqrt : Op_name.t
+  val sqrtGrad : Op_name.t
   val square : Op_name.t
   val squaredDifference : Op_name.t
   val squeeze : Op_name.t
@@ -359,6 +380,7 @@ module Op_names : sig
   val stackPush : Op_name.t
   val stopGradient : Op_name.t
   val stridedSlice : Op_name.t
+  val stridedSliceAssign : Op_name.t
   val stridedSliceGrad : Op_name.t
   val stringJoin : Op_name.t
   val stringSplit : Op_name.t
@@ -378,9 +400,11 @@ module Op_names : sig
   val tensorArray : Op_name.t
   val tensorArrayClose : Op_name.t
   val tensorArrayConcat : Op_name.t
+  val tensorArrayGather : Op_name.t
   val tensorArrayGrad : Op_name.t
   val tensorArrayPack : Op_name.t
   val tensorArrayRead : Op_name.t
+  val tensorArrayScatter : Op_name.t
   val tensorArraySize : Op_name.t
   val tensorArraySplit : Op_name.t
   val tensorArrayUnpack : Op_name.t
@@ -486,7 +510,7 @@ val all
   -> ?keep_dims:bool
   -> ?control_inputs:Node.p list
   -> [ `bool ] t
-  -> [ `int32 ] t
+  -> ([< `int32 | `int64 ] as 'tidx) t
   -> [ `bool ] t
 
 (* Generates labels for candidate sampling with a learned unigram distribution. *)
@@ -520,7 +544,7 @@ val any
   -> ?keep_dims:bool
   -> ?control_inputs:Node.p list
   -> [ `bool ] t
-  -> [ `int32 ] t
+  -> ([< `int32 | `int64 ] as 'tidx) t
   -> [ `bool ] t
 
 (* Update '*var' according to the adadelta scheme. *)
@@ -552,6 +576,21 @@ val applyAdagrad
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
+
+(* Update '*var' according to the proximal adagrad scheme. *)
+val applyAdagradDA
+  :  ?name:string
+  -> ?use_locking:bool
+  -> ?control_inputs:Node.p list
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
+  -> [ `int64 ] t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
 
 (* Update '*var' according to the Adam algorithm. *)
@@ -682,7 +721,7 @@ val argMax
   :  ?name:string
   -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
-  -> [ `int32 ] t
+  -> ([< `int32 | `int64 ] as 'tidx) t
   -> [ `int64 ] t
 
 (* Returns the index with the smallest value across dimensions of a tensor. *)
@@ -690,7 +729,7 @@ val argMin
   :  ?name:string
   -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
-  -> [ `int32 ] t
+  -> ([< `int32 | `int64 ] as 'tidx) t
   -> [ `int64 ] t
 
 (* Converts each entry in the given tensor to strings.  Supports many numeric *)
@@ -883,20 +922,12 @@ val barrierReadySize
   -> [ `string ] t
   -> [ `int32 ] t
 
-(* Computes the Cholesky decomposition of a batch of square matrices. *)
-(* The input is a tensor of shape `[..., M, M]` whose inner-most 2 dimensions
-form square matrices, with the same constraints as the single matrix Cholesky
-decomposition above. The output is a tensor of the same shape as the input
-containing the Cholesky decompositions for all input submatrices `[..., :, :]`. *)
 val batchCholesky
   :  ?name:string
   -> ?control_inputs:Node.p list
   -> ([< `double | `float ] as 't) t
   -> ([< `double | `float ] as 't) t
 
-(* Computes the reverse mode backpropagated gradient of the Cholesky algorithm. *)
-(* For an explanation see 'Differentiation of the Cholesky algorithm' by
-Iain Murray http://arxiv.org/abs/1602.07527. *)
 val batchCholeskyGrad
   :  ?name:string
   -> ?control_inputs:Node.p list
@@ -904,48 +935,36 @@ val batchCholeskyGrad
   -> ([< `float | `double ] as 't) t
   -> ([< `float | `double ] as 't) t
 
-(* Compute the 1-dimensional discrete Fourier Transform over the inner-most *)
-(* dimension of `input`. *)
 val batchFFT
   :  ?name:string
   -> ?control_inputs:Node.p list
   -> [ `complex64 ] t
   -> [ `complex64 ] t
 
-(* Compute the 2-dimensional discrete Fourier Transform over the inner-most *)
-(* 2 dimensions of `input`. *)
 val batchFFT2D
   :  ?name:string
   -> ?control_inputs:Node.p list
   -> [ `complex64 ] t
   -> [ `complex64 ] t
 
-(* Compute the 3-dimensional discrete Fourier Transform over the inner-most 3 *)
-(* dimensions of `input`. *)
 val batchFFT3D
   :  ?name:string
   -> ?control_inputs:Node.p list
   -> [ `complex64 ] t
   -> [ `complex64 ] t
 
-(* Compute the inverse 1-dimensional discrete Fourier Transform over the inner-most *)
-(* dimension of `input`. *)
 val batchIFFT
   :  ?name:string
   -> ?control_inputs:Node.p list
   -> [ `complex64 ] t
   -> [ `complex64 ] t
 
-(* Compute the inverse 2-dimensional discrete Fourier Transform over the inner-most *)
-(* 2 dimensions of `input`. *)
 val batchIFFT2D
   :  ?name:string
   -> ?control_inputs:Node.p list
   -> [ `complex64 ] t
   -> [ `complex64 ] t
 
-(* Compute the inverse 3-dimensional discrete Fourier Transform over the inner-most *)
-(* 3 dimensions of `input`. *)
 val batchIFFT3D
   :  ?name:string
   -> ?control_inputs:Node.p list
@@ -980,45 +999,6 @@ val batchMatMul
   -> ([< `float | `double | `int32 | `complex64 ] as 't) t
   -> ([< `float | `double | `int32 | `complex64 ] as 't) t
 
-(* Copy a tensor setting everything outside a central band in each innermost matrix *)
-(* to zero.
-
-The `band` part is computed as follows:
-Assume `input` has `k` dimensions `[I, J, K, ..., M, N]`, then the output is a
-tensor with the same shape where
-
-`band[i, j, k, ..., m, n] = in_band(m, n) * input[i, j, k, ..., m, n]`.
-
-The indicator function 'in_band(m, n)` is one if
-`(num_lower < 0 || (m-n) <= num_lower)) &&
-(num_upper < 0 || (n-m) <= num_upper)`, and zero otherwise.
-
-For example:
-
-```prettyprint
-# if 'input' is [[ 0,  1,  2, 3]
-                 [-1,  0,  1, 2]
-                 [-2, -1,  0, 1]
-                 [-3, -2, -1, 0]],
-
-tf.batch_matrix_band_part(input, 1, -1) ==> [[ 0,  1,  2, 3]
-                                             [-1,  0,  1, 2]
-                                             [ 0, -1,  0, 1]
-                                             [ 0,  0, -1, 0]],
-
-tf.batch_matrix_band_part(input, 2, 1) ==> [[ 0,  1,  0, 0]
-                                            [-1,  0,  1, 0]
-                                            [-2, -1,  0, 1]
-                                            [ 0, -2, -1, 0]]
-```
-
-Useful special cases:
-
-```prettyprint
- tf.batch_matrix_band_part(input, 0, -1) ==> Upper triangular part.
- tf.batch_matrix_band_part(input, -1, 0) ==> Lower triangular part.
- tf.batch_matrix_band_part(input, 0, 0) ==> Diagonal.
-``` *)
 val batchMatrixBandPart
   :  ?name:string
   -> ?control_inputs:Node.p list
@@ -1027,96 +1007,24 @@ val batchMatrixBandPart
   -> [ `int64 ] t
   -> 't t
 
-(* Computes the determinants for a batch of square matrices. *)
-(* The input is a tensor of shape `[..., M, M]` whose inner-most 2 dimensions
-form square matrices. The output is a tensor containing the determinants
-for all input submatrices `[..., :, :]`. *)
 val batchMatrixDeterminant
   :  ?name:string
   -> ?control_inputs:Node.p list
   -> ([< `float | `double ] as 't) t
   -> ([< `float | `double ] as 't) t
 
-(* Returns a batched diagonal tensor with a given batched diagonal values. *)
-(* Given a `diagonal`, this operation returns a tensor with the `diagonal` and
-everything else padded with zeros. The diagonal is computed as follows:
-
-Assume `diagonal` has `k` dimensions `[I, J, K, ..., N]`, then the output is a
-tensor of rank `k+1` with dimensions [I, J, K, ..., N, N]` where:
-
-`output[i, j, k, ..., m, n] = 1{m=n} * diagonal[i, j, k, ..., n]`.
-
-For example:
-
-```prettyprint
-# 'diagonal' is [[1, 2, 3, 4], [5, 6, 7, 8]]
-
-and diagonal.shape = (2, 4)
-
-tf.batch_matrix_diag(diagonal) ==> [[[1, 0, 0, 0]
-                                     [0, 2, 0, 0]
-                                     [0, 0, 3, 0]
-                                     [0, 0, 0, 4]],
-                                    [[5, 0, 0, 0]
-                                     [0, 6, 0, 0]
-                                     [0, 0, 7, 0]
-                                     [0, 0, 0, 8]]]
-
-which has shape (2, 4, 4)
-``` *)
 val batchMatrixDiag
   :  ?name:string
   -> ?control_inputs:Node.p list
   -> 't t
   -> 't t
 
-(* Returns the batched diagonal part of a batched tensor. *)
-(* This operation returns a tensor with the `diagonal` part
-of the batched `input`. The `diagonal` part is computed as follows:
-
-Assume `input` has `k` dimensions `[I, J, K, ..., N, N]`, then the output is a
-tensor of rank `k - 1` with dimensions `[I, J, K, ..., N]` where:
-
-`diagonal[i, j, k, ..., n] = input[i, j, k, ..., n, n]`.
-
-The input must be at least a matrix.
-
-For example:
-
-```prettyprint
-# 'input' is [[[1, 0, 0, 0]
-               [0, 2, 0, 0]
-               [0, 0, 3, 0]
-               [0, 0, 0, 4]],
-              [[5, 0, 0, 0]
-               [0, 6, 0, 0]
-               [0, 0, 7, 0]
-               [0, 0, 0, 8]]]
-
-and input.shape = (2, 4, 4)
-
-tf.batch_matrix_diag_part(input) ==> [[1, 2, 3, 4], [5, 6, 7, 8]]
-
-which has shape (2, 4)
-``` *)
 val batchMatrixDiagPart
   :  ?name:string
   -> ?control_inputs:Node.p list
   -> 't t
   -> 't t
 
-(* Computes the inverse of square invertible matrices or their adjoints *)
-(* (conjugate transposes).
-
-The input is a tensor of shape `[..., M, M]` whose inner-most 2 dimensions
-form square matrices. The output is a tensor of the same shape as the input
-containing the inverse for all input submatrices `[..., :, :]`.
-
-The op uses LU decomposition with partial pivoting to compute the inverses.
-
-If a matrix is not invertible there is no guarantee what the op does. It
-may detect the condition and raise an exception or it may simply return a
-garbage result. *)
 val batchMatrixInverse
   :  ?name:string
   -> ?adjoint:bool
@@ -1124,20 +1032,6 @@ val batchMatrixInverse
   -> ([< `double | `float ] as 't) t
   -> ([< `double | `float ] as 't) t
 
-(* Returns a batched matrix tensor with new batched diagonal values. *)
-(* Given `input` and `diagonal`, this operation returns a tensor with the
-same shape and values as `input`, except for the diagonals of the innermost
-matrices.  These will be overwritten by the values in `diagonal`.
-The batched matrices must be square.
-
-The output is computed as follows:
-
-Assume `input` has `k+1` dimensions `[I, J, K, ..., N, N]` and `diagonal` has
-`k` dimensions `[I, J, K, ..., N]`.  Then the output is a
-tensor of rank `k+1` with dimensions [I, J, K, ..., N, N]` where:
-
-  * `output[i, j, k, ..., m, n] = diagonal[i, j, k, ..., n]` for `m == n`.
-  * `output[i, j, k, ..., m, n] = input[i, j, k, ..., m, n]` for `m != n`. *)
 val batchMatrixSetDiag
   :  ?name:string
   -> ?control_inputs:Node.p list
@@ -1145,13 +1039,6 @@ val batchMatrixSetDiag
   -> 't t
   -> 't t
 
-(* Solves systems of linear equations. Checks for invertibility. *)
-(* Matrix is a tensor of shape `[..., M, M]` whose inner-most 2 dimensions
-form square matrices. Rhs is a tensor of shape
-`[..., M, K]`. The output is a tensor shape `[..., M, K]`.  If `adjoint` is `False` then each output
-matrix satisfies `matrix[..., :, :] * output[..., :, :] = rhs[..., :, :]`.
-If `adjoint` is `True` then each output
-matrix satisfies `adjoint(matrix[..., :, :]) * output[..., :, :] = rhs[..., :, :]`. *)
 val batchMatrixSolve
   :  ?name:string
   -> ?adjoint:bool
@@ -1160,39 +1047,6 @@ val batchMatrixSolve
   -> ([< `double | `float ] as 't) t
   -> ([< `double | `float ] as 't) t
 
-(* Solves multiple linear least-squares problems. *)
-(* `matrix` is a tensor of shape `[..., M, N]` whose inner-most 2 dimensions
-form matrices of size `[M, N]`. Rhs is a tensor of shape `[..., M, K]`.
-The output is a tensor shape `[..., N, K]` where each output matrix solves
-each of the equations matrix[..., :, :] * output[..., :, :] = rhs[..., :, :]
-in the least squares sense.
-
-Below we will use the following notation for each pair of
-matrix and right-hand sides in the batch:
-
-`matrix`=\\(A \in \Re^{m \times n}\\),
-`rhs`=\\(B  \in \Re^{m \times k}\\),
-`output`=\\(X  \in \Re^{n \times k}\\),
-`l2_regularizer`=\\(\lambda\\).
-
-If `fast` is `True`, then the solution is computed by solving the normal
-equations using Cholesky decomposition. Specifically, if \\(m \ge n\\) then
-\\(X = (A^T A + \lambda I)^{-1} A^T B\\), which solves the least-squares
-problem \\(X = \mathrm{argmin}_{Z \in \Re^{n \times k}} ||A Z - B||_F^2 +
-\lambda ||Z||_F^2\\). If \\(m \lt n\\) then `output` is computed as
-\\(X = A^T (A A^T + \lambda I)^{-1} B\\), which (for \\(\lambda = 0\\)) is the
-minimum-norm solution to the under-determined linear system, i.e.
-\\(X = \mathrm{argmin}_{Z \in \Re^{n \times k}} ||Z||_F^2 \\), subject to
-\\(A Z = B\\). Notice that the fast path is only numerically stable when
-\\(A\\) is numerically full rank and has a condition number
-\\(\mathrm{cond}(A) \lt \frac{1}{\sqrt{\epsilon_{mach}}}\\) or\\(\lambda\\) is
-sufficiently large.
-
-If `fast` is `False` an algorithm based on the numerically robust complete
-orthogonal decomposition is used. This computes the minimum-norm
-least-squares solution, even when \\(A\\) is rank deficient. This path is
-typically 6-7 times slower than the fast path. If `fast` is `False` then
-`l2_regularizer` is ignored. *)
 val batchMatrixSolveLs
   :  ?name:string
   -> ?fast:bool
@@ -1202,22 +1056,6 @@ val batchMatrixSolveLs
   -> [ `double ] t
   -> ([< `double | `float ] as 't) t
 
-(* Solves systems of linear equations with upper or lower triangular matrices by *)
-(* backsubstitution.
-
-`matrix` is a tensor of shape `[..., M, M]` whose inner-most 2 dimensions form
-square matrices. If `lower` is `True` then the strictly upper triangular part
-of each inner-most matrix is assumed to be zero and not accessed.
-If `lower` is False then the strictly lower triangular part of each inner-most
-matrix is assumed to be zero and not accessed.
-`rhs` is a tensor of shape [..., M, K]`.
-
-The output is a tensor of shape `[..., M, K]`. If `adjoint` is `True` then the
-innermost matrices in output` satisfy matrix equations
-`matrix[..., :, :] * output[..., :, :] = rhs[..., :, :]`.
-If `adjoint` is `False` then the strictly then the  innermost matrices in
-`output` satisfy matrix equations
-`adjoint(matrix[..., i, k]) * output[..., k, j] = rhs[..., i, j]`. *)
 val batchMatrixTriangularSolve
   :  ?name:string
   -> ?lower:bool
@@ -1255,30 +1093,12 @@ val batchNormWithGlobalNormalizationGrad
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t * ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t * ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t * ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t * ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
 
-(* Computes the Eigen Decomposition of a batch of square self-adjoint matrices. *)
-(* The input is a tensor of shape `[..., M, M]` whose inner-most 2 dimensions
-form square matrices, with the same constraints as the single matrix
-SelfAdjointEig.
-
-The result is a [..., M+1, M] matrix with [..., 0,:] containing the
-eigenvalues, and subsequent [...,1:, :] containing the eigenvectors. *)
 val batchSelfAdjointEig
   :  ?name:string
   -> ?control_inputs:Node.p list
   -> ([< `double | `float ] as 't) t
   -> ([< `double | `float ] as 't) t
 
-(* Computes the eigen decomposition of a batch of square self-adjoint matrices. *)
-(* Computes the eigenvalues and (optionally) eigenvectors of each inner matrix in
-`input` such that `input[..., :, :] = v[..., :, :] * diag(e[..., :])`.
-
-```prettyprint
-# a is a tensor.
-# e is a tensor of eigenvalues.
-# v is a tensor of eigenvectors.
-e, v = batch_self_adjoint_eig(a)
-e = batch_self_adjoint_eig(a, compute_v=False)
-``` *)
 val batchSelfAdjointEigV2
   :  ?name:string
   -> ?compute_v:bool
@@ -1286,28 +1106,18 @@ val batchSelfAdjointEigV2
   -> ([< `double | `float ] as 't) t
   -> ([< `double | `float ] as 't) t * ([< `double | `float ] as 't) t
 
-(* Computes the singular value decompositions of a batch of matrices. *)
-(* Computes the SVD of each inner matrix in `input` such that
-`input[..., :, :] = u[..., :, :] * diag(s[..., :, :]) * transpose(v[..., :, :])`
-
-```prettyprint
-# a is a tensor containing a batch of matrices.
-# s is a tensor of singular values for each matrix.
-# u is the tensor containing of left singular vectors for each matrix.
-# v is the tensor containing of right singular vectors for each matrix.
-s, u, v = batch_svd(a)
-s, _, _ = batch_svd(a, compute_uv=False)
-``` *)
 val batchSvd
   :  ?name:string
   -> ?compute_uv:bool
   -> ?full_matrices:bool
   -> ?control_inputs:Node.p list
-  -> ([< `double | `float ] as 't) t
-  -> ([< `double | `float ] as 't) t * ([< `double | `float ] as 't) t * ([< `double | `float ] as 't) t
+  -> ([< `double | `float | `complex64 ] as 't) t
+  -> ([< `double | `float | `complex64 ] as 't) t * ([< `double | `float | `complex64 ] as 't) t * ([< `double | `float | `complex64 ] as 't) t
 
 (* BatchToSpace for 4-D tensors of type T. *)
-(* Rearranges (permutes) data from batch into blocks of spatial data, followed by
+(* This is a legacy version of the more general BatchToSpaceND.
+
+Rearranges (permutes) data from batch into blocks of spatial data, followed by
 cropping. This is the reverse transformation of SpaceToBatch. More specifically,
 this op outputs a copy of the input tensor where values from the `batch`
 dimension are moved in spatial blocks to the `height` and `width` dimensions,
@@ -1317,8 +1127,45 @@ val batchToSpace
   -> block_size:int
   -> ?control_inputs:Node.p list
   -> 't t
-  -> [ `int32 ] t
+  -> ([< `int32 | `int64 ] as 'tidx) t
   -> 't t
+
+(* BatchToSpace for N-D tensors of type T. *)
+(* This operation reshapes the 'batch' dimension 0 into `M + 1` dimensions of shape
+`block_shape + [batch]`, interleaves these blocks back into the grid defined by
+the spatial dimensions `[1, ..., M]`, to obtain a result with the same rank as
+the input.  The spatial dimensions of this intermediate result are then
+optionally cropped according to `crops` to produce the output.  This is the
+reverse of SpaceToBatch.  See below for a precise description. *)
+val batchToSpaceND
+  :  ?name:string
+  -> ?control_inputs:Node.p list
+  -> 't t
+  -> ([< `int32 | `int64 ] as 'tblock_shape) t
+  -> ([< `int32 | `int64 ] as 'tcrops) t
+  -> 't t
+
+(* Compute the regularized incomplete beta integral \\(I_x(a, b)\\). *)
+(* The regularized incomplete beta integral is defined as:
+
+```
+I_x(a, b) = \frac{B(x; a, b)}{B(a, b)}
+```
+where
+
+```
+B(x; a, b) = \int_0^x t^{a-1} (1 - t)^{b-1} dt
+```
+
+is the incomplete beta function and \\(B(a, b)\\) is the *complete*
+beta function. *)
+val betainc
+  :  ?name:string
+  -> ?control_inputs:Node.p list
+  -> ([< `float | `double ] as 't) t
+  -> ([< `float | `double ] as 't) t
+  -> ([< `float | `double ] as 't) t
+  -> ([< `float | `double ] as 't) t
 
 (* Adds `bias` to `value`. *)
 (* This is a special case of `tf.add` where `bias` is restricted to be 1-D.
@@ -1379,9 +1226,9 @@ val bitcast
 val broadcastGradientArgs
   :  ?name:string
   -> ?control_inputs:Node.p list
-  -> [ `int32 ] t
-  -> [ `int32 ] t
-  -> [ `int32 ] t * [ `int32 ] t
+  -> ([< `int32 | `int64 ] as 't) t
+  -> ([< `int32 | `int64 ] as 't) t
+  -> ([< `int32 | `int64 ] as 't) t * ([< `int32 | `int64 ] as 't) t
 
 (* Performs greedy decoding on the logits given in inputs. *)
 (* A note about the attribute merge_repeated: if enabled, when
@@ -1440,13 +1287,11 @@ val checkNumerics
   -> ([< `float | `double ] as 't) t
   -> ([< `float | `double ] as 't) t
 
-(* Computes the Cholesky decomposition of a square matrix. *)
-(* The input has to be symmetric and positive definite. Only the lower-triangular
-part of the input will be used for this operation. The upper-triangular part
-will not be read.
-
-The result is the lower-triangular matrix of the Cholesky decomposition of the
-input, `L`, so that `input = L L^*`. *)
+(* Computes the Cholesky decomposition of one or more square matrices. *)
+(* The input is a tensor of shape `[..., M, M]` whose inner-most 2 dimensions
+form square matrices, with the same constraints as the single matrix Cholesky
+decomposition above. The output is a tensor of the same shape as the input
+containing the Cholesky decompositions for all input submatrices `[..., :, :]`. *)
 val cholesky
   :  ?name:string
   -> ?control_inputs:Node.p list
@@ -1815,7 +1660,7 @@ val cumprod
   -> ?reverse:bool
   -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
-  -> [ `int32 ] t
+  -> ([< `int32 | `int64 ] as 'tidx) t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
 
 (* Compute the cumulative sum of the tensor `x` along `axis`. *)
@@ -1848,7 +1693,7 @@ val cumsum
   -> ?reverse:bool
   -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
-  -> [ `int32 ] t
+  -> ([< `int32 | `int64 ] as 'tidx) t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
 
 (* Debug Identity Op. *)
@@ -1868,6 +1713,15 @@ val debugNanCount
   -> ?control_inputs:Node.p list
   -> 't t
   -> [ `int64 ] t
+
+(* Decode web-safe base64-encoded strings. *)
+(* Input may or may not have padding at the end. See EncodeBase64 for padding.
+Web-safe means that input must use - and _ instead of + and /. *)
+val decodeBase64
+  :  ?name:string
+  -> ?control_inputs:Node.p list
+  -> [ `string ] t
+  -> [ `string ] t
 
 (* Convert JSON-encoded Example records to binary protocol buffer strings. *)
 (* This op translates a tensor containing Example records, encoded using
@@ -1896,27 +1750,6 @@ Accepted values are:
 If needed, the PNG-encoded image is transformed to match the requested number
 of color channels. *)
 val decodePng
-  :  ?name:string
-  -> type_:'dtype Type.t
-  -> ?channels:int
-  -> ?control_inputs:Node.p list
-  -> [ `string ] t
-  -> 'dtype t
-
-(* Decode a GIF-encoded image to a uint8 or uint16 tensor. *)
-(* The attr `channels` indicates the desired number of color channels for the
-decoded image.
-
-Accepted values are:
-
-*   0: Use the number of channels in the GIF-encoded image.
-*   1: output a grayscale image.
-*   3: output an RGB image.
-*   4: output an RGBA image.
-
-If needed, the GIF-encoded image is transformed to match the requested number
-of color channels. *)
-val decodeGif
   :  ?name:string
   -> type_:'dtype Type.t
   -> ?channels:int
@@ -2271,7 +2104,7 @@ bounding box coordinates are floats in `[0.0, 1.0]` relative to the width and
 height of the underlying image.
 
 For example, if an image is 100 x 200 pixels and the bounding box is
-`[0.1, 0.5, 0.2, 0.9]`, the bottom-left and upper-right coordinates of the
+`[0.1, 0.2, 0.5, 0.9]`, the bottom-left and upper-right coordinates of the
 bounding box will be `(10, 40)` to `(50, 180)`.
 
 Parts of the bounding box may fall outside the image. *)
@@ -2392,16 +2225,30 @@ val editDistance
 val elu
   :  ?name:string
   -> ?control_inputs:Node.p list
-  -> ([< `float | `double ] as 't) t
-  -> ([< `float | `double ] as 't) t
+  -> ([< `float | `double | `int32 | `int64 ] as 't) t
+  -> ([< `float | `double | `int32 | `int64 ] as 't) t
 
 (* Computes gradients for the exponential linear (Elu) operation. *)
 val eluGrad
   :  ?name:string
   -> ?control_inputs:Node.p list
-  -> ([< `float | `double ] as 't) t
-  -> ([< `float | `double ] as 't) t
-  -> ([< `float | `double ] as 't) t
+  -> ([< `float | `double | `int32 | `int64 ] as 't) t
+  -> ([< `float | `double | `int32 | `int64 ] as 't) t
+  -> ([< `float | `double | `int32 | `int64 ] as 't) t
+
+(* Encode strings into web-safe base64 format. *)
+(* Refer to the following article for more information on base64 format:
+en.wikipedia.org/wiki/Base64. Base64 strings may have padding with '=' at the
+end so that the encoded has length multiple of 4. See Padding section of the
+link above.
+
+Web-safe means that the encoder uses - and _ instead of + and /. *)
+val encodeBase64
+  :  ?name:string
+  -> ?pad:bool
+  -> ?control_inputs:Node.p list
+  -> [ `string ] t
+  -> [ `string ] t
 
 (* PNG-encode an image. *)
 (* `image` is a 3-D uint8 or uint16 Tensor of shape `[height, width, channels]`
@@ -2511,7 +2358,7 @@ val expandDims
   :  ?name:string
   -> ?control_inputs:Node.p list
   -> 't t
-  -> [ `int32 ] t
+  -> ([< `int32 | `int64 ] as 'tdim) t
   -> 't t
 
 (* Extracts a glimpse from the input tensor. *)
@@ -2558,21 +2405,24 @@ val extractImagePatches
   -> ([< `float | `double | `int32 | `int64 ] as 't) t
   -> ([< `float | `double | `int32 | `int64 ] as 't) t
 
-(* Compute the 1-dimensional discrete Fourier Transform. *)
+(* Compute the 1-dimensional discrete Fourier Transform over the inner-most *)
+(* dimension of `input`. *)
 val fFT
   :  ?name:string
   -> ?control_inputs:Node.p list
   -> [ `complex64 ] t
   -> [ `complex64 ] t
 
-(* Compute the 2-dimensional discrete Fourier Transform. *)
+(* Compute the 2-dimensional discrete Fourier Transform over the inner-most *)
+(* 2 dimensions of `input`. *)
 val fFT2D
   :  ?name:string
   -> ?control_inputs:Node.p list
   -> [ `complex64 ] t
   -> [ `complex64 ] t
 
-(* Compute the 3-dimensional discrete Fourier Transform. *)
+(* Compute the 3-dimensional discrete Fourier Transform over the inner-most 3 *)
+(* dimensions of `input`. *)
 val fFT3D
   :  ?name:string
   -> ?control_inputs:Node.p list
@@ -2664,6 +2514,117 @@ val fixedUnigramCandidateSampler
 val floor
   :  ?name:string
   -> ?control_inputs:Node.p list
+  -> ([< `float | `double ] as 't) t
+  -> ([< `float | `double ] as 't) t
+
+(* Performs fractional average pooling on the input. *)
+(* Fractional average pooling is similar to Fractional max pooling in the pooling
+region generation step. The only difference is that after pooling regions are
+generated, a mean operation is performed instead of a max operation in each
+pooling region. *)
+val fractionalAvgPool
+  :  ?name:string
+  -> pooling_ratio:float list
+  -> ?pseudo_random:bool
+  -> ?overlapping:bool
+  -> ?deterministic:bool
+  -> ?seed:int
+  -> ?seed2:int
+  -> ?control_inputs:Node.p list
+  -> ([< `float | `double | `int32 | `int64 ] as 't) t
+  -> ([< `float | `double | `int32 | `int64 ] as 't) t * [ `int64 ] t * [ `int64 ] t
+
+(* Computes gradient of the FractionalAvgPool function. *)
+(* Unlike FractionalMaxPoolGrad, we don't need to find arg_max for
+FractionalAvgPoolGrad, we just need to evenly back-propagate each element of
+out_backprop to those indices that form the same pooling cell. Therefore, we
+just need to know the shape of original input tensor, instead of the whole
+tensor. *)
+val fractionalAvgPoolGrad
+  :  ?name:string
+  -> ?overlapping:bool
+  -> ?control_inputs:Node.p list
+  -> [ `int64 ] t
+  -> ([< `float | `double | `int32 | `int64 ] as 't) t
+  -> [ `int64 ] t
+  -> [ `int64 ] t
+  -> ([< `float | `double | `int32 | `int64 ] as 't) t
+
+(* Performs fractional max pooling on the input. *)
+(* Fractional max pooling is slightly different than regular max pooling.  In
+regular max pooling, you downsize an input set by taking the maximum value of
+smaller N x N subsections of the set (often 2x2), and try to reduce the set by
+a factor of N, where N is an integer.  Fractional max pooling, as you might
+expect from the word 'fractional', means that the overall reduction ratio N
+does not have to be an integer.
+
+The sizes of the pooling regions are generated randomly but are fairly uniform.
+For example, let's look at the height dimension, and the constraints on the
+list of rows that will be pool boundaries.
+
+First we define the following:
+
+1.  input_row_length : the number of rows from the input set
+2.  output_row_length : which will be smaller than the input
+3.  alpha = input_row_length / output_row_length : our reduction ratio
+4.  K = floor(alpha)
+5.  row_pooling_sequence : this is the result list of pool boundary rows
+
+Then, row_pooling_sequence should satisfy:
+
+1.  a[0] = 0 : the first value of the sequence is 0
+2.  a[end] = input_row_length : the last value of the sequence is the size
+3.  K <= (a[i+1] - a[i]) <= K+1 : all intervals are K or K+1 size
+4.  length(row_pooling_sequence) = output_row_length+1
+
+For more details on fractional max pooling, see this paper:
+[Benjamin Graham, Fractional Max-Pooling]
+(http://arxiv.org/abs/1412.6071) *)
+val fractionalMaxPool
+  :  ?name:string
+  -> pooling_ratio:float list
+  -> ?pseudo_random:bool
+  -> ?overlapping:bool
+  -> ?deterministic:bool
+  -> ?seed:int
+  -> ?seed2:int
+  -> ?control_inputs:Node.p list
+  -> ([< `float | `double | `int32 | `int64 ] as 't) t
+  -> ([< `float | `double | `int32 | `int64 ] as 't) t * [ `int64 ] t * [ `int64 ] t
+
+(* Computes gradient of the FractionalMaxPool function. *)
+val fractionalMaxPoolGrad
+  :  ?name:string
+  -> ?overlapping:bool
+  -> ?control_inputs:Node.p list
+  -> ([< `float | `double | `int32 | `int64 ] as 't) t
+  -> ([< `float | `double | `int32 | `int64 ] as 't) t
+  -> ([< `float | `double | `int32 | `int64 ] as 't) t
+  -> [ `int64 ] t
+  -> [ `int64 ] t
+  -> ([< `float | `double | `int32 | `int64 ] as 't) t
+
+(* Performs a resize and padding as a preprocess during a convolution. *)
+(* It's often possible to do spatial transformations more efficiently as part of
+the packing stage of a convolution, so this op allows for an optimized
+implementation where these stages are fused together. This prevents the need to
+write out the intermediate results as whole tensors, reducing memory pressure,
+and we can get some latency gains by merging the transformation calculations.
+The data_format attribute for Conv2D isn't supported by this op, and defaults to
+'NHWC' order.
+Internally this op uses a single per-graph scratch buffer, which means that it
+will block if multiple versions are being run in parallel. This is because this
+operator is primarily an optimization to minimize memory usage. *)
+val fusedResizeAndPadConv2D
+  :  ?name:string
+  -> ?resize_align_corners:bool
+  -> mode:string
+  -> strides:int list
+  -> padding:string
+  -> ?control_inputs:Node.p list
+  -> ([< `float | `double ] as 't) t
+  -> [ `int32 ] t
+  -> [ `int32 ] t
   -> ([< `float | `double ] as 't) t
   -> ([< `float | `double ] as 't) t
 
@@ -2835,6 +2796,7 @@ val hashTable
   :  ?name:string
   -> ?container:string
   -> ?shared_name:string
+  -> ?use_node_name_sharing:bool
   -> ?control_inputs:Node.p list
   -> unit
   -> [ `string ] t
@@ -2852,22 +2814,24 @@ val histogramSummary
   -> ([< `float | `double | `int32 | `int64 ] as 't) t
   -> [ `string ] t
 
-(*     .Doc(R'doc( *)
-(* Compute the inverse 1-dimensional discrete Fourier Transform. *)
+(* Compute the inverse 1-dimensional discrete Fourier Transform over the inner-most *)
+(* dimension of `input`. *)
 val iFFT
   :  ?name:string
   -> ?control_inputs:Node.p list
   -> [ `complex64 ] t
   -> [ `complex64 ] t
 
-(* Compute the inverse 2-dimensional discrete Fourier Transform. *)
+(* Compute the inverse 2-dimensional discrete Fourier Transform over the inner-most *)
+(* 2 dimensions of `input`. *)
 val iFFT2D
   :  ?name:string
   -> ?control_inputs:Node.p list
   -> [ `complex64 ] t
   -> [ `complex64 ] t
 
-(* Compute the inverse 3-dimensional discrete Fourier Transform. *)
+(* Compute the inverse 3-dimensional discrete Fourier Transform over the inner-most *)
+(* 3 dimensions of `input`. *)
 val iFFT3D
   :  ?name:string
   -> ?control_inputs:Node.p list
@@ -2896,7 +2860,7 @@ val identityReader
 (* The lower regularized incomplete Gamma function is defined as:
 
 ```
-P(a, x) = gamma(a, x) / Gamma(x) = 1 - Q(a, x)
+P(a, x) = gamma(a, x) / Gamma(a) = 1 - Q(a, x)
 ```
 where
 ```
@@ -2917,7 +2881,7 @@ val igamma
 (* The upper regularized incomplete Gamma function is defined as:
 
 ```
-Q(a, x) = Gamma(a, x) / Gamma(x) = 1 - P(a, x)
+Q(a, x) = Gamma(a, x) / Gamma(a) = 1 - P(a, x)
 ```
 where
 ```
@@ -3068,6 +3032,16 @@ val inv
   -> ([< `float | `double | `int32 | `int64 | `complex64 ] as 't) t
   -> ([< `float | `double | `int32 | `int64 | `complex64 ] as 't) t
 
+(* Computes the gradient for the inverse of `x` wrt its input. *)
+(* Specifically, `grad = -dy * y*y`, where `y = 1/x`, and `dy`
+is the corresponding input gradient. *)
+val invGrad
+  :  ?name:string
+  -> ?control_inputs:Node.p list
+  -> ([< `float | `double | `complex64 ] as 't) t
+  -> ([< `float | `double | `complex64 ] as 't) t
+  -> ([< `float | `double | `complex64 ] as 't) t
+
 (* Computes the inverse permutation of a tensor. *)
 (* This operation computes the inverse of an index permutation. It takes a 1-D
 integer tensor `x`, which represents the indices of a zero-based array, and
@@ -3087,8 +3061,8 @@ invert_permutation(x) ==> [2, 4, 3, 0, 1]
 val invertPermutation
   :  ?name:string
   -> ?control_inputs:Node.p list
-  -> [ `int32 ] t
-  -> [ `int32 ] t
+  -> ([< `int32 | `int64 ] as 't) t
+  -> ([< `int32 | `int64 ] as 't) t
 
 (* Returns which elements of x are finite. *)
 val isFinite
@@ -3229,7 +3203,7 @@ val linSpace
   -> ?control_inputs:Node.p list
   -> ([< `float | `double ] as 't) t
   -> ([< `float | `double ] as 't) t
-  -> [ `int32 ] t
+  -> ([< `int32 | `int64 ] as 'tidx) t
   -> ([< `float | `double ] as 't) t
 
 (* Computes the difference between two lists of numbers or strings. *)
@@ -3256,10 +3230,11 @@ idx ==> [1, 3, 5]
 ``` *)
 val listDiff
   :  ?name:string
+  -> type_1:([< `int32 | `int64 ] as 'out_idx) Type.t
   -> ?control_inputs:Node.p list
   -> 't t
   -> 't t
-  -> 't t * [ `int32 ] t
+  -> 't t * ([< `int32 | `int64 ] as 'out_idx) t
 
 (* Computes natural logarithm of x element-wise. *)
 (* I.e., \\(y = \log_e x\\). *)
@@ -3415,19 +3390,141 @@ val matchingFiles
   -> [ `string ] t
   -> [ `string ] t
 
-(* Computes the determinant of a square matrix. *)
+(* Copy a tensor setting everything outside a central band in each innermost matrix *)
+(* to zero.
+
+The `band` part is computed as follows:
+Assume `input` has `k` dimensions `[I, J, K, ..., M, N]`, then the output is a
+tensor with the same shape where
+
+`band[i, j, k, ..., m, n] = in_band(m, n) * input[i, j, k, ..., m, n]`.
+
+The indicator function 'in_band(m, n)` is one if
+`(num_lower < 0 || (m-n) <= num_lower)) &&
+(num_upper < 0 || (n-m) <= num_upper)`, and zero otherwise.
+
+For example:
+
+```prettyprint
+# if 'input' is [[ 0,  1,  2, 3]
+                 [-1,  0,  1, 2]
+                 [-2, -1,  0, 1]
+                 [-3, -2, -1, 0]],
+
+tf.matrix_band_part(input, 1, -1) ==> [[ 0,  1,  2, 3]
+                                             [-1,  0,  1, 2]
+                                             [ 0, -1,  0, 1]
+                                             [ 0,  0, -1, 0]],
+
+tf.matrix_band_part(input, 2, 1) ==> [[ 0,  1,  0, 0]
+                                            [-1,  0,  1, 0]
+                                            [-2, -1,  0, 1]
+                                            [ 0, -2, -1, 0]]
+```
+
+Useful special cases:
+
+```prettyprint
+ tf.matrix_band_part(input, 0, -1) ==> Upper triangular part.
+ tf.matrix_band_part(input, -1, 0) ==> Lower triangular part.
+ tf.matrix_band_part(input, 0, 0) ==> Diagonal.
+``` *)
+val matrixBandPart
+  :  ?name:string
+  -> ?control_inputs:Node.p list
+  -> 't t
+  -> [ `int64 ] t
+  -> [ `int64 ] t
+  -> 't t
+
+(* Computes the determinant of one ore more square matrices. *)
+(* The input is a tensor of shape `[..., M, M]` whose inner-most 2 dimensions
+form square matrices. The output is a tensor containing the determinants
+for all input submatrices `[..., :, :]`. *)
 val matrixDeterminant
   :  ?name:string
   -> ?control_inputs:Node.p list
   -> ([< `float | `double ] as 't) t
   -> ([< `float | `double ] as 't) t
 
-(* Computes the inverse of a square invertible matrix or its adjoint (conjugate *)
-(* transpose).
+(* Returns a batched diagonal tensor with a given batched diagonal values. *)
+(* Given a `diagonal`, this operation returns a tensor with the `diagonal` and
+everything else padded with zeros. The diagonal is computed as follows:
 
-The op uses LU decomposition with partial pivoting to compute the inverse.
+Assume `diagonal` has `k` dimensions `[I, J, K, ..., N]`, then the output is a
+tensor of rank `k+1` with dimensions [I, J, K, ..., N, N]` where:
 
-If the matrix is not invertible there is no guarantee what the op does. It
+`output[i, j, k, ..., m, n] = 1{m=n} * diagonal[i, j, k, ..., n]`.
+
+For example:
+
+```prettyprint
+# 'diagonal' is [[1, 2, 3, 4], [5, 6, 7, 8]]
+
+and diagonal.shape = (2, 4)
+
+tf.matrix_diag(diagonal) ==> [[[1, 0, 0, 0]
+                                     [0, 2, 0, 0]
+                                     [0, 0, 3, 0]
+                                     [0, 0, 0, 4]],
+                                    [[5, 0, 0, 0]
+                                     [0, 6, 0, 0]
+                                     [0, 0, 7, 0]
+                                     [0, 0, 0, 8]]]
+
+which has shape (2, 4, 4)
+``` *)
+val matrixDiag
+  :  ?name:string
+  -> ?control_inputs:Node.p list
+  -> 't t
+  -> 't t
+
+(* Returns the batched diagonal part of a batched tensor. *)
+(* This operation returns a tensor with the `diagonal` part
+of the batched `input`. The `diagonal` part is computed as follows:
+
+Assume `input` has `k` dimensions `[I, J, K, ..., N, N]`, then the output is a
+tensor of rank `k - 1` with dimensions `[I, J, K, ..., N]` where:
+
+`diagonal[i, j, k, ..., n] = input[i, j, k, ..., n, n]`.
+
+The input must be at least a matrix.
+
+For example:
+
+```prettyprint
+# 'input' is [[[1, 0, 0, 0]
+               [0, 2, 0, 0]
+               [0, 0, 3, 0]
+               [0, 0, 0, 4]],
+              [[5, 0, 0, 0]
+               [0, 6, 0, 0]
+               [0, 0, 7, 0]
+               [0, 0, 0, 8]]]
+
+and input.shape = (2, 4, 4)
+
+tf.matrix_diag_part(input) ==> [[1, 2, 3, 4], [5, 6, 7, 8]]
+
+which has shape (2, 4)
+``` *)
+val matrixDiagPart
+  :  ?name:string
+  -> ?control_inputs:Node.p list
+  -> 't t
+  -> 't t
+
+(* Computes the inverse of one or more square invertible matrices or their *)
+(* adjoints (conjugate transposes).
+
+The input is a tensor of shape `[..., M, M]` whose inner-most 2 dimensions
+form square matrices. The output is a tensor of the same shape as the input
+containing the inverse for all input submatrices `[..., :, :]`.
+
+The op uses LU decomposition with partial pivoting to compute the inverses.
+
+If a matrix is not invertible there is no guarantee what the op does. It
 may detect the condition and raise an exception or it may simply return a
 garbage result. *)
 val matrixInverse
@@ -3437,7 +3534,34 @@ val matrixInverse
   -> ([< `double | `float ] as 't) t
   -> ([< `double | `float ] as 't) t
 
-(* Solves a system of linear equations. Checks for invertibility. *)
+(* Returns a batched matrix tensor with new batched diagonal values. *)
+(* Given `input` and `diagonal`, this operation returns a tensor with the
+same shape and values as `input`, except for the diagonals of the innermost
+matrices.  These will be overwritten by the values in `diagonal`.
+The batched matrices must be square.
+
+The output is computed as follows:
+
+Assume `input` has `k+1` dimensions `[I, J, K, ..., N, N]` and `diagonal` has
+`k` dimensions `[I, J, K, ..., N]`.  Then the output is a
+tensor of rank `k+1` with dimensions [I, J, K, ..., N, N]` where:
+
+  * `output[i, j, k, ..., m, n] = diagonal[i, j, k, ..., n]` for `m == n`.
+  * `output[i, j, k, ..., m, n] = input[i, j, k, ..., m, n]` for `m != n`. *)
+val matrixSetDiag
+  :  ?name:string
+  -> ?control_inputs:Node.p list
+  -> 't t
+  -> 't t
+  -> 't t
+
+(* Solves systems of linear equations. *)
+(* `Matrix` is a tensor of shape `[..., M, M]` whose inner-most 2 dimensions
+form square matrices. `Rhs` is a tensor of shape `[..., M, K]`. The `output` is
+a tensor shape `[..., M, K]`.  If `adjoint` is `False` then each output matrix
+satisfies `matrix[..., :, :] * output[..., :, :] = rhs[..., :, :]`.
+If `adjoint` is `True` then each output matrix satisfies
+`adjoint(matrix[..., :, :]) * output[..., :, :] = rhs[..., :, :]`. *)
 val matrixSolve
   :  ?name:string
   -> ?adjoint:bool
@@ -3446,8 +3570,15 @@ val matrixSolve
   -> ([< `double | `float ] as 't) t
   -> ([< `double | `float ] as 't) t
 
-(* Solves a linear least-squares problem. *)
-(* Below we will use the following notation
+(* Solves one or more linear least-squares problems. *)
+(* `matrix` is a tensor of shape `[..., M, N]` whose inner-most 2 dimensions
+form matrices of size `[M, N]`. Rhs is a tensor of shape `[..., M, K]`.
+The output is a tensor shape `[..., N, K]` where each output matrix solves
+each of the equations matrix[..., :, :] * output[..., :, :] = rhs[..., :, :]
+in the least squares sense.
+
+matrix and right-hand sides in the batch:
+
 `matrix`=\\(A \in \Re^{m \times n}\\),
 `rhs`=\\(B  \in \Re^{m \times k}\\),
 `output`=\\(X  \in \Re^{n \times k}\\),
@@ -3458,15 +3589,13 @@ equations using Cholesky decomposition. Specifically, if \\(m \ge n\\) then
 \\(X = (A^T A + \lambda I)^{-1} A^T B\\), which solves the least-squares
 problem \\(X = \mathrm{argmin}_{Z \in \Re^{n \times k}} ||A Z - B||_F^2 +
 \lambda ||Z||_F^2\\). If \\(m \lt n\\) then `output` is computed as
-\\(X = A^T (A A^T + \lambda I)^{-1} B\\),
-which (for \\(\lambda = 0\\)) is the minimum-norm solution to the
-under-determined linear system, i.e.
-\\(X = \mathrm{argmin}_{Z \in \Re^{n \times k}} ||Z||_F^2 \\),
-subject to \\(A Z = B\\).
-Notice that the fast path is only numerically stable when \\(A\\) is
-numerically full rank and has a condition number
-\\(\mathrm{cond}(A) \lt \frac{1}{\sqrt{\epsilon_{mach}}}\\)
-or \\(\lambda\\) is sufficiently large.
+\\(X = A^T (A A^T + \lambda I)^{-1} B\\), which (for \\(\lambda = 0\\)) is the
+minimum-norm solution to the under-determined linear system, i.e.
+\\(X = \mathrm{argmin}_{Z \in \Re^{n \times k}} ||Z||_F^2 \\), subject to
+\\(A Z = B\\). Notice that the fast path is only numerically stable when
+\\(A\\) is numerically full rank and has a condition number
+\\(\mathrm{cond}(A) \lt \frac{1}{\sqrt{\epsilon_{mach}}}\\) or\\(\lambda\\) is
+sufficiently large.
 
 If `fast` is `False` an algorithm based on the numerically robust complete
 orthogonal decomposition is used. This computes the minimum-norm
@@ -3482,21 +3611,22 @@ val matrixSolveLs
   -> [ `double ] t
   -> ([< `double | `float ] as 't) t
 
-(* Solves a system of linear equations with an upper or lower triangular matrix by *)
+(* Solves systems of linear equations with upper or lower triangular matrices by *)
 (* backsubstitution.
 
-`matrix` is a matrix of shape `[M, M]`. If `lower` is `True` then the strictly
-upper triangular part of `matrix` is assumed to be zero and not accessed.
-If `lower` is False then the strictly lower triangular part of `matrix` is
-assumed to be zero and not accessed.
-`rhs` is a matrix of shape [M, K]`.
+`matrix` is a tensor of shape `[..., M, M]` whose inner-most 2 dimensions form
+square matrices. If `lower` is `True` then the strictly upper triangular part
+of each inner-most matrix is assumed to be zero and not accessed.
+If `lower` is False then the strictly lower triangular part of each inner-most
+matrix is assumed to be zero and not accessed.
+`rhs` is a tensor of shape `[..., M, K]`.
 
-The output is a matrix of shape `[M, K]`. If `adjoint` is `False` the output
-satisfies the matrix equation `matrix` * `output` = `rhs`.
-If `adjoint` is `False` then `output` satisfies the matrix equation
-`matrix` * `output` = `rhs`.
-If `adjoint` is `True` then `output` satisfies the matrix equation
-`adjoint(matrix)` * `output` = `rhs`. *)
+The output is a tensor of shape `[..., M, K]`. If `adjoint` is
+`True` then the innermost matrices in output` satisfy matrix equations
+`matrix[..., :, :] * output[..., :, :] = rhs[..., :, :]`.
+If `adjoint` is `False` then the strictly then the  innermost matrices in
+`output` satisfy matrix equations
+`adjoint(matrix[..., i, k]) * output[..., k, j] = rhs[..., i, j]`. *)
 val matrixTriangularSolve
   :  ?name:string
   -> ?lower:bool
@@ -3516,7 +3646,7 @@ val max
   -> ?keep_dims:bool
   -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
-  -> [ `int32 ] t
+  -> ([< `int32 | `int64 ] as 'tidx) t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
 
 (* Performs max pooling on the input. *)
@@ -3611,7 +3741,7 @@ val mean
   -> ?keep_dims:bool
   -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
-  -> [ `int32 ] t
+  -> ([< `int32 | `int64 ] as 'tidx) t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
 
 (* Forwards the value of an available tensor from `inputs` to `output`. *)
@@ -3650,7 +3780,7 @@ val min
   -> ?keep_dims:bool
   -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
-  -> [ `int32 ] t
+  -> ([< `int32 | `int64 ] as 'tidx) t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
 
 (* Returns the min of x and y (i.e. x < y ? x : y) element-wise. *)
@@ -3694,7 +3824,7 @@ val mirrorPad
   -> mode:string
   -> ?control_inputs:Node.p list
   -> 't t
-  -> [ `int32 ] t
+  -> ([< `int32 | `int64 ] as 'tpaddings) t
   -> 't t
 
 (* Gradient op for `MirrorPad` op. This op folds a mirror-padded tensor. *)
@@ -3721,7 +3851,7 @@ val mirrorPadGrad
   -> mode:string
   -> ?control_inputs:Node.p list
   -> 't t
-  -> [ `int32 ] t
+  -> ([< `int32 | `int64 ] as 'tpaddings) t
   -> 't t
 
 (* Returns element-wise remainder of division. *)
@@ -3762,6 +3892,7 @@ val mutableHashTable
   :  ?name:string
   -> ?container:string
   -> ?shared_name:string
+  -> ?use_node_name_sharing:bool
   -> ?control_inputs:Node.p list
   -> unit
   -> [ `string ] t
@@ -3774,6 +3905,7 @@ val mutableHashTableOfTensors
   :  ?name:string
   -> ?container:string
   -> ?shared_name:string
+  -> ?use_node_name_sharing:bool
   -> ?value_shape:Dim.t list
   -> ?control_inputs:Node.p list
   -> unit
@@ -4005,7 +4137,7 @@ val pad
   :  ?name:string
   -> ?control_inputs:Node.p list
   -> 't t
-  -> [ `int32 ] t
+  -> ([< `int32 | `int64 ] as 'tpaddings) t
   -> 't t
 
 (* A queue that produces elements in first-in first-out order. *)
@@ -4123,7 +4255,7 @@ val prod
   -> ?keep_dims:bool
   -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
-  -> [ `int32 ] t
+  -> ([< `int32 | `int64 ] as 'tidx) t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
 
 (* Quantizes then dequantizes a tensor. *)
@@ -4339,10 +4471,10 @@ tf.range(start, limit, delta) ==> [3, 6, 9, 12, 15]
 val range
   :  ?name:string
   -> ?control_inputs:Node.p list
-  -> [ `int32 ] t
-  -> [ `int32 ] t
-  -> [ `int32 ] t
-  -> [ `int32 ] t
+  -> ([< `int32 | `int64 ] as 'tidx) t
+  -> ([< `int32 | `int64 ] as 'tidx) t
+  -> ([< `int32 | `int64 ] as 'tidx) t
+  -> ([< `int32 | `int64 ] as 'tidx) t
 
 (* Returns the rank of a tensor. *)
 (* This operation returns an integer representing the rank of `input`.
@@ -4648,7 +4780,7 @@ val reshape
   :  ?name:string
   -> ?control_inputs:Node.p list
   -> 't t
-  -> [ `int32 ] t
+  -> ([< `int32 | `int64 ] as 'tshape) t
   -> 't t
 
 (* Resize `images` to `size` using area interpolation. *)
@@ -4864,7 +4996,7 @@ val reverseSequence
   -> ?batch_dim:int
   -> ?control_inputs:Node.p list
   -> 't t
-  -> [ `int64 ] t
+  -> ([< `int32 | `int64 ] as 'tlen) t
   -> 't t
 
 (* Computes reciprocal of square root of x element-wise. *)
@@ -4872,6 +5004,16 @@ val reverseSequence
 val rsqrt
   :  ?name:string
   -> ?control_inputs:Node.p list
+  -> ([< `float | `double | `complex64 ] as 't) t
+  -> ([< `float | `double | `complex64 ] as 't) t
+
+(* Computes the gradient for the rsqrt of `x` wrt its input. *)
+(* Specifically, `grad = dy * -0.5 * y^3`, where `y = rsqrt(x)`, and `dy`
+is the corresponding input gradient. *)
+val rsqrtGrad
+  :  ?name:string
+  -> ?control_inputs:Node.p list
+  -> ([< `float | `double | `complex64 ] as 't) t
   -> ([< `float | `double | `complex64 ] as 't) t
   -> ([< `float | `double | `complex64 ] as 't) t
 
@@ -4960,6 +5102,62 @@ Requires `updates.shape = indices.shape + ref.shape[1:]`.
 <img style='width:100%' src='../../images/ScatterAdd.png' alt>
 </div> *)
 val scatterAdd
+  :  ?name:string
+  -> ?use_locking:bool
+  -> ?control_inputs:Node.p list
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
+  -> ([< `int32 | `int64 ] as 'tindices) t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
+
+(* Divides a variable reference by sparse updates. *)
+(* This operation computes
+
+    # Scalar indices
+    ref[indices, ...] /= updates[...]
+
+    # Vector indices (for each i)
+    ref[indices[i], ...] /= updates[i, ...]
+
+    # High rank indices (for each i, ..., j)
+    ref[indices[i, ..., j], ...] /= updates[i, ..., j, ...]
+
+This operation outputs `ref` after the update is done.
+This makes it easier to chain operations that need to use the reset value.
+
+Duplicate entries are handled correctly: if multiple `indices` reference
+the same location, their contributions divide.
+
+Requires `updates.shape = indices.shape + ref.shape[1:]`. *)
+val scatterDiv
+  :  ?name:string
+  -> ?use_locking:bool
+  -> ?control_inputs:Node.p list
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
+  -> ([< `int32 | `int64 ] as 'tindices) t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
+
+(* Multiplies sparse updates into a variable reference. *)
+(* This operation computes
+
+    # Scalar indices
+    ref[indices, ...] *= updates[...]
+
+    # Vector indices (for each i)
+    ref[indices[i], ...] *= updates[i, ...]
+
+    # High rank indices (for each i, ..., j)
+    ref[indices[i, ..., j], ...] *= updates[i, ..., j, ...]
+
+This operation outputs `ref` after the update is done.
+This makes it easier to chain operations that need to use the reset value.
+
+Duplicate entries are handled correctly: if multiple `indices` reference
+the same location, their contributions multiply.
+
+Requires `updates.shape = indices.shape + ref.shape[1:]`. *)
+val scatterMul
   :  ?name:string
   -> ?use_locking:bool
   -> ?control_inputs:Node.p list
@@ -5171,26 +5369,27 @@ val select
   -> 't t
   -> 't t
 
-(* Computes the Eigen Decomposition of a square Self-Adjoint matrix. *)
-(* Only the lower-triangular part of the input will be used in this case. The
-upper-triangular part will not be read.
+(* Computes the Eigen Decomposition of a batch of square self-adjoint matrices. *)
+(* The input is a tensor of shape `[..., M, M]` whose inner-most 2 dimensions
+form square matrices, with the same constraints as the single matrix
+SelfAdjointEig.
 
-The result is a M+1 x M matrix whose first row is the eigenvalues, and
-subsequent rows are eigenvectors. *)
+The result is a [..., M+1, M] matrix with [..., 0,:] containing the
+eigenvalues, and subsequent [...,1:, :] containing the eigenvectors. *)
 val selfAdjointEig
   :  ?name:string
   -> ?control_inputs:Node.p list
   -> ([< `double | `float ] as 't) t
   -> ([< `double | `float ] as 't) t
 
-(* Computes the eigen decomposition of a self-adjoint (\'symmetric\') matrix. *)
-(* Computes the eigenvalues and (optionally) eigenvectors such that
-`input = v * diag(e)`.
+(* Computes the eigen decomposition of one or more square self-adjoint matrices. *)
+(* Computes the eigenvalues and (optionally) eigenvectors of each inner matrix in
+`input` such that `input[..., :, :] = v[..., :, :] * diag(e[..., :])`.
 
 ```prettyprint
-# a is a self-adjoint matrix.
-# e is a vector of eigenvalues.
-# v is a matrix of eigenvectors.
+# a is a tensor.
+# e is a tensor of eigenvalues.
+# v is a tensor of eigenvectors.
 e, v = self_adjoint_eig(a)
 e = self_adjoint_eig(a, compute_v=False)
 ``` *)
@@ -5237,17 +5436,19 @@ shape(t) ==> [2, 2, 3]
 ``` *)
 val shape
   :  ?name:string
+  -> type_:([< `int32 | `int64 ] as 'out_type) Type.t
   -> ?control_inputs:Node.p list
   -> 't t
-  -> [ `int32 ] t
+  -> ([< `int32 | `int64 ] as 'out_type) t
 
 (* Returns shape of tensors. *)
 (* This operation returns N 1-D integer tensors representing shape of `input[i]s`. *)
 val shapeN
   :  ?name:string
+  -> type_:([< `int32 | `int64 ] as 'out_type) Type.t
   -> ?control_inputs:Node.p list
   -> 't t list
-  -> [ `int32 ] t list
+  -> ([< `int32 | `int64 ] as 'out_type) t list
 
 (* Generate a sharded filename. The filename is printf formatted as *)
 (*    %s-%05d-of-%05d, basename, shard, num_shards. *)
@@ -5314,9 +5515,10 @@ size(t) ==> 12
 ``` *)
 val size
   :  ?name:string
+  -> type_:([< `int32 | `int64 ] as 'out_type) Type.t
   -> ?control_inputs:Node.p list
   -> 't t
-  -> [ `int32 ] t
+  -> ([< `int32 | `int64 ] as 'out_type) t
 
 (* Parses a text file and creates a batch of examples. *)
 val skipgram
@@ -5395,7 +5597,9 @@ val softsignGrad
   -> ([< `float | `double | `int32 | `int64 ] as 't) t
 
 (* SpaceToBatch for 4-D tensors of type T. *)
-(* Zero-pads and then rearranges (permutes) blocks of spatial data into batch.
+(* This is a legacy version of the more general SpaceToBatchND.
+
+Zero-pads and then rearranges (permutes) blocks of spatial data into batch.
 More specifically, this op outputs a copy of the input tensor where values from
 the `height` and `width` dimensions are moved to the `batch` dimension. After
 the zero-padding, both `height` and `width` of the input must be divisible by the
@@ -5405,7 +5609,24 @@ val spaceToBatch
   -> block_size:int
   -> ?control_inputs:Node.p list
   -> 't t
-  -> [ `int32 ] t
+  -> ([< `int32 | `int64 ] as 'tpaddings) t
+  -> 't t
+
+(* SpaceToBatch for N-D tensors of type T. *)
+(* This operation divides 'spatial' dimensions `[1, ..., M]` of the input into a
+grid of blocks of shape `block_shape`, and interleaves these blocks with the
+'batch' dimension (0) such that in the output, the spatial dimensions
+`[1, ..., M]` correspond to the position within the grid, and the batch
+dimension combines both the position within a spatial block and the original
+batch position.  Prior to division into blocks, the spatial dimensions of the
+input are optionally zero padded according to `paddings`.  See below for a
+precise description. *)
+val spaceToBatchND
+  :  ?name:string
+  -> ?control_inputs:Node.p list
+  -> 't t
+  -> ([< `int32 | `int64 ] as 'tblock_shape) t
+  -> ([< `int32 | `int64 ] as 'tpaddings) t
   -> 't t
 
 (* SpaceToDepth for tensors of type T. *)
@@ -5555,6 +5776,22 @@ val sparseApplyAdagrad
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
   -> ([< `int32 | `int64 ] as 'tindices) t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
+
+(* Update entries in '*var' and '*accum' according to the proximal adagrad scheme. *)
+val sparseApplyAdagradDA
+  :  ?name:string
+  -> ?use_locking:bool
+  -> ?control_inputs:Node.p list
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
+  -> ([< `int32 | `int64 ] as 'tindices) t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
+  -> [ `int64 ] t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
 
 (* Update relevant entries in '*var' according to the Ftrl-proximal scheme. *)
@@ -5796,6 +6033,29 @@ val sparseReduceSum
   -> [ `int32 ] t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
 
+(* Computes the sum of elements across dimensions of a SparseTensor. *)
+(* This Op takes a SparseTensor and is the sparse counterpart to
+`tf.reduce_sum()`.  In contrast to SparseReduceSum, this Op returns a
+SparseTensor.
+
+Reduces `sp_input` along the dimensions given in `reduction_axes`.  Unless
+`keep_dims` is true, the rank of the tensor is reduced by 1 for each entry in
+`reduction_axes`. If `keep_dims` is true, the reduced dimensions are retained
+with length 1.
+
+If `reduction_axes` has no entries, all dimensions are reduced, and a tensor
+with a single element is returned.  Additionally, the axes can be negative,
+which are interpreted according to the indexing rules in Python. *)
+val sparseReduceSumSparse
+  :  ?name:string
+  -> ?keep_dims:bool
+  -> ?control_inputs:Node.p list
+  -> [ `int64 ] t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
+  -> [ `int64 ] t
+  -> [ `int32 ] t
+  -> [ `int64 ] t * ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t * [ `int64 ] t
+
 (* Reorders a SparseTensor into the canonical, row-major ordering. *)
 (* Note that by convention, all sparse ops preserve the canonical ordering along
 increasing dimension number. The only time ordering can be violated is during
@@ -5848,7 +6108,7 @@ val sparseSegmentMean
   :  ?name:string
   -> ?control_inputs:Node.p list
   -> ([< `float | `double ] as 't) t
-  -> [ `int32 ] t
+  -> ([< `int32 | `int64 ] as 'tidx) t
   -> [ `int32 ] t
   -> ([< `float | `double ] as 't) t
 
@@ -5859,7 +6119,7 @@ val sparseSegmentMeanGrad
   :  ?name:string
   -> ?control_inputs:Node.p list
   -> ([< `float | `double ] as 't) t
-  -> [ `int32 ] t
+  -> ([< `int32 | `int64 ] as 'tidx) t
   -> [ `int32 ] t
   -> [ `int32 ] t
   -> ([< `float | `double ] as 't) t
@@ -5874,7 +6134,7 @@ val sparseSegmentSqrtN
   :  ?name:string
   -> ?control_inputs:Node.p list
   -> ([< `float | `double ] as 't) t
-  -> [ `int32 ] t
+  -> ([< `int32 | `int64 ] as 'tidx) t
   -> [ `int32 ] t
   -> ([< `float | `double ] as 't) t
 
@@ -5885,7 +6145,7 @@ val sparseSegmentSqrtNGrad
   :  ?name:string
   -> ?control_inputs:Node.p list
   -> ([< `float | `double ] as 't) t
-  -> [ `int32 ] t
+  -> ([< `int32 | `int64 ] as 'tidx) t
   -> [ `int32 ] t
   -> [ `int32 ] t
   -> ([< `float | `double ] as 't) t
@@ -5924,7 +6184,7 @@ val sparseSegmentSum
   :  ?name:string
   -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int32 | `int64 ] as 't) t
-  -> [ `int32 ] t
+  -> ([< `int32 | `int64 ] as 'tidx) t
   -> [ `int32 ] t
   -> ([< `float | `double | `int32 | `int64 ] as 't) t
 
@@ -6071,6 +6331,16 @@ val sqrt
   -> ([< `float | `double | `complex64 ] as 't) t
   -> ([< `float | `double | `complex64 ] as 't) t
 
+(* Computes the gradient for the sqrt of `x` wrt its input. *)
+(* Specifically, `grad = dy * 0.5 / y`, where `y = sqrt(x)`, and `dy`
+is the corresponding input gradient. *)
+val sqrtGrad
+  :  ?name:string
+  -> ?control_inputs:Node.p list
+  -> ([< `float | `double | `complex64 ] as 't) t
+  -> ([< `float | `double | `complex64 ] as 't) t
+  -> ([< `float | `double | `complex64 ] as 't) t
+
 (* Computes square of x element-wise. *)
 (* I.e., \\(y = x * x = x^2\\). *)
 val square
@@ -6195,6 +6465,28 @@ val stridedSlice
   -> ([< `int32 | `int64 ] as 'index) t
   -> ([< `int32 | `int64 ] as 'index) t
   -> ([< `int32 | `int64 ] as 'index) t
+  -> 't t
+
+(* Assign `value` to the sliced l-value reference of `ref`. *)
+(* The values of `value` are assigned to the positions in the variable
+`ref` that are selected by the slice parameters. The slice parameters
+`begin, `end`, `strides`, etc. work exactly as in `StridedSlice`.
+
+NOTE this op currently does not support broadcasting and so `value`'s
+shape must be exactly the shape produced by the slice of `ref`. *)
+val stridedSliceAssign
+  :  ?name:string
+  -> ?begin_mask:int
+  -> ?end_mask:int
+  -> ?ellipsis_mask:int
+  -> ?new_axis_mask:int
+  -> ?shrink_axis_mask:int
+  -> ?control_inputs:Node.p list
+  -> 't t
+  -> ([< `int32 | `int64 ] as 'index) t
+  -> ([< `int32 | `int64 ] as 'index) t
+  -> ([< `int32 | `int64 ] as 'index) t
+  -> 't t
   -> 't t
 
 (* Returns the gradient of `StridedSlice`. *)
@@ -6333,17 +6625,18 @@ val sum
   -> ?keep_dims:bool
   -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
-  -> [ `int32 ] t
+  -> ([< `int32 | `int64 ] as 'tidx) t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
 
-(* Computes the singular value decomposition of a matrix. *)
-(* Computes the SVD of if `input` such that `input = u * diag(s) * transpose(v)`
+(* Computes the singular value decompositions of one or more matrices. *)
+(* Computes the SVD of each inner matrix in `input` such that
+`input[..., :, :] = u[..., :, :] * diag(s[..., :, :]) * transpose(v[..., :, :])`
 
 ```prettyprint
-# a is a matrix.
-# s is a vector of singular values.
-# u is the matrix of left singular vectors.
-# v is a matrix of right singular vectors.
+# a is a tensor containing a batch of matrices.
+# s is a tensor of singular values for each matrix.
+# u is the tensor containing of left singular vectors for each matrix.
+# v is the tensor containing of right singular vectors for each matrix.
 s, u, v = svd(a)
 s, _, _ = svd(a, compute_uv=False)
 ``` *)
@@ -6352,8 +6645,8 @@ val svd
   -> ?compute_uv:bool
   -> ?full_matrices:bool
   -> ?control_inputs:Node.p list
-  -> ([< `double | `float ] as 't) t
-  -> ([< `double | `float ] as 't) t * ([< `double | `float ] as 't) t * ([< `double | `float ] as 't) t
+  -> ([< `double | `float | `complex64 ] as 't) t
+  -> ([< `double | `float | `complex64 ] as 't) t * ([< `double | `float | `complex64 ] as 't) t * ([< `double | `float | `complex64 ] as 't) t
 
 (* Forwards `data` to the output port determined by `pred`. *)
 (* If `pred` is true, the `data` input is forwarded to `output_true`. Otherwise,
@@ -6465,6 +6758,18 @@ val tensorArrayConcat
   -> [ `float ] t
   -> 'dtype t * [ `int64 ] t
 
+(* Gather specific elements from the TensorArray into output `value`. *)
+(* All elements selected by `indices` must have the same shape. *)
+val tensorArrayGather
+  :  ?name:string
+  -> type_:'dtype Type.t
+  -> ?element_shape:Dim.t list
+  -> ?control_inputs:Node.p list
+  -> [ `string ] t
+  -> [ `int32 ] t
+  -> [ `float ] t
+  -> 'dtype t
+
 (* Creates a TensorArray for storing the gradients of values in the given handle. *)
 (* If the given TensorArray gradient already exists, returns a reference to it.
 
@@ -6511,7 +6816,12 @@ val tensorArrayGrad
   -> [ `string ] t
 
 (* Pack the elements from the TensorArray into output `value`. *)
-(* All elements must have the same shape. *)
+(* **WARNING: This op is deprecated.**
+
+Instead of this op, use `TensorArrayGather` with
+`indices = RangeOp(0, TensorArraySizeOp)`.
+
+All elements must have the same shape. *)
 val tensorArrayPack
   :  ?name:string
   -> type_:'dtype Type.t
@@ -6530,6 +6840,17 @@ val tensorArrayRead
   -> [ `int32 ] t
   -> [ `float ] t
   -> 'dtype t
+
+(* Scatter the data from the input value into specific TensorArray elements. *)
+(* `indices` must be a vector, its length must match the first dim of `value`. *)
+val tensorArrayScatter
+  :  ?name:string
+  -> ?control_inputs:Node.p list
+  -> [ `string ] t
+  -> [ `int32 ] t
+  -> 't t
+  -> [ `float ] t
+  -> [ `float ] t
 
 (* Get the current size of the TensorArray. *)
 val tensorArraySize
@@ -6567,6 +6888,10 @@ val tensorArraySplit
   -> [ `float ] t
 
 (* Unpack the data from the input value into TensorArray elements. *)
+(* **WARNING: This op is deprecated.**
+
+Instead of this op, use `TensorArrayScatter` with
+`indices = RangeOp(0, SizeOp(value)[0])`. *)
 val tensorArrayUnpack
   :  ?name:string
   -> ?control_inputs:Node.p list
@@ -6636,7 +6961,7 @@ val tile
   :  ?name:string
   -> ?control_inputs:Node.p list
   -> 't t
-  -> [ `int32 ] t
+  -> ([< `int32 | `int64 ] as 'tmultiples) t
   -> 't t
 
 (* Returns the gradient of `Tile`. *)
@@ -6699,7 +7024,7 @@ val transpose
   :  ?name:string
   -> ?control_inputs:Node.p list
   -> 't t
-  -> [ `int32 ] t
+  -> ([< `int32 | `int64 ] as 'tperm) t
   -> 't t
 
 (* Outputs random values from a truncated normal distribution. *)
@@ -6755,9 +7080,10 @@ idx ==> [0, 0, 1, 2, 2, 2, 3, 4, 4]
 ``` *)
 val unique
   :  ?name:string
+  -> type_1:([< `int32 | `int64 ] as 'out_idx) Type.t
   -> ?control_inputs:Node.p list
   -> 't t
-  -> 't t * [ `int32 ] t
+  -> 't t * ([< `int32 | `int64 ] as 'out_idx) t
 
 (* Finds unique elements in a 1-D tensor. *)
 (* This operation returns a tensor `y` containing all of the unique elements of `x`
@@ -6779,9 +7105,11 @@ count ==> [2, 1, 3, 1, 2]
 ``` *)
 val uniqueWithCounts
   :  ?name:string
+  -> type_1:([< `int32 | `int64 ] as 'out_idx) Type.t
+  -> type_2:([< `int32 | `int64 ] as 'out_idx) Type.t
   -> ?control_inputs:Node.p list
   -> 't t
-  -> 't t * [ `int32 ] t * [ `int32 ] t
+  -> 't t * ([< `int32 | `int64 ] as 'out_idx) t * ([< `int32 | `int64 ] as 'out_idx) t
 
 (* Unpacks a given dimension of a rank-`R` tensor into `num` rank-`(R-1)` tensors. *)
 (* Unpacks `num` tensors from `value` by chipping it along the `axis` dimension.
