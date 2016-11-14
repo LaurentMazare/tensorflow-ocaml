@@ -17,7 +17,7 @@ After that you have to get/build the TensorFlow library `libtensorflow-0.10.so`.
     1. Clone the TensorFlow repo `git clone --recurse-submodules -b r0.10 https://github.com/tensorflow/tensorflow`
     1. In `tensorflow` run `./configure` then `bazel build -c opt tensorflow:libtensorflow.so`. Note: you first have to edit tensorflow/BUILD to include `"//tensorflow/c:c_api"` in the deps section of libtensorflow.so.
        - In order to build with GPU support, CUDA needs to be installed and specified during `./configure`, and use `bazel build -c opt --config=cuda tensorflow:libtensorflow.so` to build.
-* You can download a prebuilt [x86-64 linux binary](https://github.com/LaurentMazare/tensorflow-ocaml/releases/download/0.0.5/libtensorflow-0.10.so).
+* You can download a prebuilt x86-64 linux binaries, [libtensorflow-0.10.so](https://github.com/LaurentMazare/tensorflow-ocaml/releases/download/0.0.5/libtensorflow-0.10.so) or [libtensorflow-0.11.so](https://github.com/LaurentMazare/tensorflow-ocaml/releases/download/0.0.6/libtensorflow-0.11.so).
 
 Adjust your LD_LIBRARY_PATH to include the directory in which you've put `libtensorflow-0.10.so` and finally download a [very simple example](https://github.com/LaurentMazare/tensorflow-ocaml/tree/master/examples/basics/forty_two.ml) and compile it with the following command:
 ```bash
