@@ -10,14 +10,18 @@ The easiest way is probably to use opam.
 opam install tensorflow
 ```
 
-After that you have to get/build the TensorFlow library `libtensorflow-0.10.so`. The opam packages starting from version 0.0.6 use TensorFlow release 0.10, the current tip uses release 0.11 (for which you need to build `libtensorflow-0.11.so`. There are two possibilities to obtain it:
+The opam package requires the TensorFlow library to be installed on your system.
 
-* You can build it from source by following these steps:
+* The version 0.0.6 of the opam package uses TensorFlow release 0.10: `libtensorflow-0.10.so`.
+* The version 0.0.7 of the opam package and the current tip uses release 0.11: `libtensorflow-0.11.so`.
+
+There are two ways to obtain these libraries:
+* You can build them from source by following these steps:
     1. [Install the Bazel build system](http://bazel.io/docs/install.html)
-    1. Clone the TensorFlow repo `git clone --recurse-submodules -b r0.10 https://github.com/tensorflow/tensorflow`
-    1. In `tensorflow` run `./configure` then `bazel build -c opt tensorflow:libtensorflow.so`. Note: you first have to edit tensorflow/BUILD to include `"//tensorflow/c:c_api"` in the deps section of libtensorflow.so.
-       - In order to build with GPU support, CUDA needs to be installed and specified during `./configure`, and use `bazel build -c opt --config=cuda tensorflow:libtensorflow.so` to build.
-* You can download a prebuilt x86-64 linux binaries, [libtensorflow-0.10.so](https://github.com/LaurentMazare/tensorflow-ocaml/releases/download/0.0.5/libtensorflow-0.10.so) or [libtensorflow-0.11.so](https://github.com/LaurentMazare/tensorflow-ocaml/releases/download/0.0.6/libtensorflow-0.11.so).
+    1. Clone the TensorFlow repo `git clone --recurse-submodules -b r0.11 https://github.com/tensorflow/tensorflow`
+    1. In `tensorflow` run `./configure` then `bazel build -c opt tensorflow:libtensorflow_c.so`.
+       - In order to build with GPU support, CUDA needs to be installed and specified during `./configure`.
+* You can download prebuilt x86-64 linux binaries (CPU only), [libtensorflow-0.10.so](https://github.com/LaurentMazare/tensorflow-ocaml/releases/download/0.0.5/libtensorflow-0.10.so) or [libtensorflow-0.11.so](https://github.com/LaurentMazare/tensorflow-ocaml/releases/download/0.0.6/libtensorflow-0.11.so).
 
 Adjust your LD_LIBRARY_PATH to include the directory in which you've put `libtensorflow-0.10.so` and finally download a [very simple example](https://github.com/LaurentMazare/tensorflow-ocaml/tree/master/examples/basics/forty_two.ml) and compile it with the following command:
 ```bash
