@@ -23,7 +23,7 @@ There are two ways to obtain these libraries:
        - In order to build with GPU support, CUDA needs to be installed and specified during `./configure`.
 * You can download prebuilt x86-64 linux binaries (CPU only), [libtensorflow-0.10.so](https://github.com/LaurentMazare/tensorflow-ocaml/releases/download/0.0.5/libtensorflow-0.10.so) or [libtensorflow-0.11.so](https://github.com/LaurentMazare/tensorflow-ocaml/releases/download/0.0.6/libtensorflow-0.11.so).
 
-Adjust your LD_LIBRARY_PATH to include the directory in which you've put `libtensorflow-0.10.so` and finally download a [very simple example](https://github.com/LaurentMazare/tensorflow-ocaml/tree/master/examples/basics/forty_two.ml) and compile it with the following command:
+Adjust your LD_LIBRARY_PATH to include the directory in which you've put `libtensorflow-0.1x.so` and finally download a [very simple example](https://github.com/LaurentMazare/tensorflow-ocaml/tree/master/examples/basics/forty_two.ml) and compile it with the following command:
 ```bash
 ocamlbuild forty_two.native -package ctypes -package ctypes.foreign -package core_kernel -package tensorflow -cflags -w,-40
 ```
