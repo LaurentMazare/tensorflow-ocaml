@@ -163,6 +163,11 @@ module Graph : sig
     :  t
     -> string
     -> unit Status.result
+
+  val find_operation
+    :  t
+    -> string
+    -> operation option
 end
 
 module Session : sig

@@ -364,6 +364,12 @@ module Tf_graph = struct
       @-> Tf_import_graph_def_options.t
       @-> Tf_status.t
       @-> returning void)
+
+  let tf_graphoperationbyname =
+    foreign "TF_GraphOperationByName" ~from
+      (t
+      @-> string
+      @-> returning Tf_operation.t)
 end
 
 module Tf_operationdescription = struct
@@ -649,6 +655,12 @@ module Graph = struct
       num_dims
 
   let import = Graph_import.import
+
+  let find_operation t name =
+    let operation = Tf_graph.tf_graphoperationbyname t name in
+    if to_voidp operation = null
+    then None
+    else Some (t, operation)
 end
 
 module Tf_sessionoptions = struct
