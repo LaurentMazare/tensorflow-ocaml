@@ -325,6 +325,28 @@ module Tf_port = struct
   let () = seal t
 end
 
+module Tf_import_graph_def_options = struct
+  type t = unit ptr
+  let t : t typ = ptr void
+
+  let tf_newimportgraphdefoptions =
+    foreign "TF_NewImportGraphDefOptions" ~from (void @-> returning t)
+
+  let tf_deleteimportgraphdefoptions =
+    foreign "TF_DeleteImportGraphDefOptions" ~from (t @-> returning void)
+end
+
+module Tf_buffer = struct
+  type t = unit ptr
+  let t : t typ = ptr void
+
+  let tf_newbufferfromstring =
+    foreign "TF_NewBufferFromString" ~from (string @-> int @-> returning t)
+
+  let tf_deletebuffer =
+    foreign "TF_DeleteBuffer" ~from (t @-> returning void)
+end
+
 module Tf_graph = struct
   type t = unit ptr
   let t : t typ = ptr void
@@ -334,6 +356,14 @@ module Tf_graph = struct
 
   let tf_deletegraph =
     foreign "TF_DeleteGraph" ~from (t @-> returning void)
+
+  let tf_graphimportgraphdef =
+    foreign "TF_GraphImportGraphDef" ~from
+      (t
+      @-> Tf_buffer.t
+      @-> Tf_import_graph_def_options.t
+      @-> Tf_status.t
+      @-> returning void)
 end
 
 module Tf_operationdescription = struct
@@ -421,6 +451,31 @@ module Tf_operationdescription = struct
   let tf_setattrtensorlist =
     foreign "TF_SetAttrTensorList" ~from
       (t @-> ptr char @-> ptr Tf_tensor.t @-> int @-> Tf_status.t @-> returning void)
+end
+
+module Buffer = struct
+  type t = Tf_buffer.t
+
+  let create_from_string str =
+    let t = Tf_buffer.tf_newbufferfromstring str (String.length str) in
+    Gc.finalise Tf_buffer.tf_deletebuffer t;
+    (t : t)
+end
+
+module Graph_import = struct
+  type import_options = Tf_import_graph_def_options.t
+
+  let create_import_options () =
+    let import_options = Tf_import_graph_def_options.tf_newimportgraphdefoptions () in
+    Gc.finalise Tf_import_graph_def_options.tf_deleteimportgraphdefoptions import_options;
+    (import_options : import_options)
+
+  let import graph str =
+    let status = Status.create () in
+    let import_options = create_import_options () in
+    let buffer = Buffer.create_from_string str in
+    Tf_graph.tf_graphimportgraphdef graph buffer import_options status;
+    Status.result_or_error status ()
 end
 
 module Graph = struct
@@ -592,6 +647,8 @@ module Graph = struct
       (ptr_of_string attr_name)
       shape
       num_dims
+
+  let import = Graph_import.import
 end
 
 module Tf_sessionoptions = struct

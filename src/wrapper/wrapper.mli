@@ -158,6 +158,11 @@ module Graph : sig
     -> attr_name:string
     -> int list
     -> unit
+
+  val import
+    :  t
+    -> string
+    -> unit Status.result
 end
 
 module Session : sig
