@@ -11,7 +11,7 @@ import numpy as np
 import keras.optimizers
 from keras.layers import Embedding, Dense, LSTM, TimeDistributed
 from keras.models import Sequential
-size = 64
+size = 4
 model = Sequential()
 input_shape=(None, 3)
 model.add(LSTM(size, return_sequences=True, consume_less='gpu', input_shape=input_shape))
@@ -22,3 +22,4 @@ tf.train.write_graph(sess.graph.as_graph_def(), '.', 'lstm.pb', as_text=False)
 print model.input
 print model.output
 print [ str(o.name) for o in sess.graph.get_operations() if o.type == 'Assign' ]
+print model.get_weights()

@@ -9,8 +9,8 @@ let ok_exn (result : 'a Status.result) ~context =
     |> failwith
 
 let () =
-  let data = Tensor.create1 Float32 3 in
-  Tensor.copy_elt_list data [ 1.; 2.; 6. ];
+  let data = Tensor.create3 Float32 1 2 3 in
+  Tensor.copy_elt_list data [ 1.; 2.; 6.; 1.; 2.; 6. ];
   let input_tensor = Tensor.P data in
   let graph = Graph.create () in
   let session =
@@ -19,7 +19,7 @@ let () =
   in
   Graph.import
     graph
-    (Protobuf.read_file "examples/load/load.pb" |> Protobuf.to_string)
+    (Protobuf.read_file "examples/load/lstm.pb" |> Protobuf.to_string)
     |> ok_exn ~context:"extending graph";
   let find_operation name =
     match Graph.find_operation graph name with
@@ -29,11 +29,32 @@ let () =
   let output =
     Session.run
       session
-      ~inputs:[ Graph.create_port (find_operation "x") ~index:0, input_tensor ]
-      ~outputs:[ Graph.create_port (find_operation "add") ~index:0 ]
-      ~targets:[ find_operation "add" ]
+      ~inputs:[]
+      ~outputs:[]
+      ~targets:
+        [ find_operation "dense_1_b/Assign"
+        ; find_operation "dense_1_W/Assign"
+        ; find_operation "lstm_1_W/Assign"
+        ; find_operation "lstm_1_b/Assign"
+        ; find_operation "lstm_1_U/Assign"
+        ]
     |> ok_exn ~context:"session run"
   in
-  match output with
-  | [ output ] -> Tensor.print output
-  | _ -> assert false
+  begin
+    match output with
+    | [] -> ()
+    | _ -> assert false
+  end;
+  let output =
+    Session.run
+      session
+      ~inputs:[ Graph.create_port (find_operation "lstm_input_1") ~index:0, input_tensor ]
+      ~outputs:[ Graph.create_port (find_operation "Sigmoid") ~index:0 ]
+      ~targets:[ find_operation "Variable/Assign" ]
+    |> ok_exn ~context:"session run"
+  in
+  begin
+    match output with
+    | [ output ] -> Tensor.print output
+    | _ -> assert false
+  end
