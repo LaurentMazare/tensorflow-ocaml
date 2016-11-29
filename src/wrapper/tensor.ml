@@ -140,7 +140,7 @@ let float64 (P tensor) =
   | Bigarray.Float64 -> Some (tensor : (float, float64_elt) t)
   | _ -> None
 
-let set_float_array t array =
+let set_float_array1 t array =
   let length = Array.length array in
   let num_dims = Bigarray.Genarray.num_dims t.data in
   if num_dims <> 1
@@ -197,9 +197,9 @@ let set_float_array3 t array =
     done
   done
 
-let of_float_array array kind =
+let of_float_array1 array kind =
   let t = create1 kind (Array.length array) in
-  set_float_array t array;
+  set_float_array1 t array;
   t
 
 let of_float_array2 array kind =
@@ -228,3 +228,18 @@ let of_float_array3 array kind =
   let t = create3 kind dim1 dim2 dim3 in
   set_float_array3 t array;
   t
+
+let to_float_array1 t =
+  let ba = Bigarray.array1_of_genarray t.data in
+  Array.init (Bigarray.Array1.dim ba) (fun i -> ba.{i})
+
+let to_float_array2 t =
+  let ba = Bigarray.array2_of_genarray t.data in
+  Array.init (Bigarray.Array2.dim1 ba) (fun i ->
+    Array.init (Bigarray.Array2.dim2 ba) (fun j -> ba.{i, j}))
+
+let to_float_array3 t =
+  let ba = Bigarray.array3_of_genarray t.data in
+  Array.init (Bigarray.Array3.dim1 ba) (fun i ->
+    Array.init (Bigarray.Array3.dim2 ba) (fun j ->
+      Array.init (Bigarray.Array3.dim3 ba) (fun k -> ba.{i, j, k})))

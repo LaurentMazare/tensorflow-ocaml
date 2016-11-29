@@ -41,7 +41,7 @@ type 'a eq =
 val float32 : p -> (float, float32_elt) t option
 val float64 : p -> (float, float64_elt) t option
 
-val set_float_array
+val set_float_array1
   :  (float, 'a) t
   -> float array
   -> unit
@@ -56,7 +56,7 @@ val of_float_array3
   -> float array array array
   -> unit
 
-val of_float_array
+val of_float_array1
   :  float array
   -> (float, 'a) Bigarray.kind
   -> (float, 'a) t
@@ -70,3 +70,15 @@ val of_float_array3
   :  float array array array
   -> (float, 'a) Bigarray.kind
   -> (float, 'a) t
+
+val to_float_array1
+  :  (float, _) t
+  -> float array
+
+val to_float_array2
+  :  (float, _) t
+  -> float array array
+
+val to_float_array3
+  :  (float, _) t
+  -> float array array array
