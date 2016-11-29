@@ -1,3 +1,6 @@
+type float32_elt = Bigarray.float32_elt
+type float64_elt = Bigarray.float64_elt
+
 type ('a, 'b) t =
   { data : ('a, 'b, Bigarray.c_layout) Bigarray.Genarray.t
   ; scalar : bool
@@ -124,5 +127,104 @@ let copy_elt_list : type a b. (a, b) t -> a list -> unit = fun t data ->
     data
 
 type 'a eq =
-  | Float : (Bigarray.float32_elt * [ `float ]) eq
-  | Double : (Bigarray.float64_elt * [ `double ]) eq
+  | Float : (float32_elt * [ `float ]) eq
+  | Double : (float64_elt * [ `double ]) eq
+
+let float32 (P tensor) =
+  match kind tensor with
+  | Bigarray.Float32 -> Some (tensor : (float, float32_elt) t)
+  | _ -> None
+
+let float64 (P tensor) =
+  match kind tensor with
+  | Bigarray.Float64 -> Some (tensor : (float, float64_elt) t)
+  | _ -> None
+
+let set_float_array t array =
+  let length = Array.length array in
+  let num_dims = Bigarray.Genarray.num_dims t.data in
+  if num_dims <> 1
+  then failwith (Printf.sprintf "Improper number of dimension %d <> 1" num_dims);
+  let data = Bigarray.array1_of_genarray t.data in
+  let length' = Bigarray.Array1.dim data in
+  if length <> length'
+  then failwith (Printf.sprintf "Dimension mismatch %d <> %d" length length');
+  for i = 0 to length - 1 do
+    data.{i} <- array.(i)
+  done
+
+let set_float_array2 t array =
+  let dim1 = Array.length array in
+  let num_dims = Bigarray.Genarray.num_dims t.data in
+  if num_dims <> 2
+  then failwith (Printf.sprintf "Improper number of dimension %d <> 2" num_dims);
+  let data = Bigarray.array2_of_genarray t.data in
+  let dim1' = Bigarray.Array2.dim1 data in
+  if dim1 <> dim1'
+  then failwith (Printf.sprintf "Dimension 1 mismatch %d <> %d" dim1 dim1');
+  for i = 0 to dim1 - 1 do
+    let dim2 = Array.length array.(i) in
+    let dim2' = Bigarray.Array2.dim2 data in
+    if dim2 <> dim2'
+    then failwith (Printf.sprintf "Dimension 2 mismatch %d <> %d" dim2 dim2');
+    for j = 0 to dim2 - 1 do
+      data.{i, j} <- array.(i).(j)
+    done
+  done
+
+let set_float_array3 t array =
+  let dim1 = Array.length array in
+  let num_dims = Bigarray.Genarray.num_dims t.data in
+  if num_dims <> 3
+  then failwith (Printf.sprintf "Improper number of dimension %d <> 3" num_dims);
+  let data = Bigarray.array3_of_genarray t.data in
+  let dim1' = Bigarray.Array3.dim1 data in
+  if dim1 <> dim1'
+  then failwith (Printf.sprintf "Dimension 1 mismatch %d <> %d" dim1 dim1');
+  for i = 0 to dim1 - 1 do
+    let dim2 = Array.length array.(i) in
+    let dim2' = Bigarray.Array3.dim2 data in
+    if dim2 <> dim2'
+    then failwith (Printf.sprintf "Dimension 2 mismatch %d <> %d" dim2 dim2');
+    for j = 0 to dim2 - 1 do
+      let dim3 = Array.length array.(i).(j) in
+      let dim3' = Bigarray.Array3.dim3 data in
+      if dim3 <> dim3'
+      then failwith (Printf.sprintf "Dimension 3 mismatch %d <> %d" dim3 dim3');
+      for k = 0 to dim3 - 1 do
+        data.{i, j, k} <- array.(i).(j).(k)
+      done
+    done
+  done
+
+let of_float_array array kind =
+  let t = create1 kind (Array.length array) in
+  set_float_array t array;
+  t
+
+let of_float_array2 array kind =
+  let dim1 = Array.length array in
+  let dim2 =
+    if dim1 = 0
+    then 0
+    else Array.length array.(0)
+  in
+  let t = create2 kind dim1 dim2 in
+  set_float_array2 t array;
+  t
+
+let of_float_array3 array kind =
+  let dim1 = Array.length array in
+  let dim2 =
+    if dim1 = 0
+    then 0
+    else Array.length array.(0)
+  in
+  let dim3 =
+    if dim1 = 0 || dim2 = 0
+    then 0
+    else Array.length array.(0).(0)
+  in
+  let t = create3 kind dim1 dim2 dim3 in
+  set_float_array3 t array;
+  t

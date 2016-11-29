@@ -1,3 +1,6 @@
+type float32_elt = Bigarray.float32_elt
+type float64_elt = Bigarray.float64_elt
+
 type ('a, 'b) t
 
 type p = P : (_, _) t -> p
@@ -32,5 +35,38 @@ val fill : ('a, 'b) t -> 'a -> unit
 val blit : ('a, 'b) t -> ('a, 'b) t -> unit
 
 type 'a eq =
-  | Float : (Bigarray.float32_elt * [ `float ]) eq
-  | Double : (Bigarray.float64_elt * [ `double ]) eq
+  | Float : (float32_elt * [ `float ]) eq
+  | Double : (float64_elt * [ `double ]) eq
+
+val float32 : p -> (float, float32_elt) t option
+val float64 : p -> (float, float64_elt) t option
+
+val set_float_array
+  :  (float, 'a) t
+  -> float array
+  -> unit
+
+val set_float_array2
+  :  (float, 'a) t
+  -> float array array
+  -> unit
+
+val of_float_array3
+  :  (float, 'a) t
+  -> float array array array
+  -> unit
+
+val of_float_array
+  :  float array
+  -> (float, 'a) Bigarray.kind
+  -> (float, 'a) t
+
+val of_float_array2
+  :  float array array
+  -> (float, 'a) Bigarray.kind
+  -> (float, 'a) t
+
+val of_float_array3
+  :  float array array array
+  -> (float, 'a) Bigarray.kind
+  -> (float, 'a) t
