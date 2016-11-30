@@ -51,11 +51,6 @@ val set_float_array2
   -> float array array
   -> unit
 
-val of_float_array3
-  :  (float, 'a) t
-  -> float array array array
-  -> unit
-
 val of_float_array1
   :  float array
   -> (float, 'a) Bigarray.kind
