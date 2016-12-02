@@ -1,14 +1,23 @@
 open Core_kernel.Std
 
-type t
+type 'a t
 
-val create : string -> t
-
-val onehot
-  :  t
+val create
+  :  string
   -> (float, 'a) Bigarray.kind
+  -> 'a t
+
+val batch_sequence
+  :  'a t
   -> pos:int
   -> len:int
-  -> (float, 'a, Bigarray.c_layout) Bigarray.Array2.t
+  -> seq_len:int
+  -> batch_size:int
+  -> ((float, 'a, Bigarray.c_layout) Bigarray.Array3.t
+   * (float, 'a, Bigarray.c_layout) Bigarray.Array3.t) Sequence.t
   
-val map : t -> int Int.Map.t
+val map : _ t -> int Int.Map.t
+
+val length : _ t -> int
+
+val dim : _ t -> int
