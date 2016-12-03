@@ -8,13 +8,12 @@ val create
   -> 'a t
 
 val batch_sequence
-  :  'a t
-  -> pos:int
-  -> len:int
+  :  ?pos:int
+  -> ?len:int
+  -> 'a t
   -> seq_len:int
   -> batch_size:int
-  -> ((float, 'a, Bigarray.c_layout) Bigarray.Array3.t
-   * (float, 'a, Bigarray.c_layout) Bigarray.Array3.t) Sequence.t
+  -> ((float, 'a) Tensor.t * (float, 'a) Tensor.t) Sequence.t
   
 val map : _ t -> int Int.Map.t
 

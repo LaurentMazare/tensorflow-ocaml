@@ -12,5 +12,6 @@ Optimizers
 Registered_gradients
 Session
 Tensor
+Text_helper
 Var
 Wrapper

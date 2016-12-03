@@ -2,6 +2,7 @@ true: package(ctypes), package(ctypes.foreign)
 <examples/*/*_gnuplot.*> or <examples/basics/rnn.*>: package(gnuplot)
 <examples/*/*.native>: use_tensorflow
 <examples/char_rnn/*>: package(cmdliner)
+<examples/rnn/*>: package(cmdliner)
 
 not <src/piqi/*>: warn(A-4-29-40-41-42-44-45-48-56-58)
 not <src/piqi/*>: warn_error()

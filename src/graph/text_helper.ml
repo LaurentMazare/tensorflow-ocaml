@@ -9,7 +9,7 @@ type 'a t =
 
 let create filename kind =
   let file_descr = Unix.openfile filename [ O_RDONLY ] 0 in
-  let content = Bigarray.Array1.map_file file_descr Int8_unsigned C_layout false 0 in
+  let content = Bigarray.Array1.map_file file_descr Int8_unsigned C_layout false (-1) in
   let table = Int.Table.create () in
   for i = 0 to Bigarray.Array1.dim content - 1 do
     let v = content.{i} in
@@ -26,25 +26,30 @@ let create filename kind =
   }
 
 let batch t ~batch_size ~seq_len ~batchX ~batchY ~pos =
-  Bigarray.Array3.fill batchX 0.;
-  Bigarray.Array3.fill batchY 0.;
+  Tensor.fill batchX 0.;
+  Tensor.fill batchY 0.;
   for batch_idx = 0 to batch_size - 1 do
     for i = 0 to seq_len do
       let v = Map.find_exn t.map t.content.{pos + batch_idx * seq_len + i} in
       if i < seq_len
-      then batchX.{batch_idx, i, v} <- 1.;
+      then Tensor.set batchX [| batch_idx; i; v |] 1.;
       if 0 < i
-      then batchY.{batch_idx, i-1, v} <- 1.;
+      then Tensor.set batchY [| batch_idx; i-1; v |] 1.;
     done;
   done;
   batchX, batchY
 
-let batch_sequence t ~pos ~len ~seq_len ~batch_size =
+let length t = Bigarray.Array1.dim t.content
+
+let batch_sequence ?pos ?len t ~seq_len ~batch_size =
   let open Sequence.Generator in
-  let pos_plus_len = pos + len in
+  let pos = Option.value pos ~default:0 in
+  let pos_plus_len =
+    Option.value_map len ~default:(length t) ~f:(fun len -> pos + len)
+  in
   let total_batch_size = seq_len * batch_size in
-  let batchX = Bigarray.Array3.create t.kind C_layout batch_size seq_len t.dim in
-  let batchY = Bigarray.Array3.create t.kind C_layout batch_size seq_len t.dim in
+  let batchX = Tensor.create3 t.kind batch_size seq_len t.dim in
+  let batchY = Tensor.create3 t.kind batch_size seq_len t.dim in
   let rec loop pos =
     if pos + total_batch_size + 1 >= pos_plus_len
     then return ()
@@ -56,7 +61,5 @@ let batch_sequence t ~pos ~len ~seq_len ~batch_size =
   loop pos |> run
 
 let map t = t.map
-
-let length t = Bigarray.Array1.dim t.content
 
 let dim t = t.dim
