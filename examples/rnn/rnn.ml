@@ -6,77 +6,43 @@ let size_c = 256
 let seq_len = 180
 let batch_size = 128
 
-type t =
-  { err              : [ `float ] Node.t
-  ; placeholder_x    : [ `float ] Ops.Placeholder.t
-  ; placeholder_y    : [ `float ] Ops.Placeholder.t
-  }
-
-let unfolded_lstm ~dim =
-  let placeholder_x = Ops.placeholder ~type_:Float [] in
-  let placeholder_y = Ops.placeholder ~type_:Float [] in
-  let wy, by =
-    Var.normalf [ size_c; dim ] ~stddev:0.1, Var.f [ dim ] 0.
-  in
-  let lstm = Staged.unstage (Cell.lstm ~size_c ~size_x:dim) in
-  (* placeholder_x and placeholder_y should be tensor of dimension:
-       (batch_size, seq_len, dim)
-     Split them on the seq_len dimension to unroll the rnn.
-  *)
-  let x_and_ys =
-    let split node =
-      Ops.split Ops.one32 (Ops.Placeholder.to_node node) ~num_split:seq_len
-      |> List.map ~f:(fun n ->
-        Ops.reshape n (Ops.const_int ~type_:Int32 [ batch_size; dim ]))
-    in
-    List.zip_exn (split placeholder_x) (split placeholder_y)
-  in
-  let err, _output_mem =
-    let zero = Ops.f 0. ~shape:[ batch_size; size_c ] in
-    List.fold x_and_ys
-      ~init:([], (`h zero, `c zero))
-      ~f:(fun (errs, (`h h, `c c)) (x, y) ->
-        let mem = lstm ~x ~h ~c in
-        let `h h, `c _ = mem in
-        let y_bar = Ops.(h *^ wy + by) |> Ops.softmax in
-        let err = Ops.(neg (y * log y_bar)) in
-        err :: errs, mem)
-  in
-  let err =
-    match err with
-    | [] -> failwith "seq_len is 0"
-    | [ err ] -> err
-    | errs -> Ops.concat Ops.one32 errs |> Ops.reduce_sum
-  in
-  { err
-  ; placeholder_x
-  ; placeholder_y
-  }
-
-let all_vars_with_names t =
-  Var.get_all_vars t.err
+let all_vars_with_names node =
+  Var.get_all_vars node
   |> List.mapi ~f:(fun i var -> sprintf "V%d" i, var)
 
-let train filename checkpoint learning_rate =
+let train filename learning_rate =
   let dataset = Text_helper.create filename Float32 in
   let dim = Text_helper.dim dataset in
-  let t = unfolded_lstm ~dim in
-  let gd = Optimizers.adam_minimizer t.err ~learning_rate:(Ops.f learning_rate) in
-  let save_node = Ops.save ~filename:checkpoint (all_vars_with_names t) in
+  let { Cell.Cross_entropy.err; placeholder_x; placeholder_y } =
+    let wy, by =
+      Var.normalf [ size_c; dim ] ~stddev:0.1, Var.f [ dim ] 0.
+    in
+    let lstm = Staged.unstage (Cell.lstm ~size_c ~size_x:dim) in
+    let zero = Ops.f 0. ~shape:[ batch_size; size_c ] in
+    Cell.Cross_entropy.unfold
+      ~batch_size
+      ~seq_len
+      ~dim
+      ~init:(`h zero, `c zero)
+      ~f:(fun ~x ~mem:(`h h, `c c) ->
+        let mem = lstm ~h ~x ~c in
+        let `h h, `c _ = mem in
+        let y_bar = Ops.(h *^ wy + by) |> Ops.softmax in
+        y_bar, `mem mem)
+  in
+  let gd = Optimizers.adam_minimizer err ~learning_rate:(Ops.f learning_rate) in
+  let save_node = Ops.save ~filename:"out.cpkt" (all_vars_with_names err) in
   let run sequence ~train =
     let targets = if train then gd else [] in
     let sum_err, batch_count =
       Sequence.fold sequence ~init:(0., 0) ~f:(fun (acc_err, acc_cnt) (batch_x, batch_y) ->
         let inputs =
           Session.Input.
-            [ float t.placeholder_x batch_x
-            ; float t.placeholder_y batch_y
+            [ float placeholder_x batch_x
+            ; float placeholder_y batch_y
             ]
         in
-        let sum_err =
-          Session.run ~inputs ~targets Session.Output.(scalar_float t.err)
-        in
-        printf "%c%!" (if train then '.' else 'v');
+        let sum_err = Session.run ~inputs ~targets Session.Output.(scalar_float err) in
         acc_err +. sum_err, acc_cnt + 1)
     in
     sum_err /. (float batch_count *. float seq_len *. float batch_size *. log 2.)
@@ -103,11 +69,6 @@ let () =
       Arg.(value & opt file "data/text8"
         & info [ "data-file" ] ~docv:"FILE" ~doc)
     in
-    let checkpoint =
-      let doc = "Checkpoint file to store the current state." in
-      Arg.(value & opt string "out.cpkt"
-        & info [ "checkpoint" ] ~docv:"FILE" ~doc)
-    in
     let learning_rate =
       let doc = "Learning rate for the Adam optimizer" in
       Arg.(value & opt float 0.004
@@ -119,7 +80,7 @@ let () =
       ; `P doc
       ]
     in
-    Term.(const train $ filename $ checkpoint $ learning_rate),
+    Term.(const train $ filename $ learning_rate),
     Term.info "train" ~sdocs:"" ~doc ~man
   in
   let default_cmd =

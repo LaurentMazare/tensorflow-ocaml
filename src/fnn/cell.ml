@@ -51,3 +51,45 @@ let gru_ ~type_ ~size_h ~size_x =
 
 let gru ~size_h ~size_x = gru_ ~type_:Float ~size_h ~size_x
 let gru_d ~size_h ~size_x = gru_ ~type_:Double ~size_h ~size_x
+
+module Cross_entropy = struct
+  type t =
+    { err              : [ `float ] Node.t
+    ; placeholder_x    : [ `float ] Ops.Placeholder.t
+    ; placeholder_y    : [ `float ] Ops.Placeholder.t
+    }
+
+  let unfold ~batch_size ~seq_len ~dim ~init ~f =
+    let placeholder_x = Ops.placeholder ~type_:Float [] in
+    let placeholder_y = Ops.placeholder ~type_:Float [] in
+    (* placeholder_x and placeholder_y should be tensor of dimension:
+         (batch_size, seq_len, dim)
+       Split them on the seq_len dimension to unroll the rnn.
+    *)
+    let x_and_ys =
+      let split node =
+        Ops.split Ops.one32 (Ops.Placeholder.to_node node) ~num_split:seq_len
+        |> List.map ~f:(fun n ->
+          Ops.reshape n (Ops.const_int ~type_:Int32 [ batch_size; dim ]))
+      in
+      List.zip_exn (split placeholder_x) (split placeholder_y)
+    in
+    let err, _output_mem =
+      List.fold x_and_ys
+        ~init:([], init)
+        ~f:(fun (errs, mem) (x, y) ->
+          let y_bar, `mem mem = f ~x ~mem in
+          let err = Ops.(neg (y * log y_bar)) in
+          err :: errs, mem)
+    in
+    let err =
+      match err with
+      | [] -> failwith "seq_len is 0"
+      | [ err ] -> err
+      | errs -> Ops.concat Ops.one32 errs |> Ops.reduce_sum
+    in
+    { err
+    ; placeholder_x
+    ; placeholder_y
+    }
+end
