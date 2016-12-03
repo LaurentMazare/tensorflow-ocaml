@@ -153,6 +153,12 @@ module Graph : sig
     -> Tensor.p
     -> unit Status.result
 
+  val set_attr_tensor_string
+    :  operation_description
+    -> attr_name:string
+    -> string list
+    -> unit Status.result
+
   val set_attr_tensors
     :  operation_description
     -> attr_name:string

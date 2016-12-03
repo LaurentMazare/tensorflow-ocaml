@@ -75,8 +75,7 @@ let add_attribute operation_description ~attr_name attr =
   | List (String _) -> failwith "List String attributes are not supported yet."
   | List (Shape _) -> failwith "List Shape attributes are not supported yet."
   | Tensor_string tensor_str ->
-    let tensor = Tensor.of_strings tensor_str.values in
-    Wrapper.Graph.set_attr_tensor operation_description ~attr_name tensor
+    Wrapper.Graph.set_attr_tensor_string operation_description ~attr_name tensor_str.values
     |> Wrapper.Status.ok_exn
 
 let rec build t node ~variable_initializations =

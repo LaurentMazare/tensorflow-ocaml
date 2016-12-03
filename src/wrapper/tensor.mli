@@ -77,7 +77,3 @@ val to_float_array2
 val to_float_array3
   :  (float, _) t
   -> float array array array
-
-val of_strings
-  :  string list
-  -> p

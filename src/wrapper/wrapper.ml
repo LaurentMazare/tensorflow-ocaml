@@ -166,7 +166,7 @@ module Tensor = struct
     in
     let data_type = Tensor.kind tensor |> data_type_of_kind in
     let size = Array.fold_left ( * ) 1 dim_array * sizeof data_type in
-    Hashtbl.add live_tensors id packed_tensor;
+    Hashtbl.add live_tensors id (`tensor packed_tensor);
     let num_dims = Tensor.num_dims tensor in
     let start =
       bigarray_start genarray (Tensor.to_bigarray tensor)
@@ -203,6 +203,69 @@ module Tensor = struct
     | TF_INT64 -> apply_kind Bigarray.int64
     | TF_BOOL -> apply_kind Bigarray.int8_unsigned
     | _ -> failwith "Unsupported tensor type"
+
+  let varint_len int =
+    let rec loop acc int =
+      if int < 128
+      then acc + 1
+      else loop (acc + 1) (int / 128)
+    in
+    loop 0 int
+
+  let c_tensor_of_strings strings =
+    let nstrings = List.length strings in
+    let bigarray, size =
+      let start_offset_len = nstrings * 8 in
+      let data_len, offsets =
+        List.fold_left
+          (fun (acc_length, offsets) str ->
+            let length = String.length str in
+            acc_length + length + varint_len length, acc_length :: offsets)
+          (0, [])
+          strings
+      in
+      let offsets = List.rev offsets |> Array.of_list in
+      let bigarray =
+        Bigarray.Array1.create Char Bigarray.c_layout (start_offset_len + data_len)
+      in
+      List.iteri
+        (fun i str ->
+          let offset = offsets.(i) in
+          let length = String.length str in
+          let rec loop acc length =
+            bigarray.{ start_offset_len + offset + acc } <- Char.chr (length mod 128);
+            if length < 128
+            then acc + 1
+            else loop (acc + 1) (length / 128)
+          in
+          let varint_len = loop 0 length in
+          for j = 0 to length - 1 do
+            bigarray.{ start_offset_len + offset + varint_len + j } <- str.[j]
+          done;
+          let offset = ref offset in
+          for j = 0 to 7 do
+            bigarray.{8*i + j} <- Char.chr (!offset mod 256);
+            offset := !offset / 256;
+          done)
+        strings;
+      Bigarray.genarray_of_array1 bigarray, Bigarray.Array1.dim bigarray
+    in
+    let id = Id.create () in
+    let dims =
+      CArray.of_list int64_t [ Int64.of_int nstrings ]
+      |> CArray.start
+    in
+    Hashtbl.add live_tensors id (`string_tensor bigarray);
+    let start = bigarray_start genarray bigarray |> to_voidp in
+    if force_full_major
+    then Gc.full_major ();
+    tf_newtensor (data_type_to_int TF_STRING)
+      dims
+      1
+      start
+      (Unsigned.Size_t.of_int size)
+      deallocate
+      (Id.to_int id |> Nativeint.of_int |> ptr_of_raw_address)
 end
 
 module Tf_status = struct
@@ -632,6 +695,16 @@ module Graph = struct
 
   let set_attr_tensor (_, od) ~attr_name tensor =
     let tensor = Tensor.c_tensor_of_tensor tensor in
+    let status = Status.create () in
+    Tf_operationdescription.tf_setattrtensor
+      od
+      (ptr_of_string attr_name)
+      tensor
+      status;
+    Status.result_or_error status ()
+
+  let set_attr_tensor_string (_, od) ~attr_name strings =
+    let tensor = Tensor.c_tensor_of_strings strings in
     let status = Status.create () in
     Tf_operationdescription.tf_setattrtensor
       od
