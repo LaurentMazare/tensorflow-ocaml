@@ -69,10 +69,15 @@ let add_attribute operation_description ~attr_name attr =
     Wrapper.Graph.set_attr_float_list operation_description ~attr_name fs
   | List (Bool bs) ->
     Wrapper.Graph.set_attr_bool_list operation_description ~attr_name bs
+  | List (Type dtypes) ->
+    let dtypes = List.map ~f:Node.Type.to_data_type dtypes in
+    Wrapper.Graph.set_attr_type_list operation_description ~attr_name dtypes
   | List (String _) -> failwith "List String attributes are not supported yet."
-  | List (Type _) -> failwith "List Type attributes are not supported yet."
   | List (Shape _) -> failwith "List Shape attributes are not supported yet."
-  | Tensor_string _ -> failwith "Tensor_string attributes are not supported yet."
+  | Tensor_string tensor_str ->
+    let tensor = Tensor.of_strings tensor_str.values in
+    Wrapper.Graph.set_attr_tensor operation_description ~attr_name tensor
+    |> Wrapper.Status.ok_exn
 
 let rec build t node ~variable_initializations =
   let id = Node.packed_id node in

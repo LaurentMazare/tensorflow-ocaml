@@ -622,6 +622,14 @@ module Graph = struct
       (ptr_of_string attr_name)
       (data_type_to_int dtype)
 
+  let set_attr_type_list (_, od) ~attr_name dtypes =
+    let dtypes = List.map data_type_to_int dtypes in
+    Tf_operationdescription.tf_setattrtypelist
+      od
+      (ptr_of_string attr_name)
+      CArray.(of_list int dtypes |> start)
+      (List.length dtypes)
+
   let set_attr_tensor (_, od) ~attr_name tensor =
     let tensor = Tensor.c_tensor_of_tensor tensor in
     let status = Status.create () in

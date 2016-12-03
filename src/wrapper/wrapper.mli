@@ -141,6 +141,12 @@ module Graph : sig
     -> data_type
     -> unit
 
+  val set_attr_type_list
+    :  operation_description
+    -> attr_name:string
+    -> data_type list
+    -> unit
+
   val set_attr_tensor
     :  operation_description
     -> attr_name:string

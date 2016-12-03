@@ -243,3 +243,47 @@ let to_float_array3 t =
   Array.init (Bigarray.Array3.dim1 ba) (fun i ->
     Array.init (Bigarray.Array3.dim2 ba) (fun j ->
       Array.init (Bigarray.Array3.dim3 ba) (fun k -> ba.{i, j, k})))
+
+let varint_len int =
+  let rec loop acc int =
+    if int < 128
+    then acc + 1
+    else loop (acc + 1) (int / 128)
+  in
+  loop 0 int
+
+let of_strings strings =
+  let start_offset_len = List.length strings * 8 in
+  let data_len, offsets =
+    List.fold_left
+      (fun (acc_length, offsets) str ->
+        let length = String.length str in
+        acc_length + length + varint_len length, acc_length :: offsets)
+      (0, [])
+      strings
+  in
+  let offsets = List.rev offsets |> Array.of_list in
+  let bigarray =
+    Bigarray.Array1.create Int8_unsigned Bigarray.c_layout (start_offset_len + data_len)
+  in
+  List.iteri
+    (fun i str ->
+      let offset = offsets.(i) in
+      let length = String.length str in
+      let rec loop acc length =
+        bigarray.{ start_offset_len + offset + acc } <- length mod 128;
+        if length < 128
+        then acc + 1
+        else loop (acc + 1) (length / 128)
+      in
+      let varint_len = loop 0 length in
+      for j = 0 to length - 1 do
+        bigarray.{ start_offset_len + offset + varint_len + j } <- Char.code str.[j]
+      done;
+      let offset = ref offset in
+      for j = 0 to 7 do
+        bigarray.{8*i + j} <- !offset mod 256;
+        offset := !offset / 256;
+      done)
+    strings;
+  P (of_bigarray (Bigarray.genarray_of_array1 bigarray) ~scalar:false)
