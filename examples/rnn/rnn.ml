@@ -61,29 +61,36 @@ let train filename checkpoint learning_rate =
   let dataset = Text_helper.create filename Float32 in
   let dim = Text_helper.dim dataset in
   let t = unfolded_lstm ~dim in
-  let gd =
-    Optimizers.adam_minimizer t.err ~learning_rate:(Ops.f learning_rate)
-  in
+  let gd = Optimizers.adam_minimizer t.err ~learning_rate:(Ops.f learning_rate) in
   let save_node = Ops.save ~filename:checkpoint (all_vars_with_names t) in
-  for epoch = 1 to epochs do
-    let sequence =
-      Text_helper.batch_sequence dataset ~seq_len ~batch_size
+  let run sequence ~train =
+    let targets = if train then gd else [] in
+    let sum_err, batch_count =
+      Sequence.fold sequence ~init:(0., 0) ~f:(fun (acc_err, acc_cnt) (batch_x, batch_y) ->
+        let inputs =
+          Session.Input.
+            [ float t.placeholder_x batch_x
+            ; float t.placeholder_y batch_y
+            ]
+        in
+        let sum_err =
+          Session.run ~inputs ~targets Session.Output.(scalar_float t.err)
+        in
+        printf "%c%!" (if train then '.' else 'v');
+        acc_err +. sum_err, acc_cnt + 1)
     in
-    Sequence.iter sequence ~f:(fun (batch_x, batch_y) ->
-      let inputs =
-        Session.Input.
-          [ float t.placeholder_x batch_x
-          ; float t.placeholder_y batch_y
-          ]
-      in
-      let sum_err =
-        Session.run
-          ~inputs
-          ~targets:gd
-          Session.Output.(scalar_float t.err)
-      in
-      let avg_err = sum_err /. (float seq_len *. float batch_size *. log 2.) in
-      printf "Epoch: %d %.4fbpc\n%!" epoch avg_err);
+    sum_err /. (float batch_count *. float seq_len *. float batch_size *. log 2.)
+  in
+  for epoch = 1 to epochs do
+    let train_sequence =
+      Text_helper.batch_sequence dataset ~seq_len ~batch_size ~len:90_000_000
+    in
+    let train_bpc = run train_sequence ~train:true in
+    let valid_sequence =
+      Text_helper.batch_sequence dataset ~seq_len ~batch_size ~pos:90_000_000 ~len:5_000_000
+    in
+    let valid_bpc = run valid_sequence ~train:false in
+    printf "\nEpoch: %d IS: %.4fbpc   OoS: %.4fbpc\n%!" epoch train_bpc valid_bpc;
     Session.run ~targets:[ Node.P save_node ] Session.Output.empty;
   done
 
@@ -93,7 +100,7 @@ let () =
   let train_cmd =
     let filename =
       let doc = "Data file to use for training/validation." in
-      Arg.(value & opt file "data/input.txt"
+      Arg.(value & opt file "data/text8"
         & info [ "data-file" ] ~docv:"FILE" ~doc)
     in
     let checkpoint =
