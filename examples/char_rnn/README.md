@@ -8,19 +8,21 @@ from which a character is randomly sampled and this is iterated to generate a te
 By default, this uses a stack of two LSTMs. At the end of each training epoch, a checkpoint file containing
 the weights is saved. This checkpoint file can then be used by the generation step.
 
-## Dataset
-
 Any text file can be used as an input, as long as it's large enough for training.
 A typical example would be the
 [tiny Shakespeare dataset](https://raw.githubusercontent.com/karpathy/char-rnn/master/data/tinyshakespeare/input.txt).
 
-## Training
+Compiling the example is done via the following command line:
+```bash
+ocamlbuild examples/char_rnn/char_rnn.native
+```
 
+Training can be performed as follows:
 ```bash
 ./char_rnn.native train --train-file input.txt --checkpoint out.cpkt
 ```
 
-## Sequence Generation
+In order to generate a sequence, the following command can be used:
 ```bash
 ./char_rnn.native sample --train-file input.txt --checkpoint out.cpkt --seed KING
 ```
