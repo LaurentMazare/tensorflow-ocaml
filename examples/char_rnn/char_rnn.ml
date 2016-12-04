@@ -8,12 +8,11 @@ open Tensorflow
 
 let epochs = 100000
 let size_c = 256
-let sample_size = 25
+let seq_len = 180
+let batch_size = 128
 
 type t =
   { train_err              : [ `float ] Node.t
-  ; train_output_mem       : [ `float ] Node.t
-  ; train_placeholder_mem  : [ `float ] Ops.Placeholder.t
   ; train_placeholder_x    : [ `float ] Ops.Placeholder.t
   ; train_placeholder_y    : [ `float ] Ops.Placeholder.t
   ; sample_output          : [ `float ] Node.t
@@ -28,56 +27,40 @@ let tensor_zero size =
   Tensor.fill tensor 0.;
   tensor
 
-let rnn ~size_c ~sample_size ~alphabet_size =
-  let train_placeholder_mem  = Ops.placeholder ~type_:Float [] in
+let rnn ~size_c ~dim =
   let train_placeholder_x    = Ops.placeholder ~type_:Float [] in
   let train_placeholder_y    = Ops.placeholder ~type_:Float [] in
   let sample_placeholder_mem = Ops.placeholder ~type_:Float [] in
   let sample_placeholder_x   = Ops.placeholder ~type_:Float [] in
   (* Two LSTM specific code. *)
   let wy, by =
-    Var.normalf [ size_c; alphabet_size ] ~stddev:0.1, Var.f [ alphabet_size ] 0.
+    Var.normalf [ size_c; dim ] ~stddev:0.1, Var.f [ dim ] 0.
   in
-  let lstm1 = Staged.unstage (Cell.lstm ~size_c ~size_x:alphabet_size) in
+  let lstm1 = Staged.unstage (Cell.lstm ~size_c ~size_x:dim) in
   let lstm2 = Staged.unstage (Cell.lstm ~size_c ~size_x:size_c) in
-  let two_lstm ~mem:(h1, c1, h2, c2) ~x =
+  let two_lstm ~x ~mem:(h1, c1, h2, c2) =
     let `h h1, `c c1 = lstm1 ~h:h1 ~c:c1 ~x in
     let `h h2, `c c2 = lstm2 ~h:h2 ~c:c2 ~x:h1 in
     let y_bar = Ops.(h2 *^ wy + by) |> Ops.softmax in
-    y_bar, (h1, c1, h2, c2)
+    y_bar, `mem (h1, c1, h2, c2)
   in
-  let split node =
-    Ops.split Ops.zero32 (Ops.Placeholder.to_node node) ~num_split:sample_size
-    |> List.map ~f:(fun n ->
-      Ops.reshape n (Ops.const_int ~type_:Int32 [ 1; alphabet_size ]))
-  in
-  let x_and_ys =
-    List.zip_exn (split train_placeholder_x) (split train_placeholder_y)
+  let y_hats =
+    let zero = Ops.f 0. ~shape:[ batch_size; size_c ] in
+    Cell.Unfold.unfold
+      ~xs:(Ops.Placeholder.to_node train_placeholder_x)
+      ~seq_len
+      ~dim
+      ~init:(zero, zero, zero, zero)
+      ~f:two_lstm
   in
   let mem_split mem = Ops.split4 Ops.one32 (Ops.Placeholder.to_node mem) in
-  let train_err, train_output_mem =
-    List.fold x_and_ys
-      ~init:([], mem_split train_placeholder_mem)
-      ~f:(fun (errs, mem) (x, y) ->
-        let y_bar, mem = two_lstm ~x ~mem in
-        let err = Ops.(neg (y * log y_bar)) in
-        err :: errs, mem)
-  in
-  let train_err =
-    match train_err with
-    | [] -> failwith "sample_size is 0"
-    | [ err ] -> err
-    | errs -> Ops.concat Ops.one32 errs |> Ops.reduce_sum
-  in
-  let mem_concat (h1, c1, h2, c2) = Ops.concat Ops.one32 [ h1; c1; h2; c2 ] in
-  let sample_output, sample_output_mem =
+  let sample_output, `mem sample_output_mem =
     two_lstm
       ~mem:(mem_split sample_placeholder_mem)
       ~x:(Ops.Placeholder.to_node sample_placeholder_x)
   in
-  { train_err
-  ; train_output_mem = mem_concat train_output_mem
-  ; train_placeholder_mem
+  let mem_concat (h1, c1, h2, c2) = Ops.concat Ops.one32 [ h1; c1; h2; c2 ] in
+  { train_err = Cell.cross_entropy ~ys:(Ops.Placeholder.to_node train_placeholder_y) ~y_hats
   ; train_placeholder_x
   ; train_placeholder_y
   ; sample_output
@@ -91,77 +74,42 @@ let all_vars_with_names t =
   Var.get_all_vars t.sample_output
   |> List.mapi ~f:(fun i var -> sprintf "V%d" i, var)
 
-let fit_and_evaluate data all_chars ~learning_rate ~checkpoint =
-  let alphabet_size = Array.length all_chars in
-  let input_size = (Tensor.dims data).(0) in
-  let t = rnn ~size_c ~sample_size ~alphabet_size in
+let fit_and_evaluate ~dataset ~learning_rate ~checkpoint =
+  let t = rnn ~size_c ~dim:(Text_helper.dim dataset) in
   let gd =
     Optimizers.adam_minimizer t.train_err ~learning_rate:(Ops.f learning_rate)
   in
   let save_node = Ops.save ~filename:checkpoint (all_vars_with_names t) in
-  List.fold (List.range 1 epochs)
-    ~init:(log (float alphabet_size) *. float sample_size, t.initial_memory)
-    ~f:(fun (smooth_error, prev_mem_data) i ->
-      let start_idx = (i * sample_size) % (input_size - sample_size - 1) in
-      let x_data = Tensor.sub_left data start_idx sample_size in
-      let y_data = Tensor.sub_left data (start_idx + 1) sample_size in
-      let inputs =
-        Session.Input.
-          [ float t.train_placeholder_x x_data
-          ; float t.train_placeholder_y y_data
-          ; float t.train_placeholder_mem prev_mem_data
-          ]
-      in
-      let err, mem_data =
-        Session.run
-          ~inputs
-          ~targets:gd
-          Session.Output.(both (scalar_float t.train_err) (float t.train_output_mem))
-      in
-      let error_is_reasonable =
-        match Float.classify err with
-        | Infinite | Nan | Zero | Subnormal -> false
-        | Normal -> true
-      in
-      if not error_is_reasonable
-      then failwith "The training error is not reasonable.";
-      let smooth_error = 0.999 *. smooth_error +. 0.001 *. err in
-      if i % 500 = 0 then begin
-        printf "Epoch: %d %f\n%!" i smooth_error;
-        Session.run ~targets:[ Node.P save_node ] Session.Output.empty;
-      end;
-      smooth_error, mem_data)
-  |> ignore
-
-let index_by_char all_chars =
-  Array.mapi all_chars ~f:(fun i c -> c, i)
-  |> Array.to_list
-  |> Char.Table.of_alist_exn
-
-let read_file filename =
-  let input = In_channel.read_all filename |> String.to_array in
-  let all_chars = Char.Set.of_array input |> Set.to_array in
-  let index_by_char = index_by_char all_chars in
-  let input_length = Array.length input in
-  let alphabet_size = Array.length all_chars in
-  let data = Tensor.create2 Float32 input_length alphabet_size in
-  Tensor.fill data 0.;
-  for x = 0 to input_length - 1 do
-    let c = Hashtbl.find_exn index_by_char input.(x) in
-    Tensor.set data [| x; c |] 1.
-  done;
-  data, all_chars
+  for epoch = 1 to epochs do
+    let train_sequence = Text_helper.batch_sequence dataset ~seq_len ~batch_size in
+    let sum_err, batch_count =
+      Sequence.fold train_sequence ~init:(0., 0) ~f:(fun (acc_err, acc_cnt) (batch_x, batch_y) ->
+        let inputs =
+          Session.Input.
+            [ float t.train_placeholder_x batch_x
+            ; float t.train_placeholder_y batch_y
+            ]
+        in
+        let sum_err =
+          Session.run ~inputs ~targets:gd Session.Output.(scalar_float t.train_err)
+        in
+        acc_err +. sum_err, acc_cnt + 1)
+    in
+    let bpc = sum_err /. (float batch_count *. float seq_len *. float batch_size *. log 2.) in
+    printf "Epoch: %d   %.4fbpc\n%!" epoch bpc;
+    Session.run ~targets:[ Node.P save_node ] Session.Output.empty;
+  done
 
 let train filename checkpoint learning_rate =
-  let data, all_chars = read_file filename in
-  fit_and_evaluate data all_chars ~checkpoint ~learning_rate
+  let dataset = Text_helper.create filename Float32 in
+  fit_and_evaluate ~dataset ~checkpoint ~learning_rate
 
 let sample filename checkpoint gen_size temperature seed =
-  let _data, all_chars = read_file filename in
-  let alphabet_size = Array.length all_chars in
+  let dataset = Text_helper.create filename Float32 in
+  let dim = Text_helper.dim dataset in
   let seed_length = String.length seed in
-  let index_by_char = index_by_char all_chars in
-  let t = rnn ~size_c ~sample_size ~alphabet_size in
+  let index_by_char = Text_helper.map dataset in
+  let t = rnn ~size_c ~dim in
   let load_and_assign_nodes =
     let checkpoint = Ops.const_string [ checkpoint ] in
     List.map (all_vars_with_names t) ~f:(fun (var_name, (Node.P var)) ->
@@ -173,7 +121,7 @@ let sample filename checkpoint gen_size temperature seed =
       |> fun node -> Node.P node)
   in
   Session.run ~targets:load_and_assign_nodes Session.Output.empty;
-  let prev_y = tensor_zero alphabet_size in
+  let prev_y = tensor_zero dim in
   Tensor.set prev_y [| 0; 0 |] 1.;
   let init = [], prev_y, t.initial_memory in
   let ys, _, _ =
@@ -191,32 +139,35 @@ let sample filename checkpoint gen_size temperature seed =
       let y =
         if i < seed_length
         then
-          match Hashtbl.find index_by_char (String.get seed i) with
+          match Map.find index_by_char (String.get seed i |> Char.to_int) with
           | None ->
             failwithf
               "Cannot find seed character '%c' in the train file" (String.get seed i) ()
           | Some y -> y
         else begin
           let dist =
-            Array.init alphabet_size ~f:(fun i ->
+            Array.init dim ~f:(fun i ->
               (Tensor.get y_res [| 0; i |]) ** (1. /. temperature))
           in
           let p = Random.float (Array.reduce_exn dist ~f:(+.)) in
           let acc = ref 0. in
           let y = ref 0 in
-          for i = 0 to alphabet_size - 1 do
+          for i = 0 to dim - 1 do
             if !acc <= p then y := i;
             acc := !acc +. dist.(i)
           done;
           !y
         end
       in
-      let y_res = tensor_zero alphabet_size in
+      let y_res = tensor_zero dim in
       Tensor.set y_res [| 0; y |] 1.;
       y :: acc_y, y_res, mem_data)
   in
+  let inv_map = Array.create ~len:dim 'X' in
+  Map.iteri index_by_char ~f:(fun ~key ~data ->
+    inv_map.(data) <- Char.of_int_exn key);
   List.rev ys
-  |> List.map ~f:(fun i -> all_chars.(i))
+  |> List.map ~f:(fun i -> inv_map.(i))
   |> String.of_char_list
   |> printf "%s\n\n%!"
 
