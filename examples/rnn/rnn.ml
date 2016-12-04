@@ -20,7 +20,6 @@ let train filename learning_rate =
     let lstm = Staged.unstage (Cell.lstm ~size_c ~size_x:dim) in
     let zero = Ops.f 0. ~shape:[ batch_size; size_c ] in
     Cell.Unfold.cross_entropy
-      ~batch_size
       ~seq_len
       ~dim
       ~init:(`h zero, `c zero)

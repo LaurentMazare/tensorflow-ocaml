@@ -59,31 +59,30 @@ module Unfold = struct
     ; placeholder_y    : [ `float ] Ops.Placeholder.t
     }
 
-  let unfold ~xs ~batch_size ~seq_len ~dim ~init ~f =
+  let unfold ~xs ~seq_len ~dim ~init ~f =
     (* xs should be tensor of dimension:
          (batch_size, seq_len, dim)
        Split it the seq_len dimension to unroll the rnn.
     *)
     let xs =
-      let shape = Ops.const_int ~type_:Int32 [ batch_size; dim ] in
+      let shape = Ops.const_int ~type_:Int32 [ -1; dim ] in
       Ops.split Ops.one32 xs ~num_split:seq_len
       |> List.map ~f:(fun n -> Ops.reshape n shape)
     in
     let y_bars, _output_mem =
-      let shape = Ops.const_int ~type_:Int32 [ batch_size; 1; dim ] in
+      let shape = Ops.const_int ~type_:Int32 [ -1; 1; dim ] in
       List.fold xs ~init:([], init) ~f:(fun (y_bars, mem) x ->
         let y_bar, `mem mem = f ~x ~mem in
         Ops.reshape y_bar shape :: y_bars, mem)
     in
     Ops.concat Ops.one32 (List.rev y_bars)
 
-  let cross_entropy ~batch_size ~seq_len ~dim ~init ~f =
+  let cross_entropy ~seq_len ~dim ~init ~f =
     let placeholder_x = Ops.placeholder ~type_:Float [] in
     let placeholder_y = Ops.placeholder ~type_:Float [] in
     let y_hats =
       unfold
         ~xs:(Ops.Placeholder.to_node placeholder_x)
-        ~batch_size
         ~seq_len
         ~dim
         ~init

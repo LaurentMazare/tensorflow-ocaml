@@ -33,7 +33,6 @@ val gru_d
 module Unfold : sig
   val unfold
     :  xs:'b Node.t
-    -> batch_size:int
     -> seq_len:int
     -> dim:int
     -> init:'a
@@ -47,8 +46,7 @@ module Unfold : sig
     }
 
   val cross_entropy
-    :  batch_size:int
-    -> seq_len:int
+    :  seq_len:int
     -> dim:int
     -> init:'a
     -> f:(x:[ `float ] Node.t -> mem:'a -> [ `float ] Node.t * [ `mem of 'a ])
