@@ -30,6 +30,11 @@ val gru_d
      -> x: [ `double ] Node.t
      -> [ `double ] Node.t) Staged.t
 
+val cross_entropy
+  :  ys:([< `complex64 | `double | `float ] as 'a) Node.t
+  -> y_hats:'a Node.t
+  -> 'a Node.t
+
 module Unfold : sig
   val unfold
     :  xs:'b Node.t
@@ -38,17 +43,4 @@ module Unfold : sig
     -> init:'a
     -> f:(x:'b Node.t -> mem:'a -> 'b Node.t * [ `mem of 'a ])
     -> 'b Node.t
-
-  type t =
-    { err              : [ `float ] Node.t
-    ; placeholder_x    : [ `float ] Ops.Placeholder.t
-    ; placeholder_y    : [ `float ] Ops.Placeholder.t
-    }
-
-  val cross_entropy
-    :  seq_len:int
-    -> dim:int
-    -> init:'a
-    -> f:(x:[ `float ] Node.t -> mem:'a -> [ `float ] Node.t * [ `mem of 'a ])
-    -> t
 end

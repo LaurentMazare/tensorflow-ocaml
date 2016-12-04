@@ -13,24 +13,30 @@ let all_vars_with_names node =
 let train filename learning_rate =
   let dataset = Text_helper.create filename Float32 in
   let dim = Text_helper.dim dataset in
-  let { Cell.Unfold.err; placeholder_x; placeholder_y } =
+  let placeholder_x = Ops.placeholder ~type_:Float [] in
+  let placeholder_y = Ops.placeholder ~type_:Float [] in
+  let cross_entropy =
     let wy, by =
       Var.normalf [ size_c; dim ] ~stddev:0.1, Var.f [ dim ] 0.
     in
     let lstm = Staged.unstage (Cell.lstm ~size_c ~size_x:dim) in
     let zero = Ops.f 0. ~shape:[ batch_size; size_c ] in
-    Cell.Unfold.cross_entropy
-      ~seq_len
-      ~dim
-      ~init:(`h zero, `c zero)
-      ~f:(fun ~x ~mem:(`h h, `c c) ->
-        let mem = lstm ~h ~x ~c in
-        let `h h, `c _ = mem in
-        let y_bar = Ops.(h *^ wy + by) |> Ops.softmax in
-        y_bar, `mem mem)
+    let y_hats =
+      Cell.Unfold.unfold
+        ~xs:(Ops.Placeholder.to_node placeholder_x)
+        ~seq_len
+        ~dim
+        ~init:(`h zero, `c zero)
+        ~f:(fun ~x ~mem:(`h h, `c c) ->
+          let mem = lstm ~h ~x ~c in
+          let `h h, `c _ = mem in
+          let y_bar = Ops.(h *^ wy + by) |> Ops.softmax in
+          y_bar, `mem mem)
+    in
+    Cell.cross_entropy ~ys:(Ops.Placeholder.to_node placeholder_y) ~y_hats
   in
-  let gd = Optimizers.adam_minimizer err ~learning_rate:(Ops.f learning_rate) in
-  let save_node = Ops.save ~filename:"out.cpkt" (all_vars_with_names err) in
+  let gd = Optimizers.adam_minimizer cross_entropy ~learning_rate:(Ops.f learning_rate) in
+  let save_node = Ops.save ~filename:"out.cpkt" (all_vars_with_names cross_entropy) in
   let run sequence ~train =
     let targets = if train then gd else [] in
     let sum_err, batch_count =
@@ -41,7 +47,7 @@ let train filename learning_rate =
             ; float placeholder_y batch_y
             ]
         in
-        let sum_err = Session.run ~inputs ~targets Session.Output.(scalar_float err) in
+        let sum_err = Session.run ~inputs ~targets Session.Output.(scalar_float cross_entropy) in
         acc_err +. sum_err, acc_cnt + 1)
     in
     sum_err /. (float batch_count *. float seq_len *. float batch_size *. log 2.)

@@ -52,13 +52,10 @@ let gru_ ~type_ ~size_h ~size_x =
 let gru ~size_h ~size_x = gru_ ~type_:Float ~size_h ~size_x
 let gru_d ~size_h ~size_x = gru_ ~type_:Double ~size_h ~size_x
 
-module Unfold = struct
-  type t =
-    { err              : [ `float ] Node.t
-    ; placeholder_x    : [ `float ] Ops.Placeholder.t
-    ; placeholder_y    : [ `float ] Ops.Placeholder.t
-    }
+let cross_entropy ~ys ~y_hats =
+  Ops.(neg (ys * log y_hats) |> reduce_sum)
 
+module Unfold = struct
   let unfold ~xs ~seq_len ~dim ~init ~f =
     (* xs should be tensor of dimension:
          (batch_size, seq_len, dim)
@@ -76,21 +73,4 @@ module Unfold = struct
         Ops.reshape y_bar shape :: y_bars, mem)
     in
     Ops.concat Ops.one32 (List.rev y_bars)
-
-  let cross_entropy ~seq_len ~dim ~init ~f =
-    let placeholder_x = Ops.placeholder ~type_:Float [] in
-    let placeholder_y = Ops.placeholder ~type_:Float [] in
-    let y_hats =
-      unfold
-        ~xs:(Ops.Placeholder.to_node placeholder_x)
-        ~seq_len
-        ~dim
-        ~init
-        ~f
-    in
-    let ys = Ops.Placeholder.to_node placeholder_y in
-    { err = Ops.(neg (ys * log y_hats) |> reduce_sum)
-    ; placeholder_x
-    ; placeholder_y
-    }
 end
