@@ -30,14 +30,23 @@ val gru_d
      -> x: [ `double ] Node.t
      -> [ `double ] Node.t) Staged.t
 
-module Cross_entropy : sig
+module Unfold : sig
+  val unfold
+    :  xs:'b Node.t
+    -> batch_size:int
+    -> seq_len:int
+    -> dim:int
+    -> init:'a
+    -> f:(x:'b Node.t -> mem:'a -> 'b Node.t * [ `mem of 'a ])
+    -> 'b Node.t
+
   type t =
     { err              : [ `float ] Node.t
     ; placeholder_x    : [ `float ] Ops.Placeholder.t
     ; placeholder_y    : [ `float ] Ops.Placeholder.t
     }
 
-  val unfold
+  val cross_entropy
     :  batch_size:int
     -> seq_len:int
     -> dim:int

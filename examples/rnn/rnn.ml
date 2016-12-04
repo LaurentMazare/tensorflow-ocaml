@@ -13,13 +13,13 @@ let all_vars_with_names node =
 let train filename learning_rate =
   let dataset = Text_helper.create filename Float32 in
   let dim = Text_helper.dim dataset in
-  let { Cell.Cross_entropy.err; placeholder_x; placeholder_y } =
+  let { Cell.Unfold.err; placeholder_x; placeholder_y } =
     let wy, by =
       Var.normalf [ size_c; dim ] ~stddev:0.1, Var.f [ dim ] 0.
     in
     let lstm = Staged.unstage (Cell.lstm ~size_c ~size_x:dim) in
     let zero = Ops.f 0. ~shape:[ batch_size; size_c ] in
-    Cell.Cross_entropy.unfold
+    Cell.Unfold.cross_entropy
       ~batch_size
       ~seq_len
       ~dim
