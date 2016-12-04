@@ -84,14 +84,11 @@ let fit_and_evaluate ~dataset ~learning_rate ~checkpoint =
     let train_sequence = Text_helper.batch_sequence dataset ~seq_len ~batch_size in
     let sum_err, batch_count =
       Sequence.fold train_sequence ~init:(0., 0) ~f:(fun (acc_err, acc_cnt) (batch_x, batch_y) ->
-        let inputs =
-          Session.Input.
-            [ float t.train_placeholder_x batch_x
-            ; float t.train_placeholder_y batch_y
-            ]
-        in
         let sum_err =
-          Session.run ~inputs ~targets:gd Session.Output.(scalar_float t.train_err)
+          Session.run Session.Output.(scalar_float t.train_err)
+            ~inputs:Session.Input.
+              [ float t.train_placeholder_x batch_x; float t.train_placeholder_y batch_y ]
+            ~targets:gd
         in
         acc_err +. sum_err, acc_cnt + 1)
     in
@@ -126,15 +123,10 @@ let sample filename checkpoint gen_size temperature seed =
   let init = [], prev_y, t.initial_memory in
   let ys, _, _ =
     List.fold (List.range 0 gen_size) ~init ~f:(fun (acc_y, prev_y, prev_mem_data) i ->
-      let inputs =
-        Session.Input.
-          [ float t.sample_placeholder_x prev_y
-          ; float t.sample_placeholder_mem prev_mem_data
-          ]
-      in
       let y_res, mem_data =
-        Session.run ~inputs
-          Session.Output.(both (float t.sample_output) (float t.sample_output_mem))
+        Session.run Session.Output.(both (float t.sample_output) (float t.sample_output_mem))
+          ~inputs:Session.Input.
+            [ float t.sample_placeholder_x prev_y; float t.sample_placeholder_mem prev_mem_data ]
       in
       let y =
         if i < seed_length
@@ -163,11 +155,10 @@ let sample filename checkpoint gen_size temperature seed =
       Tensor.set y_res [| 0; y |] 1.;
       y :: acc_y, y_res, mem_data)
   in
-  let inv_map = Array.create ~len:dim 'X' in
+  let inv_map = Array.create ~len:dim '?' in
   Map.iteri index_by_char ~f:(fun ~key ~data ->
     inv_map.(data) <- Char.of_int_exn key);
-  List.rev ys
-  |> List.map ~f:(fun i -> inv_map.(i))
+  List.rev_map ys ~f:(fun i -> inv_map.(i))
   |> String.of_char_list
   |> printf "%s\n\n%!"
 
