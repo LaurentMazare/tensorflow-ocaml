@@ -53,7 +53,8 @@ let gru ~size_h ~size_x = gru_ ~type_:Float ~size_h ~size_x
 let gru_d ~size_h ~size_x = gru_ ~type_:Double ~size_h ~size_x
 
 let cross_entropy ~ys ~y_hats =
-  Ops.(neg (ys * log y_hats) |> reduce_sum)
+  let type_ = Node.output_type ys in
+  Ops.(neg (ys * log (y_hats + f_or_d ~type_ 1e-7)) |> reduce_sum)
 
 module Unfold = struct
   let unfold ~xs ~seq_len ~dim ~init ~f =

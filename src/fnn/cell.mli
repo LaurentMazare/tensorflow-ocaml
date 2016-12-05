@@ -31,7 +31,7 @@ val gru_d
      -> [ `double ] Node.t) Staged.t
 
 val cross_entropy
-  :  ys:([< `complex64 | `double | `float ] as 'a) Node.t
+  :  ys:([< `double | `float ] as 'a) Node.t
   -> y_hats:'a Node.t
   -> 'a Node.t
 
