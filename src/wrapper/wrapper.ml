@@ -620,34 +620,38 @@ module Graph = struct
     Tf_operationdescription.tf_addinputlist od ports (List.length op_and_indexes);
     keep_alive graph
 
-  let set_attr_int (_, od) ~attr_name value =
+  let set_attr_int (graph, od) ~attr_name value =
     Tf_operationdescription.tf_setattrint
       od
       (ptr_of_string attr_name)
-      (Int64.of_int value)
+      (Int64.of_int value);
+    keep_alive graph
 
-  let set_attr_int_list (_, od) ~attr_name values =
+  let set_attr_int_list (graph, od) ~attr_name values =
     let values = List.map Int64.of_int values in
     Tf_operationdescription.tf_setattrintlist
       od
       (ptr_of_string attr_name)
       CArray.(of_list int64_t values |> start)
-      (List.length values)
+      (List.length values);
+    keep_alive graph
 
-  let set_attr_float (_, od) ~attr_name value =
+  let set_attr_float (graph, od) ~attr_name value =
     Tf_operationdescription.tf_setattrfloat
       od
       (ptr_of_string attr_name)
-      value
+      value;
+    keep_alive graph
 
-  let set_attr_float_list (_, od) ~attr_name values =
+  let set_attr_float_list (graph, od) ~attr_name values =
     Tf_operationdescription.tf_setattrfloatlist
       od
       (ptr_of_string attr_name)
       CArray.(of_list float values |> start)
-      (List.length values)
+      (List.length values);
+    keep_alive graph
 
-  let set_attr_bool (_, od) ~attr_name value =
+  let set_attr_bool (graph, od) ~attr_name value =
     let value =
       if value
       then Unsigned.UChar.one
@@ -656,9 +660,10 @@ module Graph = struct
     Tf_operationdescription.tf_setattrbool
       od
       (ptr_of_string attr_name)
-      value
+      value;
+    keep_alive graph
 
-  let set_attr_bool_list (_, od) ~attr_name values =
+  let set_attr_bool_list (graph, od) ~attr_name values =
     let values =
       List.map
         (function
@@ -670,30 +675,34 @@ module Graph = struct
       od
       (ptr_of_string attr_name)
       CArray.(of_list uchar values |> start)
-      (List.length values)
+      (List.length values);
+    keep_alive graph
 
-  let set_attr_string (_, od) ~attr_name value =
+  let set_attr_string (graph, od) ~attr_name value =
     Tf_operationdescription.tf_setattrstring
       od
       (ptr_of_string attr_name)
       (ptr_of_string value)
-      (String.length value)
+      (String.length value);
+    keep_alive graph
 
-  let set_attr_type (_, od) ~attr_name dtype =
+  let set_attr_type (graph, od) ~attr_name dtype =
     Tf_operationdescription.tf_setattrtype
       od
       (ptr_of_string attr_name)
-      (data_type_to_int dtype)
+      (data_type_to_int dtype);
+    keep_alive graph
 
-  let set_attr_type_list (_, od) ~attr_name dtypes =
+  let set_attr_type_list (graph, od) ~attr_name dtypes =
     let dtypes = List.map data_type_to_int dtypes in
     Tf_operationdescription.tf_setattrtypelist
       od
       (ptr_of_string attr_name)
       CArray.(of_list int dtypes |> start)
-      (List.length dtypes)
+      (List.length dtypes);
+    keep_alive graph
 
-  let set_attr_tensor (_, od) ~attr_name tensor =
+  let set_attr_tensor (graph, od) ~attr_name tensor =
     let tensor = Tensor.c_tensor_of_tensor tensor in
     let status = Status.create () in
     Tf_operationdescription.tf_setattrtensor
@@ -701,9 +710,10 @@ module Graph = struct
       (ptr_of_string attr_name)
       tensor
       status;
+    keep_alive graph;
     Status.result_or_error status ()
 
-  let set_attr_tensor_string (_, od) ~attr_name strings =
+  let set_attr_tensor_string (graph, od) ~attr_name strings =
     let tensor = Tensor.c_tensor_of_strings strings in
     let status = Status.create () in
     Tf_operationdescription.tf_setattrtensor
@@ -711,9 +721,10 @@ module Graph = struct
       (ptr_of_string attr_name)
       tensor
       status;
+    keep_alive graph;
     Status.result_or_error status ()
 
-  let set_attr_tensors (_, od) ~attr_name tensors =
+  let set_attr_tensors (graph, od) ~attr_name tensors =
     let tensors = List.map Tensor.c_tensor_of_tensor tensors in
     let tensor_start = CArray.(of_list Tf_tensor.t tensors |> start) in
     let status = Status.create () in
@@ -723,9 +734,10 @@ module Graph = struct
       tensor_start
       (List.length tensors)
       status;
+    keep_alive graph;
     Status.result_or_error status ()
 
-  let set_attr_shape (_, od) ~attr_name shape =
+  let set_attr_shape (graph, od) ~attr_name shape =
     let num_dims = List.length shape in
     let shape = List.map Int64.of_int shape in
     let shape = CArray.(of_list int64_t shape |> start) in
@@ -733,7 +745,8 @@ module Graph = struct
       od
       (ptr_of_string attr_name)
       shape
-      num_dims
+      num_dims;
+    keep_alive graph
 
   let import = Graph_import.import
 
