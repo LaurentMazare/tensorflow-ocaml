@@ -1,3 +1,6 @@
+(* Sample implementation of:
+     "Using Fast Weights to Attend to the Recent Past" https://arxiv.org/abs/1610.06258
+*)
 open Core_kernel.Std
 open Tensorflow
 
@@ -6,8 +9,8 @@ let seq_len = 3
 let batch_size = 128
 let hidden_units = 50
 let depth = 2
-let train_samples = 512_000
-let valid_samples = 128_000
+let train_samples = 64_000
+let valid_samples = 16_000
 
 let generate_data ~samples =
   let xs = Tensor.create3 Float32 samples (3 + 2*seq_len) 37 in
@@ -86,17 +89,27 @@ let model ~input_len ~input_dim ~output_dim =
   in
   let y_hats = Ops.(fw_h *^ w_softmax + b_softmax |> softmax) in
   let cross_entropy = Cell.cross_entropy ~ys ~y_hats in
-  xs_placeholder, ys_placeholder, cross_entropy
+  let accuracy =
+    Ops.(equal (argMax y_hats one32) (argMax ys one32))
+    |> Ops.cast ~type_
+    |> Ops.reduce_mean
+  in
+  xs_placeholder, ys_placeholder, cross_entropy, accuracy
 
 let () =
   let train_xs, train_ys = generate_data ~samples:train_samples in
   let valid_xs, valid_ys = generate_data ~samples:valid_samples in
-  let xs_placeholder, ys_placeholder, cross_entropy =
+  let xs_placeholder, ys_placeholder, cross_entropy, accuracy =
     model ~input_len:(2*seq_len+3) ~input_dim:36 ~output_dim:10
   in
-  let gd = Optimizers.adam_minimizer cross_entropy ~learning_rate:(Ops.f 1e-4) in
+  let gd = Optimizers.adam_minimizer cross_entropy ~learning_rate:(Ops.f 1e-2) in
+  let train_batch_count = train_samples / batch_size in
+  let valid_batch_count = valid_samples / batch_size in
   for epoch = 1 to epochs do
-    for batch_idx = 0 to train_samples / batch_size - 1 do
+    let train_sum_err = ref 0. in
+    let valid_sum_err = ref 0. in
+    let valid_sum_accuracy = ref 0. in
+    for batch_idx = 0 to train_batch_count - 1 do
       let batch_start = batch_idx * batch_size in
       let inputs =
         Session.Input.
@@ -105,6 +118,26 @@ let () =
           ]
       in
       let err = Session.run ~inputs ~targets:gd Session.Output.(scalar_float cross_entropy) in
-      printf "%d %f\n" epoch err
-    done
+      train_sum_err := !train_sum_err +. err;
+    done;
+    for batch_idx = 0 to valid_batch_count - 1 do
+      let batch_start = batch_idx * batch_size in
+      let inputs =
+        Session.Input.
+          [ float xs_placeholder (Tensor.sub_left valid_xs batch_start batch_size)
+          ; float ys_placeholder (Tensor.sub_left valid_ys batch_start batch_size)
+          ]
+      in
+      let err, accuracy =
+        Session.run ~inputs ~targets:gd
+          Session.Output.(both (scalar_float cross_entropy) (scalar_float accuracy))
+      in
+      valid_sum_err := !valid_sum_err +. err;
+      valid_sum_accuracy := !valid_sum_accuracy +. accuracy;
+    done;
+    printf "%d %f %f %.2f%%\n%!"
+      epoch
+      (!train_sum_err /. float train_batch_count)
+      (!valid_sum_err /. float valid_batch_count)
+      (100. *. !valid_sum_accuracy /. float valid_batch_count)
   done
