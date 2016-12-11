@@ -433,6 +433,22 @@ module Tf_graph = struct
       (t
       @-> string
       @-> returning Tf_operation.t)
+
+  let tf_graphgettensornumdims =
+    foreign "TF_GraphGetTensorNumDims" ~from
+      (t
+      @-> Tf_port.t
+      @-> Tf_status.t
+      @-> returning int)
+
+  let tf_graphgettensorshape =
+    foreign "TF_GraphGetTensorShape" ~from
+      (t
+      @-> Tf_port.t
+      @-> int
+      @-> ptr int
+      @-> Tf_status.t
+      @-> returning void)
 end
 
 module Tf_operationdescription = struct
@@ -755,6 +771,18 @@ module Graph = struct
     if to_voidp operation = null
     then None
     else Some (t, operation)
+
+  let shape t port =
+    let status = Status.create () in
+    let num_dims = Tf_graph.tf_graphgettensornumdims t port status in
+    match Status.code status with
+    | TF_OK ->
+      let shape = CArray.make int num_dims in
+      let shape_start = CArray.start shape in
+      Tf_graph.tf_graphgettensorshape t port num_dims shape_start status;
+      let dims = CArray.to_list shape in
+      Status.result_or_error status dims
+    | _ -> Error status
 end
 
 module Tf_sessionoptions = struct

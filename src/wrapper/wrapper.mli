@@ -180,6 +180,11 @@ module Graph : sig
     :  t
     -> string
     -> operation option
+
+  val shape
+    :  t
+    -> port
+    -> int list Status.result
 end
 
 module Session : sig

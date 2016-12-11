@@ -76,8 +76,8 @@ let model ~input_len ~input_dim ~output_dim =
                   + reshape (fw_h *^ w_h) shape_fw_h_s_3
                   + batchMatMul fw_h_s fw_a)
               in
-              let mu = Ops.reduce_mean fw_h_s in
-              let sigma = Ops.(square (fw_h_s - mu) |> reduce_mean |> sqrt) in
+              let mu = Ops.reduce_mean fw_h_s ~dims:[ 0 ] in
+              let sigma = Ops.(square (fw_h_s - mu) |> reduce_mean ~dims:[ 0 ] |> sqrt) in
               Ops.(gain * (fw_h_s - mu) / sigma + bias |> relu))
         in
         let fw_h = Ops.reshape fw_h_s shape_fw_h_s_2 in
@@ -100,8 +100,8 @@ let () =
       let batch_start = batch_idx * batch_size in
       let inputs =
         Session.Input.
-          [ float xs_placeholder (Tensor.sub_left train_xs batch_start (batch_start+batch_size))
-          ; float ys_placeholder (Tensor.sub_left train_ys batch_start (batch_start+batch_size))
+          [ float xs_placeholder (Tensor.sub_left train_xs batch_start batch_size)
+          ; float ys_placeholder (Tensor.sub_left train_ys batch_start batch_size)
           ]
       in
       let err = Session.run ~inputs ~targets:gd Session.Output.(scalar_float cross_entropy) in
