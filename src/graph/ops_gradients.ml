@@ -162,20 +162,20 @@ let batch_matmul_gradient ~self ~gradient =
   let lhs, rhs = binary_extract_exn self in
   match adj_x, adj_y with
   | false, false ->
-    [ N.P (Ops.matMul gradient rhs ~transpose_a:false ~transpose_b:true)
-    ; N.P (Ops.matMul lhs gradient ~transpose_a:true ~transpose_b:false)
+    [ N.P (Ops.batchMatMul gradient rhs ~adj_x:false ~adj_y:true)
+    ; N.P (Ops.batchMatMul lhs gradient ~adj_x:true ~adj_y:false)
     ] |> all
   | false, true ->
-    [ N.P (Ops.matMul gradient rhs ~transpose_a:false ~transpose_b:false)
-    ; N.P (Ops.matMul lhs gradient ~transpose_a:true ~transpose_b:false)
+    [ N.P (Ops.batchMatMul gradient rhs ~adj_x:false ~adj_y:false)
+    ; N.P (Ops.batchMatMul lhs gradient ~adj_x:true ~adj_y:false)
     ] |> all
   | true, false ->
-    [ N.P (Ops.matMul gradient rhs ~transpose_a:false ~transpose_b:true)
-    ; N.P (Ops.matMul lhs gradient ~transpose_a:false ~transpose_b:false)
+    [ N.P (Ops.batchMatMul gradient rhs ~adj_x:false ~adj_y:true)
+    ; N.P (Ops.batchMatMul lhs gradient ~adj_x:false ~adj_y:false)
     ] |> all
   | true, true ->
-    [ N.P (Ops.matMul gradient rhs ~transpose_a:true ~transpose_b:true)
-    ; N.P (Ops.matMul lhs gradient ~transpose_a:true ~transpose_b:true)
+    [ N.P (Ops.batchMatMul gradient rhs ~adj_x:true ~adj_y:true)
+    ; N.P (Ops.batchMatMul lhs gradient ~adj_x:true ~adj_y:true)
     ] |> all
 
 (* Direct adaptation of math_grad.py from the tensorflow source code. *)
