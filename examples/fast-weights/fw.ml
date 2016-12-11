@@ -8,7 +8,7 @@ let epochs = 100000
 let seq_len = 3
 let batch_size = 128
 let hidden_units = 50
-let depth = 2
+let depth = 1
 let train_samples = 64_000
 let valid_samples = 16_000
 
@@ -44,7 +44,7 @@ let model ~input_len ~input_dim ~output_dim =
   let type_ = Node.Type.Float in
   let xs_placeholder = Ops.placeholder ~type_ [ batch_size; input_len; input_dim ] in
   let ys_placeholder = Ops.placeholder ~type_ [ batch_size; output_dim ] in
-  let l = Ops.const_float ~type_ [ 0.9 ] in
+  let l = Ops.const_float ~type_ [ 0.95 ] in
   let e = Ops.const_float ~type_ [ 0.5 ] in
   let xs = Ops.Placeholder.to_node xs_placeholder in
   let ys = Ops.Placeholder.to_node ys_placeholder in
@@ -94,7 +94,9 @@ let model ~input_len ~input_dim ~output_dim =
       )
   in
   let y_hats = Ops.(fw_h *^ w_softmax + b_softmax |> softmax) in
-  let cross_entropy = Cell.cross_entropy ~ys ~y_hats in
+  let cross_entropy =
+    Ops.(neg (ys * log (y_hats + f_or_d ~type_ 1e-7)) |> reduce_mean)
+  in
   let accuracy =
     Ops.(equal (argMax y_hats one32) (argMax ys one32))
     |> Ops.cast ~type_
