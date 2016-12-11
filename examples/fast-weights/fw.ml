@@ -48,11 +48,17 @@ let model ~input_len ~input_dim ~output_dim =
   let e = Ops.const_float ~type_ [ 0.5 ] in
   let xs = Ops.Placeholder.to_node xs_placeholder in
   let ys = Ops.Placeholder.to_node ys_placeholder in
-  (* TODO: proper initializations... *)
-  let w_x = Var.normal ~type_ [ input_dim; hidden_units ] ~stddev:0.1 in
+  let w_x =
+    let hi = sqrt (2. /. 37.) in
+    Var.uniform ~type_ [ input_dim; hidden_units ] ~lo:(-. hi) ~hi
+  in
   let b_x = Var.f_or_d [ hidden_units ] 0. ~type_ in
+  (* TODO: proper initializations... *)
   let w_h = Var.normal ~type_ [ hidden_units; hidden_units ] ~stddev:0.1 in
-  let w_softmax = Var.normal ~type_ [ hidden_units; output_dim ] ~stddev:0.1 in
+  let w_softmax =
+    let hi = sqrt (2. /. float hidden_units) in
+    Var.uniform ~type_ [ hidden_units; output_dim ] ~lo:(-. hi) ~hi
+  in
   let b_softmax = Var.normal ~type_ [ output_dim ] ~stddev:0.1 in
   let gain = Var.f_or_d [ hidden_units ] 1. ~type_ in
   let bias = Var.f_or_d [ hidden_units ] 0. ~type_ in
@@ -100,9 +106,9 @@ let () =
   let train_xs, train_ys = generate_data ~samples:train_samples in
   let valid_xs, valid_ys = generate_data ~samples:valid_samples in
   let xs_placeholder, ys_placeholder, cross_entropy, accuracy =
-    model ~input_len:(2*seq_len+3) ~input_dim:36 ~output_dim:10
+    model ~input_len:(2*seq_len+3) ~input_dim:37 ~output_dim:10
   in
-  let gd = Optimizers.adam_minimizer cross_entropy ~learning_rate:(Ops.f 1e-2) in
+  let gd = Optimizers.adam_minimizer cross_entropy ~learning_rate:(Ops.f 1e-3) in
   let train_batch_count = train_samples / batch_size in
   let valid_batch_count = valid_samples / batch_size in
   for epoch = 1 to epochs do

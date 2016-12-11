@@ -34,6 +34,16 @@ val truncated_normal
 val truncated_normalf : int list -> stddev:float -> [ `float ] Node.t
 val truncated_normald : int list -> stddev:float -> [ `double ] Node.t
 
+val uniform
+  :  int list
+  -> lo:float
+  -> hi:float
+  -> type_:([< `float | `double] as 'a) Node.Type.t
+  -> 'a Node.t
+
+val uniformf : int list -> lo:float -> hi:float -> [ `float ] Node.t
+val uniformd : int list -> lo:float -> hi:float -> [ `double ] Node.t
+
 val load_f : int list -> filename:string -> tensor:string -> [ `float ] Node.t
 val load_d : int list -> filename:string -> tensor:string -> [ `double ] Node.t
 

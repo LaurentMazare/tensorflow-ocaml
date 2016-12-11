@@ -26,24 +26,31 @@ let f_or_d shape x ~type_ = create shape ~type_ ~init:(Ops.f_or_d x ~shape ~type
 let f shape x = f_or_d shape x ~type_:Float
 let d shape x = f_or_d shape x ~type_:Double
 
-let normal_gen node shape ~type_ ~stddev =
+let gen node shape ~type_ ~scale =
   let init =
     node (Ops.const_int ~type_:Int32 shape) ~type_
-    |> Ops.mul (Ops.f_or_d stddev ~type_)
+    |> Ops.mul (Ops.f_or_d scale ~type_)
   in
   create shape ~init ~type_
 
 let normal shape ~stddev ~type_ =
-  normal_gen (fun shape -> Ops.randomStandardNormal shape) shape ~type_ ~stddev
+  gen (fun shape -> Ops.randomStandardNormal shape) shape ~type_ ~scale:stddev
 
 let normalf = normal ~type_:Float
 let normald = normal ~type_:Double
 
 let truncated_normal shape ~stddev ~type_ =
-  normal_gen (fun shape -> Ops.truncatedNormal shape) shape ~type_ ~stddev
+  gen (fun shape -> Ops.truncatedNormal shape) shape ~type_ ~scale:stddev
 
 let truncated_normalf = truncated_normal ~type_:Float
 let truncated_normald = truncated_normal ~type_:Double
+
+let uniform shape ~lo ~hi ~type_ =
+  gen (fun shape -> Ops.randomUniform shape) shape ~type_ ~scale:(hi -. lo)
+  |> Ops.add (Ops.f_or_d lo ~type_)
+
+let uniformf = uniform ~type_:Float
+let uniformd = uniform ~type_:Double
 
 let get_init p = Node.Weak_table.find init_table p
 
