@@ -6,10 +6,8 @@ let seq_len = 3
 let batch_size = 128
 let hidden_units = 50
 let depth = 2
-
-let all_vars_with_names node =
-  Var.get_all_vars node
-  |> List.mapi ~f:(fun i var -> sprintf "V%d" i, var)
+let train_samples = 512_000
+let valid_samples = 128_000
 
 let generate_data ~samples =
   let xs = Tensor.create3 Float32 samples (3 + 2*seq_len) 37 in
@@ -59,9 +57,9 @@ let model ~input_len ~input_dim ~output_dim =
   let fw_a = Ops.f_or_d 0. ~shape:[ batch_size; hidden_units; hidden_units ] ~type_ in
   let fw_h = Ops.f_or_d 0. ~shape:[ batch_size; hidden_units ] ~type_ in
   let shape_fw_h_s_3 = const_i32 ~shape:[ 3 ] [ batch_size; 1; hidden_units ] in
-  let shape_fw_h_s_2 = const_i32 ~shape:[ 3 ] [ batch_size; hidden_units ] in
+  let shape_fw_h_s_2 = const_i32 ~shape:[ 2 ] [ batch_size; hidden_units ] in
   let zero_two_one = const_i32 ~shape:[ 3 ] [ 0; 2; 1 ] in
-  let fw_a, fw_h =
+  let _, fw_h =
     List.init input_len ~f:Fn.id
     |> List.fold ~init:(fw_a, fw_h) ~f:(fun (fw_a, fw_h) input_idx ->
         let xs = Ops.slice xs (const_i32 [ 0; input_idx; 0 ]) (const_i32 [ batch_size; 1; input_dim ]) in
@@ -90,6 +88,22 @@ let model ~input_len ~input_dim ~output_dim =
   xs_placeholder, ys_placeholder, cross_entropy
 
 let () =
-  let test_xs, test_ys = generate_data ~samples:512_000 in
-  let valid_xs, valid_ys = generate_data ~samples:128_000 in
-  ()
+  let train_xs, train_ys = generate_data ~samples:train_samples in
+  let valid_xs, valid_ys = generate_data ~samples:valid_samples in
+  let xs_placeholder, ys_placeholder, cross_entropy =
+    model ~input_len:(2*seq_len+3) ~input_dim:36 ~output_dim:10
+  in
+  let gd = Optimizers.adam_minimizer cross_entropy ~learning_rate:(Ops.f 1e-4) in
+  for epoch = 1 to epochs do
+    for batch_idx = 0 to train_samples / batch_size - 1 do
+      let batch_start = batch_idx * batch_size in
+      let inputs =
+        Session.Input.
+          [ float xs_placeholder (Tensor.sub_left train_xs batch_start (batch_start+batch_size))
+          ; float ys_placeholder (Tensor.sub_left train_ys batch_start (batch_start+batch_size))
+          ]
+      in
+      let err = Session.run ~inputs ~targets:gd Session.Output.(scalar_float cross_entropy) in
+      printf "%d %f\n" epoch err
+    done
+  done

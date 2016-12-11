@@ -148,6 +148,36 @@ let matmul_gradient ~self ~gradient =
     ; N.P (Ops.matMul gradient lhs ~transpose_a:true ~transpose_b:true)
     ] |> all
 
+let batch_matmul_gradient ~self ~gradient =
+  let get_adj str =
+    List.Assoc.find (N.attributes self) str
+    |> Option.value_map
+        ~default:false
+        ~f:(function
+          | N.Bool b -> b
+          | _ -> assert false)
+  in
+  let adj_x = get_adj "adj_x" in
+  let adj_y = get_adj "adj_y" in
+  let lhs, rhs = binary_extract_exn self in
+  match adj_x, adj_y with
+  | false, false ->
+    [ N.P (Ops.matMul gradient rhs ~transpose_a:false ~transpose_b:true)
+    ; N.P (Ops.matMul lhs gradient ~transpose_a:true ~transpose_b:false)
+    ] |> all
+  | false, true ->
+    [ N.P (Ops.matMul gradient rhs ~transpose_a:false ~transpose_b:false)
+    ; N.P (Ops.matMul lhs gradient ~transpose_a:true ~transpose_b:false)
+    ] |> all
+  | true, false ->
+    [ N.P (Ops.matMul gradient rhs ~transpose_a:false ~transpose_b:true)
+    ; N.P (Ops.matMul lhs gradient ~transpose_a:false ~transpose_b:false)
+    ] |> all
+  | true, true ->
+    [ N.P (Ops.matMul gradient rhs ~transpose_a:true ~transpose_b:true)
+    ; N.P (Ops.matMul lhs gradient ~transpose_a:true ~transpose_b:true)
+    ] |> all
+
 (* Direct adaptation of math_grad.py from the tensorflow source code. *)
 let reduce_gradient ~self =
   let N.P input, N.P indices =
@@ -387,12 +417,12 @@ let concat_gradient ~self ~gradient =
 let split_gradient ~self ~gradients =
   match N.inputs self with
   | [ `single split_dim; _ ] ->
-    let num_split = Option.value_exn (Node.get_attr_int self "num_split") in
+    let num_split = Option.value_exn (N.get_attr_int self "num_split") in
     let all_gradients =
       List.init num_split ~f:(fun output_idx ->
         match Map.find gradients output_idx with
         | Some gradient -> gradient
-        | None -> Ops.zerosLike (Node.set_output_idx self (Some output_idx)))
+        | None -> Ops.zerosLike (N.set_output_idx self (Some output_idx)))
     in
     let split_dim =
       match N.extract split_dim Int32 with
@@ -437,7 +467,7 @@ let merge_gradient ~self ~gradients =
 
 let pad_gradient ~self ~gradient =
   match N.inputs self with
-  | [ `single (Node.P x); `single padding ] ->
+  | [ `single (N.P x); `single padding ] ->
     let padding = N.extract_exn padding Int32 in
     let pad_before =
       Ops.slice
@@ -454,47 +484,65 @@ let pad_gradient ~self ~gradient =
     [ Some (N.P gradient); None ]
   | _ -> failwith "pad should have two single inputs"
 
+let transpose_gradient ~self ~gradient =
+  let gradients ~indices =
+    [ Some (N.P (Ops.transpose gradient (Ops.invertPermutation indices))); None ]
+  in
+  let indices =
+    match N.inputs self with
+    | [ `single _; `single indices ] -> indices
+    | _ -> failwith "Incorrect number of inputs"
+  in
+  match N.extract indices Int32 with
+  | Some indices -> gradients ~indices
+  | None ->
+    match N.extract indices Int64 with
+    | Some indices -> gradients ~indices
+    | None -> failwith "Improper type for indexes in transpose"
+
 let register_all () =
   let module O = Ops.Op_names in
   List.iter ~f:(fun (name, f) -> Registered_gradients.add name f)
-    [ O.abs,     { Registered_gradients.f = abs_gradient }
-    ; O.add,     { f = add_gradient }
-    ; O.addN,    { f = addn_gradient }
-    ; O.avgPool, { f = avgpool_gradient }
-    ; O.concat,  { f = concat_gradient }
-    ; O.cos,     { f = cos_gradient }
-    ; O.conv2D,  { f = conv2d_gradient }
-    ; O.div,     { f = div_gradient }
-    ; O.erf,     { f = erf_gradient }
-    ; O.erfc,    { f = erfc_gradient }
-    ; O.exp,     { f = exp_gradient }
-    ; O.fill,    { f = fill_gradient }
-    ; O.floor,   { f = none }
-    ; O.identity,{ f = identity_gradient }
-    ; O.inv,     { f = inv_gradient }
-    ; O.log,     { f = log_gradient }
-    ; O.matMul,  { f = matmul_gradient }
-    ; O.max,     { f = minmax_gradient }
-    ; O.maxPool, { f = maxpool_gradient }
-    ; O.mean,    { f = mean_gradient }
-    ; O.min,     { f = minmax_gradient }
-    ; O.mul,     { f = mul_gradient }
-    ; O.neg,     { f = neg_gradient }
-    ; O.pad,     { f = pad_gradient }
-    ; O.pow,     { f = pow_gradient }
-    ; O.relu,    { f = relu_gradient }
-    ; O.reshape, { f = reshape_gradient }
-    ; O.rsqrt,   { f = rsqrt_gradient }
-    ; O.select,  { f = select_gradient }
-    ; O.sigmoid, { f = sigmoid_gradient }
-    ; O.sign,    { f = sign_gradient }
-    ; O.sin,     { f = sin_gradient }
-    ; O.softmax, { f = softmax_gradient }
-    ; O.sqrt,    { f = sqrt_gradient }
-    ; O.square,  { f = square_gradient }
-    ; O.sub,     { f = sub_gradient }
-    ; O.sum,     { f = sum_gradient }
-    ; O.tanh,    { f = tanh_gradient }
+    [ O.abs,         { Registered_gradients.f = abs_gradient }
+    ; O.add,         { f = add_gradient }
+    ; O.addN,        { f = addn_gradient }
+    ; O.avgPool,     { f = avgpool_gradient }
+    ; O.batchMatMul, { f = batch_matmul_gradient }
+    ; O.concat,      { f = concat_gradient }
+    ; O.cos,         { f = cos_gradient }
+    ; O.conv2D,      { f = conv2d_gradient }
+    ; O.div,         { f = div_gradient }
+    ; O.erf,         { f = erf_gradient }
+    ; O.erfc,        { f = erfc_gradient }
+    ; O.exp,         { f = exp_gradient }
+    ; O.fill,        { f = fill_gradient }
+    ; O.floor,       { f = none }
+    ; O.identity,    { f = identity_gradient }
+    ; O.inv,         { f = inv_gradient }
+    ; O.log,         { f = log_gradient }
+    ; O.matMul,      { f = matmul_gradient }
+    ; O.max,         { f = minmax_gradient }
+    ; O.maxPool,     { f = maxpool_gradient }
+    ; O.mean,        { f = mean_gradient }
+    ; O.min,         { f = minmax_gradient }
+    ; O.mul,         { f = mul_gradient }
+    ; O.neg,         { f = neg_gradient }
+    ; O.pad,         { f = pad_gradient }
+    ; O.pow,         { f = pow_gradient }
+    ; O.relu,        { f = relu_gradient }
+    ; O.reshape,     { f = reshape_gradient }
+    ; O.rsqrt,       { f = rsqrt_gradient }
+    ; O.select,      { f = select_gradient }
+    ; O.sigmoid,     { f = sigmoid_gradient }
+    ; O.sign,        { f = sign_gradient }
+    ; O.sin,         { f = sin_gradient }
+    ; O.softmax,     { f = softmax_gradient }
+    ; O.sqrt,        { f = sqrt_gradient }
+    ; O.square,      { f = square_gradient }
+    ; O.sub,         { f = sub_gradient }
+    ; O.sum,         { f = sum_gradient }
+    ; O.tanh,        { f = tanh_gradient }
+    ; O.transpose,   { f = transpose_gradient }
     ];
   List.iter ~f:(fun (name, g) -> Registered_gradients.add_multi name g)
     [ O.split,   { Registered_gradients.g = split_gradient }
