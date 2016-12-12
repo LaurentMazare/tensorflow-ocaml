@@ -57,21 +57,29 @@ let cross_entropy ~ys ~y_hats =
   Ops.(neg (ys * log (y_hats + f_or_d ~type_ 1e-7)) |> reduce_sum)
 
 module Unfold = struct
-  let unfold ~xs ~seq_len ~dim ~init ~f =
+  let unfold_gen ~xs ~seq_len ~input_dim ~output_shape ~init ~f =
     (* xs should be tensor of dimension:
-         (batch_size, seq_len, dim)
+         (batch_size, seq_len, input_dim)
        Split it the seq_len dimension to unroll the rnn.
     *)
     let xs =
-      let shape = Ops.const_int ~type_:Int32 [ -1; dim ] in
+      let shape = Ops.const_int ~type_:Int32 [ -1; input_dim ] in
       Ops.split Ops.one32 xs ~num_split:seq_len
       |> List.map ~f:(fun n -> Ops.reshape n shape)
     in
     let y_bars, _output_mem =
-      let shape = Ops.const_int ~type_:Int32 [ -1; 1; dim ] in
+      let shape = Ops.const_int ~type_:Int32 output_shape in
       List.fold xs ~init:([], init) ~f:(fun (y_bars, mem) x ->
         let y_bar, `mem mem = f ~x ~mem in
         Ops.reshape y_bar shape :: y_bars, mem)
     in
+    y_bars
+
+  let unfold ~xs ~seq_len ~dim ~init ~f =
+    let y_bars = unfold_gen ~xs ~seq_len ~input_dim:dim ~output_shape:[ -1; 1; dim ] ~init ~f in
     Ops.concat Ops.one32 (List.rev y_bars)
+
+  let unfold_last ~xs ~seq_len ~input_dim ~output_dim ~init ~f =
+    unfold_gen ~xs ~seq_len ~input_dim ~output_shape:[ -1; output_dim ] ~init ~f
+    |> List.hd
 end

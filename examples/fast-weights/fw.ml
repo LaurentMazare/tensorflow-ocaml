@@ -40,14 +40,10 @@ let generate_data ~samples =
 let const_i32 = Ops.const_int ~type_:Int32
 
 (* Adapted from https://github.com/ajarai/fast-weights. *)
-let model ~input_len ~input_dim ~output_dim =
+let recursive_model ~input_dim =
   let type_ = Node.Type.Float in
-  let xs_placeholder = Ops.placeholder ~type_ [ batch_size; input_len; input_dim ] in
-  let ys_placeholder = Ops.placeholder ~type_ [ batch_size; output_dim ] in
   let l = Ops.const_float ~type_ [ 0.95 ] in
   let e = Ops.const_float ~type_ [ 0.5 ] in
-  let xs = Ops.Placeholder.to_node xs_placeholder in
-  let ys = Ops.Placeholder.to_node ys_placeholder in
   let w_x =
     let hi = sqrt (2. /. 37.) in
     Var.uniform ~type_ [ input_dim; hidden_units ] ~lo:(-. hi) ~hi
@@ -55,44 +51,53 @@ let model ~input_len ~input_dim ~output_dim =
   let b_x = Var.f_or_d [ hidden_units ] 0. ~type_ in
   (* TODO: proper initializations... *)
   let w_h = Var.normal ~type_ [ hidden_units; hidden_units ] ~stddev:0.1 in
+  let gain = Var.f_or_d [ hidden_units ] 1. ~type_ in
+  let bias = Var.f_or_d [ hidden_units ] 0. ~type_ in
+  let shape_fw_h_s_3 = const_i32 ~shape:[ 3 ] [ batch_size; 1; hidden_units ] in
+  let shape_fw_h_s_2 = const_i32 ~shape:[ 2 ] [ batch_size; hidden_units ] in
+  let zero_two_one = const_i32 ~shape:[ 3 ] [ 0; 2; 1 ] in
+  let init =
+    Ops.f_or_d 0. ~shape:[ batch_size; hidden_units; hidden_units ] ~type_,
+    Ops.f_or_d 0. ~shape:[ batch_size; hidden_units ] ~type_
+  in
+  init,
+  Staged.stage (fun ~x ~mem:(fw_a, fw_h) ->
+    let fw_h = Ops.(x *^ w_x + fw_h *^ w_h + b_x |> relu) in
+    let fw_h_s = Ops.reshape fw_h shape_fw_h_s_3 in
+    let fw_a = Ops.(l * fw_a + e * batchMatMul (transpose fw_h_s zero_two_one) fw_h_s) in
+    let fw_h_s =
+      List.init depth ~f:Fn.id
+      |> List.fold ~init:fw_h_s ~f:(fun fw_h_s _idx ->
+          let fw_h_s =
+            Ops.(
+              reshape (x *^ w_x + b_x) shape_fw_h_s_3
+              + reshape (fw_h *^ w_h) shape_fw_h_s_3
+              + batchMatMul fw_h_s fw_a)
+          in
+          let mu = Ops.reduce_mean fw_h_s ~dims:[ 0 ] in
+          let sigma = Ops.(square (fw_h_s - mu) |> reduce_mean ~dims:[ 0 ] |> sqrt) in
+          Ops.(gain * (fw_h_s - mu) / sigma + bias |> relu))
+    in
+    let fw_h = Ops.reshape fw_h_s shape_fw_h_s_2 in
+    fw_h, `mem (fw_a, fw_h))
+
+let model ~input_len ~input_dim ~output_dim =
+  let type_ = Node.Type.Float in
+  let xs_placeholder = Ops.placeholder ~type_ [ batch_size; input_len; input_dim ] in
+  let ys_placeholder = Ops.placeholder ~type_ [ batch_size; output_dim ] in
+  let xs = Ops.Placeholder.to_node xs_placeholder in
+  let ys = Ops.Placeholder.to_node ys_placeholder in
   let w_softmax =
     let hi = sqrt (2. /. float hidden_units) in
     Var.uniform ~type_ [ hidden_units; output_dim ] ~lo:(-. hi) ~hi
   in
   let b_softmax = Var.normal ~type_ [ output_dim ] ~stddev:0.1 in
-  let gain = Var.f_or_d [ hidden_units ] 1. ~type_ in
-  let bias = Var.f_or_d [ hidden_units ] 0. ~type_ in
-  let fw_a = Ops.f_or_d 0. ~shape:[ batch_size; hidden_units; hidden_units ] ~type_ in
-  let fw_h = Ops.f_or_d 0. ~shape:[ batch_size; hidden_units ] ~type_ in
-  let shape_fw_h_s_3 = const_i32 ~shape:[ 3 ] [ batch_size; 1; hidden_units ] in
-  let shape_fw_h_s_2 = const_i32 ~shape:[ 2 ] [ batch_size; hidden_units ] in
-  let shape_xs = const_i32 ~shape:[ 2 ] [ batch_size; input_dim ] in
-  let zero_two_one = const_i32 ~shape:[ 3 ] [ 0; 2; 1 ] in
-  let _, fw_h =
-    List.init input_len ~f:Fn.id
-    |> List.fold ~init:(fw_a, fw_h) ~f:(fun (fw_a, fw_h) input_idx ->
-        let xs = Ops.slice xs (const_i32 [ 0; input_idx; 0 ]) (const_i32 [ batch_size; 1; input_dim ]) in
-        let xs = Ops.reshape xs shape_xs in
-        let fw_h = Ops.(xs *^ w_x + fw_h *^ w_h + b_x |> relu) in
-        let fw_h_s = Ops.reshape fw_h shape_fw_h_s_3 in
-        let fw_a = Ops.(l * fw_a + e * batchMatMul (transpose fw_h_s zero_two_one) fw_h_s) in
-        let fw_h_s =
-          List.init depth ~f:Fn.id
-          |> List.fold ~init:fw_h_s ~f:(fun fw_h_s _idx ->
-              let fw_h_s =
-                Ops.(
-                  reshape (xs *^ w_x + b_x) shape_fw_h_s_3
-                  + reshape (fw_h *^ w_h) shape_fw_h_s_3
-                  + batchMatMul fw_h_s fw_a)
-              in
-              let mu = Ops.reduce_mean fw_h_s ~dims:[ 0 ] in
-              let sigma = Ops.(square (fw_h_s - mu) |> reduce_mean ~dims:[ 0 ] |> sqrt) in
-              Ops.(gain * (fw_h_s - mu) / sigma + bias |> relu))
-        in
-        let fw_h = Ops.reshape fw_h_s shape_fw_h_s_2 in
-        fw_a, fw_h
-      )
+  let init, f = recursive_model ~input_dim in
+  let fw_h =
+    Cell.Unfold.unfold_last
+      ~xs ~seq_len:input_len ~input_dim ~output_dim:hidden_units ~init ~f:(Staged.unstage f)
   in
+  let fw_h = Option.value_exn fw_h in
   let y_hats = Ops.(fw_h *^ w_softmax + b_softmax |> softmax) in
   let cross_entropy =
     Ops.(neg (ys * log (y_hats + f_or_d ~type_ 1e-7)) |> reduce_mean)
