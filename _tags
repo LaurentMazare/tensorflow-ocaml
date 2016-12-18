@@ -1,6 +1,7 @@
 true: package(ctypes), package(ctypes.foreign), package(ctypes.stubs)
 <examples/*/*_gnuplot.*> or <examples/basics/rnn.*>: package(gnuplot)
 <examples/*/*.native>: use_tensorflow
+<examples/*/*.native>: linkdep(src/wrapper/tf_stubs.o)
 <tests/*.native>: linkdep(src/wrapper/tf_stubs.o)
 <examples/char_rnn/*>: package(cmdliner)
 <examples/rnn/*>: package(cmdliner)
