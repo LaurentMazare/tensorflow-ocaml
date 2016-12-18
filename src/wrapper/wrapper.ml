@@ -282,8 +282,6 @@ module Status = struct
     Gc.finalise tf_deletestatus status;
     status
 
-  let set = tf_setstatus
-
   let code t = tf_getcode t |> code_of_int
 
   let message = tf_message
