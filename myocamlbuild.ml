@@ -7,6 +7,7 @@ let () =
    *)
       Options.use_ocamlfind := true
     | After_rules ->
+      dep ["c"; "compile"] [ "src/wrapper/c_api.h" ];
       pdep ["link"] "linkdep" (fun param -> [param]);
       rule "cstubs"
         ~prods:["src/wrapper/%_stubs.c"; "src/wrapper/%_generated.ml"]
