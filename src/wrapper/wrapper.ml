@@ -2,6 +2,7 @@ open Ctypes
 open Foreign
 
 let from = Dl.dlopen ~filename:"libtensorflow-0.11.so" ~flags:[ RTLD_LAZY ]
+module C = Tf_bindings.C(Tf_generated)
 
 let verbose = false
 let force_full_major = false
@@ -69,17 +70,6 @@ let int_to_data_type = function
 module Tf_tensor = struct
   type t = unit ptr
   let t : t typ = ptr void
-
-  let tf_newtensor =
-    foreign "TF_NewTensor" ~from
-      (int            (* data type *)
-      @-> ptr int64_t (* dims *)
-      @-> int         (* num dims *)
-      @-> ptr void    (* data *)
-      @-> size_t      (* len *)
-      @-> funptr (ptr void @-> int @-> ptr void @-> returning void) (* deallocator *)
-      @-> ptr void    (* deallocator arg *)
-      @-> returning t)
 
   let tf_deletetensor =
     foreign "TF_DeleteTensor" ~from (t @-> returning void)
@@ -174,7 +164,7 @@ module Tensor = struct
     in
     if force_full_major
     then Gc.full_major ();
-    tf_newtensor (data_type_to_int data_type)
+    C.tf_newtensor (data_type_to_int data_type)
       dims
       num_dims
       start
@@ -259,7 +249,7 @@ module Tensor = struct
     let start = bigarray_start genarray bigarray |> to_voidp in
     if force_full_major
     then Gc.full_major ();
-    tf_newtensor (data_type_to_int TF_STRING)
+    C.tf_newtensor (data_type_to_int TF_STRING)
       dims
       1
       start
