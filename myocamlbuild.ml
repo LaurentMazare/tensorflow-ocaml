@@ -3,8 +3,6 @@ let () =
   dispatch (function
     | Before_options ->
       flag ["ocaml"; "link"] (S [ A "-cclib"; A "-ltensorflow"; A "-cclib"; A "-L../lib" ]);
-  (*flag ["ocaml"; "link"] (S [ A "-cclib"; A "-ltensorflow"; A "-cclib"; A "-L../lib2" ]);
-   *)
       Options.use_ocamlfind := true
     | After_rules ->
       dep ["c"; "compile"] [ "src/wrapper/c_api.h" ];

@@ -13,7 +13,7 @@ module C(F: Cstubs.FOREIGN) = struct
         @-> int         (* num dims *)
         @-> ptr void    (* data *)
         @-> size_t      (* len *)
-        @-> Foreign.funptr Ctypes.(ptr void @-> size_t @-> ptr void @-> returning void) (* deallocator *)
+        @-> static_funptr Ctypes.(ptr void @-> size_t @-> ptr void @-> returning void) (* deallocator *)
         @-> ptr void    (* deallocator arg *)
         @-> returning t)
 

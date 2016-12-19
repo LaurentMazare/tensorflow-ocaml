@@ -1,9 +1,9 @@
 lib: [
-  "_build/src/tensorflow.a" {"tensorflow.a"}
-  "_build/src/tensorflow.cmxa" {"tensorflow.cmxa"}
-  "_build/src/tensorflow.cma" {"tensorflow.cma"}
-  "_build/src/tensorflow.cmxs" {"tensorflow.cmxs"}
-  "_build/src/tensorflow.cmx" {"tensorflow.cmx"}
-  "_build/src/tensorflow.cmi" {"tensorflow.cmi"}
+  "_build/tensorflow.a" {"tensorflow.a"}
+  "_build/tensorflow.cmxa" {"tensorflow.cmxa"}
+  "_build/tensorflow.cma" {"tensorflow.cma"}
+  "_build/tensorflow.cmxs" {"tensorflow.cmxs"}
+  "_build/tensorflow.cmx" {"tensorflow.cmx"}
+  "_build/tensorflow.cmi" {"tensorflow.cmi"}
   "META"
 ]
