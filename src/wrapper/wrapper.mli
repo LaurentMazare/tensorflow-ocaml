@@ -61,7 +61,7 @@ module Graph : sig
   type t
   type operation
   type operation_description
-  type port
+  type output
 
   val create : unit -> t
 
@@ -91,7 +91,7 @@ module Graph : sig
     -> (operation * int) list
     -> unit
 
-  val create_port : operation -> index:int -> port
+  val create_output : operation -> index:int -> output
 
   val set_attr_int
     :  operation_description
@@ -183,7 +183,7 @@ module Graph : sig
 
   val shape
     :  t
-    -> port
+    -> output
     -> int list Status.result
 end
 
@@ -196,8 +196,8 @@ module Session : sig
     -> t Status.result
 
   val run
-    :  ?inputs:(Graph.port * Tensor.p) list
-    -> ?outputs:Graph.port list
+    :  ?inputs:(Graph.output * Tensor.p) list
+    -> ?outputs:Graph.output list
     -> ?targets:Graph.operation list
     -> t
     -> Tensor.p list Status.result

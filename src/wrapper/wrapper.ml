@@ -354,7 +354,7 @@ module Graph = struct
      has been succesfully called. *)
   type operation_description = Tf_graph.t * Tf_operationdescription.t
 
-  type port = Tf_port.t structure
+  type output = Tf_output.t structure
 
   let live_strings = ref []
 
@@ -366,11 +366,11 @@ module Graph = struct
     CArray.set carray len '\x00';
     CArray.start carray
 
-  let create_port (_graph, op) ~index =
-    let port = make Tf_port.t in
-    setf port Tf_port.oper op;
-    setf port Tf_port.index index;
-    port
+  let create_output (_graph, op) ~index =
+    let output = make Tf_output.t in
+    setf output Tf_output.oper op;
+    setf output Tf_output.index index;
+    output
 
   let new_operation t ~op_name ~name =
     let od =
@@ -395,18 +395,18 @@ module Graph = struct
   let add_input (graph, od) (graph', op) ~index =
     if graph != graph'
     then failwith "Calling add_input on different graphs.";
-    let port = create_port (graph, op) ~index in
-    Tf_operationdescription.tf_addinput od port;
+    let output = create_output (graph, op) ~index in
+    Tf_operationdescription.tf_addinput od output;
     keep_alive graph
 
   let add_inputs (graph, od) op_and_indexes =
-    let ports =
-      List.map (fun (op, index) -> create_port op ~index)
+    let outputs =
+      List.map (fun (op, index) -> create_output op ~index)
         op_and_indexes
-      |> CArray.of_list Tf_port.t
+      |> CArray.of_list Tf_output.t
       |> CArray.start
     in
-    Tf_operationdescription.tf_addinputlist od ports (List.length op_and_indexes);
+    Tf_operationdescription.tf_addinputlist od outputs (List.length op_and_indexes);
     keep_alive graph
 
   let set_attr_int (graph, od) ~attr_name value =
@@ -545,14 +545,14 @@ module Graph = struct
     then None
     else Some (t, operation)
 
-  let shape t port =
+  let shape t output =
     let status = Status.create () in
-    let num_dims = Tf_graph.tf_graphgettensornumdims t port status in
+    let num_dims = Tf_graph.tf_graphgettensornumdims t output status in
     match Status.code status with
     | TF_OK ->
       let shape = CArray.make int num_dims in
       let shape_start = CArray.start shape in
-      Tf_graph.tf_graphgettensorshape t port num_dims shape_start status;
+      Tf_graph.tf_graphgettensorshape t output num_dims shape_start status;
       let dims = CArray.to_list shape in
       Status.result_or_error status dims
     | _ -> Error status
@@ -590,10 +590,10 @@ module Session = struct
   let run ?(inputs = []) ?(outputs = []) ?(targets = []) (graph, t) =
     let status = Status.create () in
     let ninputs = List.length inputs in
-    let input_ports, input_tensors = List.split inputs in
-    let input_ports = CArray.(of_list Tf_port.t input_ports |> start) in
+    let input_outputs, input_tensors = List.split inputs in
+    let input_outputs = CArray.(of_list Tf_output.t input_outputs |> start) in
     let input_tensors = List.map Tensor.c_tensor_of_tensor input_tensors in
-    let output_ports = CArray.(of_list Tf_port.t outputs |> start) in
+    let output_outputs = CArray.(of_list Tf_output.t outputs |> start) in
     let output_len = List.length outputs in
     let output_tensors = CArray.make Tf_tensor.t output_len in
     let input_tensor_start = CArray.(of_list Tf_tensor.t input_tensors |> start) in
@@ -606,10 +606,10 @@ module Session = struct
     Tf_sessionwithgraph.tf_sessionrun
       t
       null
-      input_ports
+      input_outputs
       input_tensor_start
       ninputs
-      output_ports
+      output_outputs
       output_tensor_start
       output_len
       target_operations

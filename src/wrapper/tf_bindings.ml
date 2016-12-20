@@ -76,9 +76,9 @@ module C(F: Cstubs.FOREIGN) = struct
       foreign "TF_OperationNumInputs" (t @-> returning int)
   end
 
-  module Tf_port = struct
+  module Tf_output = struct
     type t
-    let t : t structure typ = structure "TF_Port"
+    let t : t structure typ = structure "TF_Output"
     let oper = field t "oper" Tf_operation.t
     let index = field t "index" int
     let () = seal t
@@ -133,14 +133,14 @@ module C(F: Cstubs.FOREIGN) = struct
     let tf_graphgettensornumdims =
       foreign "TF_GraphGetTensorNumDims"
         (t
-        @-> Tf_port.t
+        @-> Tf_output.t
         @-> Tf_status.t
         @-> returning int)
 
     let tf_graphgettensorshape =
       foreign "TF_GraphGetTensorShape"
         (t
-        @-> Tf_port.t
+        @-> Tf_output.t
         @-> int
         @-> ptr int
         @-> Tf_status.t
@@ -165,12 +165,12 @@ module C(F: Cstubs.FOREIGN) = struct
         @-> returning Tf_operation.t)
 
     let tf_addinput =
-      foreign "TF_AddInput" (t @-> Tf_port.t @-> returning void)
+      foreign "TF_AddInput" (t @-> Tf_output.t @-> returning void)
 
     let tf_addinputlist =
       foreign "TF_AddInputList"
         (t
-        @-> ptr Tf_port.t
+        @-> ptr Tf_output.t
         @-> int
         @-> returning void)
 
@@ -275,11 +275,11 @@ module C(F: Cstubs.FOREIGN) = struct
         (t
         @-> ptr void (* run_options *)
         (* Input tensors *)
-        @-> ptr Tf_port.t
+        @-> ptr Tf_output.t
         @-> ptr Tf_tensor.t
         @-> int
         (* Output tensors *)
-        @-> ptr Tf_port.t
+        @-> ptr Tf_output.t
         @-> ptr Tf_tensor.t
         @-> int
         (* Target nodes *)

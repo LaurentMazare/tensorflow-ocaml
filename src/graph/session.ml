@@ -125,13 +125,13 @@ let run ?(inputs=[]) ?(outputs=[]) ?(targets=[]) t =
   let inputs =
     List.map inputs ~f:(fun (input, input_tensor) ->
       let op = build t input ~variable_initializations in
-      Wrapper.Graph.create_port op ~index:0, input_tensor)
+      Wrapper.Graph.create_output op ~index:0, input_tensor)
   in
   let outputs = List.map outputs ~f:(build t ~variable_initializations) in
   let targets =
     List.map targets ~f:(build t ~variable_initializations) @ outputs
   in
-  let outputs = List.map outputs ~f:(fun op -> Wrapper.Graph.create_port op ~index:0) in
+  let outputs = List.map outputs ~f:(fun op -> Wrapper.Graph.create_output op ~index:0) in
   (* [variable_initializations] is topologically sorted. *)
   List.iter (List.rev !variable_initializations) ~f:(fun init_op ->
     Wrapper.Session.run t.session ~inputs ~outputs:[] ~targets:[ init_op ]
