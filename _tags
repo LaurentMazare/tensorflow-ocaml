@@ -1,10 +1,12 @@
-true: package(ctypes), package(ctypes.foreign)
+true: package(ctypes), package(ctypes.foreign), package(ctypes.stubs)
 <examples/*/*_gnuplot.*> or <examples/basics/rnn.*>: package(gnuplot)
 <examples/*/*.native>: use_tensorflow
+<examples/*/*.native>: linkdep(src/wrapper/tf_stubs.o)
+<tests/*.native>: linkdep(src/wrapper/tf_stubs.o)
 <examples/char_rnn/*>: package(cmdliner)
 <examples/rnn/*>: package(cmdliner)
 
-not <src/piqi/*>: warn(A-4-29-40-41-42-44-45-48-56-58)
+not <src/piqi/*> and not <src/wrapper/tf_generated*>: warn(A-4-29-40-41-42-44-45-48-56-58)
 not <src/piqi/*>: warn_error()
 <src/gen_ops/*> or <src/graph/*> or <src/nn/*> or <src/fnn/*> or <examples/*> or <examples/*/*> or <tests/*>: package(core_kernel), thread
 <lib>: -traverse

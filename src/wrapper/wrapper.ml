@@ -1,8 +1,7 @@
 open Ctypes
-open Foreign
 
-let from = Dl.dlopen ~filename:"libtensorflow-0.11.so" ~flags:[ RTLD_LAZY ]
-
+module C = Tf_bindings.C(Tf_generated)
+open C
 let verbose = false
 let force_full_major = false
 
@@ -66,43 +65,8 @@ let int_to_data_type = function
   | 17 -> TF_UINT16
   | n -> Unknown n
 
-module Tf_tensor = struct
-  type t = unit ptr
-  let t : t typ = ptr void
-
-  let tf_newtensor =
-    foreign "TF_NewTensor" ~from
-      (int            (* data type *)
-      @-> ptr int64_t (* dims *)
-      @-> int         (* num dims *)
-      @-> ptr void    (* data *)
-      @-> size_t      (* len *)
-      @-> funptr (ptr void @-> int @-> ptr void @-> returning void) (* deallocator *)
-      @-> ptr void    (* deallocator arg *)
-      @-> returning t)
-
-  let tf_deletetensor =
-    foreign "TF_DeleteTensor" ~from (t @-> returning void)
-
-  let tf_numdims =
-    foreign "TF_NumDims" ~from (t @-> returning int)
-
-  let tf_dim =
-    foreign "TF_Dim" ~from (t @-> int @-> returning int)
-
-  let tf_tensorbytesize =
-    foreign "TF_TensorByteSize" ~from (t @-> returning size_t)
-
-  let tf_tensordata =
-    foreign "TF_TensorData" ~from (t @-> returning (ptr void))
-
-  let tf_tensortype =
-    foreign "TF_TensorType" ~from (t @-> returning int)
-end
-
 module Tensor = struct
-  include Tf_tensor
-
+  open C.Tf_tensor
   let sizeof = function
     | TF_FLOAT -> 4
     | TF_DOUBLE -> 8
@@ -153,6 +117,12 @@ module Tensor = struct
     if verbose
     then Printf.printf "Deallocating tensor %d\n%!" (Id.to_int id);
     Hashtbl.remove live_tensors id
+
+  let deallocate =
+    coerce
+      (Foreign.funptr (ptr void @-> size_t @-> ptr void @-> returning void))
+      (static_funptr (ptr void @-> size_t @-> ptr void @-> returning void))
+      deallocate
 
   let c_tensor_of_tensor packed_tensor =
     let Tensor.P tensor = packed_tensor in
@@ -268,28 +238,8 @@ module Tensor = struct
       (Id.to_int id |> Nativeint.of_int |> ptr_of_raw_address)
 end
 
-module Tf_status = struct
-  type t = unit ptr
-  let t : t typ = ptr void
-
-  let tf_newstatus =
-    foreign "TF_NewStatus" ~from (void @-> returning t)
-
-  let tf_deletestatus =
-    foreign "TF_DeleteStatus" ~from (t @-> returning void)
-
-  let tf_setstatus =
-    foreign "TF_SetStatus" ~from (t @-> int @-> string @-> returning void)
-
-  let tf_getcode =
-    foreign "TF_GetCode" ~from (t @-> returning int)
-
-  let tf_message =
-    foreign "TF_Message" ~from (t @-> returning string)
-end
-
 module Status = struct
-  include Tf_status
+  include C.Tf_status
 
   type code =
     | TF_OK
@@ -338,8 +288,6 @@ module Status = struct
     Gc.finalise tf_deletestatus status;
     status
 
-  let set = tf_setstatus
-
   let code t = tf_getcode t |> code_of_int
 
   let message = tf_message
@@ -360,185 +308,8 @@ module Status = struct
         (Printf.sprintf "%d %s" (tf_getcode status) (message status))
 end
 
-module Tf_operation = struct
-  type t = unit ptr
-  let t : t typ = ptr void
-
-  let tf_operationname =
-    foreign "TF_OperationName" ~from (t @-> returning string)
-
-  let tf_operationoptype =
-    foreign "TF_OperationOpType" ~from (t @-> returning string)
-
-  let tf_operationdevice =
-    foreign "TF_OperationDevice" ~from (t @-> returning string)
-
-  let tf_operationnumoutputs =
-    foreign "TF_OperationNumOutputs" ~from (t @-> returning int)
-
-  let tf_operationnuminputs =
-    foreign "TF_OperationNumInputs" ~from (t @-> returning int)
-end
-
-module Tf_port = struct
-  type t
-  let t : t structure typ = structure "TF_Port"
-  let oper = field t "oper" Tf_operation.t
-  let index = field t "index" int
-  let () = seal t
-end
-
-module Tf_import_graph_def_options = struct
-  type t = unit ptr
-  let t : t typ = ptr void
-
-  let tf_newimportgraphdefoptions =
-    foreign "TF_NewImportGraphDefOptions" ~from (void @-> returning t)
-
-  let tf_deleteimportgraphdefoptions =
-    foreign "TF_DeleteImportGraphDefOptions" ~from (t @-> returning void)
-end
-
-module Tf_buffer = struct
-  type t = unit ptr
-  let t : t typ = ptr void
-
-  let tf_newbufferfromstring =
-    foreign "TF_NewBufferFromString" ~from (string @-> int @-> returning t)
-
-  let tf_deletebuffer =
-    foreign "TF_DeleteBuffer" ~from (t @-> returning void)
-end
-
-module Tf_graph = struct
-  type t = unit ptr
-  let t : t typ = ptr void
-
-  let tf_newgraph =
-    foreign "TF_NewGraph" ~from (void @-> returning t)
-
-  let tf_deletegraph =
-    foreign "TF_DeleteGraph" ~from (t @-> returning void)
-
-  let tf_graphimportgraphdef =
-    foreign "TF_GraphImportGraphDef" ~from
-      (t
-      @-> Tf_buffer.t
-      @-> Tf_import_graph_def_options.t
-      @-> Tf_status.t
-      @-> returning void)
-
-  let tf_graphoperationbyname =
-    foreign "TF_GraphOperationByName" ~from
-      (t
-      @-> string
-      @-> returning Tf_operation.t)
-
-  let tf_graphgettensornumdims =
-    foreign "TF_GraphGetTensorNumDims" ~from
-      (t
-      @-> Tf_port.t
-      @-> Tf_status.t
-      @-> returning int)
-
-  let tf_graphgettensorshape =
-    foreign "TF_GraphGetTensorShape" ~from
-      (t
-      @-> Tf_port.t
-      @-> int
-      @-> ptr int
-      @-> Tf_status.t
-      @-> returning void)
-end
-
-module Tf_operationdescription = struct
-  type t = unit ptr
-  let t : t typ = ptr void
-
-  let tf_newoperation =
-    foreign "TF_NewOperation" ~from
-      (Tf_graph.t
-      @-> ptr char
-      @-> ptr char
-      @-> returning t)
-
-  let tf_finishoperation =
-    foreign "TF_FinishOperation" ~from
-      (t
-      @-> Tf_status.t
-      @-> returning Tf_operation.t)
-
-  let tf_addinput =
-    foreign "TF_AddInput" ~from (t @-> Tf_port.t @-> returning void)
-
-  let tf_addinputlist =
-    foreign "TF_AddInputList" ~from
-      (t
-      @-> ptr Tf_port.t
-      @-> int
-      @-> returning void)
-
-  let tf_addcontrolinput =
-    foreign "TF_AddControlInput" ~from (t @-> Tf_operation.t @-> returning void)
-
-  let tf_setattrstring =
-    foreign "TF_SetAttrString" ~from
-      (t @-> ptr char @-> ptr char @-> int @-> returning void)
-
-  let tf_setattrstringlist =
-    foreign "TF_SetAttrStringList" ~from
-      (t @-> ptr char @-> ptr (ptr char) @-> ptr int @-> int @-> returning void)
-
-  let tf_setattrint =
-    foreign "TF_SetAttrInt" ~from
-      (t @-> ptr char @-> int64_t @-> returning void)
-
-  let tf_setattrintlist =
-    foreign "TF_SetAttrIntList" ~from
-      (t @-> ptr char @-> ptr int64_t @-> int @-> returning void)
-
-  let tf_setattrfloat =
-    foreign "TF_SetAttrFloat" ~from
-      (t @-> ptr char @-> float @-> returning void)
-
-  let tf_setattrfloatlist =
-    foreign "TF_SetAttrFloatList" ~from
-      (t @-> ptr char @-> ptr float @-> int @-> returning void)
-
-  let tf_setattrbool =
-    foreign "TF_SetAttrBool" ~from
-      (t @-> ptr char @-> uchar @-> returning void)
-
-  let tf_setattrboollist =
-    foreign "TF_SetAttrBoolList" ~from
-      (t @-> ptr char @-> ptr uchar @-> int @-> returning void)
-
-  let tf_setattrtype =
-    foreign "TF_SetAttrType" ~from
-      (t @-> ptr char @-> int @-> returning void)
-
-  let tf_setattrtypelist =
-    foreign "TF_SetAttrTypeList" ~from
-      (t @-> ptr char @-> ptr int @-> int @-> returning void)
-
-  let tf_setattrshape =
-    foreign "TF_SetAttrShape" ~from
-      (t @-> ptr char @-> ptr int64_t @-> int @-> returning void)
-
-  let tf_setattrshapelist =
-    foreign "TF_SetAttrShapeList" ~from
-      (t @-> ptr char @-> ptr (ptr int64_t) @-> ptr int @-> int @-> returning void)
-
-  let tf_setattrtensor =
-    foreign "TF_SetAttrTensor" ~from
-      (t @-> ptr char @-> Tf_tensor.t @-> Tf_status.t @-> returning void)
-
-  let tf_setattrtensorlist =
-    foreign "TF_SetAttrTensorList" ~from
-      (t @-> ptr char @-> ptr Tf_tensor.t @-> int @-> Tf_status.t @-> returning void)
-end
-
 module Buffer = struct
+  module Tf_buffer = C.Tf_buffer
   type t = Tf_buffer.t
 
   let create_from_string str =
@@ -548,6 +319,7 @@ module Buffer = struct
 end
 
 module Graph_import = struct
+  module Tf_import_graph_def_options = C.Tf_import_graph_def_options
   type import_options = Tf_import_graph_def_options.t
 
   let create_import_options () =
@@ -559,11 +331,12 @@ module Graph_import = struct
     let status = Status.create () in
     let import_options = create_import_options () in
     let buffer = Buffer.create_from_string str in
-    Tf_graph.tf_graphimportgraphdef graph buffer import_options status;
+    C.Tf_graph.tf_graphimportgraphdef graph buffer import_options status;
     Status.result_or_error status ()
 end
 
 module Graph = struct
+  open C
   type t = Tf_graph.t
 
   let create () =
@@ -785,28 +558,6 @@ module Graph = struct
     | _ -> Error status
 end
 
-module Tf_sessionoptions = struct
-  type t = unit ptr
-  let t : t typ = ptr void
-
-  let tf_newsessionoptions =
-    foreign "TF_NewSessionOptions" ~from (void @-> returning t)
-
-  let tf_settarget =
-    foreign "TF_SetTarget" ~from (t @-> string @-> returning void)
-
-  let tf_setconfig =
-    foreign "TF_SetConfig" ~from
-      (t
-      @-> ptr void
-      @-> size_t
-      @-> Tf_status.t
-      @-> returning t)
-
-  let tf_deletesessionoptions =
-    foreign "TF_DeleteSessionOptions" ~from (t @-> returning void)
-end
-
 module Session_options = struct
   include Tf_sessionoptions
 
@@ -814,41 +565,6 @@ module Session_options = struct
     let session_options = tf_newsessionoptions () in
     Gc.finalise tf_deletesessionoptions session_options;
     session_options
-end
-
-module Tf_sessionwithgraph = struct
-  type t = unit ptr
-  let t : t typ = ptr void
-
-  let tf_newsessionwithgraph =
-    foreign "TF_NewSessionWithGraph" ~from
-      (Tf_graph.t @-> Tf_sessionoptions.t @-> Tf_status.t @-> returning t)
-
-  let tf_closesessionwithgraph =
-    foreign "TF_CloseSessionWithGraph" ~from (t @-> Tf_status.t @-> returning void)
-
-  let tf_deletesessionwithgraph =
-    foreign "TF_DeleteSessionWithGraph" ~from (t @-> Tf_status.t @-> returning void)
-
-  let tf_sessionrun =
-    foreign "TF_SessionRun" ~from
-      (t
-      @-> ptr void (* run_options *)
-      (* Input tensors *)
-      @-> ptr Tf_port.t
-      @-> ptr Tf_tensor.t
-      @-> int
-      (* Output tensors *)
-      @-> ptr Tf_port.t
-      @-> ptr Tf_tensor.t
-      @-> int
-      (* Target nodes *)
-      @-> ptr Tf_operation.t
-      @-> int
-      @-> ptr void (* run_metadata *)
-      (* Output status *)
-      @-> Tf_status.t
-      @-> returning void)
 end
 
 module Session = struct
@@ -910,20 +626,3 @@ module Session = struct
       Status.Ok output_tensors
     | Error _ as err -> err
 end
-
-
-let () =
-  ignore
-    ( Tf_sessionoptions.tf_settarget
-    , Tf_sessionoptions.tf_setconfig
-    , Tf_tensor.tf_tensorbytesize
-    , Status.set
-    , Tf_operation.tf_operationname
-    , Tf_operation.tf_operationoptype
-    , Tf_operation.tf_operationdevice
-    , Tf_operation.tf_operationnumoutputs
-    , Tf_operation.tf_operationnuminputs
-    , Tf_operationdescription.tf_setattrstringlist
-    , Tf_operationdescription.tf_setattrtypelist
-    , Tf_operationdescription.tf_setattrshapelist
-    )
