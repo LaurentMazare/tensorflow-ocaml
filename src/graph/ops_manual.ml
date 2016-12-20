@@ -142,8 +142,7 @@ let dropout node ~keep_prob =
     Ops_generated.randomUniform ~type_ (Ops_generated.shape node ~type_:Int32)
   in
   Ops_generated.floor (keep_prob + random)
-  |> fun binary_tensor -> node * Ops_generated.inv keep_prob * binary_tensor
-
+  |> fun binary_tensor -> node * Ops_generated.reciprocal keep_prob * binary_tensor
 
 let save_
     ?(name = "Save")
@@ -211,7 +210,7 @@ let moments t ~dims =
   let divisor =
     count t ~dims
     |> Ops_generated.cast ~type_:(Node.output_type t)
-    |> Ops_generated.inv
+    |> Ops_generated.reciprocal
   in
   let mean = reduce_sum ~dims t * divisor in
   let square_sum = Ops_generated.square t |> reduce_sum ~dims in

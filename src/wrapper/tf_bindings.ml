@@ -256,19 +256,19 @@ module C(F: Cstubs.FOREIGN) = struct
       foreign "TF_DeleteSessionOptions" (t @-> returning void)
   end
 
-  module Tf_sessionwithgraph = struct
+  module Tf_session = struct
     type t = unit ptr
     let t : t typ = ptr void
 
-    let tf_newsessionwithgraph =
-      foreign "TF_NewSessionWithGraph"
+    let tf_newsession =
+      foreign "TF_NewSession"
         (Tf_graph.t @-> Tf_sessionoptions.t @-> Tf_status.t @-> returning t)
 
-    let tf_closesessionwithgraph =
-      foreign "TF_CloseSessionWithGraph" (t @-> Tf_status.t @-> returning void)
+    let tf_closesession =
+      foreign "TF_CloseSession" (t @-> Tf_status.t @-> returning void)
 
-    let tf_deletesessionwithgraph =
-      foreign "TF_DeleteSessionWithGraph" (t @-> Tf_status.t @-> returning void)
+    let tf_deletesession =
+      foreign "TF_DeleteSession" (t @-> Tf_status.t @-> returning void)
 
     let tf_sessionrun =
       foreign "TF_SessionRun"

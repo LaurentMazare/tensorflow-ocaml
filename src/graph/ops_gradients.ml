@@ -108,7 +108,7 @@ let square_gradient (type a) ~self ~(gradient : a N.t) =
   unary_wrapper_exn ~self ~gradient ~t
 
 let log_gradient (type a) ~self ~(gradient : a N.t) =
-  let t = { f1 = fun ~x ~y:_ ~gradient -> Ops.mul gradient (Ops.inv x) } in
+  let t = { f1 = fun ~x ~y:_ ~gradient -> Ops.mul gradient (Ops.reciprocal x) } in
   unary_wrapper_exn ~self ~gradient ~t
 
 let relu_gradient ~self ~gradient =
@@ -246,7 +246,7 @@ let exp_gradient ~self ~gradient =
 
 let sqrt_gradient ~self ~gradient =
   let gradient =
-    Ops.(gradient * const_float ~type_:(N.output_type self) [ 0.5 ] * Ops.inv self)
+    Ops.(gradient * const_float ~type_:(N.output_type self) [ 0.5 ] * Ops.reciprocal self)
   in
   all [ N.P gradient ]
 
@@ -276,7 +276,7 @@ let inv_gradient ~self ~gradient =
 let rsqrt_gradient (type a) ~self ~(gradient : a N.t) =
   let t =
     { f1 = fun ~x ~y ~gradient ->
-        Ops.(gradient * const_float ~type_:(N.output_type y) [ -0.5 ] * Ops.inv x * y)
+        Ops.(gradient * const_float ~type_:(N.output_type y) [ -0.5 ] * Ops.reciprocal x * y)
     }
   in
   unary_wrapper_exn ~self ~gradient ~t
@@ -529,6 +529,7 @@ let register_all () =
     ; O.neg,         { f = neg_gradient }
     ; O.pad,         { f = pad_gradient }
     ; O.pow,         { f = pow_gradient }
+    ; O.reciprocal,  { f = inv_gradient }
     ; O.relu,        { f = relu_gradient }
     ; O.reshape,     { f = reshape_gradient }
     ; O.rsqrt,       { f = rsqrt_gradient }

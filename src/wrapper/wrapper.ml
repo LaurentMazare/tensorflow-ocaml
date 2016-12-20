@@ -568,7 +568,7 @@ module Session_options = struct
 end
 
 module Session = struct
-  type t = Tf_graph.t * Tf_sessionwithgraph.t
+  type t = Tf_graph.t * Tf_session.t
 
   let create ?session_options graph =
     let session_options =
@@ -578,12 +578,12 @@ module Session = struct
     in
     let status = Status.create () in
     let session =
-      Tf_sessionwithgraph.tf_newsessionwithgraph graph session_options status
+      Tf_session.tf_newsession graph session_options status
     in
     Gc.finalise
       (fun session ->
-        Tf_sessionwithgraph.tf_closesessionwithgraph session status;
-        Tf_sessionwithgraph.tf_deletesessionwithgraph session status)
+        Tf_session.tf_closesession session status;
+        Tf_session.tf_deletesession session status)
       session;
     Status.result_or_error status (graph, session)
 
@@ -603,7 +603,7 @@ module Session = struct
     let target_operations = CArray.(of_list Tf_operation.t targets |> start) in
     if force_full_major
     then Gc.full_major ();
-    Tf_sessionwithgraph.tf_sessionrun
+    Tf_session.tf_sessionrun
       t
       null
       input_outputs
