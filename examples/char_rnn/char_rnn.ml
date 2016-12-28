@@ -60,7 +60,7 @@ let rnn ~size_c ~dim =
       ~x:(Ops.Placeholder.to_node sample_placeholder_x)
   in
   let mem_concat (h1, c1, h2, c2) = Ops.concat Ops.one32 [ h1; c1; h2; c2 ] in
-  { train_err = Ops.cross_entropy ~ys:(Ops.Placeholder.to_node train_placeholder_y) y_hats
+  { train_err = Ops.cross_entropy ~ys:(Ops.Placeholder.to_node train_placeholder_y) ~y_hats `sum
   ; train_placeholder_x
   ; train_placeholder_y
   ; sample_output

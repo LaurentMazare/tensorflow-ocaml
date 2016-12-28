@@ -79,7 +79,7 @@ let () =
   let ys_ =
     build_model ~xs:(O.Placeholder.to_node xs) ~testing:(O.Placeholder.to_node testing)
   in
-  let cross_entropy = O.(neg (reduce_mean (ys_node * log (ys_ + f 1e-9)))) in
+  let cross_entropy = O.cross_entropy ~ys:ys_node ~y_hats:ys_ `mean in
   let accuracy =
     O.(equal (argMax ys_ one32) (argMax ys_node one32))
     |> O.cast ~type_:Float

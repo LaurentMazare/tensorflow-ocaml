@@ -182,5 +182,6 @@ val shape32
 val cross_entropy
   :  ?epsilon:float
   -> ys:([< `double | `float ] as 'a) Node.t (** Actual y values. *)
-  -> 'a Node.t (** Predicted y values. *)
+  -> y_hats:'a Node.t (** Predicted y values. *)
+  -> [ `sum | `mean ]
   -> 'a Node.t

@@ -17,7 +17,7 @@ let () =
   let w = Var.f [ image_dim; label_count ] 0. in
   let b = Var.f [ label_count ] 0. in
   let ys_ = O.(Placeholder.to_node xs *^ w + b) |> O.softmax in
-  let cross_entropy = O.(neg (reduce_mean (ys_node * log ys_))) in
+  let cross_entropy = O.cross_entropy ~ys:ys_node ~y_hats:ys_ `mean in
   let accuracy =
     O.(equal (argMax ys_ O.one32) (argMax ys_node O.one32))
     |> O.cast ~type_:Float

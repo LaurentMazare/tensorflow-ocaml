@@ -99,9 +99,7 @@ let model ~input_len ~input_dim ~output_dim =
   in
   let fw_h = Option.value_exn fw_h in
   let y_hats = Ops.(fw_h *^ w_softmax + b_softmax |> softmax) in
-  let cross_entropy =
-    Ops.(neg (ys * log (y_hats + f_or_d ~type_ 1e-7)) |> reduce_mean)
-  in
+  let cross_entropy = Ops.cross_entropy ~ys ~y_hats `mean in
   let accuracy =
     Ops.(equal (argMax y_hats one32) (argMax ys one32))
     |> Ops.cast ~type_
