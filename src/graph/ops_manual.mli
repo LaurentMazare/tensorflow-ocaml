@@ -178,3 +178,9 @@ val shape32
   -> ?control_inputs:Node.p list
   -> 't Node.t
   -> [ `int32 ] Node.t
+
+val cross_entropy
+  :  ?epsilon:float
+  -> ys:([< `double | `float ] as 'a) Node.t (** Actual y values. *)
+  -> 'a Node.t (** Predicted y values. *)
+  -> 'a Node.t

@@ -52,10 +52,6 @@ let gru_ ~type_ ~size_h ~size_x =
 let gru ~size_h ~size_x = gru_ ~type_:Float ~size_h ~size_x
 let gru_d ~size_h ~size_x = gru_ ~type_:Double ~size_h ~size_x
 
-let cross_entropy ~ys ~y_hats =
-  let type_ = Node.output_type ys in
-  Ops.(neg (ys * log (y_hats + f_or_d ~type_ 1e-7)) |> reduce_sum)
-
 module Unfold = struct
   let unfold_gen ~xs ~seq_len ~input_dim ~output_shape ~init ~f =
     (* xs should be tensor of dimension:

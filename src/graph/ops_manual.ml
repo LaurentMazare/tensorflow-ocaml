@@ -243,3 +243,7 @@ let cond t ~if_true ~if_false =
     ~if_false:(fun ~control_inputs -> Ops_generated.identity ~control_inputs if_false)
 
 let shape32 = Ops_generated.shape ~type_:Int32
+
+let cross_entropy ?(epsilon = 1e-7) ~ys y_hats =
+  let type_ = Node.output_type ys in
+  Ops_generated.(neg (ys * log (y_hats + f_or_d ~type_ epsilon)) |> reduce_sum)

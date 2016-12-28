@@ -33,7 +33,7 @@ let train filename learning_rate =
           let y_bar = Ops.(h *^ wy + by) |> Ops.softmax in
           y_bar, `mem mem)
     in
-    Cell.cross_entropy ~ys:(Ops.Placeholder.to_node placeholder_y) ~y_hats
+    cross_entropy ~ys:(Ops.Placeholder.to_node placeholder_y) y_hats
   in
   let gd = Optimizers.adam_minimizer cross_entropy ~learning_rate:(Ops.f learning_rate) in
   let save_node = Ops.save ~filename:"out.cpkt" (all_vars_with_names cross_entropy) in

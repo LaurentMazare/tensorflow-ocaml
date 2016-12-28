@@ -30,11 +30,6 @@ val gru_d
      -> x: [ `double ] Node.t
      -> [ `double ] Node.t) Staged.t
 
-val cross_entropy
-  :  ys:([< `double | `float ] as 'a) Node.t
-  -> y_hats:'a Node.t
-  -> 'a Node.t
-
 module Unfold : sig
   (* [unfold ~xs ~seq_len ~dim ~init ~f] returns the full sequence obtained by applying
      recursively [f] on [seq_len] slices of [xs]. The initial memory value is [init].
