@@ -550,10 +550,10 @@ module Graph = struct
     let num_dims = Tf_graph.tf_graphgettensornumdims t output status in
     match Status.code status with
     | TF_OK ->
-      let shape = CArray.make int num_dims in
+      let shape = CArray.make int64_t num_dims in
       let shape_start = CArray.start shape in
-      Tf_graph.tf_graphgettensorshape t output num_dims shape_start status;
-      let dims = CArray.to_list shape in
+      Tf_graph.tf_graphgettensorshape t output shape_start num_dims status;
+      let dims = CArray.to_list shape |> List.map Int64.to_int in
       Status.result_or_error status dims
     | _ -> Error status
 end

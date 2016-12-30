@@ -141,8 +141,8 @@ module C(F: Cstubs.FOREIGN) = struct
       foreign "TF_GraphGetTensorShape"
         (t
         @-> Tf_output.t
+        @-> ptr int64_t
         @-> int
-        @-> ptr int
         @-> Tf_status.t
         @-> returning void)
   end
@@ -183,7 +183,7 @@ module C(F: Cstubs.FOREIGN) = struct
 
     let tf_setattrstringlist =
       foreign "TF_SetAttrStringList"
-        (t @-> ptr char @-> ptr (ptr char) @-> ptr int @-> int @-> returning void)
+        (t @-> ptr char @-> ptr (ptr void) @-> ptr size_t @-> int @-> returning void)
 
     let tf_setattrint =
       foreign "TF_SetAttrInt"
