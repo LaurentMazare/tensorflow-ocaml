@@ -72,6 +72,13 @@ val conv2d'
   -> unit
   -> (_3d t -> _3d t) Staged.t
 
+val avg_pool
+  :  _3d t
+  -> filter:int*int
+  -> strides:int*int
+  -> padding:[ `same | `valid ]
+  -> _3d t
+
 val max_pool
   :  _3d t
   -> filter:int*int

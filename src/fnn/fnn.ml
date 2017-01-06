@@ -86,10 +86,11 @@ end
 
 type init = [ `const of float | `normal of float | `truncated_normal of float ]
 
-type max_pool =
+type pool =
   { filter : int * int
   ; strides : int * int
   ; padding : [ `same | `valid ]
+  ; avg_or_max : [ `avg | `max ]
   }
 
 type conv2d =
@@ -108,7 +109,7 @@ type 'a op =
   | Unary : Unary.t * 'a t -> 'a op
   | Binary : Binary.t * 'a t * 'a t -> 'a op
   | Dense : init * init * _1d t -> _1d op
-  | Max_pool : max_pool * _3d t -> _3d op
+  | Pool : pool * _3d t -> _3d op
   | Conv2d : conv2d * _3d t -> _3d op
   | Reshape : 'a Shape.t * 'b t -> 'a op
   | Concat : _1d t list -> _2d op
@@ -217,7 +218,7 @@ let padding_str = function
   | `same -> "SAME"
   | `valid -> "VALID"
 
-let max_pool t ~filter ~strides ~padding =
+let pool ~avg_or_max t ~filter ~strides ~padding =
   let input_height, input_width, input_channels =
     match t.shape with
     | Shape.D3 (d, d', d'') -> d, d', d''
@@ -234,16 +235,20 @@ let max_pool t ~filter ~strides ~padding =
       ~stride_width
       ~padding
   in
-  let max_pool =
+  let pool =
     { filter
     ; strides
     ; padding
+    ; avg_or_max
     }
   in
   { shape = D3 (output_height, output_width, input_channels)
-  ; op = Max_pool (max_pool, t)
+  ; op = Pool (pool, t)
   ; id = Id.create ()
   }
+
+let max_pool = pool ~avg_or_max:`max
+let avg_pool = pool ~avg_or_max:`avg
 
 let conv2d' ?(w_init = `const 0.) ?(b_init = `const 0.) ~filter ~out_channels ~strides ~padding () =
   let id = Id.create () in
@@ -313,14 +318,19 @@ let build_node t ~type_ =
       Hashtbl.find_or_add inputs t.id ~default:(fun () ->
         Ops.placeholder ~type_ (Shape.dim_list t.shape))
       |> Ops.Placeholder.to_node
-    | Max_pool (max_pool, t) ->
-      let filter_height, filter_width = max_pool.filter in
-      let stride_height, stride_width = max_pool.strides in
-      (* [maxPool] only exists for float and not for double so cast to float. *)
-      Ops.maxPool (walk (P t) |> Ops.cast ~type_:Float)
+    | Pool (pool, t) ->
+      let filter_height, filter_width = pool.filter in
+      let stride_height, stride_width = pool.strides in
+      let pool_ops =
+        match pool.avg_or_max with
+        | `max -> Ops.maxPool
+        | `avg -> Ops.avgPool
+      in
+      (* [...Pool] only exists for float and not for double so cast to float. *)
+      pool_ops (walk (P t) |> Ops.cast ~type_:Float)
         ~ksize:[ 1; filter_height; filter_width; 1 ]
         ~strides:[ 1; stride_height; stride_width; 1 ]
-        ~padding:(padding_str max_pool.padding)
+        ~padding:(padding_str pool.padding)
       |> Ops.cast ~type_
     | Conv2d (conv2d, u) ->
       let filter_height, filter_width = conv2d.filter in
