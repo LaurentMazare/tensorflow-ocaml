@@ -52,7 +52,10 @@ let () =
   let input_id, model = vgg19 () in
   Fnn.Model.load model ~filename:(Sys.getcwd () ^ "/vgg19.cpkt");
   let results = Fnn.Model.predict model [ input_id, input_tensor ] in
-  for i = 0 to 999 do
-    printf "%d -> %f\n" i (Tensor.get results [| 0; i |] )
-  done
+  let pr, category =
+    List.init 1000 ~f:(fun i ->
+      Tensor.get results [| 0; i |], i+1)
+    |> List.reduce_exn ~f:Pervasives.max
+  in
+  printf "%d: %.2f%%\n" category (100. *. pr)
 
