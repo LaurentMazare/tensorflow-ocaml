@@ -2,6 +2,7 @@ true: package(ctypes), package(ctypes.foreign), package(ctypes.stubs)
 <examples/*/*_gnuplot.*> or <examples/basics/rnn.*>: package(gnuplot)
 <examples/*/*.native> or <tests/*.native>: use_tensorflow
 <examples/char_rnn/*> or <examples/rnn/*>: package(cmdliner)
+<examples/fnn/vgg19.*>: package(magick)
 <src/gen_ops/*.native>: use_tensorflow
 
 not <src/piqi/*> and not <src/wrapper/tf_generated*>: warn(A-4-29-40-41-42-44-45-48-56-58)
