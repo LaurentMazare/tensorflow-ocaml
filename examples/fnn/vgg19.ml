@@ -39,7 +39,7 @@ let load_image ~filename =
   let tensor = Tensor.create3 Float32 img_size img_size 3 in
   for i = 0 to img_size - 1 do
     for j = 0 to img_size - 1 do
-      let red, green, blue = raw.(i).(j) in
+      let red, green, blue = raw.(j).(i) in
       Tensor.set tensor [| i; j; 0 |] (float blue -. 103.939);
       Tensor.set tensor [| i; j; 1 |] (float green -. 116.779);
       Tensor.set tensor [| i; j; 2 |] (float red -. 123.68);
