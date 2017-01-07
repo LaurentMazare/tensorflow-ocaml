@@ -101,6 +101,7 @@ type conv2d =
   ; out_channels : int
   ; w_init : init
   ; b_init : init
+  ; name : string option
   }
 
 type 'a op =
@@ -108,7 +109,7 @@ type 'a op =
   | Const : float -> 'a op
   | Unary : Unary.t * 'a t -> 'a op
   | Binary : Binary.t * 'a t * 'a t -> 'a op
-  | Dense : init * init * _1d t -> _1d op
+  | Dense : init * init * _1d t * string option -> _1d op
   | Pool : pool * _3d t -> _3d op
   | Conv2d : conv2d * _3d t -> _3d op
   | Reshape : 'a Shape.t * 'b t -> 'a op
@@ -187,16 +188,16 @@ let concat = function
     ; id = Id.create ()
     }
 
-let dense' ?(w_init = `const 0.) ?(b_init = `const 0.) dim =
+let dense' ?(w_init = `const 0.) ?(b_init = `const 0.) ?name dim =
   let id = Id.create () in
   Staged.stage (fun t ->
     { shape = D1 dim
-    ; op = Dense (w_init, b_init, t)
+    ; op = Dense (w_init, b_init, t, name)
     ; id
     })
 
-let dense ?w_init ?b_init dim =
-  Staged.unstage (dense' ?w_init ?b_init dim)
+let dense ?w_init ?b_init ?name dim =
+  Staged.unstage (dense' ?w_init ?b_init ?name dim)
 
 let conv_sizes
       ~input_height
@@ -250,7 +251,7 @@ let pool ~avg_or_max t ~filter ~strides ~padding =
 let max_pool = pool ~avg_or_max:`max
 let avg_pool = pool ~avg_or_max:`avg
 
-let conv2d' ?(w_init = `const 0.) ?(b_init = `const 0.) ~filter ~out_channels ~strides ~padding () =
+let conv2d' ?(w_init = `const 0.) ?(b_init = `const 0.) ?name ~filter ~out_channels ~strides ~padding () =
   let id = Id.create () in
   Staged.stage (fun t ->
     let input_height, input_width, input_channels =
@@ -265,6 +266,7 @@ let conv2d' ?(w_init = `const 0.) ?(b_init = `const 0.) ~filter ~out_channels ~s
       ; out_channels
       ; w_init
       ; b_init
+      ; name
       }
     in
     let filter_height, filter_width = filter in
@@ -284,8 +286,8 @@ let conv2d' ?(w_init = `const 0.) ?(b_init = `const 0.) ~filter ~out_channels ~s
     ; id
     })
 
-let conv2d ?w_init ?b_init ~filter ~out_channels ~strides ~padding () =
-  Staged.unstage (conv2d' ?w_init ?b_init ~filter ~out_channels ~strides ~padding ())
+let conv2d ?w_init ?b_init ?name ~filter ~out_channels ~strides ~padding () =
+  Staged.unstage (conv2d' ?w_init ?b_init ?name ~filter ~out_channels ~strides ~padding ())
 
 let var dims ~init ~type_ =
   match init with
@@ -298,19 +300,22 @@ let build_node t ~type_ =
   let dense_vars = Id.Table.create () in
   let conv_vars = Id.Table.create () in
   let splits = Id.Table.create () in
+  let var_names = Node.Id.Table.create () in
   let rec walk (P t) =
     match t.op with
     | Unary (unary, t) -> Unary.apply unary (walk (P t))
     | Binary (binary, t1, t2) -> Binary.apply binary (walk (P t1)) (walk (P t2))
     | Const f -> Ops.f_or_d ~shape:(Shape.dim_list t.shape) ~type_ f
-    | Dense (w_init, b_init, input)->
+    | Dense (w_init, b_init, input, name_opt)->
       let Shape.D1 input_shape = input.shape in
       let Shape.D1 shape = t.shape in
-      printf "%d %d\n%!" input_shape shape;
       let w, b =
         Hashtbl.find_or_add dense_vars t.id ~default:(fun () ->
           let w = var ~type_ ~init:w_init [ input_shape; shape ] in
           let b = var ~type_ ~init:b_init [ shape ] in
+          Option.iter name_opt ~f:(fun name ->
+            Hashtbl.set var_names ~key:(Node.id w) ~data:(name ^ "/" ^ name ^ "_weights");
+            Hashtbl.set var_names ~key:(Node.id b) ~data:(name ^ "/" ^ name ^ "_biases"));
           w, b)
       in
       Ops.(walk (P input) *^ w + b)
@@ -343,6 +348,9 @@ let build_node t ~type_ =
               [ filter_height; filter_width; in_channels; out_channels ]
           in
           let b = var ~type_ ~init:conv2d.b_init [ out_channels ] in
+          Option.iter conv2d.name ~f:(fun name ->
+            Hashtbl.set var_names ~key:(Node.id w) ~data:(name ^ "/" ^ name ^ "_filters");
+            Hashtbl.set var_names ~key:(Node.id b) ~data:(name ^ "/" ^ name ^ "_biases"));
           w, b, in_channels)
       in
       if in_channels <> conv2d.in_channels
@@ -367,7 +375,7 @@ let build_node t ~type_ =
       in
       List.nth_exn list idx
   in
-  walk t, inputs
+  walk t, inputs, var_names
 
 module Optimizer = struct
   (* We should use some inline records here when they will be available. *)
@@ -430,12 +438,13 @@ module Model = struct
     ; inputs : 'b Ops.Placeholder.t Id.Table.t
     ; save_nodes : [ `unit ] Node.t String.Table.t
     ; load_and_assign_nodes : Node.p list String.Table.t
+    ; var_names : string Node.Id.Table.t
     ; eq : ('c * 'b) Tensor.eq
     }
 
   let create (type a) (type b) (eq : (b * a) Tensor.eq) fnn =
     let create eq ~type_ =
-      let node, inputs = build_node (P fnn) ~type_ in
+      let node, inputs, var_names = build_node (P fnn) ~type_ in
       let session = Session.create () in
       let placeholder = Ops.placeholder ~type_ (Shape.dim_list fnn.shape) in
       { session
@@ -444,6 +453,7 @@ module Model = struct
       ; inputs
       ; save_nodes = String.Table.create ()
       ; load_and_assign_nodes = String.Table.create ()
+      ; var_names
       ; eq
       }
     in
@@ -542,7 +552,17 @@ module Model = struct
      This does not seem very robust but will do for now. *)
   let all_vars_with_names t =
     Var.get_all_vars t.node
-    |> List.mapi ~f:(fun i var -> sprintf "V%d" i, var)
+    |> List.mapi ~f:(fun i var ->
+      let name =
+        let node_id =
+          match var with
+          | Node.P v -> Node.id v
+        in
+        match Hashtbl.find t.var_names node_id with
+        | Some name -> name
+        | None -> sprintf "V%d" i
+      in
+      name, var)
 
   let save t ~filename =
     let save_node =

@@ -4,10 +4,11 @@ open Tensorflow
 let img_size = 224
 
 let vgg19 () =
-  let block iter ~out_channels x =
+  let block iter ~block_idx ~out_channels x =
     List.init iter ~f:Fn.id
-    |> List.fold ~init:x ~f:(fun acc _idx ->
+    |> List.fold ~init:x ~f:(fun acc idx ->
       Fnn.conv2d () acc
+        ~name:(sprintf "conv%d_%d" block_idx (idx+1))
         ~w_init:(`normal 0.1) ~filter:(3, 3) ~strides:(1, 1) ~padding:`same ~out_channels
       |> Fnn.relu)
     |> Fnn.max_pool ~filter:(2, 2) ~strides:(2, 2) ~padding:`same
@@ -15,17 +16,17 @@ let vgg19 () =
   let input, input_id = Fnn.input ~shape:(D1 (img_size*img_size*3)) in
   let model =
     Fnn.reshape input ~shape:(D3 (img_size, img_size, 3))
-    |> block 2 ~out_channels:64
-    |> block 2 ~out_channels:128
-    |> block 4 ~out_channels:256
-    |> block 4 ~out_channels:512
-    |> block 4 ~out_channels:512
+    |> block 2 ~block_idx:1 ~out_channels:64
+    |> block 2 ~block_idx:2 ~out_channels:128
+    |> block 4 ~block_idx:3 ~out_channels:256
+    |> block 4 ~block_idx:4 ~out_channels:512
+    |> block 4 ~block_idx:5 ~out_channels:512
     |> Fnn.flatten
-    |> Fnn.dense ~w_init:(`normal 0.1) 4096
+    |> Fnn.dense ~name:"fc6" ~w_init:(`normal 0.1) 4096
     |> Fnn.relu
-    |> Fnn.dense ~w_init:(`normal 0.1) 4096
+    |> Fnn.dense ~name:"fc7" ~w_init:(`normal 0.1) 4096
     |> Fnn.relu
-    |> Fnn.dense ~w_init:(`normal 0.1) 1000
+    |> Fnn.dense ~name:"fc8" ~w_init:(`normal 0.1) 1000
     |> Fnn.softmax
     |> Fnn.Model.create Float
   in
@@ -49,6 +50,7 @@ let load_image ~filename =
 let () =
   let input_tensor = load_image ~filename:"input.png" in
   let input_id, model = vgg19 () in
+  Fnn.Model.load model ~filename:(Sys.getcwd () ^ "/vgg19.cpkt");
   let results = Fnn.Model.predict model [ input_id, input_tensor ] in
   for i = 0 to 999 do
     printf "%d -> %f\n" i (Tensor.get results [| 0; i |] )

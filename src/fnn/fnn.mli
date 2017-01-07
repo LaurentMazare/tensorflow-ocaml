@@ -41,6 +41,7 @@ val ( * ) : 'a t -> 'a t -> 'a t
 val dense
   :  ?w_init:init
   -> ?b_init:init
+  -> ?name:string
   -> int
   -> _1d t
   -> _1d t
@@ -48,6 +49,7 @@ val dense
 val conv2d
   :  ?w_init:init
   -> ?b_init:init
+  -> ?name:string
   -> filter:int*int
   -> out_channels:int
   -> strides:int*int
@@ -59,12 +61,14 @@ val conv2d
 val dense'
   :  ?w_init:init
   -> ?b_init:init
+  -> ?name:string
   -> int
   -> (_1d t -> _1d t) Staged.t
 
 val conv2d'
   :  ?w_init:init
   -> ?b_init:init
+  -> ?name:string
   -> filter:int*int
   -> out_channels:int
   -> strides:int*int
