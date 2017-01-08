@@ -33,18 +33,19 @@ let vgg19 () =
   input_id, model
 
 let load_image ~filename =
-  let image_handle = Magick.read_image ~filename in
-  let width = Magick.get_image_width image_handle in
-  let height = Magick.get_image_height image_handle in
+  let image = OImages.load filename [] in
+  let image = OImages.rgb24 image in
+  let width = image # width in
+  let height = image # height in
   let min_edge = min width height in
-  let image_handle =
-    Magick.Fun.crop () image_handle
-      ~x:((width-min_edge) / 2)
-      ~y:((height-min_edge) / 2)
-      ~width:min_edge
-      ~height:min_edge
-    |> Magick.Fun.resize () ~width:img_size ~height:img_size ~blur:1. ~filter:Cubic
+  let image =
+    image # sub
+      ((width-min_edge) / 2)
+      ((height-min_edge) / 2)
+      min_edge
+      min_edge
   in
+  let image = image # resize None img_size img_size in
   let tensor = Tensor.create3 Float32 img_size img_size 3 in
   let normalize x ~channel =
     let mean =
@@ -53,14 +54,14 @@ let load_image ~filename =
       | `green -> 116.779
       | `red -> 123.68
     in
-    float x /. 65535. *. 255. -. mean
+    float x -. mean
   in
   for i = 0 to img_size - 1 do
     for j = 0 to img_size - 1 do
-      let red, green, blue, _alpha = Magick.Imper.acquire_pixel image_handle j i in
-      Tensor.set tensor [| i; j; 0 |] (normalize blue ~channel:`blue);
-      Tensor.set tensor [| i; j; 1 |] (normalize green ~channel:`green);
-      Tensor.set tensor [| i; j; 2 |] (normalize red ~channel:`red);
+      let { Color.r; g; b } = image # get j i in
+      Tensor.set tensor [| i; j; 0 |] (normalize b ~channel:`blue);
+      Tensor.set tensor [| i; j; 1 |] (normalize g ~channel:`green);
+      Tensor.set tensor [| i; j; 2 |] (normalize r ~channel:`red);
     done;
   done;
   tensor
