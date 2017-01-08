@@ -13,7 +13,7 @@ let vgg19 () =
       |> Fnn.relu)
     |> Fnn.max_pool ~filter:(2, 2) ~strides:(2, 2) ~padding:`same
   in
-  let input, input_id = Fnn.input ~shape:(D1 (img_size*img_size*3)) in
+  let input, input_id = Fnn.input ~shape:(D3 (img_size, img_size, 3)) in
   let model =
     Fnn.reshape input ~shape:(D3 (img_size, img_size, 3))
     |> block 2 ~block_idx:1 ~out_channels:64
@@ -34,21 +34,39 @@ let vgg19 () =
 
 let load_image ~filename =
   let image_handle = Magick.read_image ~filename in
-  Magick.Imper.resize image_handle ~width:img_size ~height:img_size ~blur:0.1 ~filter:Cubic;
-  let raw = Magick.Imper.get_raw_without_alpha image_handle in
+  let width = Magick.get_image_width image_handle in
+  let height = Magick.get_image_height image_handle in
+  let min_edge = min width height in
+  let image_handle =
+    Magick.Fun.crop () image_handle
+      ~x:((width-min_edge) / 2)
+      ~y:((height-min_edge) / 2)
+      ~width:min_edge
+      ~height:min_edge
+    |> Magick.Fun.resize () ~width:img_size ~height:img_size ~blur:1. ~filter:Cubic
+  in
   let tensor = Tensor.create3 Float32 img_size img_size 3 in
+  let normalize x ~channel =
+    let mean =
+      match channel with
+      | `blue -> 103.939
+      | `green -> 116.779
+      | `red -> 123.68
+    in
+    float x /. 65535. *. 255. -. mean
+  in
   for i = 0 to img_size - 1 do
     for j = 0 to img_size - 1 do
-      let red, green, blue = raw.(j).(i) in
-      Tensor.set tensor [| i; j; 0 |] (float blue -. 103.939);
-      Tensor.set tensor [| i; j; 1 |] (float green -. 116.779);
-      Tensor.set tensor [| i; j; 2 |] (float red -. 123.68);
+      let red, green, blue, _alpha = Magick.Imper.acquire_pixel image_handle j i in
+      Tensor.set tensor [| i; j; 0 |] (normalize blue ~channel:`blue);
+      Tensor.set tensor [| i; j; 1 |] (normalize green ~channel:`green);
+      Tensor.set tensor [| i; j; 2 |] (normalize red ~channel:`red);
     done;
   done;
   tensor
 
 let () =
-  let input_tensor = load_image ~filename:"input.png" in
+  let input_tensor = load_image ~filename:"input.jpg" in
   let input_id, model = vgg19 () in
   Fnn.Model.load model ~filename:(Sys.getcwd () ^ "/vgg19.cpkt");
   let results = Fnn.Model.predict model [ input_id, input_tensor ] in
