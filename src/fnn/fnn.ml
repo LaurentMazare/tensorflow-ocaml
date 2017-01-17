@@ -398,7 +398,7 @@ let build_node t ~type_ =
           ~type_
           ~init:(walk (P u)))
   in
-  walk t, inputs, var_names
+  walk t, inputs, var_names, explicit_vars
 
 module Optimizer = struct
   (* We should use some inline records here when they will be available. *)
@@ -415,18 +415,22 @@ module Optimizer = struct
   let momentum ~learning_rate ~momentum =
     Momentum (learning_rate, momentum)
 
-  let get t ~loss =
+  let get ?varsf ?varsd t ~loss =
     match t with
     | Gradient_descent learning_rate ->
-      Optimizers.gradient_descent_minimizer ~learning_rate:(Ops.f learning_rate) loss
+      Optimizers.gradient_descent_minimizer ?varsf ?varsd ~learning_rate:(Ops.f learning_rate) loss
     | Adam (learning_rate, beta1, beta2, epsilon) ->
       Optimizers.adam_minimizer loss
+        ?varsf
+        ?varsd
         ~learning_rate:(Ops.f learning_rate)
         ?beta1:(Option.map beta1 ~f:Ops.f)
         ?beta2:(Option.map beta2 ~f:Ops.f)
         ?epsilon:(Option.map epsilon ~f:Ops.f)
     | Momentum (learning_rate, momentum) ->
       Optimizers.momentum_minimizer loss
+        ?varsf
+        ?varsd
         ~learning_rate:(Ops.f learning_rate)
         ~momentum:(Ops.f momentum)
 end
@@ -462,12 +466,13 @@ module Model = struct
     ; save_nodes : [ `unit ] Node.t String.Table.t
     ; load_and_assign_nodes : Node.p list String.Table.t
     ; var_names : string Node.Id.Table.t
+    ; explicit_vars : 'b Node.t Id.Table.t
     ; eq : ('c * 'b) Tensor.eq
     }
 
   let create (type a) (type b) (eq : (b * a) Tensor.eq) fnn =
     let create eq ~type_ =
-      let node, inputs, var_names = build_node (P fnn) ~type_ in
+      let node, inputs, var_names, explicit_vars = build_node (P fnn) ~type_ in
       let session = Session.create () in
       let placeholder = Ops.placeholder ~type_ (Shape.dim_list fnn.shape) in
       { session
@@ -477,6 +482,7 @@ module Model = struct
       ; save_nodes = String.Table.create ()
       ; load_and_assign_nodes = String.Table.create ()
       ; var_names
+      ; explicit_vars
       ; eq
       }
     in
@@ -507,6 +513,7 @@ module Model = struct
   let fit (type a) (type b)
         ?(addn_inputs : (Input_id.t * (float, b) Tensor.t) list option)
         ?batch_size
+        ?explicit_vars
         (t : (_, a, b) t)
         ~loss
         ~optimizer
@@ -521,7 +528,27 @@ module Model = struct
         ~sample_ys:(Ops.Placeholder.to_node placeholder)
         ~model_ys:node
     in
-    let optimizer = Optimizer.get optimizer ~loss in
+    let optimizer =
+      let varsf, varsd =
+        match explicit_vars with
+        | None -> None, None
+        | Some explicit_vars ->
+          match t.eq with
+          | Tensor.Float ->
+            let nodes =
+              List.map explicit_vars ~f:(fun ev ->
+                Hashtbl.find_exn t.explicit_vars ev.id)
+            in
+            Some (nodes : [ `float ] Node.t list), None
+          | Tensor.Double ->
+            let nodes =
+              List.map explicit_vars ~f:(fun ev ->
+                Hashtbl.find_exn t.explicit_vars ev.id)
+            in
+            None, Some (nodes : [ `double ] Node.t list)
+        in
+      Optimizer.get optimizer ~loss ?varsf ?varsd
+    in
     let samples = (Tensor.dims xs).(0) in
     let batch_size =
       match batch_size with

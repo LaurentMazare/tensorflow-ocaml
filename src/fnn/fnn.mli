@@ -138,6 +138,7 @@ module Model : sig
   val fit
     :  ?addn_inputs:(Input_id.t * (float, 'c) Tensor.t) list
     -> ?batch_size:int
+    -> ?explicit_vars:('a fnn list)
     -> ('a, 'b, 'c) t
     -> loss:Loss.t
     -> optimizer:Optimizer.t
