@@ -57,13 +57,19 @@ module Unary = struct
     | Tanh
     | Relu
     | Softmax
+    | Reduce_sum
+    | Square
+    | Neg
 
   let apply t node =
     match t with
-    | Sigmoid -> Ops.sigmoid node
-    | Tanh    -> Ops.tanh node
-    | Relu    -> Ops.relu node
-    | Softmax -> Ops.softmax node
+    | Sigmoid    -> Ops.sigmoid    node
+    | Tanh       -> Ops.tanh       node
+    | Relu       -> Ops.relu       node
+    | Softmax    -> Ops.softmax    node
+    | Reduce_sum -> Ops.reduce_sum node
+    | Square     -> Ops.square     node
+    | Neg        -> Ops.neg        node
 end
 
 module Binary = struct
@@ -144,10 +150,13 @@ let unary unary t =
   ; id = Id.create ()
   }
 
-let sigmoid t = unary Sigmoid t
-let tanh t = unary Tanh t
-let relu t = unary Relu t
-let softmax t = unary Softmax t
+let sigmoid    t = unary Sigmoid    t
+let tanh       t = unary Tanh       t
+let relu       t = unary Relu       t
+let softmax    t = unary Softmax    t
+let reduce_sum t = unary Reduce_sum t
+let square     t = unary Square     t
+let neg        t = unary Neg        t
 
 let binary binary t1 t2 =
   if t1.shape <> t2.shape

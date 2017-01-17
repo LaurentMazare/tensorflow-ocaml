@@ -29,10 +29,13 @@ val const
   -> shape:'a Shape.t
   -> 'a t
 
-val sigmoid : 'a t -> 'a t
-val tanh : 'a t -> 'a t
-val relu : 'a t -> 'a t
-val softmax : 'a t -> 'a t
+val sigmoid    : 'a t -> 'a t
+val tanh       : 'a t -> 'a t
+val relu       : 'a t -> 'a t
+val softmax    : 'a t -> 'a t
+val reduce_sum : 'a t -> 'a t
+val square     : 'a t -> 'a t
+val neg        : 'a t -> 'a t
 
 val (+) : 'a t -> 'a t -> 'a t
 val (-) : 'a t -> 'a t -> 'a t
