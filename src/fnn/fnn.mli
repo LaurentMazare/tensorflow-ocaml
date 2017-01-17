@@ -106,6 +106,8 @@ val split : _2d t -> _1d t list
 
 val concat : _1d t list -> _2d t
 
+val var : 'a t -> 'a t
+
 module Optimizer : sig
   type t
   val gradient_descent : learning_rate:float -> t

@@ -121,6 +121,7 @@ type 'a op =
   | Reshape : 'a Shape.t * 'b t -> 'a op
   | Concat : _1d t list -> _2d op
   | Split : _2d t * int * int -> _1d op
+  | Var : 'a t -> 'a op
 and 'a t =
   { shape : 'a Shape.t
   ; op : 'a op
@@ -196,6 +197,12 @@ let concat = function
     ; op = Concat l
     ; id = Id.create ()
     }
+
+let var t =
+  { shape = t.shape
+  ; op = Var t
+  ; id = Id.create ()
+  }
 
 let dense' ?(w_init = `const 0.) ?(b_init = `const 0.) ?name dim =
   let id = Id.create () in
@@ -298,7 +305,7 @@ let conv2d' ?(w_init = `const 0.) ?(b_init = `const 0.) ?name ~filter ~out_chann
 let conv2d ?w_init ?b_init ?name ~filter ~out_channels ~strides ~padding () =
   Staged.unstage (conv2d' ?w_init ?b_init ?name ~filter ~out_channels ~strides ~padding ())
 
-let var dims ~init ~type_ =
+let create_var dims ~init ~type_ =
   match init with
   | `const f -> Var.f_or_d dims f ~type_
   | `normal stddev -> Var.normal dims ~stddev ~type_
@@ -306,6 +313,7 @@ let var dims ~init ~type_ =
 
 let build_node t ~type_ =
   let inputs = Id.Table.create () in
+  let explicit_vars = Id.Table.create () in
   let dense_vars = Id.Table.create () in
   let conv_vars = Id.Table.create () in
   let splits = Id.Table.create () in
@@ -320,8 +328,8 @@ let build_node t ~type_ =
       let Shape.D1 shape = t.shape in
       let w, b =
         Hashtbl.find_or_add dense_vars t.id ~default:(fun () ->
-          let w = var ~type_ ~init:w_init [ input_shape; shape ] in
-          let b = var ~type_ ~init:b_init [ shape ] in
+          let w = create_var ~type_ ~init:w_init [ input_shape; shape ] in
+          let b = create_var ~type_ ~init:b_init [ shape ] in
           Option.iter name_opt ~f:(fun name ->
             Hashtbl.set var_names ~key:(Node.id w) ~data:(name ^ "/" ^ name ^ "_weights");
             Hashtbl.set var_names ~key:(Node.id b) ~data:(name ^ "/" ^ name ^ "_biases"));
@@ -353,10 +361,10 @@ let build_node t ~type_ =
         Hashtbl.find_or_add conv_vars t.id ~default:(fun () ->
           let in_channels = conv2d.in_channels in
           let w =
-            var ~type_ ~init:conv2d.w_init
+            create_var ~type_ ~init:conv2d.w_init
               [ filter_height; filter_width; in_channels; out_channels ]
           in
-          let b = var ~type_ ~init:conv2d.b_init [ out_channels ] in
+          let b = create_var ~type_ ~init:conv2d.b_init [ out_channels ] in
           Option.iter conv2d.name ~f:(fun name ->
             Hashtbl.set var_names ~key:(Node.id w) ~data:(name ^ "/" ^ name ^ "_filters");
             Hashtbl.set var_names ~key:(Node.id b) ~data:(name ^ "/" ^ name ^ "_biases"));
@@ -383,6 +391,12 @@ let build_node t ~type_ =
           Ops.(split ~num_split one32 (walk (P u))))
       in
       List.nth_exn list idx
+    | Var u ->
+      Hashtbl.find_or_add explicit_vars t.id ~default:(fun () ->
+        let dim_list = Shape.dim_list t.shape in
+        Var.create dim_list
+          ~type_
+          ~init:(walk (P u)))
   in
   walk t, inputs, var_names
 
