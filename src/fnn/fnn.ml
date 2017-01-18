@@ -597,34 +597,45 @@ module Model = struct
     fit t.placeholder t.node Session.Input.double Session.Output.scalar_double
   | _ -> assert false
 
-  (* Collect all variables in a net. The order of the created list is important as it
-     will serve to name the variable.
-     This does not seem very robust but will do for now. *)
   let all_vars_with_names t =
     Var.get_all_vars t.node
-    |> List.mapi ~f:(fun i var ->
+    |> List.filter_map ~f:(fun var ->
       let name =
         let node_id =
           match var with
           | Node.P v -> Node.id v
         in
-        match Hashtbl.find t.var_names node_id with
-        | Some name -> name
-        | None -> sprintf "V%d" i
+        Hashtbl.find t.var_names node_id
       in
-      name, var)
+      Option.map name ~f:(fun name -> name, var))
 
-  let save t ~filename =
+  let input_list (type a) (type b)
+      (t : (_, a, b) t)
+      (inputs : (Input_id.t * (float, b) Tensor.t) list)
+    =
+    List.map inputs ~f:(fun (id, tensor) ->
+      match Hashtbl.find t.inputs id with
+      | None -> failwith "missing input"
+      | Some placeholder ->
+        match Node.output_type t.node, t.eq with
+        | Node.Type.Float, Tensor.Float ->
+          Session.Input.float placeholder tensor
+        | Node.Type.Double, Tensor.Double ->
+          Session.Input.double placeholder tensor
+        | _ -> assert false)
+
+  let save ?(inputs = []) t ~filename =
     let save_node =
       Hashtbl.find_or_add t.save_nodes filename ~default:(fun () ->
         Ops.save ~filename (all_vars_with_names t))
     in
     Session.run
       ~session:t.session
+      ~inputs:(input_list t inputs)
       ~targets:[ Node.P save_node ]
       Session.Output.empty
 
-  let load t ~filename =
+  let load ?(inputs = []) t ~filename =
     let load_and_assign_nodes =
       Hashtbl.find_or_add t.load_and_assign_nodes filename ~default:(fun () ->
         let filename = Ops.const_string [ filename ] in
@@ -637,6 +648,7 @@ module Model = struct
           |> fun node -> Node.P node))
     in
     Session.run
+      ~inputs:(input_list t inputs)
       ~session:t.session
       ~targets:load_and_assign_nodes
       Session.Output.empty

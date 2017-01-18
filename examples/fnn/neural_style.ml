@@ -14,8 +14,9 @@ let vgg19 () =
     |> Fnn.max_pool ~filter:(2, 2) ~strides:(2, 2) ~padding:`same
   in
   let input, input_id = Fnn.input ~shape:(D3 (img_size, img_size, 3)) in
+  let var = Fnn.var input in
   let model =
-    Fnn.reshape input ~shape:(D3 (img_size, img_size, 3))
+    Fnn.reshape var ~shape:(D3 (img_size, img_size, 3))
     |> block 2 ~block_idx:1 ~out_channels:64
     |> block 2 ~block_idx:2 ~out_channels:128
     |> block 4 ~block_idx:3 ~out_channels:256
@@ -87,7 +88,8 @@ let () =
   let input_tensor = load_image ~filename:"input.jpg" in
   save_image input_tensor ~filename:"cropped.jpg";
   let input_id, model = vgg19 () in
-  Fnn.Model.load model ~filename:(Sys.getcwd () ^ "/vgg19.cpkt");
+  Fnn.Model.load model ~filename:(Sys.getcwd () ^ "/vgg19.cpkt")
+    ~inputs:[ input_id, input_tensor ];
   let results = Fnn.Model.predict model [ input_id, input_tensor ] in
   let pr, category =
     List.init 1000 ~f:(fun i ->

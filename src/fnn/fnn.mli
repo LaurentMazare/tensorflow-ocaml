@@ -149,12 +149,14 @@ module Model : sig
     -> unit
 
   val save
-    :  ('a, 'b, 'c) t
+    :  ?inputs:(Input_id.t * (float, 'c) Tensor.t) list
+    -> ('a, 'b, 'c) t
     -> filename:string
     -> unit
 
   val load
-    :  ('a, 'b, 'c) t
+    :  ?inputs:(Input_id.t * (float, 'c) Tensor.t) list
+    -> ('a, 'b, 'c) t
     -> filename:string
     -> unit
 end
