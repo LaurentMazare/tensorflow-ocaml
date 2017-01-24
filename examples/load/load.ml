@@ -48,8 +48,8 @@ let () =
   let output =
     Session.run
       session
-      ~inputs:[ Graph.create_port (find_operation "lstm_input_1") ~index:0, input_tensor ]
-      ~outputs:[ Graph.create_port (find_operation "Sigmoid") ~index:0 ]
+      ~inputs:[ Graph.create_output (find_operation "lstm_input_1") ~index:0, input_tensor ]
+      ~outputs:[ Graph.create_output (find_operation "Sigmoid") ~index:0 ]
       ~targets:[ find_operation "Variable/Assign" ]
     |> ok_exn ~context:"session run"
   in
