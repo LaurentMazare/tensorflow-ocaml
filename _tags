@@ -1,6 +1,8 @@
 true: package(ctypes), package(ctypes.foreign), package(ctypes.stubs)
 <examples/*/*_gnuplot.*> or <examples/basics/rnn.*>: package(gnuplot)
-<examples/*/*.native> or <tests/*.native>: use_tensorflow
+<examples/*/*.native> and not <examples/load/*.native>: use_tensorflow
+<tests/*.native>: use_tensorflow
+<examples/load/*.native>: use_tensorflow_core
 <examples/char_rnn/*> or <examples/rnn/*>: package(cmdliner)
 <examples/fnn/vgg19.*> or <examples/fnn/neural_style.*>: package(camlimages.jpeg)
 <src/gen_ops/*.native>: use_tensorflow
@@ -11,5 +13,7 @@ not <src/piqi/*>: warn_error()
 <lib>: -traverse
 <lib2>: -traverse
 <src/piqi> or <src/wrapper> or <src/graph> or <src> or <src/nn> or <src/fnn>: include
-<src/*/*>: for-pack(Tensorflow)
+<src/*/*> and not <src/wrapper/*>: for-pack(Tensorflow)
+<src/wrapper/*>: for-pack(Tensorflow_core)
 <tensorflow.cm{x,}a>: use_tensorflowcstubs
+<tensorflow_core.cm{x,}a>: use_tensorflowcstubs

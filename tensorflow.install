@@ -6,5 +6,11 @@ lib: [
   "_build/tensorflow.cmxs" {"tensorflow.cmxs"}
   "_build/tensorflow.cmx" {"tensorflow.cmx"}
   "_build/tensorflow.cmi" {"tensorflow.cmi"}
+  "_build/tensorflow_core.a" {"tensorflow_core.a"}
+  "_build/tensorflow_core.cmxa" {"tensorflow_core.cmxa"}
+  "_build/tensorflow_core.cma" {"tensorflow_core.cma"}
+  "_build/tensorflow_core.cmxs" {"tensorflow_core.cmxs"}
+  "_build/tensorflow_core.cmx" {"tensorflow_core.cmx"}
+  "_build/tensorflow_core.cmi" {"tensorflow_core.cmi"}
   "META"
 ]

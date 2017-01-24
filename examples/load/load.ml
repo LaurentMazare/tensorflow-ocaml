@@ -1,5 +1,6 @@
-open Tensorflow
 open Wrapper
+module Graph = Wrapper.Graph
+module Session = Wrapper.Session
 
 let ok_exn (result : 'a Status.result) ~context =
   match result with
