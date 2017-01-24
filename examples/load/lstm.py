@@ -13,7 +13,7 @@ from keras.layers import Embedding, Dense, LSTM, TimeDistributed
 from keras.models import Sequential
 size = 4
 model = Sequential()
-input_shape=(None, 3)
+input_shape=(1, 3)
 model.add(LSTM(size, return_sequences=True, consume_less='gpu', input_shape=input_shape))
 model.add(TimeDistributed(Dense(1, activation='sigmoid'), input_shape=(None, size)))
 

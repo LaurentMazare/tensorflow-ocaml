@@ -123,7 +123,7 @@ node {
   attr {
     key: "seed2"
     value {
-      i: 480506941
+      i: 61008956
     }
   }
 }
@@ -271,7 +271,7 @@ node {
             size: 16
           }
         }
-        tensor_content: "&\371\270\276\240\177\344=6\037\207\276G\343\014\277\024\006\215\276\000\202\215=\205R\203>\2417\013\276\003\037\264\276e\2674>\222Z\035\2762(\234\276.Y\346\275\343d\217>>\347\260\276\024`_>\213\017M=< Y\275\026jk\276\327i(\277\366\222\'\276\315r\205\276!\016\025\276&NH>%4\007>\273\246\212\275\320O\\=iz\034>\332\217\326>W}\302=\355`\014?X#5\276\226f/>0V\272=z\247P\276\337\277\177\274\275M\246\276\325\223\250>\'\344\337>?D\002?\007\302\260\275k/\250\275\305\036S>\353\026\206>fZ\244\276ve\264\276\314fH>\212\362\214>\\\360\262>\030I\222>Z-\255\276v\001\274\275\361\367\032\275 *\200=sJH\276\013_\021\276\2735\004?G\312\303>c\231\006\277u\260s>j~I\276n-u\275\000u\007\276e\254\360="
+        tensor_content: "\270Hz\276\223\203\255=:\313\027?\223\000\215>,\005\263\276\323$_\276\201\265\241\274\210;\210>h\202l\276\311f>\276\004\037\345=y6\232\2761F\326\275tw\261>^\374{\276\330<\233\276\354\221\371\276\0220\302=g\024\222\276\244\351\026\276\343\021\233=\034\366\267>\377-\202\275pj\000?r\177\224>\367?\275>\030-m>4\274\350\275\256\243\022\276\305>\345=;4\303\276\257\375\202=\017\231\237=^\320H>x;*>\265\270#\275\356\331\364\275\212\317\307>#\232\000\277\310\317I>[el\276\217\322\200\2757\223N\274\243D\357>\232\270\n\277\244\360\203\275\276I\243>S\344e\275O4\264\276\344\324\214\2766j\244=\250\335\330\275\261\3633\276\224\276\236=5y\202>\326\250\363\276\342\275\270\276\351z\301>3\303\300>\nU\263>\313\303\020\275\233-\244>{\233\236=z\213\005>"
       }
     }
   }
@@ -799,1468 +799,6 @@ node {
   }
 }
 node {
-  name: "pack"
-  op: "Const"
-  attr {
-    key: "dtype"
-    value {
-      type: DT_INT32
-    }
-  }
-  attr {
-    key: "value"
-    value {
-      tensor {
-        dtype: DT_INT32
-        tensor_shape {
-          dim {
-            size: 3
-          }
-        }
-        tensor_content: "\000\000\000\000\000\000\000\000\000\000\000\000"
-      }
-    }
-  }
-}
-node {
-  name: "pack_1"
-  op: "Const"
-  attr {
-    key: "dtype"
-    value {
-      type: DT_INT32
-    }
-  }
-  attr {
-    key: "value"
-    value {
-      tensor {
-        dtype: DT_INT32
-        tensor_shape {
-          dim {
-            size: 3
-          }
-        }
-        tensor_content: "\001\000\000\000\377\377\377\377\377\377\377\377"
-      }
-    }
-  }
-}
-node {
-  name: "Slice"
-  op: "Slice"
-  input: "transpose"
-  input: "pack"
-  input: "pack_1"
-  attr {
-    key: "Index"
-    value {
-      type: DT_INT32
-    }
-  }
-  attr {
-    key: "T"
-    value {
-      type: DT_FLOAT
-    }
-  }
-}
-node {
-  name: "Squeeze"
-  op: "Squeeze"
-  input: "Slice"
-  attr {
-    key: "T"
-    value {
-      type: DT_FLOAT
-    }
-  }
-  attr {
-    key: "squeeze_dims"
-    value {
-      list {
-        i: 0
-      }
-    }
-  }
-}
-node {
-  name: "strided_slice/pack"
-  op: "Const"
-  attr {
-    key: "dtype"
-    value {
-      type: DT_INT32
-    }
-  }
-  attr {
-    key: "value"
-    value {
-      tensor {
-        dtype: DT_INT32
-        tensor_shape {
-          dim {
-            size: 2
-          }
-        }
-        tensor_content: "\000\000\000\000\000\000\000\000"
-      }
-    }
-  }
-}
-node {
-  name: "strided_slice/pack_1"
-  op: "Const"
-  attr {
-    key: "dtype"
-    value {
-      type: DT_INT32
-    }
-  }
-  attr {
-    key: "value"
-    value {
-      tensor {
-        dtype: DT_INT32
-        tensor_shape {
-          dim {
-            size: 2
-          }
-        }
-        tensor_content: "\000\000\000\000\004\000\000\000"
-      }
-    }
-  }
-}
-node {
-  name: "strided_slice/pack_2"
-  op: "Const"
-  attr {
-    key: "dtype"
-    value {
-      type: DT_INT32
-    }
-  }
-  attr {
-    key: "value"
-    value {
-      tensor {
-        dtype: DT_INT32
-        tensor_shape {
-          dim {
-            size: 2
-          }
-        }
-        tensor_content: "\001\000\000\000\001\000\000\000"
-      }
-    }
-  }
-}
-node {
-  name: "strided_slice"
-  op: "StridedSlice"
-  input: "concat"
-  input: "strided_slice/pack"
-  input: "strided_slice/pack_1"
-  input: "strided_slice/pack_2"
-  attr {
-    key: "Index"
-    value {
-      type: DT_INT32
-    }
-  }
-  attr {
-    key: "T"
-    value {
-      type: DT_FLOAT
-    }
-  }
-  attr {
-    key: "begin_mask"
-    value {
-      i: 1
-    }
-  }
-  attr {
-    key: "ellipsis_mask"
-    value {
-      i: 0
-    }
-  }
-  attr {
-    key: "end_mask"
-    value {
-      i: 1
-    }
-  }
-  attr {
-    key: "new_axis_mask"
-    value {
-      i: 0
-    }
-  }
-  attr {
-    key: "shrink_axis_mask"
-    value {
-      i: 0
-    }
-  }
-}
-node {
-  name: "strided_slice_1/pack"
-  op: "Const"
-  attr {
-    key: "dtype"
-    value {
-      type: DT_INT32
-    }
-  }
-  attr {
-    key: "value"
-    value {
-      tensor {
-        dtype: DT_INT32
-        tensor_shape {
-          dim {
-            size: 2
-          }
-        }
-        tensor_content: "\000\000\000\000\004\000\000\000"
-      }
-    }
-  }
-}
-node {
-  name: "strided_slice_1/pack_1"
-  op: "Const"
-  attr {
-    key: "dtype"
-    value {
-      type: DT_INT32
-    }
-  }
-  attr {
-    key: "value"
-    value {
-      tensor {
-        dtype: DT_INT32
-        tensor_shape {
-          dim {
-            size: 2
-          }
-        }
-        tensor_content: "\000\000\000\000\010\000\000\000"
-      }
-    }
-  }
-}
-node {
-  name: "strided_slice_1/pack_2"
-  op: "Const"
-  attr {
-    key: "dtype"
-    value {
-      type: DT_INT32
-    }
-  }
-  attr {
-    key: "value"
-    value {
-      tensor {
-        dtype: DT_INT32
-        tensor_shape {
-          dim {
-            size: 2
-          }
-        }
-        tensor_content: "\001\000\000\000\001\000\000\000"
-      }
-    }
-  }
-}
-node {
-  name: "strided_slice_1"
-  op: "StridedSlice"
-  input: "concat"
-  input: "strided_slice_1/pack"
-  input: "strided_slice_1/pack_1"
-  input: "strided_slice_1/pack_2"
-  attr {
-    key: "Index"
-    value {
-      type: DT_INT32
-    }
-  }
-  attr {
-    key: "T"
-    value {
-      type: DT_FLOAT
-    }
-  }
-  attr {
-    key: "begin_mask"
-    value {
-      i: 1
-    }
-  }
-  attr {
-    key: "ellipsis_mask"
-    value {
-      i: 0
-    }
-  }
-  attr {
-    key: "end_mask"
-    value {
-      i: 1
-    }
-  }
-  attr {
-    key: "new_axis_mask"
-    value {
-      i: 0
-    }
-  }
-  attr {
-    key: "shrink_axis_mask"
-    value {
-      i: 0
-    }
-  }
-}
-node {
-  name: "mul/y"
-  op: "Const"
-  attr {
-    key: "dtype"
-    value {
-      type: DT_FLOAT
-    }
-  }
-  attr {
-    key: "value"
-    value {
-      tensor {
-        dtype: DT_FLOAT
-        tensor_shape {
-        }
-        float_val: 1.0
-      }
-    }
-  }
-}
-node {
-  name: "mul"
-  op: "Mul"
-  input: "Squeeze"
-  input: "mul/y"
-  attr {
-    key: "T"
-    value {
-      type: DT_FLOAT
-    }
-  }
-}
-node {
-  name: "MatMul"
-  op: "MatMul"
-  input: "mul"
-  input: "lstm_1_W/read"
-  attr {
-    key: "T"
-    value {
-      type: DT_FLOAT
-    }
-  }
-  attr {
-    key: "transpose_a"
-    value {
-      b: false
-    }
-  }
-  attr {
-    key: "transpose_b"
-    value {
-      b: false
-    }
-  }
-}
-node {
-  name: "mul_1/y"
-  op: "Const"
-  attr {
-    key: "dtype"
-    value {
-      type: DT_FLOAT
-    }
-  }
-  attr {
-    key: "value"
-    value {
-      tensor {
-        dtype: DT_FLOAT
-        tensor_shape {
-        }
-        float_val: 1.0
-      }
-    }
-  }
-}
-node {
-  name: "mul_1"
-  op: "Mul"
-  input: "strided_slice"
-  input: "mul_1/y"
-  attr {
-    key: "T"
-    value {
-      type: DT_FLOAT
-    }
-  }
-}
-node {
-  name: "MatMul_1"
-  op: "MatMul"
-  input: "mul_1"
-  input: "lstm_1_U/read"
-  attr {
-    key: "T"
-    value {
-      type: DT_FLOAT
-    }
-  }
-  attr {
-    key: "transpose_a"
-    value {
-      b: false
-    }
-  }
-  attr {
-    key: "transpose_b"
-    value {
-      b: false
-    }
-  }
-}
-node {
-  name: "add"
-  op: "Add"
-  input: "MatMul"
-  input: "MatMul_1"
-  attr {
-    key: "T"
-    value {
-      type: DT_FLOAT
-    }
-  }
-}
-node {
-  name: "add_1"
-  op: "Add"
-  input: "add"
-  input: "lstm_1_b/read"
-  attr {
-    key: "T"
-    value {
-      type: DT_FLOAT
-    }
-  }
-}
-node {
-  name: "strided_slice_2/pack"
-  op: "Const"
-  attr {
-    key: "dtype"
-    value {
-      type: DT_INT32
-    }
-  }
-  attr {
-    key: "value"
-    value {
-      tensor {
-        dtype: DT_INT32
-        tensor_shape {
-          dim {
-            size: 2
-          }
-        }
-        tensor_content: "\000\000\000\000\000\000\000\000"
-      }
-    }
-  }
-}
-node {
-  name: "strided_slice_2/pack_1"
-  op: "Const"
-  attr {
-    key: "dtype"
-    value {
-      type: DT_INT32
-    }
-  }
-  attr {
-    key: "value"
-    value {
-      tensor {
-        dtype: DT_INT32
-        tensor_shape {
-          dim {
-            size: 2
-          }
-        }
-        tensor_content: "\000\000\000\000\004\000\000\000"
-      }
-    }
-  }
-}
-node {
-  name: "strided_slice_2/pack_2"
-  op: "Const"
-  attr {
-    key: "dtype"
-    value {
-      type: DT_INT32
-    }
-  }
-  attr {
-    key: "value"
-    value {
-      tensor {
-        dtype: DT_INT32
-        tensor_shape {
-          dim {
-            size: 2
-          }
-        }
-        tensor_content: "\001\000\000\000\001\000\000\000"
-      }
-    }
-  }
-}
-node {
-  name: "strided_slice_2"
-  op: "StridedSlice"
-  input: "add_1"
-  input: "strided_slice_2/pack"
-  input: "strided_slice_2/pack_1"
-  input: "strided_slice_2/pack_2"
-  attr {
-    key: "Index"
-    value {
-      type: DT_INT32
-    }
-  }
-  attr {
-    key: "T"
-    value {
-      type: DT_FLOAT
-    }
-  }
-  attr {
-    key: "begin_mask"
-    value {
-      i: 3
-    }
-  }
-  attr {
-    key: "ellipsis_mask"
-    value {
-      i: 0
-    }
-  }
-  attr {
-    key: "end_mask"
-    value {
-      i: 1
-    }
-  }
-  attr {
-    key: "new_axis_mask"
-    value {
-      i: 0
-    }
-  }
-  attr {
-    key: "shrink_axis_mask"
-    value {
-      i: 0
-    }
-  }
-}
-node {
-  name: "strided_slice_3/pack"
-  op: "Const"
-  attr {
-    key: "dtype"
-    value {
-      type: DT_INT32
-    }
-  }
-  attr {
-    key: "value"
-    value {
-      tensor {
-        dtype: DT_INT32
-        tensor_shape {
-          dim {
-            size: 2
-          }
-        }
-        tensor_content: "\000\000\000\000\004\000\000\000"
-      }
-    }
-  }
-}
-node {
-  name: "strided_slice_3/pack_1"
-  op: "Const"
-  attr {
-    key: "dtype"
-    value {
-      type: DT_INT32
-    }
-  }
-  attr {
-    key: "value"
-    value {
-      tensor {
-        dtype: DT_INT32
-        tensor_shape {
-          dim {
-            size: 2
-          }
-        }
-        tensor_content: "\000\000\000\000\010\000\000\000"
-      }
-    }
-  }
-}
-node {
-  name: "strided_slice_3/pack_2"
-  op: "Const"
-  attr {
-    key: "dtype"
-    value {
-      type: DT_INT32
-    }
-  }
-  attr {
-    key: "value"
-    value {
-      tensor {
-        dtype: DT_INT32
-        tensor_shape {
-          dim {
-            size: 2
-          }
-        }
-        tensor_content: "\001\000\000\000\001\000\000\000"
-      }
-    }
-  }
-}
-node {
-  name: "strided_slice_3"
-  op: "StridedSlice"
-  input: "add_1"
-  input: "strided_slice_3/pack"
-  input: "strided_slice_3/pack_1"
-  input: "strided_slice_3/pack_2"
-  attr {
-    key: "Index"
-    value {
-      type: DT_INT32
-    }
-  }
-  attr {
-    key: "T"
-    value {
-      type: DT_FLOAT
-    }
-  }
-  attr {
-    key: "begin_mask"
-    value {
-      i: 1
-    }
-  }
-  attr {
-    key: "ellipsis_mask"
-    value {
-      i: 0
-    }
-  }
-  attr {
-    key: "end_mask"
-    value {
-      i: 1
-    }
-  }
-  attr {
-    key: "new_axis_mask"
-    value {
-      i: 0
-    }
-  }
-  attr {
-    key: "shrink_axis_mask"
-    value {
-      i: 0
-    }
-  }
-}
-node {
-  name: "strided_slice_4/pack"
-  op: "Const"
-  attr {
-    key: "dtype"
-    value {
-      type: DT_INT32
-    }
-  }
-  attr {
-    key: "value"
-    value {
-      tensor {
-        dtype: DT_INT32
-        tensor_shape {
-          dim {
-            size: 2
-          }
-        }
-        tensor_content: "\000\000\000\000\010\000\000\000"
-      }
-    }
-  }
-}
-node {
-  name: "strided_slice_4/pack_1"
-  op: "Const"
-  attr {
-    key: "dtype"
-    value {
-      type: DT_INT32
-    }
-  }
-  attr {
-    key: "value"
-    value {
-      tensor {
-        dtype: DT_INT32
-        tensor_shape {
-          dim {
-            size: 2
-          }
-        }
-        tensor_content: "\000\000\000\000\014\000\000\000"
-      }
-    }
-  }
-}
-node {
-  name: "strided_slice_4/pack_2"
-  op: "Const"
-  attr {
-    key: "dtype"
-    value {
-      type: DT_INT32
-    }
-  }
-  attr {
-    key: "value"
-    value {
-      tensor {
-        dtype: DT_INT32
-        tensor_shape {
-          dim {
-            size: 2
-          }
-        }
-        tensor_content: "\001\000\000\000\001\000\000\000"
-      }
-    }
-  }
-}
-node {
-  name: "strided_slice_4"
-  op: "StridedSlice"
-  input: "add_1"
-  input: "strided_slice_4/pack"
-  input: "strided_slice_4/pack_1"
-  input: "strided_slice_4/pack_2"
-  attr {
-    key: "Index"
-    value {
-      type: DT_INT32
-    }
-  }
-  attr {
-    key: "T"
-    value {
-      type: DT_FLOAT
-    }
-  }
-  attr {
-    key: "begin_mask"
-    value {
-      i: 1
-    }
-  }
-  attr {
-    key: "ellipsis_mask"
-    value {
-      i: 0
-    }
-  }
-  attr {
-    key: "end_mask"
-    value {
-      i: 1
-    }
-  }
-  attr {
-    key: "new_axis_mask"
-    value {
-      i: 0
-    }
-  }
-  attr {
-    key: "shrink_axis_mask"
-    value {
-      i: 0
-    }
-  }
-}
-node {
-  name: "strided_slice_5/pack"
-  op: "Const"
-  attr {
-    key: "dtype"
-    value {
-      type: DT_INT32
-    }
-  }
-  attr {
-    key: "value"
-    value {
-      tensor {
-        dtype: DT_INT32
-        tensor_shape {
-          dim {
-            size: 2
-          }
-        }
-        tensor_content: "\000\000\000\000\014\000\000\000"
-      }
-    }
-  }
-}
-node {
-  name: "strided_slice_5/pack_1"
-  op: "Const"
-  attr {
-    key: "dtype"
-    value {
-      type: DT_INT32
-    }
-  }
-  attr {
-    key: "value"
-    value {
-      tensor {
-        dtype: DT_INT32
-        tensor_shape {
-          dim {
-            size: 2
-          }
-        }
-        tensor_content: "\000\000\000\000\000\000\000\000"
-      }
-    }
-  }
-}
-node {
-  name: "strided_slice_5/pack_2"
-  op: "Const"
-  attr {
-    key: "dtype"
-    value {
-      type: DT_INT32
-    }
-  }
-  attr {
-    key: "value"
-    value {
-      tensor {
-        dtype: DT_INT32
-        tensor_shape {
-          dim {
-            size: 2
-          }
-        }
-        tensor_content: "\001\000\000\000\001\000\000\000"
-      }
-    }
-  }
-}
-node {
-  name: "strided_slice_5"
-  op: "StridedSlice"
-  input: "add_1"
-  input: "strided_slice_5/pack"
-  input: "strided_slice_5/pack_1"
-  input: "strided_slice_5/pack_2"
-  attr {
-    key: "Index"
-    value {
-      type: DT_INT32
-    }
-  }
-  attr {
-    key: "T"
-    value {
-      type: DT_FLOAT
-    }
-  }
-  attr {
-    key: "begin_mask"
-    value {
-      i: 1
-    }
-  }
-  attr {
-    key: "ellipsis_mask"
-    value {
-      i: 0
-    }
-  }
-  attr {
-    key: "end_mask"
-    value {
-      i: 3
-    }
-  }
-  attr {
-    key: "new_axis_mask"
-    value {
-      i: 0
-    }
-  }
-  attr {
-    key: "shrink_axis_mask"
-    value {
-      i: 0
-    }
-  }
-}
-node {
-  name: "mul_2/x"
-  op: "Const"
-  attr {
-    key: "dtype"
-    value {
-      type: DT_FLOAT
-    }
-  }
-  attr {
-    key: "value"
-    value {
-      tensor {
-        dtype: DT_FLOAT
-        tensor_shape {
-        }
-        float_val: 0.20000000298
-      }
-    }
-  }
-}
-node {
-  name: "mul_2"
-  op: "Mul"
-  input: "mul_2/x"
-  input: "strided_slice_2"
-  attr {
-    key: "T"
-    value {
-      type: DT_FLOAT
-    }
-  }
-}
-node {
-  name: "add_2/y"
-  op: "Const"
-  attr {
-    key: "dtype"
-    value {
-      type: DT_FLOAT
-    }
-  }
-  attr {
-    key: "value"
-    value {
-      tensor {
-        dtype: DT_FLOAT
-        tensor_shape {
-        }
-        float_val: 0.5
-      }
-    }
-  }
-}
-node {
-  name: "add_2"
-  op: "Add"
-  input: "mul_2"
-  input: "add_2/y"
-  attr {
-    key: "T"
-    value {
-      type: DT_FLOAT
-    }
-  }
-}
-node {
-  name: "Const_1"
-  op: "Const"
-  attr {
-    key: "dtype"
-    value {
-      type: DT_FLOAT
-    }
-  }
-  attr {
-    key: "value"
-    value {
-      tensor {
-        dtype: DT_FLOAT
-        tensor_shape {
-        }
-        float_val: 0.0
-      }
-    }
-  }
-}
-node {
-  name: "Const_2"
-  op: "Const"
-  attr {
-    key: "dtype"
-    value {
-      type: DT_FLOAT
-    }
-  }
-  attr {
-    key: "value"
-    value {
-      tensor {
-        dtype: DT_FLOAT
-        tensor_shape {
-        }
-        float_val: 1.0
-      }
-    }
-  }
-}
-node {
-  name: "clip_by_value/Minimum"
-  op: "Minimum"
-  input: "add_2"
-  input: "Const_2"
-  attr {
-    key: "T"
-    value {
-      type: DT_FLOAT
-    }
-  }
-}
-node {
-  name: "clip_by_value"
-  op: "Maximum"
-  input: "clip_by_value/Minimum"
-  input: "Const_1"
-  attr {
-    key: "T"
-    value {
-      type: DT_FLOAT
-    }
-  }
-}
-node {
-  name: "mul_3/x"
-  op: "Const"
-  attr {
-    key: "dtype"
-    value {
-      type: DT_FLOAT
-    }
-  }
-  attr {
-    key: "value"
-    value {
-      tensor {
-        dtype: DT_FLOAT
-        tensor_shape {
-        }
-        float_val: 0.20000000298
-      }
-    }
-  }
-}
-node {
-  name: "mul_3"
-  op: "Mul"
-  input: "mul_3/x"
-  input: "strided_slice_3"
-  attr {
-    key: "T"
-    value {
-      type: DT_FLOAT
-    }
-  }
-}
-node {
-  name: "add_3/y"
-  op: "Const"
-  attr {
-    key: "dtype"
-    value {
-      type: DT_FLOAT
-    }
-  }
-  attr {
-    key: "value"
-    value {
-      tensor {
-        dtype: DT_FLOAT
-        tensor_shape {
-        }
-        float_val: 0.5
-      }
-    }
-  }
-}
-node {
-  name: "add_3"
-  op: "Add"
-  input: "mul_3"
-  input: "add_3/y"
-  attr {
-    key: "T"
-    value {
-      type: DT_FLOAT
-    }
-  }
-}
-node {
-  name: "Const_3"
-  op: "Const"
-  attr {
-    key: "dtype"
-    value {
-      type: DT_FLOAT
-    }
-  }
-  attr {
-    key: "value"
-    value {
-      tensor {
-        dtype: DT_FLOAT
-        tensor_shape {
-        }
-        float_val: 0.0
-      }
-    }
-  }
-}
-node {
-  name: "Const_4"
-  op: "Const"
-  attr {
-    key: "dtype"
-    value {
-      type: DT_FLOAT
-    }
-  }
-  attr {
-    key: "value"
-    value {
-      tensor {
-        dtype: DT_FLOAT
-        tensor_shape {
-        }
-        float_val: 1.0
-      }
-    }
-  }
-}
-node {
-  name: "clip_by_value_1/Minimum"
-  op: "Minimum"
-  input: "add_3"
-  input: "Const_4"
-  attr {
-    key: "T"
-    value {
-      type: DT_FLOAT
-    }
-  }
-}
-node {
-  name: "clip_by_value_1"
-  op: "Maximum"
-  input: "clip_by_value_1/Minimum"
-  input: "Const_3"
-  attr {
-    key: "T"
-    value {
-      type: DT_FLOAT
-    }
-  }
-}
-node {
-  name: "mul_4"
-  op: "Mul"
-  input: "clip_by_value_1"
-  input: "strided_slice_1"
-  attr {
-    key: "T"
-    value {
-      type: DT_FLOAT
-    }
-  }
-}
-node {
-  name: "Tanh"
-  op: "Tanh"
-  input: "strided_slice_4"
-  attr {
-    key: "T"
-    value {
-      type: DT_FLOAT
-    }
-  }
-}
-node {
-  name: "mul_5"
-  op: "Mul"
-  input: "clip_by_value"
-  input: "Tanh"
-  attr {
-    key: "T"
-    value {
-      type: DT_FLOAT
-    }
-  }
-}
-node {
-  name: "add_4"
-  op: "Add"
-  input: "mul_4"
-  input: "mul_5"
-  attr {
-    key: "T"
-    value {
-      type: DT_FLOAT
-    }
-  }
-}
-node {
-  name: "mul_6/x"
-  op: "Const"
-  attr {
-    key: "dtype"
-    value {
-      type: DT_FLOAT
-    }
-  }
-  attr {
-    key: "value"
-    value {
-      tensor {
-        dtype: DT_FLOAT
-        tensor_shape {
-        }
-        float_val: 0.20000000298
-      }
-    }
-  }
-}
-node {
-  name: "mul_6"
-  op: "Mul"
-  input: "mul_6/x"
-  input: "strided_slice_5"
-  attr {
-    key: "T"
-    value {
-      type: DT_FLOAT
-    }
-  }
-}
-node {
-  name: "add_5/y"
-  op: "Const"
-  attr {
-    key: "dtype"
-    value {
-      type: DT_FLOAT
-    }
-  }
-  attr {
-    key: "value"
-    value {
-      tensor {
-        dtype: DT_FLOAT
-        tensor_shape {
-        }
-        float_val: 0.5
-      }
-    }
-  }
-}
-node {
-  name: "add_5"
-  op: "Add"
-  input: "mul_6"
-  input: "add_5/y"
-  attr {
-    key: "T"
-    value {
-      type: DT_FLOAT
-    }
-  }
-}
-node {
-  name: "Const_5"
-  op: "Const"
-  attr {
-    key: "dtype"
-    value {
-      type: DT_FLOAT
-    }
-  }
-  attr {
-    key: "value"
-    value {
-      tensor {
-        dtype: DT_FLOAT
-        tensor_shape {
-        }
-        float_val: 0.0
-      }
-    }
-  }
-}
-node {
-  name: "Const_6"
-  op: "Const"
-  attr {
-    key: "dtype"
-    value {
-      type: DT_FLOAT
-    }
-  }
-  attr {
-    key: "value"
-    value {
-      tensor {
-        dtype: DT_FLOAT
-        tensor_shape {
-        }
-        float_val: 1.0
-      }
-    }
-  }
-}
-node {
-  name: "clip_by_value_2/Minimum"
-  op: "Minimum"
-  input: "add_5"
-  input: "Const_6"
-  attr {
-    key: "T"
-    value {
-      type: DT_FLOAT
-    }
-  }
-}
-node {
-  name: "clip_by_value_2"
-  op: "Maximum"
-  input: "clip_by_value_2/Minimum"
-  input: "Const_5"
-  attr {
-    key: "T"
-    value {
-      type: DT_FLOAT
-    }
-  }
-}
-node {
-  name: "Tanh_1"
-  op: "Tanh"
-  input: "add_4"
-  attr {
-    key: "T"
-    value {
-      type: DT_FLOAT
-    }
-  }
-}
-node {
-  name: "mul_7"
-  op: "Mul"
-  input: "clip_by_value_2"
-  input: "Tanh_1"
-  attr {
-    key: "T"
-    value {
-      type: DT_FLOAT
-    }
-  }
-}
-node {
-  name: "concat_1/concat_dim"
-  op: "Const"
-  attr {
-    key: "dtype"
-    value {
-      type: DT_INT32
-    }
-  }
-  attr {
-    key: "value"
-    value {
-      tensor {
-        dtype: DT_INT32
-        tensor_shape {
-        }
-        int_val: 1
-      }
-    }
-  }
-}
-node {
-  name: "concat_1"
-  op: "Concat"
-  input: "concat_1/concat_dim"
-  input: "mul_7"
-  input: "add_4"
-  attr {
-    key: "N"
-    value {
-      i: 2
-    }
-  }
-  attr {
-    key: "T"
-    value {
-      type: DT_FLOAT
-    }
-  }
-}
-node {
   name: "Shape"
   op: "Shape"
   input: "transpose"
@@ -2278,7 +816,7 @@ node {
   }
 }
 node {
-  name: "strided_slice_6/pack"
+  name: "strided_slice/stack"
   op: "Const"
   attr {
     key: "dtype"
@@ -2302,7 +840,7 @@ node {
   }
 }
 node {
-  name: "strided_slice_6/pack_1"
+  name: "strided_slice/stack_1"
   op: "Const"
   attr {
     key: "dtype"
@@ -2326,7 +864,7 @@ node {
   }
 }
 node {
-  name: "strided_slice_6/pack_2"
+  name: "strided_slice/stack_2"
   op: "Const"
   attr {
     key: "dtype"
@@ -2350,12 +888,12 @@ node {
   }
 }
 node {
-  name: "strided_slice_6"
+  name: "strided_slice"
   op: "StridedSlice"
   input: "Shape"
-  input: "strided_slice_6/pack"
-  input: "strided_slice_6/pack_1"
-  input: "strided_slice_6/pack_2"
+  input: "strided_slice/stack"
+  input: "strided_slice/stack_1"
+  input: "strided_slice/stack_2"
   attr {
     key: "Index"
     value {
@@ -2400,7 +938,7 @@ node {
   }
 }
 node {
-  name: "strided_slice_7/pack"
+  name: "strided_slice_1/stack"
   op: "Const"
   attr {
     key: "dtype"
@@ -2424,7 +962,7 @@ node {
   }
 }
 node {
-  name: "strided_slice_7/pack_1"
+  name: "strided_slice_1/stack_1"
   op: "Const"
   attr {
     key: "dtype"
@@ -2448,7 +986,7 @@ node {
   }
 }
 node {
-  name: "strided_slice_7/pack_2"
+  name: "strided_slice_1/stack_2"
   op: "Const"
   attr {
     key: "dtype"
@@ -2472,12 +1010,12 @@ node {
   }
 }
 node {
-  name: "strided_slice_7"
+  name: "strided_slice_1"
   op: "StridedSlice"
   input: "Shape"
-  input: "strided_slice_7/pack"
-  input: "strided_slice_7/pack_1"
-  input: "strided_slice_7/pack_2"
+  input: "strided_slice_1/stack"
+  input: "strided_slice_1/stack_1"
+  input: "strided_slice_1/stack_2"
   attr {
     key: "Index"
     value {
@@ -2522,7 +1060,7 @@ node {
   }
 }
 node {
-  name: "pack_2/1"
+  name: "pack/1"
   op: "Const"
   attr {
     key: "dtype"
@@ -2543,10 +1081,10 @@ node {
   }
 }
 node {
-  name: "pack_2"
+  name: "pack"
   op: "Pack"
-  input: "strided_slice_7"
-  input: "pack_2/1"
+  input: "strided_slice_1"
+  input: "pack/1"
   attr {
     key: "N"
     value {
@@ -2590,7 +1128,7 @@ node {
 node {
   name: "zeros"
   op: "Fill"
-  input: "pack_2"
+  input: "pack"
   input: "zeros/Const"
   attr {
     key: "T"
@@ -2622,8 +1160,8 @@ node {
 }
 node {
   name: "TensorArray"
-  op: "TensorArray"
-  input: "strided_slice_6"
+  op: "TensorArrayV2"
+  input: "strided_slice"
   attr {
     key: "clear_after_read"
     value {
@@ -2680,8 +1218,8 @@ node {
 }
 node {
   name: "TensorArray_1"
-  op: "TensorArray"
-  input: "strided_slice_6"
+  op: "TensorArrayV2"
+  input: "strided_slice"
   attr {
     key: "clear_after_read"
     value {
@@ -2762,7 +1300,7 @@ node {
   }
 }
 node {
-  name: "TensorArrayPack/strided_slice/pack"
+  name: "TensorArrayPack/strided_slice/stack"
   op: "Const"
   attr {
     key: "_class"
@@ -2794,7 +1332,7 @@ node {
   }
 }
 node {
-  name: "TensorArrayPack/strided_slice/pack_1"
+  name: "TensorArrayPack/strided_slice/stack_1"
   op: "Const"
   attr {
     key: "_class"
@@ -2826,7 +1364,7 @@ node {
   }
 }
 node {
-  name: "TensorArrayPack/strided_slice/pack_2"
+  name: "TensorArrayPack/strided_slice/stack_2"
   op: "Const"
   attr {
     key: "_class"
@@ -2861,9 +1399,9 @@ node {
   name: "TensorArrayPack/strided_slice"
   op: "StridedSlice"
   input: "TensorArrayPack/Shape"
-  input: "TensorArrayPack/strided_slice/pack"
-  input: "TensorArrayPack/strided_slice/pack_1"
-  input: "TensorArrayPack/strided_slice/pack_2"
+  input: "TensorArrayPack/strided_slice/stack"
+  input: "TensorArrayPack/strided_slice/stack_1"
+  input: "TensorArrayPack/strided_slice/stack_2"
   attr {
     key: "Index"
     value {
@@ -2995,8 +1533,8 @@ node {
   }
 }
 node {
-  name: "TensorArrayPack/TensorArrayScatter"
-  op: "TensorArrayScatter"
+  name: "TensorArrayPack/TensorArrayScatterV2"
+  op: "TensorArrayScatterV2"
   input: "TensorArray_1"
   input: "TensorArrayPack/range"
   input: "transpose"
@@ -3189,7 +1727,7 @@ node {
 node {
   name: "while/Less/Enter"
   op: "Enter"
-  input: "strided_slice_6"
+  input: "strided_slice"
   attr {
     key: "T"
     value {
@@ -3326,8 +1864,8 @@ node {
   }
 }
 node {
-  name: "while/TensorArrayRead/RefEnter"
-  op: "RefEnter"
+  name: "while/TensorArrayReadV2/Enter"
+  op: "Enter"
   input: "TensorArray_1"
   attr {
     key: "T"
@@ -3363,9 +1901,9 @@ node {
   }
 }
 node {
-  name: "while/TensorArrayRead/Enter"
+  name: "while/TensorArrayReadV2/Enter_1"
   op: "Enter"
-  input: "TensorArrayPack/TensorArrayScatter"
+  input: "TensorArrayPack/TensorArrayScatterV2"
   attr {
     key: "T"
     value {
@@ -3400,11 +1938,11 @@ node {
   }
 }
 node {
-  name: "while/TensorArrayRead"
-  op: "TensorArrayRead"
-  input: "while/TensorArrayRead/RefEnter"
+  name: "while/TensorArrayReadV2"
+  op: "TensorArrayReadV2"
+  input: "while/TensorArrayReadV2/Enter"
   input: "while/Identity"
-  input: "while/TensorArrayRead/Enter"
+  input: "while/TensorArrayReadV2/Enter_1"
   attr {
     key: "_class"
     value {
@@ -3421,7 +1959,7 @@ node {
   }
 }
 node {
-  name: "while/strided_slice/pack"
+  name: "while/strided_slice/stack"
   op: "Const"
   input: "^while/Identity"
   attr {
@@ -3446,7 +1984,7 @@ node {
   }
 }
 node {
-  name: "while/strided_slice/pack_1"
+  name: "while/strided_slice/stack_1"
   op: "Const"
   input: "^while/Identity"
   attr {
@@ -3471,7 +2009,7 @@ node {
   }
 }
 node {
-  name: "while/strided_slice/pack_2"
+  name: "while/strided_slice/stack_2"
   op: "Const"
   input: "^while/Identity"
   attr {
@@ -3499,9 +2037,9 @@ node {
   name: "while/strided_slice"
   op: "StridedSlice"
   input: "while/Identity_2"
-  input: "while/strided_slice/pack"
-  input: "while/strided_slice/pack_1"
-  input: "while/strided_slice/pack_2"
+  input: "while/strided_slice/stack"
+  input: "while/strided_slice/stack_1"
+  input: "while/strided_slice/stack_2"
   attr {
     key: "Index"
     value {
@@ -3546,7 +2084,7 @@ node {
   }
 }
 node {
-  name: "while/strided_slice_1/pack"
+  name: "while/strided_slice_1/stack"
   op: "Const"
   input: "^while/Identity"
   attr {
@@ -3571,7 +2109,7 @@ node {
   }
 }
 node {
-  name: "while/strided_slice_1/pack_1"
+  name: "while/strided_slice_1/stack_1"
   op: "Const"
   input: "^while/Identity"
   attr {
@@ -3596,7 +2134,7 @@ node {
   }
 }
 node {
-  name: "while/strided_slice_1/pack_2"
+  name: "while/strided_slice_1/stack_2"
   op: "Const"
   input: "^while/Identity"
   attr {
@@ -3624,9 +2162,9 @@ node {
   name: "while/strided_slice_1"
   op: "StridedSlice"
   input: "while/Identity_2"
-  input: "while/strided_slice_1/pack"
-  input: "while/strided_slice_1/pack_1"
-  input: "while/strided_slice_1/pack_2"
+  input: "while/strided_slice_1/stack"
+  input: "while/strided_slice_1/stack_1"
+  input: "while/strided_slice_1/stack_2"
   attr {
     key: "Index"
     value {
@@ -3695,7 +2233,7 @@ node {
 node {
   name: "while/mul"
   op: "Mul"
-  input: "while/TensorArrayRead"
+  input: "while/TensorArrayReadV2"
   input: "while/mul/y"
   attr {
     key: "T"
@@ -3898,7 +2436,7 @@ node {
   }
 }
 node {
-  name: "while/strided_slice_2/pack"
+  name: "while/strided_slice_2/stack"
   op: "Const"
   input: "^while/Identity"
   attr {
@@ -3923,7 +2461,7 @@ node {
   }
 }
 node {
-  name: "while/strided_slice_2/pack_1"
+  name: "while/strided_slice_2/stack_1"
   op: "Const"
   input: "^while/Identity"
   attr {
@@ -3948,7 +2486,7 @@ node {
   }
 }
 node {
-  name: "while/strided_slice_2/pack_2"
+  name: "while/strided_slice_2/stack_2"
   op: "Const"
   input: "^while/Identity"
   attr {
@@ -3976,9 +2514,9 @@ node {
   name: "while/strided_slice_2"
   op: "StridedSlice"
   input: "while/add_1"
-  input: "while/strided_slice_2/pack"
-  input: "while/strided_slice_2/pack_1"
-  input: "while/strided_slice_2/pack_2"
+  input: "while/strided_slice_2/stack"
+  input: "while/strided_slice_2/stack_1"
+  input: "while/strided_slice_2/stack_2"
   attr {
     key: "Index"
     value {
@@ -4023,7 +2561,7 @@ node {
   }
 }
 node {
-  name: "while/strided_slice_3/pack"
+  name: "while/strided_slice_3/stack"
   op: "Const"
   input: "^while/Identity"
   attr {
@@ -4048,7 +2586,7 @@ node {
   }
 }
 node {
-  name: "while/strided_slice_3/pack_1"
+  name: "while/strided_slice_3/stack_1"
   op: "Const"
   input: "^while/Identity"
   attr {
@@ -4073,7 +2611,7 @@ node {
   }
 }
 node {
-  name: "while/strided_slice_3/pack_2"
+  name: "while/strided_slice_3/stack_2"
   op: "Const"
   input: "^while/Identity"
   attr {
@@ -4101,9 +2639,9 @@ node {
   name: "while/strided_slice_3"
   op: "StridedSlice"
   input: "while/add_1"
-  input: "while/strided_slice_3/pack"
-  input: "while/strided_slice_3/pack_1"
-  input: "while/strided_slice_3/pack_2"
+  input: "while/strided_slice_3/stack"
+  input: "while/strided_slice_3/stack_1"
+  input: "while/strided_slice_3/stack_2"
   attr {
     key: "Index"
     value {
@@ -4148,7 +2686,7 @@ node {
   }
 }
 node {
-  name: "while/strided_slice_4/pack"
+  name: "while/strided_slice_4/stack"
   op: "Const"
   input: "^while/Identity"
   attr {
@@ -4173,7 +2711,7 @@ node {
   }
 }
 node {
-  name: "while/strided_slice_4/pack_1"
+  name: "while/strided_slice_4/stack_1"
   op: "Const"
   input: "^while/Identity"
   attr {
@@ -4198,7 +2736,7 @@ node {
   }
 }
 node {
-  name: "while/strided_slice_4/pack_2"
+  name: "while/strided_slice_4/stack_2"
   op: "Const"
   input: "^while/Identity"
   attr {
@@ -4226,9 +2764,9 @@ node {
   name: "while/strided_slice_4"
   op: "StridedSlice"
   input: "while/add_1"
-  input: "while/strided_slice_4/pack"
-  input: "while/strided_slice_4/pack_1"
-  input: "while/strided_slice_4/pack_2"
+  input: "while/strided_slice_4/stack"
+  input: "while/strided_slice_4/stack_1"
+  input: "while/strided_slice_4/stack_2"
   attr {
     key: "Index"
     value {
@@ -4273,7 +2811,7 @@ node {
   }
 }
 node {
-  name: "while/strided_slice_5/pack"
+  name: "while/strided_slice_5/stack"
   op: "Const"
   input: "^while/Identity"
   attr {
@@ -4298,7 +2836,7 @@ node {
   }
 }
 node {
-  name: "while/strided_slice_5/pack_1"
+  name: "while/strided_slice_5/stack_1"
   op: "Const"
   input: "^while/Identity"
   attr {
@@ -4323,7 +2861,7 @@ node {
   }
 }
 node {
-  name: "while/strided_slice_5/pack_2"
+  name: "while/strided_slice_5/stack_2"
   op: "Const"
   input: "^while/Identity"
   attr {
@@ -4351,9 +2889,9 @@ node {
   name: "while/strided_slice_5"
   op: "StridedSlice"
   input: "while/add_1"
-  input: "while/strided_slice_5/pack"
-  input: "while/strided_slice_5/pack_1"
-  input: "while/strided_slice_5/pack_2"
+  input: "while/strided_slice_5/stack"
+  input: "while/strided_slice_5/stack_1"
+  input: "while/strided_slice_5/stack_2"
   attr {
     key: "Index"
     value {
@@ -4917,8 +3455,8 @@ node {
   }
 }
 node {
-  name: "while/TensorArrayWrite/RefEnter"
-  op: "RefEnter"
+  name: "while/TensorArrayWriteV2/Enter"
+  op: "Enter"
   input: "TensorArray"
   attr {
     key: "T"
@@ -4954,9 +3492,9 @@ node {
   }
 }
 node {
-  name: "while/TensorArrayWrite"
-  op: "TensorArrayWrite"
-  input: "while/TensorArrayWrite/RefEnter"
+  name: "while/TensorArrayWriteV2"
+  op: "TensorArrayWriteV2"
+  input: "while/TensorArrayWriteV2/Enter"
   input: "while/Identity"
   input: "while/mul_7"
   input: "while/Identity_1"
@@ -5053,7 +3591,7 @@ node {
 node {
   name: "while/NextIteration_1"
   op: "NextIteration"
-  input: "while/TensorArrayWrite"
+  input: "while/TensorArrayWriteV2"
   attr {
     key: "T"
     value {
@@ -5106,8 +3644,8 @@ node {
   }
 }
 node {
-  name: "TensorArrayPack_1/TensorArraySize"
-  op: "TensorArraySize"
+  name: "TensorArrayPack_1/TensorArraySizeV2"
+  op: "TensorArraySizeV2"
   input: "TensorArray"
   input: "while/Exit_1"
   attr {
@@ -5181,7 +3719,7 @@ node {
   name: "TensorArrayPack_1/range"
   op: "Range"
   input: "TensorArrayPack_1/range/start"
-  input: "TensorArrayPack_1/TensorArraySize"
+  input: "TensorArrayPack_1/TensorArraySizeV2"
   input: "TensorArrayPack_1/range/delta"
   attr {
     key: "Tidx"
@@ -5199,8 +3737,8 @@ node {
   }
 }
 node {
-  name: "TensorArrayPack_1/TensorArrayGather"
-  op: "TensorArrayGather"
+  name: "TensorArrayPack_1/TensorArrayGatherV2"
+  op: "TensorArrayGatherV2"
   input: "TensorArray"
   input: "TensorArrayPack_1/range"
   input: "while/Exit_1"
@@ -5233,7 +3771,7 @@ node {
   }
 }
 node {
-  name: "strided_slice_8/pack"
+  name: "strided_slice_2/stack"
   op: "Const"
   attr {
     key: "dtype"
@@ -5257,7 +3795,7 @@ node {
   }
 }
 node {
-  name: "strided_slice_8/pack_1"
+  name: "strided_slice_2/stack_1"
   op: "Const"
   attr {
     key: "dtype"
@@ -5281,7 +3819,7 @@ node {
   }
 }
 node {
-  name: "strided_slice_8/pack_2"
+  name: "strided_slice_2/stack_2"
   op: "Const"
   attr {
     key: "dtype"
@@ -5305,12 +3843,12 @@ node {
   }
 }
 node {
-  name: "strided_slice_8"
+  name: "strided_slice_2"
   op: "StridedSlice"
   input: "while/Exit_2"
-  input: "strided_slice_8/pack"
-  input: "strided_slice_8/pack_1"
-  input: "strided_slice_8/pack_2"
+  input: "strided_slice_2/stack"
+  input: "strided_slice_2/stack_1"
+  input: "strided_slice_2/stack_2"
   attr {
     key: "Index"
     value {
@@ -5355,7 +3893,7 @@ node {
   }
 }
 node {
-  name: "strided_slice_9/pack"
+  name: "strided_slice_3/stack"
   op: "Const"
   attr {
     key: "dtype"
@@ -5379,7 +3917,7 @@ node {
   }
 }
 node {
-  name: "strided_slice_9/pack_1"
+  name: "strided_slice_3/stack_1"
   op: "Const"
   attr {
     key: "dtype"
@@ -5403,7 +3941,7 @@ node {
   }
 }
 node {
-  name: "strided_slice_9/pack_2"
+  name: "strided_slice_3/stack_2"
   op: "Const"
   attr {
     key: "dtype"
@@ -5427,12 +3965,12 @@ node {
   }
 }
 node {
-  name: "strided_slice_9"
+  name: "strided_slice_3"
   op: "StridedSlice"
   input: "while/Exit_2"
-  input: "strided_slice_9/pack"
-  input: "strided_slice_9/pack_1"
-  input: "strided_slice_9/pack_2"
+  input: "strided_slice_3/stack"
+  input: "strided_slice_3/stack_1"
+  input: "strided_slice_3/stack_2"
   attr {
     key: "Index"
     value {
@@ -5479,7 +4017,7 @@ node {
 node {
   name: "Shape_1"
   op: "Shape"
-  input: "TensorArrayPack_1/TensorArrayGather"
+  input: "TensorArrayPack_1/TensorArrayGatherV2"
   attr {
     key: "T"
     value {
@@ -5494,7 +4032,7 @@ node {
   }
 }
 node {
-  name: "strided_slice_10/pack"
+  name: "strided_slice_4/stack"
   op: "Const"
   attr {
     key: "dtype"
@@ -5518,7 +4056,7 @@ node {
   }
 }
 node {
-  name: "strided_slice_10/pack_1"
+  name: "strided_slice_4/stack_1"
   op: "Const"
   attr {
     key: "dtype"
@@ -5542,7 +4080,7 @@ node {
   }
 }
 node {
-  name: "strided_slice_10/pack_2"
+  name: "strided_slice_4/stack_2"
   op: "Const"
   attr {
     key: "dtype"
@@ -5566,12 +4104,12 @@ node {
   }
 }
 node {
-  name: "strided_slice_10"
+  name: "strided_slice_4"
   op: "StridedSlice"
   input: "Shape_1"
-  input: "strided_slice_10/pack"
-  input: "strided_slice_10/pack_1"
-  input: "strided_slice_10/pack_2"
+  input: "strided_slice_4/stack"
+  input: "strided_slice_4/stack_1"
+  input: "strided_slice_4/stack_2"
   attr {
     key: "Index"
     value {
@@ -5639,7 +4177,7 @@ node {
 node {
   name: "sub"
   op: "Sub"
-  input: "strided_slice_10"
+  input: "strided_slice_4"
   input: "sub/y"
   attr {
     key: "T"
@@ -5649,7 +4187,7 @@ node {
   }
 }
 node {
-  name: "pack_3/1"
+  name: "pack_1/1"
   op: "Const"
   attr {
     key: "dtype"
@@ -5670,7 +4208,7 @@ node {
   }
 }
 node {
-  name: "pack_3/2"
+  name: "pack_1/2"
   op: "Const"
   attr {
     key: "dtype"
@@ -5691,11 +4229,11 @@ node {
   }
 }
 node {
-  name: "pack_3"
+  name: "pack_1"
   op: "Pack"
   input: "sub"
-  input: "pack_3/1"
-  input: "pack_3/2"
+  input: "pack_1/1"
+  input: "pack_1/2"
   attr {
     key: "N"
     value {
@@ -5716,7 +4254,7 @@ node {
   }
 }
 node {
-  name: "pack_4"
+  name: "pack_2"
   op: "Const"
   attr {
     key: "dtype"
@@ -5740,11 +4278,11 @@ node {
   }
 }
 node {
-  name: "Slice_1"
+  name: "Slice"
   op: "Slice"
-  input: "TensorArrayPack_1/TensorArrayGather"
-  input: "pack_3"
-  input: "pack_4"
+  input: "TensorArrayPack_1/TensorArrayGatherV2"
+  input: "pack_1"
+  input: "pack_2"
   attr {
     key: "Index"
     value {
@@ -5759,9 +4297,9 @@ node {
   }
 }
 node {
-  name: "Squeeze_1"
+  name: "Squeeze"
   op: "Squeeze"
-  input: "Slice_1"
+  input: "Slice"
   attr {
     key: "T"
     value {
@@ -5804,7 +4342,7 @@ node {
 node {
   name: "transpose_1"
   op: "Transpose"
-  input: "TensorArrayPack_1/TensorArrayGather"
+  input: "TensorArrayPack_1/TensorArrayGatherV2"
   input: "transpose_1/perm"
   attr {
     key: "T"
@@ -5910,7 +4448,7 @@ node {
   attr {
     key: "seed2"
     value {
-      i: 95555046
+      i: 159636528
     }
   }
 }
@@ -6037,7 +4575,7 @@ node {
   }
 }
 node {
-  name: "Const_7"
+  name: "Const_1"
   op: "Const"
   attr {
     key: "dtype"
@@ -6096,7 +4634,7 @@ node {
   name: "dense_1_b/Assign"
   op: "Assign"
   input: "dense_1_b"
-  input: "Const_7"
+  input: "Const_1"
   attr {
     key: "T"
     value {
@@ -6144,145 +4682,6 @@ node {
   }
 }
 node {
-  name: "Shape_2"
-  op: "Shape"
-  input: "transpose_1"
-  attr {
-    key: "T"
-    value {
-      type: DT_FLOAT
-    }
-  }
-  attr {
-    key: "out_type"
-    value {
-      type: DT_INT32
-    }
-  }
-}
-node {
-  name: "strided_slice_11/pack"
-  op: "Const"
-  attr {
-    key: "dtype"
-    value {
-      type: DT_INT32
-    }
-  }
-  attr {
-    key: "value"
-    value {
-      tensor {
-        dtype: DT_INT32
-        tensor_shape {
-          dim {
-            size: 1
-          }
-        }
-        int_val: 1
-      }
-    }
-  }
-}
-node {
-  name: "strided_slice_11/pack_1"
-  op: "Const"
-  attr {
-    key: "dtype"
-    value {
-      type: DT_INT32
-    }
-  }
-  attr {
-    key: "value"
-    value {
-      tensor {
-        dtype: DT_INT32
-        tensor_shape {
-          dim {
-            size: 1
-          }
-        }
-        int_val: 2
-      }
-    }
-  }
-}
-node {
-  name: "strided_slice_11/pack_2"
-  op: "Const"
-  attr {
-    key: "dtype"
-    value {
-      type: DT_INT32
-    }
-  }
-  attr {
-    key: "value"
-    value {
-      tensor {
-        dtype: DT_INT32
-        tensor_shape {
-          dim {
-            size: 1
-          }
-        }
-        int_val: 1
-      }
-    }
-  }
-}
-node {
-  name: "strided_slice_11"
-  op: "StridedSlice"
-  input: "Shape_2"
-  input: "strided_slice_11/pack"
-  input: "strided_slice_11/pack_1"
-  input: "strided_slice_11/pack_2"
-  attr {
-    key: "Index"
-    value {
-      type: DT_INT32
-    }
-  }
-  attr {
-    key: "T"
-    value {
-      type: DT_INT32
-    }
-  }
-  attr {
-    key: "begin_mask"
-    value {
-      i: 0
-    }
-  }
-  attr {
-    key: "ellipsis_mask"
-    value {
-      i: 0
-    }
-  }
-  attr {
-    key: "end_mask"
-    value {
-      i: 0
-    }
-  }
-  attr {
-    key: "new_axis_mask"
-    value {
-      i: 0
-    }
-  }
-  attr {
-    key: "shrink_axis_mask"
-    value {
-      i: 1
-    }
-  }
-}
-node {
   name: "Reshape/shape"
   op: "Const"
   attr {
@@ -6325,7 +4724,7 @@ node {
   }
 }
 node {
-  name: "MatMul_2"
+  name: "MatMul"
   op: "MatMul"
   input: "Reshape"
   input: "dense_1_W/read"
@@ -6349,9 +4748,9 @@ node {
   }
 }
 node {
-  name: "add_6"
+  name: "add"
   op: "Add"
-  input: "MatMul_2"
+  input: "MatMul"
   input: "dense_1_b/read"
   attr {
     key: "T"
@@ -6363,7 +4762,7 @@ node {
 node {
   name: "Sigmoid"
   op: "Sigmoid"
-  input: "add_6"
+  input: "add"
   attr {
     key: "T"
     value {
@@ -6372,69 +4771,26 @@ node {
   }
 }
 node {
-  name: "Reshape_1/shape/0"
-  op: "Const"
-  attr {
-    key: "dtype"
-    value {
-      type: DT_INT32
-    }
-  }
-  attr {
-    key: "value"
-    value {
-      tensor {
-        dtype: DT_INT32
-        tensor_shape {
-        }
-        int_val: -1
-      }
-    }
-  }
-}
-node {
-  name: "Reshape_1/shape/2"
-  op: "Const"
-  attr {
-    key: "dtype"
-    value {
-      type: DT_INT32
-    }
-  }
-  attr {
-    key: "value"
-    value {
-      tensor {
-        dtype: DT_INT32
-        tensor_shape {
-        }
-        int_val: 1
-      }
-    }
-  }
-}
-node {
   name: "Reshape_1/shape"
-  op: "Pack"
-  input: "Reshape_1/shape/0"
-  input: "strided_slice_11"
-  input: "Reshape_1/shape/2"
+  op: "Const"
   attr {
-    key: "N"
-    value {
-      i: 3
-    }
-  }
-  attr {
-    key: "T"
+    key: "dtype"
     value {
       type: DT_INT32
     }
   }
   attr {
-    key: "axis"
+    key: "value"
     value {
-      i: 0
+      tensor {
+        dtype: DT_INT32
+        tensor_shape {
+          dim {
+            size: 3
+          }
+        }
+        tensor_content: "\377\377\377\377\001\000\000\000\001\000\000\000"
+      }
     }
   }
 }
@@ -6457,5 +4813,5 @@ node {
   }
 }
 versions {
-  producer: 15
+  producer: 17
 }
