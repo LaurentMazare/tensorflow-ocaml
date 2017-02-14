@@ -14,15 +14,15 @@ The opam package requires the TensorFlow library to be installed on your system.
 
 * The version 0.0.6 of the opam package uses TensorFlow release 0.10: `libtensorflow-0.10.so`.
 * The version 0.0.7 of the opam package uses release 0.11: `libtensorflow-0.11.so`.
-* The current tip uses release 0.12: `libtensorflow.so.0.12`.
+* The current tip uses release 1.0: `libtensorflow.so.1.0`.
 
 There are two ways to obtain these libraries:
 * You can build them from source by following these steps:
     1. [Install the Bazel build system](http://bazel.io/docs/install.html)
-    1. Clone the TensorFlow repo `git clone --recurse-submodules -b r0.12 https://github.com/tensorflow/tensorflow`
+    1. Clone the TensorFlow repo `git clone --recurse-submodules -b r1.0 https://github.com/tensorflow/tensorflow`
     1. In `tensorflow` run `./configure` then `bazel build -c opt tensorflow:libtensorflow_c.so`.
        - In order to build with GPU support, CUDA needs to be installed and specified during `./configure`.
-* You can download prebuilt x86-64 linux binaries (CPU only), [libtensorflow-0.10.so](https://github.com/LaurentMazare/tensorflow-ocaml/releases/download/0.0.5/libtensorflow-0.10.so), [libtensorflow-0.11.so](https://github.com/LaurentMazare/tensorflow-ocaml/releases/download/0.0.6/libtensorflow-0.11.so) or [libtensorflow.so.0.12](https://github.com/LaurentMazare/tensorflow-ocaml/releases/download/0.0.7/libtensorflow.so.0.12b).
+* You can download prebuilt x86-64 linux binaries (CPU only), [libtensorflow-0.10.so](https://github.com/LaurentMazare/tensorflow-ocaml/releases/download/0.0.5/libtensorflow-0.10.so), [libtensorflow-0.11.so](https://github.com/LaurentMazare/tensorflow-ocaml/releases/download/0.0.6/libtensorflow-0.11.so) or [libtensorflow.so.1.0](https://github.com/LaurentMazare/tensorflow-ocaml/releases/download/0.0.7/libtensorflow.so.1.0).
 
 Adjust your LD_LIBRARY_PATH to include the directory in which you've put `libtensorflow-0.1x.so` and finally download a [very simple example](https://github.com/LaurentMazare/tensorflow-ocaml/tree/master/examples/basics/forty_two.ml) and compile it with the following command:
 ```bash

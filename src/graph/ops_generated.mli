@@ -16,6 +16,7 @@ module Op_names : sig
   val adjustContrast : Op_name.t
   val adjustContrastv2 : Op_name.t
   val adjustHue : Op_name.t
+  val adjustSaturation : Op_name.t
   val all : Op_name.t
   val allCandidateSampler : Op_name.t
   val any : Op_name.t
@@ -79,6 +80,7 @@ module Op_names : sig
   val biasAddGrad : Op_name.t
   val biasAddV1 : Op_name.t
   val bitcast : Op_name.t
+  val broadcastArgs : Op_name.t
   val broadcastGradientArgs : Op_name.t
   val cTCGreedyDecoder : Op_name.t
   val cTCLoss : Op_name.t
@@ -116,11 +118,14 @@ module Op_names : sig
   val cumsum : Op_name.t
   val debugIdentity : Op_name.t
   val debugNanCount : Op_name.t
+  val debugNumericSummary : Op_name.t
   val decodeBase64 : Op_name.t
   val decodeJSONExample : Op_name.t
   val decodePng : Op_name.t
   val decodeRaw : Op_name.t
   val deleteSessionTensor : Op_name.t
+  val denseToDenseSetOperation : Op_name.t
+  val denseToSparseSetOperation : Op_name.t
   val depthToSpace : Op_name.t
   val depthwiseConv2dNative : Op_name.t
   val depthwiseConv2dNativeBackpropFilter : Op_name.t
@@ -150,6 +155,7 @@ module Op_names : sig
   val exit : Op_name.t
   val exp : Op_name.t
   val expandDims : Op_name.t
+  val expm1 : Op_name.t
   val extractGlimpse : Op_name.t
   val extractImagePatches : Op_name.t
   val fFT : Op_name.t
@@ -271,6 +277,7 @@ module Op_names : sig
   val pack : Op_name.t
   val pad : Op_name.t
   val paddingFIFOQueue : Op_name.t
+  val parallelConcat : Op_name.t
   val parameterizedTruncatedNormal : Op_name.t
   val parseTensor : Op_name.t
   val placeholder : Op_name.t
@@ -278,8 +285,10 @@ module Op_names : sig
   val placeholderWithDefault : Op_name.t
   val polygamma : Op_name.t
   val pow : Op_name.t
+  val preventGradient : Op_name.t
   val priorityQueue : Op_name.t
   val prod : Op_name.t
+  val qr : Op_name.t
   val quantizeAndDequantize : Op_name.t
   val quantizeDownAndShrinkRange : Op_name.t
   val quantizeV2 : Op_name.t
@@ -288,6 +297,7 @@ module Op_names : sig
   val quantizedBiasAdd : Op_name.t
   val quantizedConcat : Op_name.t
   val quantizedConv2D : Op_name.t
+  val quantizedInstanceNorm : Op_name.t
   val quantizedMatMul : Op_name.t
   val quantizedMaxPool : Op_name.t
   val quantizedRelu : Op_name.t
@@ -371,6 +381,7 @@ module Op_names : sig
   val selfAdjointEigV2 : Op_name.t
   val serializeManySparse : Op_name.t
   val serializeSparse : Op_name.t
+  val setSize : Op_name.t
   val shape : Op_name.t
   val shapeN : Op_name.t
   val shardedFilename : Op_name.t
@@ -426,6 +437,7 @@ module Op_names : sig
   val sparseTensorDenseAdd : Op_name.t
   val sparseTensorDenseMatMul : Op_name.t
   val sparseToDense : Op_name.t
+  val sparseToSparseSetOperation : Op_name.t
   val split : Op_name.t
   val splitV : Op_name.t
   val sqrt : Op_name.t
@@ -497,6 +509,7 @@ module Op_names : sig
   val unpack : Op_name.t
   val unsortedSegmentSum : Op_name.t
   val variable : Op_name.t
+  val variableV2 : Op_name.t
   val where : Op_name.t
   val wholeFileReader : Op_name.t
   val writeFile : Op_name.t
@@ -504,11 +517,12 @@ module Op_names : sig
   val zeta : Op_name.t
 end
 
-(* Raise a exception to abort the process when called. *)
+(* Raise a exception to abort the process when called. If exit_without_error is true, the process will exit normally, otherwise it will exit with a SIGABORT signal. *)
 (* Returns nothing but an exception. *)
 val abort
   :  ?name:string
   -> ?error_msg:string
+  -> ?exit_without_error:bool
   -> ?control_inputs:Node.p list
   -> unit
   -> [ `unit ] t
@@ -681,6 +695,20 @@ The input image is considered in the RGB colorspace. Conceptually, the RGB
 colors are first mapped into HSV. A delta is then applied all the hue values,
 and then remapped back to RGB colorspace. *)
 val adjustHue
+  :  ?name:string
+  -> ?control_inputs:Node.p list
+  -> [ `float ] t
+  -> [ `float ] t
+  -> [ `float ] t
+
+(* Adjust the saturation of one or more images. *)
+(* `images` is a tensor of at least 3 dimensions.  The last dimension is
+interpretted as channels, and must be three.
+
+The input image is considered in the RGB colorspace. Conceptually, the RGB
+colors are first mapped into HSV. A scale is then applied all the saturation
+values, and then remapped back to RGB colorspace. *)
+val adjustSaturation
   :  ?name:string
   -> ?control_inputs:Node.p list
   -> [ `float ] t
@@ -1463,6 +1491,16 @@ val bitcast
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 'type__) t
 
+(* Return the shape of s0 op s1 with broadcast. *)
+(* Given `s0` and `s1`, tensors that represent shapes, compute `r0`, the
+broadcasted shape. `s0`, `s1` and `r0` are all integer vectors. *)
+val broadcastArgs
+  :  ?name:string
+  -> ?control_inputs:Node.p list
+  -> ([< `int32 | `int64 ] as 't) t
+  -> ([< `int32 | `int64 ] as 't) t
+  -> ([< `int32 | `int64 ] as 't) t
+
 (* Return the reduction indices for computing gradients of s0 op s1 with broadcast. *)
 (* This is typically used by gradient computations for a broadcasting operation. *)
 val broadcastGradientArgs
@@ -1577,14 +1615,7 @@ val complex
 (* Given a tensor `x` of complex numbers, this operation returns a tensor of type
 `float` or `double` that is the absolute value of each element in `x`. All
 elements in `x` must be complex numbers of the form \\(a + bj\\). The absolute
-value is computed as \\( \sqrt{a^2 + b^2}\\).
-
-For example:
-
-```
-# tensor 'x' is [[-2.25 + 4.75j], [-3.25 + 5.75j]]
-tf.complex_abs(x) ==> [5.25594902, 6.60492229]
-``` *)
+value is computed as \\( \sqrt{a^2 + b^2}\\). *)
 val complexAbs
   :  ?name:string
   -> type_:([< `float | `double ] as 'tout) Type.t
@@ -1977,6 +2008,15 @@ val debugNanCount
   -> 't t
   -> [ `int64 ] t
 
+(* Debug Numeric Summary Op. *)
+(* Provide a basic summary of numeric value types, range and distribution. *)
+val debugNumericSummary
+  :  ?name:string
+  -> ?tensor_name:string
+  -> ?control_inputs:Node.p list
+  -> 't t
+  -> [ `double ] t
+
 (* Decode web-safe base64-encoded strings. *)
 (* Input may or may not have padding at the end. See EncodeBase64 for padding.
 Web-safe means that input must use - and _ instead of + and /. *)
@@ -2035,6 +2075,50 @@ val deleteSessionTensor
   -> ?control_inputs:Node.p list
   -> [ `string ] t
   -> [ `unit ] t
+
+(* Applies set operation along last dimension of 2 `Tensor` inputs. *)
+(* See SetOperationOp::SetOperationFromContext for values of `set_operation`.
+
+Output `result` is a `SparseTensor` represented by `result_indices`,
+`result_values`, and `result_shape`. For `set1` and `set2` ranked `n`, this
+has rank `n` and the same 1st `n-1` dimensions as `set1` and `set2`. The `nth`
+dimension contains the result of `set_operation` applied to the corresponding
+`[0...n-1]` dimension of `set`. *)
+val denseToDenseSetOperation
+  :  ?name:string
+  -> set_operation:string
+  -> ?validate_indices:bool
+  -> ?control_inputs:Node.p list
+  -> ([< `int32 | `int64 | `string ] as 't) t
+  -> ([< `int32 | `int64 | `string ] as 't) t
+  -> [ `int64 ] t * ([< `int32 | `int64 | `string ] as 't) t * [ `int64 ] t
+
+(* Applies set operation along last dimension of `Tensor` and `SparseTensor`. *)
+(* See SetOperationOp::SetOperationFromContext for values of `set_operation`.
+
+Input `set2` is a `SparseTensor` represented by `set2_indices`, `set2_values`,
+and `set2_shape`. For `set2` ranked `n`, 1st `n-1` dimensions must be the same
+as `set1`. Dimension `n` contains values in a set, duplicates are allowed but
+ignored.
+
+If `validate_indices` is `True`, this op validates the order and range of `set2`
+indices.
+
+Output `result` is a `SparseTensor` represented by `result_indices`,
+`result_values`, and `result_shape`. For `set1` and `set2` ranked `n`, this
+has rank `n` and the same 1st `n-1` dimensions as `set1` and `set2`. The `nth`
+dimension contains the result of `set_operation` applied to the corresponding
+`[0...n-1]` dimension of `set`. *)
+val denseToSparseSetOperation
+  :  ?name:string
+  -> set_operation:string
+  -> ?validate_indices:bool
+  -> ?control_inputs:Node.p list
+  -> ([< `int32 | `int64 | `string ] as 't) t
+  -> [ `int64 ] t
+  -> ([< `int32 | `int64 | `string ] as 't) t
+  -> [ `int64 ] t
+  -> [ `int64 ] t * ([< `int32 | `int64 | `string ] as 't) t * [ `int64 ] t
 
 (* DepthToSpace for tensors of type T. *)
 (* Rearranges data from depth into blocks of spatial data.
@@ -2675,6 +2759,14 @@ val expandDims
   -> 't t
   -> ([< `int32 | `int64 ] as 'tdim) t
   -> 't t
+
+(* Computes exponential of x - 1 element-wise. *)
+(* I.e., \\(y = (\exp x) - 1\\). *)
+val expm1
+  :  ?name:string
+  -> ?control_inputs:Node.p list
+  -> ([< `float | `double | `complex64 ] as 't) t
+  -> ([< `float | `double | `complex64 ] as 't) t
 
 (* Extracts a glimpse from the input tensor. *)
 (* Returns a set of windows called glimpses extracted at location
@@ -4691,6 +4783,30 @@ val paddingFIFOQueue
   -> unit
   -> [ `string ] t
 
+(* Concatenates a list of `N` tensors along the first dimension. *)
+(* The input tensors are all required to have size 1 in the first dimension.
+
+For example:
+
+```prettyprint
+# 'x' is [[1, 4]]
+# 'y' is [[2, 5]]
+# 'z' is [[3, 6]]
+parallel_concat([x, y, z]) => [[1, 4], [2, 5], [3, 6]]  # Pack along first dim.
+```
+
+The difference between concat and parallel_concat is that concat requires all
+of the inputs be computed before the operation will begin but doesn't require
+that the input shapes be known during graph construction.  Parallel concat
+will copy pieces of the input into the output as they become available, in
+some situations this can provide a performance benefit. *)
+val parallelConcat
+  :  ?name:string
+  -> shape:Dim.t list
+  -> ?control_inputs:Node.p list
+  -> 't t list
+  -> 't t
+
 (* Outputs random values from a normal distribution. The parameters may each be a *)
 (* scalar which applies to the entire output, or a vector of length shape[0] which
 stores the parameters for each batch. *)
@@ -4738,7 +4854,7 @@ val placeholderV2
   -> unit
   -> 'dtype t
 
-(* A placeholder op that passes though `input` when its output is not fed. *)
+(* A placeholder op that passes through `input` when its output is not fed. *)
 val placeholderWithDefault
   :  ?name:string
   -> shape:Dim.t list
@@ -4776,6 +4892,20 @@ val pow
   -> ([< `float | `double | `int32 | `int64 | `complex64 ] as 't) t
   -> ([< `float | `double | `int32 | `int64 | `complex64 ] as 't) t
 
+(* An identity op that triggers an error if a gradient is requested. *)
+(* When executed in a graph, this op outputs its input tensor as-is.
+
+When building ops to compute gradients, the TensorFlow gradient system
+will return an error when trying to lookup the gradient of this op,
+because no gradient must ever be registered for this function.  This
+op exists to prevent subtle bugs from silently returning unimplemented
+gradients in some corner cases. *)
+val preventGradient
+  :  ?name:string
+  -> ?control_inputs:Node.p list
+  -> 't t
+  -> 't t
+
 (* A queue that produces elements sorted by the first component value. *)
 (* Note that the PriorityQueue requires the first component of any element
 to be a scalar int64, in addition to the other elements declared by
@@ -4805,6 +4935,24 @@ val prod
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
   -> ([< `int32 | `int64 ] as 'tidx) t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
+
+(* Computes the QR decompositions of one or more matrices. *)
+(* Computes the QR decomposition of each inner matrix in `tensor` such that
+`tensor[..., :, :] = q[..., :, :] * r[..., :,:])`
+
+```prettyprint
+# a is a tensor.
+# q is a tensor of orthonormal matrices.
+# r is a tensor of upper triangular matrices.
+q, r = qr(a)
+q_full, r_full = qr(a, full_matrices=True)
+``` *)
+val qr
+  :  ?name:string
+  -> ?full_matrices:bool
+  -> ?control_inputs:Node.p list
+  -> ([< `double | `float | `complex64 ] as 't) t
+  -> ([< `double | `float | `complex64 ] as 't) t * ([< `double | `float | `complex64 ] as 't) t
 
 (* Quantizes then dequantizes a tensor. *)
 (* This op simulates the precision loss from the quantized forward pass by:
@@ -5039,6 +5187,20 @@ val quantizedConv2D
   -> [ `float ] t
   -> [ `float ] t
   -> 'out_type t * [ `float ] t * [ `float ] t
+
+(* Quantized Instance normalization. *)
+val quantizedInstanceNorm
+  :  ?name:string
+  -> ?output_range_given:bool
+  -> ?given_y_min:float
+  -> ?given_y_max:float
+  -> ?variance_epsilon:float
+  -> ?min_separation:float
+  -> ?control_inputs:Node.p list
+  -> 't t
+  -> [ `float ] t
+  -> [ `float ] t
+  -> 't t * [ `float ] t * [ `float ] t
 
 (* Perform a quantized matrix multiplication of  `a` by the matrix `b`. *)
 (* The inputs must be two-dimensional matrices and the inner dimension of
@@ -5416,10 +5578,7 @@ val reciprocalGrad
 (* Computes the string join across dimensions in the given string Tensor of shape
 `[d_0, d_1, ..., d_n-1]`.  Returns a new Tensor created by joining the input
 strings with the given separator (default: empty string).  Negative indices are
-counted backwards from the end, with `-1` being equivalent to `n - 1`.  Passing
-an empty `reduction_indices` joins all strings in linear index order and outputs
-a scalar string.
-
+counted backwards from the end, with `-1` being equivalent to `n - 1`.
 
 For example:
 
@@ -5854,7 +6013,10 @@ val reverseSequence
   -> 't t
 
 (* Reverses specific dimensions of a tensor. *)
-(* Given a `tensor`, and a `int32` tensor `axis` representing the set of
+(* NOTE `tf.reverse` has now changed behavior in preparation for 1.0.
+`tf.reverse_v2` is currently an alias that will be deprecated before TF 1.0.
+
+Given a `tensor`, and a `int32` tensor `axis` representing the set of
 dimensions of `tensor` to reverse. This operation reverses each dimension
 `i` for which there exists `j` s.t. `axis[j] == i`.
 
@@ -6352,7 +6514,7 @@ This operation outputs `ref` after the update is done.
 This makes it easier to chain operations that need to use the reset value.
 
 If values in `ref` is to be updated more than once, because there are
-duplicate entires in `indices`, the order at which the updates happen
+duplicate entries in `indices`, the order at which the updates happen
 for each value is undefined.
 
 Requires `updates.shape = indices.shape + ref.shape[1:]`.
@@ -6582,6 +6744,22 @@ val serializeSparse
   -> 't t
   -> [ `int64 ] t
   -> [ `string ] t
+
+(* Number of unique elements along last dimension of input `set`. *)
+(* Input `set` is a `SparseTensor` represented by `set_indices`, `set_values`,
+and `set_shape`. The last dimension contains values in a set, duplicates are
+allowed but ignored.
+
+If `validate_indices` is `True`, this op validates the order and range of `set`
+indices. *)
+val setSize
+  :  ?name:string
+  -> ?validate_indices:bool
+  -> ?control_inputs:Node.p list
+  -> [ `int64 ] t
+  -> ([< `int32 | `int64 | `string ] as 't) t
+  -> [ `int64 ] t
+  -> [ `int32 ] t
 
 (* Returns the shape of a tensor. *)
 (* This operation returns a 1-D integer tensor representing the shape of `input`.
@@ -7548,6 +7726,43 @@ val sparseToDense
   -> 't t
   -> 't t
 
+(* Applies set operation along last dimension of 2 `SparseTensor` inputs. *)
+(* See SetOperationOp::SetOperationFromContext for values of `set_operation`.
+
+If `validate_indices` is `True`, `SparseToSparseSetOperation` validates the
+order and range of `set1` and `set2` indices.
+
+Input `set1` is a `SparseTensor` represented by `set1_indices`, `set1_values`,
+and `set1_shape`. For `set1` ranked `n`, 1st `n-1` dimensions must be the same
+as `set2`. Dimension `n` contains values in a set, duplicates are allowed but
+ignored.
+
+Input `set2` is a `SparseTensor` represented by `set2_indices`, `set2_values`,
+and `set2_shape`. For `set2` ranked `n`, 1st `n-1` dimensions must be the same
+as `set1`. Dimension `n` contains values in a set, duplicates are allowed but
+ignored.
+
+If `validate_indices` is `True`, this op validates the order and range of `set1`
+and `set2` indices.
+
+Output `result` is a `SparseTensor` represented by `result_indices`,
+`result_values`, and `result_shape`. For `set1` and `set2` ranked `n`, this
+has rank `n` and the same 1st `n-1` dimensions as `set1` and `set2`. The `nth`
+dimension contains the result of `set_operation` applied to the corresponding
+`[0...n-1]` dimension of `set`. *)
+val sparseToSparseSetOperation
+  :  ?name:string
+  -> set_operation:string
+  -> ?validate_indices:bool
+  -> ?control_inputs:Node.p list
+  -> [ `int64 ] t
+  -> ([< `int32 | `int64 | `string ] as 't) t
+  -> [ `int64 ] t
+  -> [ `int64 ] t
+  -> ([< `int32 | `int64 | `string ] as 't) t
+  -> [ `int64 ] t
+  -> [ `int64 ] t * ([< `int32 | `int64 | `string ] as 't) t * [ `int64 ] t
+
 (* Splits a tensor into `num_split` tensors along one dimension. *)
 val split
   :  ?name:string
@@ -7851,9 +8066,10 @@ val stringJoin
 element of `input` based on `delimiter` and return a `SparseTensor`
 containing the splitted tokens. Empty tokens are ignored.
 
-`delimiter` can be empty or a single-byte character. If `delimiter` is an empty
- string, each element of `input` is split into individual single-byte character
- strings, including splitting of UTF-8 multibyte sequences.
+`delimiter` can be empty, or a string of split characters. If `delimiter` is an
+ empty string, each element of `input` is split into individual single-byte
+ character strings, including splitting of UTF-8 multibyte sequences. Otherwise
+ every character of `delimiter` is a potential split point.
 
 For example:
   N = 2, input[0] is 'hello world' and input[1] is 'a b c', then the output
@@ -8188,6 +8404,7 @@ val tensorArray
   -> ?dynamic_size:bool
   -> ?clear_after_read:bool
   -> ?tensor_array_name:string
+  -> ?element_shape:Dim.t list
   -> ?control_inputs:Node.p list
   -> [ `int32 ] t
   -> [ `string ] t
@@ -8198,8 +8415,7 @@ val tensorArrayClose
   -> [ `string ] t
   -> [ `unit ] t
 
-(* Delete the TensorArray from its resource container.  This enables *)
-(* the user to close and release the resource in the middle of a step/run. *)
+(* Deprecated. Use TensorArrayCloseV3 *)
 val tensorArrayCloseV2
   :  ?name:string
   -> ?control_inputs:Node.p list
@@ -8215,18 +8431,7 @@ val tensorArrayConcat
   -> [ `float ] t
   -> 'dtype t * [ `int64 ] t
 
-(* Concat the elements from the TensorArray into value `value`. *)
-(* Takes `T` elements of shapes
-
-  ```
-  (n0 x d0 x d1 x ...), (n1 x d0 x d1 x ...), ..., (n(T-1) x d0 x d1 x ...)
-  ```
-
-and concatenates them into a Tensor of shape:
-
-  ```(n0 + n1 + ... + n(T-1) x d0 x d1 x ...)```
-
-All elements must have the same shape (excepting the first dimension). *)
+(* Deprecated. Use TensorArrayConcatV3 *)
 val tensorArrayConcatV2
   :  ?name:string
   -> type_:'dtype Type.t
@@ -8246,8 +8451,7 @@ val tensorArrayGather
   -> [ `float ] t
   -> 'dtype t
 
-(* Gather specific elements from the TensorArray into output `value`. *)
-(* All elements selected by `indices` must have the same shape. *)
+(* Deprecated. Use TensorArrayGatherV3 *)
 val tensorArrayGatherV2
   :  ?name:string
   -> type_:'dtype Type.t
@@ -8266,43 +8470,7 @@ val tensorArrayGrad
   -> [ `float ] t
   -> [ `string ] t
 
-(* Creates a TensorArray for storing the gradients of values in the given handle. *)
-(* If the given TensorArray gradient already exists, returns a reference to it.
-
-Locks the size of the original TensorArray by disabling its dynamic size flag.
-
-**A note about the input flow_in:**
-
-The handle flow_in forces the execution of the gradient lookup to occur
-only after certain other operations have occurred.  For example, when
-the forward TensorArray is dynamically sized, writes to this TensorArray
-may resize the object.  The gradient TensorArray is statically sized based
-on the size of the forward TensorArray when this operation executes.
-Furthermore, the size of the forward TensorArray is frozen by this call.
-As a result, the flow is used to ensure that the call to generate the gradient
-TensorArray only happens after all writes are executed.
-
-In the case of dynamically sized TensorArrays, gradient computation should
-only be performed on read operations that have themselves been chained via
-flow to occur only after all writes have executed. That way the final size
-of the forward TensorArray is known when this operation is called.
-
-**A note about the source attribute:**
-
-TensorArray gradient calls use an accumulator TensorArray object.  If
-multiple gradients are calculated and run in the same session, the multiple
-gradient nodes may accidentally flow throuth the same accumulator TensorArray.
-This double counts and generally breaks the TensorArray gradient flow.
-
-The solution is to identify which gradient call this particular
-TensorArray gradient is being called in.  This is performed by identifying
-a unique string (e.g. 'gradients', 'gradients_1', ...) from the input
-gradient Tensor's name.  This string is used as a suffix when creating
-the TensorArray gradient object here (the attribute `source`).
-
-The attribute `source` is added as a suffix to the forward TensorArray's
-name when performing the creation / lookup, so that each separate gradient
-calculation gets its own TensorArray accumulator. *)
+(* Deprecated. Use TensorArrayGradV3 *)
 val tensorArrayGradV2
   :  ?name:string
   -> source:string
@@ -8329,7 +8497,7 @@ val tensorArrayRead
   -> [ `float ] t
   -> 'dtype t
 
-(* Read an element from the TensorArray into output `value`. *)
+(* Deprecated. Use TensorArrayReadV3 *)
 val tensorArrayReadV2
   :  ?name:string
   -> type_:'dtype Type.t
@@ -8348,8 +8516,7 @@ val tensorArrayScatter
   -> [ `float ] t
   -> [ `float ] t
 
-(* Scatter the data from the input value into specific TensorArray elements. *)
-(* `indices` must be a vector, its length must match the first dim of `value`. *)
+(* Deprecated. Use TensorArrayScatterV3 *)
 val tensorArrayScatterV2
   :  ?name:string
   -> ?control_inputs:Node.p list
@@ -8366,7 +8533,7 @@ val tensorArraySize
   -> [ `float ] t
   -> [ `int32 ] t
 
-(* Get the current size of the TensorArray. *)
+(* Deprecated. Use TensorArraySizeV3 *)
 val tensorArraySizeV2
   :  ?name:string
   -> ?control_inputs:Node.p list
@@ -8383,24 +8550,7 @@ val tensorArraySplit
   -> [ `float ] t
   -> [ `float ] t
 
-(* Split the data from the input value into TensorArray elements. *)
-(* Assuming that `lengths` takes on values
-
-  ```(n0, n1, ..., n(T-1))```
-
-and that `value` has shape
-
-  ```(n0 + n1 + ... + n(T-1) x d0 x d1 x ...)```,
-
-this splits values into a TensorArray with T tensors.
-
-TensorArray index t will be the subtensor of values with starting position
-
-  ```(n0 + n1 + ... + n(t-1), 0, 0, ...)```
-
-and having size
-
-  ```nt x d0 x d1 x ...``` *)
+(* Deprecated. Use TensorArraySplitV3 *)
 val tensorArraySplitV2
   :  ?name:string
   -> ?control_inputs:Node.p list
@@ -8418,10 +8568,10 @@ val tensorArrayUnpack
   -> [ `float ] t
   -> [ `float ] t
 
-(* An array of Tensors of given size, with data written via Write and read *)
-(* via Read or Pack. *)
+(* Deprecated. Use TensorArrayV3 *)
 val tensorArrayV2
   :  ?name:string
+  -> ?element_shape:Dim.t list
   -> ?dynamic_size:bool
   -> ?clear_after_read:bool
   -> ?tensor_array_name:string
@@ -8438,7 +8588,7 @@ val tensorArrayWrite
   -> [ `float ] t
   -> [ `float ] t
 
-(* Push an element onto the tensor_array. *)
+(* Deprecated. Use TensorArrayGradV3 *)
 val tensorArrayWriteV2
   :  ?name:string
   -> ?control_inputs:Node.p list
@@ -8724,11 +8874,22 @@ val unsortedSegmentSum
   -> [ `int32 ] t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
 
+(* Use VariableV2 instead. *)
+val variable
+  :  ?name:string
+  -> type_:'dtype Type.t
+  -> shape:Dim.t list
+  -> ?container:string
+  -> ?shared_name:string
+  -> ?control_inputs:Node.p list
+  -> unit
+  -> 'dtype t
+
 (* Holds state in the form of a tensor that persists across steps. *)
 (* Outputs a ref to the tensor state so it may be read or modified.
 TODO(zhifengc/mrry): Adds a pointer to a more detail document
 about sharing states in tensorflow. *)
-val variable
+val variableV2
   :  ?name:string
   -> type_:'dtype Type.t
   -> shape:Dim.t list

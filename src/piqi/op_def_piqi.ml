@@ -1,5 +1,6 @@
 module rec Op_def_piqi:
   sig
+    type uint64 = int64
     type float32 = float
     type float64 = float
     type protobuf_int64 = int64
@@ -27,6 +28,7 @@ module rec Op_def_piqi:
         | `dt_uint16
         | `dt_complex128
         | `dt_half
+        | `dt_resource
         | `dt_float_ref
         | `dt_double_ref
         | `dt_int32_ref
@@ -46,9 +48,11 @@ module rec Op_def_piqi:
         | `dt_uint16_ref
         | `dt_complex128_ref
         | `dt_half_ref
+        | `dt_resource_ref
       ]
     type tensor_shape_proto = Tensor_shape_proto.t
     type tensor_shape_proto_dim = Tensor_shape_proto_dim.t
+    type resource_handle = Resource_handle.t
     type tensor_proto = Tensor_proto.t
     type attr_value = Attr_value.t
     type attr_value_list_value = Attr_value_list_value.t
@@ -74,6 +78,16 @@ and Tensor_shape_proto_dim:
       mutable name: string option;
     }
   end = Tensor_shape_proto_dim
+and Resource_handle:
+  sig
+    type t = {
+      mutable device: string option;
+      mutable container: string option;
+      mutable name: string option;
+      mutable hash_code: Op_def_piqi.uint64 option;
+      mutable maybe_type_name: string option;
+    }
+  end = Resource_handle
 and Tensor_proto:
   sig
     type t = {
@@ -90,6 +104,7 @@ and Tensor_proto:
       mutable int64_val: Op_def_piqi.protobuf_int64 list;
       mutable bool_val: bool list;
       mutable dcomplex_val: Op_def_piqi.float64 list;
+      mutable resource_handle_val: Op_def_piqi.resource_handle list;
     }
   end = Tensor_proto
 and Attr_value:
@@ -117,6 +132,7 @@ and Attr_value_list_value:
       mutable type_: Op_def_piqi.data_type list;
       mutable shape: Op_def_piqi.tensor_shape_proto list;
       mutable tensor: Op_def_piqi.tensor_proto list;
+      mutable func: Op_def_piqi.name_attr_list list;
     }
   end = Attr_value_list_value
 and Name_attr_list:
@@ -202,6 +218,9 @@ and packed_parse_protobuf_int64 x = Piqirun.int64_of_packed_signed_varint x
 
 and parse_string x = Piqirun.string_of_block x
 
+and parse_uint64 x = Piqirun.int64_of_varint x
+and packed_parse_uint64 x = Piqirun.int64_of_packed_varint x
+
 and parse_protobuf_int32 x = Piqirun.int32_of_signed_varint x
 and packed_parse_protobuf_int32 x = Piqirun.int32_of_packed_signed_varint x
 
@@ -233,6 +252,22 @@ and parse_tensor_shape_proto_dim x =
     Tensor_shape_proto_dim.name = _name;
   }
 
+and parse_resource_handle x =
+  let x = Piqirun.parse_record x in
+  let _device, x = Piqirun.parse_optional_field 1 parse_string x in
+  let _container, x = Piqirun.parse_optional_field 2 parse_string x in
+  let _name, x = Piqirun.parse_optional_field 3 parse_string x in
+  let _hash_code, x = Piqirun.parse_optional_field 4 parse_uint64 x in
+  let _maybe_type_name, x = Piqirun.parse_optional_field 5 parse_string x in
+  Piqirun.check_unparsed_fields x;
+  {
+    Resource_handle.device = _device;
+    Resource_handle.container = _container;
+    Resource_handle.name = _name;
+    Resource_handle.hash_code = _hash_code;
+    Resource_handle.maybe_type_name = _maybe_type_name;
+  }
+
 and parse_tensor_proto x =
   let x = Piqirun.parse_record x in
   let _dtype, x = Piqirun.parse_optional_field 1 parse_data_type x in
@@ -248,6 +283,7 @@ and parse_tensor_proto x =
   let _bool_val, x = Piqirun.parse_packed_repeated_field 11 packed_parse_bool parse_bool x in
   let _dcomplex_val, x = Piqirun.parse_packed_repeated_field 12 packed_parse_float64 parse_float64 x in
   let _half_val, x = Piqirun.parse_packed_repeated_field 13 packed_parse_protobuf_int32 parse_protobuf_int32 x in
+  let _resource_handle_val, x = Piqirun.parse_repeated_field 14 parse_resource_handle x in
   Piqirun.check_unparsed_fields x;
   {
     Tensor_proto.dtype = _dtype;
@@ -263,6 +299,7 @@ and parse_tensor_proto x =
     Tensor_proto.bool_val = _bool_val;
     Tensor_proto.dcomplex_val = _dcomplex_val;
     Tensor_proto.half_val = _half_val;
+    Tensor_proto.resource_handle_val = _resource_handle_val;
   }
 
 and parse_attr_value x =
@@ -300,6 +337,7 @@ and parse_attr_value_list_value x =
   let _type_, x = Piqirun.parse_packed_repeated_field 6 packed_parse_data_type parse_data_type x in
   let _shape, x = Piqirun.parse_repeated_field 7 parse_tensor_shape_proto x in
   let _tensor, x = Piqirun.parse_repeated_field 8 parse_tensor_proto x in
+  let _func, x = Piqirun.parse_repeated_field 9 parse_name_attr_list x in
   Piqirun.check_unparsed_fields x;
   {
     Attr_value_list_value.s = _s;
@@ -309,6 +347,7 @@ and parse_attr_value_list_value x =
     Attr_value_list_value.type_ = _type_;
     Attr_value_list_value.shape = _shape;
     Attr_value_list_value.tensor = _tensor;
+    Attr_value_list_value.func = _func;
   }
 
 and parse_name_attr_list x =
@@ -439,6 +478,7 @@ and parse_data_type x =
     | 17l -> `dt_uint16
     | 18l -> `dt_complex128
     | 19l -> `dt_half
+    | 20l -> `dt_resource
     | 101l -> `dt_float_ref
     | 102l -> `dt_double_ref
     | 103l -> `dt_int32_ref
@@ -458,6 +498,7 @@ and parse_data_type x =
     | 117l -> `dt_uint16_ref
     | 118l -> `dt_complex128_ref
     | 119l -> `dt_half_ref
+    | 120l -> `dt_resource_ref
     | x -> Piqirun.error_enum_const x
 and packed_parse_data_type x =
   match Piqirun.int32_of_packed_signed_varint x with
@@ -481,6 +522,7 @@ and packed_parse_data_type x =
     | 17l -> `dt_uint16
     | 18l -> `dt_complex128
     | 19l -> `dt_half
+    | 20l -> `dt_resource
     | 101l -> `dt_float_ref
     | 102l -> `dt_double_ref
     | 103l -> `dt_int32_ref
@@ -500,6 +542,7 @@ and packed_parse_data_type x =
     | 117l -> `dt_uint16_ref
     | 118l -> `dt_complex128_ref
     | 119l -> `dt_half_ref
+    | 120l -> `dt_resource_ref
     | x -> Piqirun.error_enum_const x
 
 
@@ -516,6 +559,9 @@ and gen__protobuf_int64 code x = Piqirun.int64_to_signed_varint code x
 and packed_gen__protobuf_int64 x = Piqirun.int64_to_packed_signed_varint x
 
 and gen__string code x = Piqirun.string_to_block code x
+
+and gen__uint64 code x = Piqirun.int64_to_varint code x
+and packed_gen__uint64 x = Piqirun.int64_to_packed_varint x
 
 and gen__protobuf_int32 code x = Piqirun.int32_to_signed_varint code x
 and packed_gen__protobuf_int32 x = Piqirun.int32_to_packed_signed_varint x
@@ -538,6 +584,14 @@ and gen__tensor_shape_proto_dim code x =
   let _name = Piqirun.gen_optional_field 2 gen__string x.Tensor_shape_proto_dim.name in
   Piqirun.gen_record code (_size :: _name :: [])
 
+and gen__resource_handle code x =
+  let _device = Piqirun.gen_optional_field 1 gen__string x.Resource_handle.device in
+  let _container = Piqirun.gen_optional_field 2 gen__string x.Resource_handle.container in
+  let _name = Piqirun.gen_optional_field 3 gen__string x.Resource_handle.name in
+  let _hash_code = Piqirun.gen_optional_field 4 gen__uint64 x.Resource_handle.hash_code in
+  let _maybe_type_name = Piqirun.gen_optional_field 5 gen__string x.Resource_handle.maybe_type_name in
+  Piqirun.gen_record code (_device :: _container :: _name :: _hash_code :: _maybe_type_name :: [])
+
 and gen__tensor_proto code x =
   let _dtype = Piqirun.gen_optional_field 1 gen__data_type x.Tensor_proto.dtype in
   let _tensor_shape = Piqirun.gen_optional_field 2 gen__tensor_shape_proto x.Tensor_proto.tensor_shape in
@@ -552,7 +606,8 @@ and gen__tensor_proto code x =
   let _bool_val = Piqirun.gen_packed_repeated_field 11 packed_gen__bool x.Tensor_proto.bool_val in
   let _dcomplex_val = Piqirun.gen_packed_repeated_field 12 packed_gen__float64 x.Tensor_proto.dcomplex_val in
   let _half_val = Piqirun.gen_packed_repeated_field 13 packed_gen__protobuf_int32 x.Tensor_proto.half_val in
-  Piqirun.gen_record code (_dtype :: _tensor_shape :: _version_number :: _tensor_content :: _float_val :: _double_val :: _int_val :: _string_val :: _scomplex_val :: _int64_val :: _bool_val :: _dcomplex_val :: _half_val :: [])
+  let _resource_handle_val = Piqirun.gen_repeated_field 14 gen__resource_handle x.Tensor_proto.resource_handle_val in
+  Piqirun.gen_record code (_dtype :: _tensor_shape :: _version_number :: _tensor_content :: _float_val :: _double_val :: _int_val :: _string_val :: _scomplex_val :: _int64_val :: _bool_val :: _dcomplex_val :: _half_val :: _resource_handle_val :: [])
 
 and gen__attr_value code x =
   let _list = Piqirun.gen_optional_field 1 gen__attr_value_list_value x.Attr_value.list in
@@ -575,7 +630,8 @@ and gen__attr_value_list_value code x =
   let _type_ = Piqirun.gen_packed_repeated_field 6 packed_gen__data_type x.Attr_value_list_value.type_ in
   let _shape = Piqirun.gen_repeated_field 7 gen__tensor_shape_proto x.Attr_value_list_value.shape in
   let _tensor = Piqirun.gen_repeated_field 8 gen__tensor_proto x.Attr_value_list_value.tensor in
-  Piqirun.gen_record code (_s :: _i :: _f :: _b :: _type_ :: _shape :: _tensor :: [])
+  let _func = Piqirun.gen_repeated_field 9 gen__name_attr_list x.Attr_value_list_value.func in
+  Piqirun.gen_record code (_s :: _i :: _f :: _b :: _type_ :: _shape :: _tensor :: _func :: [])
 
 and gen__name_attr_list code x =
   let _name = Piqirun.gen_optional_field 1 gen__string x.Name_attr_list.name in
@@ -652,6 +708,7 @@ and gen__data_type code x =
     | `dt_uint16 -> 17l
     | `dt_complex128 -> 18l
     | `dt_half -> 19l
+    | `dt_resource -> 20l
     | `dt_float_ref -> 101l
     | `dt_double_ref -> 102l
     | `dt_int32_ref -> 103l
@@ -671,6 +728,7 @@ and gen__data_type code x =
     | `dt_uint16_ref -> 117l
     | `dt_complex128_ref -> 118l
     | `dt_half_ref -> 119l
+    | `dt_resource_ref -> 120l
   )
 and packed_gen__data_type x =
   Piqirun.int32_to_packed_signed_varint (match x with
@@ -694,6 +752,7 @@ and packed_gen__data_type x =
     | `dt_uint16 -> 17l
     | `dt_complex128 -> 18l
     | `dt_half -> 19l
+    | `dt_resource -> 20l
     | `dt_float_ref -> 101l
     | `dt_double_ref -> 102l
     | `dt_int32_ref -> 103l
@@ -713,6 +772,7 @@ and packed_gen__data_type x =
     | `dt_uint16_ref -> 117l
     | `dt_complex128_ref -> 118l
     | `dt_half_ref -> 119l
+    | `dt_resource_ref -> 120l
   )
 
 
@@ -721,12 +781,14 @@ let gen_int32 x = gen__int32 (-1) x
 let gen_bool x = gen__bool (-1) x
 let gen_protobuf_int64 x = gen__protobuf_int64 (-1) x
 let gen_string x = gen__string (-1) x
+let gen_uint64 x = gen__uint64 (-1) x
 let gen_protobuf_int32 x = gen__protobuf_int32 (-1) x
 let gen_binary x = gen__binary (-1) x
 let gen_float32 x = gen__float32 (-1) x
 let gen_float64 x = gen__float64 (-1) x
 let gen_tensor_shape_proto x = gen__tensor_shape_proto (-1) x
 let gen_tensor_shape_proto_dim x = gen__tensor_shape_proto_dim (-1) x
+let gen_resource_handle x = gen__resource_handle (-1) x
 let gen_tensor_proto x = gen__tensor_proto (-1) x
 let gen_attr_value x = gen__attr_value (-1) x
 let gen_attr_value_list_value x = gen__attr_value_list_value (-1) x
@@ -745,6 +807,7 @@ and default_int32 () = 0l
 and default_bool () = false
 and default_protobuf_int64 () = default_int64 ()
 and default_string () = ""
+and default_uint64 () = 0L
 and default_protobuf_int32 () = default_int32 ()
 and default_binary () = ""
 and default_float32 () = 0.0
@@ -758,6 +821,14 @@ and default_tensor_shape_proto_dim () =
   {
     Tensor_shape_proto_dim.size = None;
     Tensor_shape_proto_dim.name = None;
+  }
+and default_resource_handle () =
+  {
+    Resource_handle.device = None;
+    Resource_handle.container = None;
+    Resource_handle.name = None;
+    Resource_handle.hash_code = None;
+    Resource_handle.maybe_type_name = None;
   }
 and default_tensor_proto () =
   {
@@ -774,6 +845,7 @@ and default_tensor_proto () =
     Tensor_proto.bool_val = [];
     Tensor_proto.dcomplex_val = [];
     Tensor_proto.half_val = [];
+    Tensor_proto.resource_handle_val = [];
   }
 and default_attr_value () =
   {
@@ -797,6 +869,7 @@ and default_attr_value_list_value () =
     Attr_value_list_value.type_ = [];
     Attr_value_list_value.shape = [];
     Attr_value_list_value.tensor = [];
+    Attr_value_list_value.func = [];
   }
 and default_name_attr_list () =
   {
