@@ -61,6 +61,40 @@ The FNN API is a layer based API to easily build neural-networks. A linear class
     ~xs:train_images
     ~ys:train_labels;
 ```
+A complete VGG-19 model can be defined as follows:
+
+```ocaml
+let vgg19 () =
+  let block iter ~block_idx ~out_channels x =
+    List.init iter ~f:Fn.id
+    |> List.fold ~init:x ~f:(fun acc idx ->
+      Fnn.conv2d () acc
+        ~name:(sprintf "conv%d_%d" block_idx (idx+1))
+        ~w_init:(`normal 0.1) ~filter:(3, 3) ~strides:(1, 1) ~padding:`same ~out_channels
+      |> Fnn.relu)
+    |> Fnn.max_pool ~filter:(2, 2) ~strides:(2, 2) ~padding:`same
+  in
+  let input, input_id = Fnn.input ~shape:(D3 (img_size, img_size, 3)) in
+  let model =
+    Fnn.reshape input ~shape:(D3 (img_size, img_size, 3))
+    |> block 2 ~block_idx:1 ~out_channels:64
+    |> block 2 ~block_idx:2 ~out_channels:128
+    |> block 4 ~block_idx:3 ~out_channels:256
+    |> block 4 ~block_idx:4 ~out_channels:512
+    |> block 4 ~block_idx:5 ~out_channels:512
+    |> Fnn.flatten
+    |> Fnn.dense ~name:"fc6" ~w_init:(`normal 0.1) 4096
+    |> Fnn.relu
+    |> Fnn.dense ~name:"fc7" ~w_init:(`normal 0.1) 4096
+    |> Fnn.relu
+    |> Fnn.dense ~name:"fc8" ~w_init:(`normal 0.1) 1000
+    |> Fnn.softmax
+    |> Fnn.Model.create Float
+  in
+  input_id, model
+```
+This model is used in the [following example](https://github.com/LaurentMazare/tensorflow-ocaml/blob/master/examples/fnn/vgg19.ml) to classify any input image, in order to use it you will have to download some [pre-trained weights](https://github.com/LaurentMazare/tensorflow-ocaml/releases/download/0.0.7/vgg19.cpkt).
+
 
 There are also some MNIST based [examples](https://github.com/LaurentMazare/tensorflow-ocaml/tree/master/examples/fnn).
 
