@@ -8,7 +8,7 @@ authors:      [ "Laurent Mazare" "Nicolas Oury" ]
 
 version: "dev"
 
-build:   [make "tensorflow.lib"]
+build:   [make "tensorflow_core.lib" "tensorflow.lib"]
 install: []
 remove:  []
 

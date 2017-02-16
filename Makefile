@@ -1,6 +1,9 @@
 MNIST = examples/mnist
 MNIST_ALL = $(MNIST)/mnist_conv.native $(MNIST)/mnist_nn.native $(MNIST)/mnist_linear.native $(MNIST)/mnist_svm.native
-ALL = tensorflow.lib gen.native examples/basics/linear_regression.native examples/basics/forty_two.native examples/basics/save_and_load.native examples/char_rnn/char_rnn.native $(MNIST_ALL)
+ALL = tensorflow_core.lib tensorflow.lib gen.native examples/basics/linear_regression.native examples/basics/forty_two.native examples/basics/save_and_load.native examples/char_rnn/char_rnn.native $(MNIST_ALL)
+
+tensorflow_core.lib: .FORCE
+	ocamlbuild tensorflow_core.cmxa tensorflow_core.cma tensorflow_core.cmxs tensorflow_core.cmx
 
 tensorflow.lib: .FORCE
 	ocamlbuild tensorflow.cmxa tensorflow.cma tensorflow.cmxs tensorflow.cmx
