@@ -8,6 +8,9 @@ tensorflow_core.lib: .FORCE
 tensorflow.lib: .FORCE
 	ocamlbuild tensorflow.cmxa tensorflow.cma tensorflow.cmxs tensorflow.cmx
 
+libtensorflowcstubs.a: .FORCE
+	ocamlbuild libtensorflowcstubs.a
+
 %.native: .FORCE
 	ocamlbuild $@
 
