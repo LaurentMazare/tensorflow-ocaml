@@ -1,35 +1,59 @@
 The tensorflow-ocaml project provides some [OCaml](http://ocaml.org) bindings for [TensorFlow](http://tensorflow.org).
 
-These bindings are in an early stage of their development. Some operators are not supported and the API is likely to change in the future. That being said they already contain the necessary to train a convolution network using various optimizers.
-
 ## Installation
 
-The easiest way is probably to use opam.
+Use [opam](https://opam.ocaml.org/) to install the tensorflow-ocaml package.
 
 ```bash
 opam install tensorflow
 ```
 
-The opam package requires the TensorFlow library to be installed on your system.
+### Get the TensorFlow Library
 
-* The version 0.0.6 of the opam package uses TensorFlow release 0.10: `libtensorflow-0.10.so`.
-* The version 0.0.7 of the opam package uses release 0.11: `libtensorflow-0.11.so`.
-* The current tip uses release 1.0: `libtensorflow.so.1.0`.
+The opam package starting from version 0.0.8 requires the version 1.0 of the TensorFlow library to be installed on your system under the name `libtensorflow.so`.
 
-There are two ways to obtain these libraries:
-* You can build them from source by following these steps:
+* You can build this library from source by following these steps:
     1. [Install the Bazel build system](http://bazel.io/docs/install.html)
-    1. Clone the TensorFlow repo `git clone --recurse-submodules -b r1.0 https://github.com/tensorflow/tensorflow`
-    1. In `tensorflow` run `./configure` then `bazel build -c opt tensorflow:libtensorflow_c.so`.
-       - In order to build with GPU support, CUDA needs to be installed and specified during `./configure`.
-* You can download prebuilt x86-64 linux binaries (CPU only), [libtensorflow-0.10.so](https://github.com/LaurentMazare/tensorflow-ocaml/releases/download/0.0.5/libtensorflow-0.10.so), [libtensorflow-0.11.so](https://github.com/LaurentMazare/tensorflow-ocaml/releases/download/0.0.6/libtensorflow-0.11.so) or [libtensorflow.so.1.0](https://github.com/LaurentMazare/tensorflow-ocaml/releases/download/0.0.7/libtensorflow.so.1.0).
+    1. Clone the TensorFlow repo
+      `git clone --recurse-submodules -b r1.0 https://github.com/tensorflow/tensorflow`
+    1. In the `tensorflow` directory run `./configure` (you will be asked if you want to enable CUDA support).
+    1. Run `bazel build -c opt tensorflow:libtensorflow_c.so`.
+* You can download a prebuilt x86-64 linux binaries (CPU only) [libtensorflow.so.1.0](https://github.com/LaurentMazare/tensorflow-ocaml/releases/download/0.0.7/libtensorflow.so.1.0).
 
-Adjust your LD_LIBRARY_PATH to include the directory in which you've put `libtensorflow-0.1x.so` and finally download a [very simple example](https://github.com/LaurentMazare/tensorflow-ocaml/tree/master/examples/basics/forty_two.ml) and compile it with the following command:
+### Build a Simple Example
+
+Download a [very simple example](https://github.com/LaurentMazare/tensorflow-ocaml/tree/master/examples/basics/forty_two.ml) and compile it with the following command:
 ```bash
-ocamlbuild forty_two.native -package ctypes -package ctypes.foreign -package core_kernel -package tensorflow -cflags -w,-40
+ocamlbuild forty_two.native -pkg tensorflow
 ```
 
-Enjoy!
+Then run it via:
+```bash
+./forty_two.native
+```
+
+You should now be all set up, enjoy!
+
+### Frequent Problems
+
+1. When compiling the example with ocamlbuild, I get the following error:
+```bash
+/usr/bin/ld: cannot find -ltensorflow
+```
+
+You should adjust your LIBRARY_PATH environment variable to include the directory in which you have added `libtensorflow.so` (and use this exact name). E.g. run:
+```bash
+LIBRARY_PATH=/path/to/lib:$LIBRARY_PATH ocamlbuild forty_two.native -pkg tensorflow
+```
+
+1. When running forty_two.native, I get the following error:
+```bash
+./forty_two.native: error while loading shared libraries: libtensorflow.so: cannot open shared object file: No such file or directory
+```
+You should adjust your LD_LIBRARY_PATH environment variable to include the directory in which you have added `libtensorflow.so` (and use this exact name). E.g. run:
+```bash
+LD_LIBRARY_PATH=/path/to/lib:$LD_LIBRARY_PATH ./forty_two.native
+```
 
 ## Examples
 

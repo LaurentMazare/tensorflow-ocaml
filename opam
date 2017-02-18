@@ -26,4 +26,4 @@ depopts: ["gnuplot"]
 conflicts: [
 ]
 
-available: [ ocaml-version >= "4.02.1" ]
+available: [ ocaml-version >= "4.03" ]
