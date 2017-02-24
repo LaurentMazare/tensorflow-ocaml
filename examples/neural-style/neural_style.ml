@@ -3,6 +3,7 @@ open Tensorflow
 
 let img_size = 224
 let epochs = 10
+let learning_rate = 1e-3
 let cpkt_filename = Sys.getcwd () ^ "/vgg19.cpkt"
 
 let conv2d node ~in_channels ~out_channels =
@@ -48,12 +49,12 @@ let style_grams input =
       Hashtbl.set var_by_name ~key:(name ^ "/" ^ name ^ "_biases") ~data:b;
       let relu = Ops.relu conv2d in
       if idx = 0
-      then style_layer_nodes := relu :: !style_layer_nodes;
+      then style_layer_nodes := (relu, out_channels) :: !style_layer_nodes;
       relu)
     |> max_pool
   in
   let _model =
-    input
+    Ops.reshape input (Ops.const_int ~type_:Int32 [ 1; img_size; img_size; 3 ])
     |> block 2 ~block_idx:1 ~in_channels:3   ~out_channels:64
     |> block 2 ~block_idx:2 ~in_channels:64  ~out_channels:128
     |> block 4 ~block_idx:3 ~in_channels:128 ~out_channels:256
@@ -61,9 +62,10 @@ let style_grams input =
     |> block 4 ~block_idx:5 ~in_channels:512 ~out_channels:512
   in
   load var_by_name ~filename:cpkt_filename;
-  List.map !style_layer_nodes ~f:(fun node ->
-    let node = Ops.reshape node (Ops.const_int ~type_:Int32 [ -1 ]) in
-    Ops.(matMul ~transpose_a:true node node))
+  List.map !style_layer_nodes ~f:(fun (node, out_channels) ->
+    let node = Ops.reshape node (Ops.const_int ~type_:Int32 [ -1; out_channels ]) in
+    let size_ = float (out_channels * out_channels) in
+    Ops.(matMul ~transpose_a:true node node / f size_))
 
 let imagenet_mean = function
   | `blue -> 103.939
@@ -120,27 +122,38 @@ let compute_grams ~filename =
   let input_placeholder = Ops.placeholder ~type_:Float [ img_size; img_size; 3 ] in
   let style_grams = style_grams (Ops.Placeholder.to_node input_placeholder) in
   let input_tensor = load_image ~filename in
-  save_image input_tensor ~filename:"cropped.jpg";
+  save_image input_tensor ~filename:"cropped.png";
   List.map style_grams ~f:(fun node ->
     Session.run
       ~inputs:[ Session.Input.float input_placeholder input_tensor ]
-      (Session.Output.return node))
+      ~targets:[ Node.P node ]
+      (Session.Output.float node))
 
 let () =
-  let target_grams = compute_grams ~filename:"style.jpg" in
+  printf "Computing target features...\n%!";
+  let target_grams = compute_grams ~filename:"style.png" in
+  printf "Done computing target features...\n%!";
   let input_var = Var.f_or_d [ img_size; img_size; 3 ] ~type_:Float 0. in
-  let style_loss =
+  let style_losses, inputs =
     List.map2_exn (style_grams input_var) target_grams ~f:(fun gram_node target_gram ->
-      let diff = Ops.(-) gram_node target_gram in
-      Ops.(diff * diff)
-    )
-    |> List.reduce_exn ~f:Ops.(+)
+      let dims = Tensor.dims target_gram |> Array.to_list in
+      let placeholder = Ops.placeholder ~type_:Float dims in
+      let diff = Ops.(-) gram_node (Ops.Placeholder.to_node placeholder) in
+      let total_dims = List.reduce_exn dims ~f:( * ) |> float in
+      Ops.(reduce_sum (diff * diff) / f total_dims),
+      Session.Input.float placeholder target_gram)
+    |> List.unzip
   in
-  let gd = Optimizers.adam_minimizer ~learning_rate:(Ops.f 1e-3) style_loss in
+  let style_loss = List.reduce_exn style_losses ~f:Ops.(+) in
+  let gd =
+    Optimizers.adam_minimizer style_loss
+      ~learning_rate:(Ops.f learning_rate)
+      ~varsf:[ input_var ]
+  in
   for epoch = 1 to epochs do
     let style_loss =
       Session.run
-        ~inputs:[]
+        ~inputs
         ~targets:gd
         Session.Output.(scalar_float style_loss)
     in
