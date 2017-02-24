@@ -1,9 +1,9 @@
 open Core_kernel.Std
 open Tensorflow
 
-let img_size = 224
+let img_size = 224 * 2
 let epochs = 100
-let learning_rate = 1e-1
+let learning_rate = 2.
 let cpkt_filename = Sys.getcwd () ^ "/vgg19.cpkt"
 
 let conv2d node ~in_channels ~out_channels =
@@ -33,36 +33,31 @@ let load vars ~filename =
     Session.Output.empty
 
 let style_grams input =
-  let style_layer_nodes = ref [] in
   let var_by_name = String.Table.create () in
-  let block iter ~block_idx ~in_channels ~out_channels node =
+  let block iter ~block_idx ~in_channels ~out_channels (node, acc) =
     List.init iter ~f:Fn.id
-    |> List.fold ~init:node ~f:(fun acc idx ->
+    |> List.fold ~init:(node, []) ~f:(fun (node, acc_relus) idx ->
       let name = sprintf "conv%d_%d" block_idx (idx+1) in
-      let in_channels =
-        if idx = 0
-        then in_channels
-        else out_channels
-      in
-      let conv2d, w, b = conv2d acc ~in_channels ~out_channels in
+      let in_channels = if idx = 0 then in_channels else out_channels in
+      let conv2d, w, b = conv2d node ~in_channels ~out_channels in
       Hashtbl.set var_by_name ~key:(name ^ "/" ^ name ^ "_filters") ~data:w;
       Hashtbl.set var_by_name ~key:(name ^ "/" ^ name ^ "_biases") ~data:b;
       let relu = Ops.relu conv2d in
-      if idx = 0
-      then style_layer_nodes := (relu, out_channels) :: !style_layer_nodes;
-      relu)
-    |> max_pool
+      relu, (relu, out_channels) :: acc_relus)
+    |> fun (node, acc_relus) -> max_pool node, List.rev acc_relus :: acc
   in
-  let _model =
-    Ops.reshape input (Ops.const_int ~type_:Int32 [ 1; img_size; img_size; 3 ])
+  let _model, acc_relus =
+    (Ops.reshape input (Ops.const_int ~type_:Int32 [ 1; img_size; img_size; 3 ]), [])
     |> block 2 ~block_idx:1 ~in_channels:3   ~out_channels:64
     |> block 2 ~block_idx:2 ~in_channels:64  ~out_channels:128
     |> block 4 ~block_idx:3 ~in_channels:128 ~out_channels:256
     |> block 4 ~block_idx:4 ~in_channels:256 ~out_channels:512
     |> block 4 ~block_idx:5 ~in_channels:512 ~out_channels:512
   in
+  let acc_relus = List.rev acc_relus in
   load var_by_name ~filename:cpkt_filename;
-  List.map !style_layer_nodes ~f:(fun (node, out_channels) ->
+  List.map acc_relus ~f:(fun relus ->
+    let node, out_channels = List.hd_exn relus in
     let node = Ops.reshape node (Ops.const_int ~type_:Int32 [ -1; out_channels ]) in
     let size_ = float (out_channels * out_channels) in
     Ops.(matMul ~transpose_a:true node node / f size_))
