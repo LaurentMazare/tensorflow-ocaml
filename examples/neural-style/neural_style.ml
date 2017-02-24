@@ -2,8 +2,8 @@ open Core_kernel.Std
 open Tensorflow
 
 let img_size = 224
-let epochs = 10
-let learning_rate = 1e-3
+let epochs = 100
+let learning_rate = 1e-1
 let cpkt_filename = Sys.getcwd () ^ "/vgg19.cpkt"
 
 let conv2d node ~in_channels ~out_channels =
@@ -77,6 +77,7 @@ let normalize x ~channel =
 
 let unnormalize x ~channel =
   min 255 (int_of_float (x +. imagenet_mean channel))
+  |> max 0
 
 let load_image ~filename =
   let image = OImages.load filename [] in
@@ -129,11 +130,22 @@ let compute_grams ~filename =
       ~targets:[ Node.P node ]
       (Session.Output.float node))
 
+let create_and_set_var tensor =
+  let input_var = Var.f_or_d [ img_size; img_size; 3 ] ~type_:Float 0. in
+  let placeholder = Ops.placeholder [ img_size; img_size; 3 ] ~type_:Float in
+  let assign = Ops.assign input_var (Ops.Placeholder.to_node placeholder) in
+  Session.run
+    ~inputs:[ Session.Input.float placeholder tensor ]
+    ~targets:[ Node.P assign ]
+    Session.Output.empty;
+  input_var
+
 let () =
   printf "Computing target features...\n%!";
   let target_grams = compute_grams ~filename:"style.png" in
   printf "Done computing target features...\n%!";
-  let input_var = Var.f_or_d [ img_size; img_size; 3 ] ~type_:Float 0. in
+  let input_tensor = load_image ~filename:"input.png" in
+  let input_var = create_and_set_var input_tensor in
   let style_losses, inputs =
     List.map2_exn (style_grams input_var) target_grams ~f:(fun gram_node target_gram ->
       let dims = Tensor.dims target_gram |> Array.to_list in
@@ -151,11 +163,12 @@ let () =
       ~varsf:[ input_var ]
   in
   for epoch = 1 to epochs do
-    let style_loss =
+    let output_tensor, style_loss =
       Session.run
         ~inputs
         ~targets:gd
-        Session.Output.(scalar_float style_loss)
+        Session.Output.(both (float input_var) (scalar_float style_loss))
     in
-    printf "epoch: %d   loss: %f\n%!" epoch style_loss
+    printf "epoch: %d   loss: %f\n%!" epoch style_loss;
+    save_image output_tensor ~filename:(sprintf "out_%d.png" epoch);
   done
