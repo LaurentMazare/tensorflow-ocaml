@@ -4,7 +4,8 @@ true: package(ctypes), package(ctypes.foreign), package(ctypes.stubs)
 <tests/*.native>: use_tensorflow
 <examples/load/*.native>: use_tensorflow_core
 <examples/char_rnn/*> or <examples/rnn/*>: package(cmdliner)
-<examples/fnn/vgg19.*> or <examples/fnn/neural_style.*>: package(camlimages.jpeg)
+<examples/fnn/vgg19.*>: package(camlimages.jpeg)
+<examples/neural-style/*>: package(camlimages.jpeg)
 <src/gen_ops/*.native>: use_tensorflow
 
 not <src/piqi/*> and not <src/wrapper/tf_generated*>: warn(A-4-29-40-41-42-44-45-48-56-58)
