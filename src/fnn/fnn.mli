@@ -11,6 +11,10 @@ module Shape : sig
     | D3 : int * int * int -> _3d t
 end
 
+module Id : sig
+  type t
+end
+
 module Input_id : sig
   type t
 end
@@ -19,6 +23,7 @@ type 'a t
 type init = [ `const of float | `normal of float | `truncated_normal of float ]
 
 val shape : 'a t -> 'a Shape.t
+val id : _ t -> Id.t
 
 val input
   :  shape:'a Shape.t
@@ -132,6 +137,7 @@ module Model : sig
 
   val predict
     :  ('a, 'b, 'c) t
+    -> ?output_id:Id.t
     -> (Input_id.t * (float, 'c) Tensor.t) list
     -> (float, 'c) Tensor.t
 

@@ -131,6 +131,7 @@ and 'a t =
 type p = P : _ t -> p
 
 let shape t = t.shape
+let id t = t.id
 
 let input ~shape =
   let id = Id.create () in
@@ -318,87 +319,92 @@ let build_node t ~type_ =
   let conv_vars = Id.Table.create () in
   let splits = Id.Table.create () in
   let var_names = Node.Id.Table.create () in
+  let all_nodes = Id.Table.create () in
   let rec walk (P t) =
-    match t.op with
-    | Unary (unary, t) -> Unary.apply unary (walk (P t))
-    | Binary (binary, t1, t2) -> Binary.apply binary (walk (P t1)) (walk (P t2))
-    | Const f -> Ops.f_or_d ~shape:(Shape.dim_list t.shape) ~type_ f
-    | Dense (w_init, b_init, input, name_opt)->
-      let Shape.D1 input_shape = input.shape in
-      let Shape.D1 shape = t.shape in
-      let w, b =
-        Hashtbl.find_or_add dense_vars t.id ~default:(fun () ->
-          let w = create_var ~type_ ~init:w_init [ input_shape; shape ] in
-          let b = create_var ~type_ ~init:b_init [ shape ] in
-          Option.iter name_opt ~f:(fun name ->
-            Hashtbl.set var_names ~key:(Node.id w) ~data:(name ^ "/" ^ name ^ "_weights");
-            Hashtbl.set var_names ~key:(Node.id b) ~data:(name ^ "/" ^ name ^ "_biases"));
-          w, b)
-      in
-      Ops.(walk (P input) *^ w + b)
-    | Input ->
-      Hashtbl.find_or_add inputs t.id ~default:(fun () ->
-        Ops.placeholder ~type_ (Shape.dim_list t.shape))
-      |> Ops.Placeholder.to_node
-    | Pool (pool, t) ->
-      let filter_height, filter_width = pool.filter in
-      let stride_height, stride_width = pool.strides in
-      let pool_ops =
-        match pool.avg_or_max with
-        | `max -> Ops.maxPool
-        | `avg -> Ops.avgPool
-      in
-      (* [...Pool] only exists for float and not for double so cast to float. *)
-      pool_ops (walk (P t) |> Ops.cast ~type_:Float)
-        ~ksize:[ 1; filter_height; filter_width; 1 ]
-        ~strides:[ 1; stride_height; stride_width; 1 ]
-        ~padding:(padding_str pool.padding)
-      |> Ops.cast ~type_
-    | Conv2d (conv2d, u) ->
-      let filter_height, filter_width = conv2d.filter in
-      let out_channels = conv2d.out_channels in
-      let w, b, in_channels =
-        Hashtbl.find_or_add conv_vars t.id ~default:(fun () ->
-          let in_channels = conv2d.in_channels in
-          let w =
-            create_var ~type_ ~init:conv2d.w_init
-              [ filter_height; filter_width; in_channels; out_channels ]
-          in
-          let b = create_var ~type_ ~init:conv2d.b_init [ out_channels ] in
-          Option.iter conv2d.name ~f:(fun name ->
-            Hashtbl.set var_names ~key:(Node.id w) ~data:(name ^ "/" ^ name ^ "_filters");
-            Hashtbl.set var_names ~key:(Node.id b) ~data:(name ^ "/" ^ name ^ "_biases"));
-          w, b, in_channels)
-      in
-      if in_channels <> conv2d.in_channels
-      then shape_mismatch (D1 in_channels) (D1 conv2d.in_channels) ~op_name:"conv2d in-channels";
-      let stride_height, stride_width = conv2d.strides in
-      let strides = [ 1; stride_height; stride_width; 1 ] in
-      Ops.(conv2D ~strides ~padding:(padding_str conv2d.padding) (walk (P u)) w + b)
-    | Reshape (shape, u) ->
-      let dim_list = Shape.dim_list shape in
-      let total_dim_output = Shape.total_dim shape in
-      let total_dim_input = Shape.total_dim u.shape in
-      if total_dim_output <> total_dim_input
-      then shape_mismatch shape u.shape ~op_name:"reshape";
-      Ops.reshape (walk (P u)) (Ops.const_int ~type_:Int32 (-1 :: dim_list))
-    | Concat list ->
-      List.map list ~f:(fun t -> walk (P t))
-      |> Ops.(concat one32)
-    | Split (u, idx, num_split) ->
-      let list =
-        Hashtbl.find_or_add splits t.id ~default:(fun () ->
-          Ops.(split ~num_split one32 (walk (P u))))
-      in
-      List.nth_exn list idx
-    | Var u ->
-      Hashtbl.find_or_add explicit_vars t.id ~default:(fun () ->
-        let dim_list = Shape.dim_list t.shape in
-        Var.create dim_list
-          ~type_
-          ~init:(walk (P u)))
+    let node =
+      match t.op with
+      | Unary (unary, t) -> Unary.apply unary (walk (P t))
+      | Binary (binary, t1, t2) -> Binary.apply binary (walk (P t1)) (walk (P t2))
+      | Const f -> Ops.f_or_d ~shape:(Shape.dim_list t.shape) ~type_ f
+      | Dense (w_init, b_init, input, name_opt)->
+        let Shape.D1 input_shape = input.shape in
+        let Shape.D1 shape = t.shape in
+        let w, b =
+          Hashtbl.find_or_add dense_vars t.id ~default:(fun () ->
+            let w = create_var ~type_ ~init:w_init [ input_shape; shape ] in
+            let b = create_var ~type_ ~init:b_init [ shape ] in
+            Option.iter name_opt ~f:(fun name ->
+              Hashtbl.set var_names ~key:(Node.id w) ~data:(name ^ "/" ^ name ^ "_weights");
+              Hashtbl.set var_names ~key:(Node.id b) ~data:(name ^ "/" ^ name ^ "_biases"));
+            w, b)
+        in
+        Ops.(walk (P input) *^ w + b)
+      | Input ->
+        Hashtbl.find_or_add inputs t.id ~default:(fun () ->
+          Ops.placeholder ~type_ (Shape.dim_list t.shape))
+        |> Ops.Placeholder.to_node
+      | Pool (pool, t) ->
+        let filter_height, filter_width = pool.filter in
+        let stride_height, stride_width = pool.strides in
+        let pool_ops =
+          match pool.avg_or_max with
+          | `max -> Ops.maxPool
+          | `avg -> Ops.avgPool
+        in
+        (* [...Pool] only exists for float and not for double so cast to float. *)
+        pool_ops (walk (P t) |> Ops.cast ~type_:Float)
+          ~ksize:[ 1; filter_height; filter_width; 1 ]
+          ~strides:[ 1; stride_height; stride_width; 1 ]
+          ~padding:(padding_str pool.padding)
+        |> Ops.cast ~type_
+      | Conv2d (conv2d, u) ->
+        let filter_height, filter_width = conv2d.filter in
+        let out_channels = conv2d.out_channels in
+        let w, b, in_channels =
+          Hashtbl.find_or_add conv_vars t.id ~default:(fun () ->
+            let in_channels = conv2d.in_channels in
+            let w =
+              create_var ~type_ ~init:conv2d.w_init
+                [ filter_height; filter_width; in_channels; out_channels ]
+            in
+            let b = create_var ~type_ ~init:conv2d.b_init [ out_channels ] in
+            Option.iter conv2d.name ~f:(fun name ->
+              Hashtbl.set var_names ~key:(Node.id w) ~data:(name ^ "/" ^ name ^ "_filters");
+              Hashtbl.set var_names ~key:(Node.id b) ~data:(name ^ "/" ^ name ^ "_biases"));
+            w, b, in_channels)
+        in
+        if in_channels <> conv2d.in_channels
+        then shape_mismatch (D1 in_channels) (D1 conv2d.in_channels) ~op_name:"conv2d in-channels";
+        let stride_height, stride_width = conv2d.strides in
+        let strides = [ 1; stride_height; stride_width; 1 ] in
+        Ops.(conv2D ~strides ~padding:(padding_str conv2d.padding) (walk (P u)) w + b)
+      | Reshape (shape, u) ->
+        let dim_list = Shape.dim_list shape in
+        let total_dim_output = Shape.total_dim shape in
+        let total_dim_input = Shape.total_dim u.shape in
+        if total_dim_output <> total_dim_input
+        then shape_mismatch shape u.shape ~op_name:"reshape";
+        Ops.reshape (walk (P u)) (Ops.const_int ~type_:Int32 (-1 :: dim_list))
+      | Concat list ->
+        List.map list ~f:(fun t -> walk (P t))
+        |> Ops.(concat one32)
+      | Split (u, idx, num_split) ->
+        let list =
+          Hashtbl.find_or_add splits t.id ~default:(fun () ->
+            Ops.(split ~num_split one32 (walk (P u))))
+        in
+        List.nth_exn list idx
+      | Var u ->
+        Hashtbl.find_or_add explicit_vars t.id ~default:(fun () ->
+          let dim_list = Shape.dim_list t.shape in
+          Var.create dim_list
+            ~type_
+            ~init:(walk (P u)))
+    in
+    Hashtbl.set all_nodes ~key:t.id ~data:node;
+    node
   in
-  walk t, inputs, var_names, explicit_vars
+  walk t, inputs, var_names, explicit_vars, all_nodes
 
 module Optimizer = struct
   (* We should use some inline records here when they will be available. *)
@@ -467,12 +473,13 @@ module Model = struct
     ; load_and_assign_nodes : Node.p list String.Table.t
     ; var_names : string Node.Id.Table.t
     ; explicit_vars : 'b Node.t Id.Table.t
+    ; all_nodes : 'b Node.t Id.Table.t
     ; eq : ('c * 'b) Tensor.eq
     }
 
   let create (type a) (type b) (eq : (b * a) Tensor.eq) fnn =
     let create eq ~type_ =
-      let node, inputs, var_names, explicit_vars = build_node (P fnn) ~type_ in
+      let node, inputs, var_names, explicit_vars, all_nodes = build_node (P fnn) ~type_ in
       let session = Session.create () in
       let placeholder = Ops.placeholder ~type_ (Shape.dim_list fnn.shape) in
       { session
@@ -483,6 +490,7 @@ module Model = struct
       ; load_and_assign_nodes = String.Table.create ()
       ; var_names
       ; explicit_vars
+      ; all_nodes
       ; eq
       }
     in
@@ -492,6 +500,7 @@ module Model = struct
 
   let predict (type a) (type b)
         (t : (_, a, b) t)
+        ?output_id
         (inputs : (Input_id.t * (float, b) Tensor.t) list)
     =
     let predict f_or_d_input f_or_d_output =
@@ -503,7 +512,15 @@ module Model = struct
       in
       Session.run ~inputs ~session:t.session (f_or_d_output t.node)
     in
-    match Node.output_type t.node, t.eq with
+    let output_node =
+      match output_id with
+      | None -> t.node
+      | Some id ->
+        match Hashtbl.find t.all_nodes id with
+        | None -> failwith "Cannot find any node with the proper id"
+        | Some node -> node
+    in
+    match Node.output_type output_node, t.eq with
     | Node.Type.Float, Tensor.Float ->
       (predict Session.Input.float Session.Output.float : (float, b) Tensor.t)
     | Node.Type.Double, Tensor.Double ->

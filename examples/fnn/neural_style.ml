@@ -3,14 +3,25 @@ open Tensorflow
 
 let img_size = 224
 
+type nn =
+  { input_id : Fnn.Input_id.t
+  ; model : (Fnn._1d, [ `float ], Tensor.float32_elt) Fnn.Model.t
+  ; style_layer_ids : Fnn.Id.t list
+  }
+
 let vgg19 () =
+  let style_layer_ids = ref [] in
   let block iter ~block_idx ~out_channels x =
     List.init iter ~f:Fn.id
     |> List.fold ~init:x ~f:(fun acc idx ->
-      Fnn.conv2d () acc
-        ~name:(sprintf "conv%d_%d" block_idx (idx+1))
-        ~w_init:(`normal 0.1) ~filter:(3, 3) ~strides:(1, 1) ~padding:`same ~out_channels
-      |> Fnn.relu)
+      let conv2d =
+        Fnn.conv2d () acc
+          ~name:(sprintf "conv%d_%d" block_idx (idx+1))
+          ~w_init:(`normal 0.1) ~filter:(3, 3) ~strides:(1, 1) ~padding:`same ~out_channels
+      in
+      let relu = Fnn.relu conv2d in
+      style_layer_ids := Fnn.id relu :: !style_layer_ids;
+      relu)
     |> Fnn.max_pool ~filter:(2, 2) ~strides:(2, 2) ~padding:`same
   in
   let input, input_id = Fnn.input ~shape:(D3 (img_size, img_size, 3)) in
@@ -31,7 +42,10 @@ let vgg19 () =
     |> Fnn.softmax
     |> Fnn.Model.create Float
   in
-  input_id, model
+  { input_id
+  ; model
+  ; style_layer_ids = !style_layer_ids
+  }
 
 let imagenet_mean = function
   | `blue -> 103.939
@@ -87,7 +101,7 @@ let save_image tensor ~filename =
 let () =
   let input_tensor = load_image ~filename:"input.jpg" in
   save_image input_tensor ~filename:"cropped.jpg";
-  let input_id, model = vgg19 () in
+  let { input_id; model; style_layer_ids = _ } = vgg19 () in
   Fnn.Model.load model ~filename:(Sys.getcwd () ^ "/vgg19.cpkt")
     ~inputs:[ input_id, input_tensor ];
   let results = Fnn.Model.predict model [ input_id, input_tensor ] in
