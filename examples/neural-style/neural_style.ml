@@ -3,7 +3,7 @@ open Tensorflow
 
 let img_size = 224 * 2
 let epochs = 100
-let learning_rate = 2.
+let learning_rate = 1.
 let cpkt_filename = Sys.getcwd () ^ "/vgg19.cpkt"
 
 let conv2d node ~in_channels ~out_channels =
@@ -32,7 +32,7 @@ let load vars ~filename =
     ~targets:load_and_assign_nodes
     Session.Output.empty
 
-let style_grams input =
+let style_grams_and_content_nodes input =
   let var_by_name = String.Table.create () in
   let block iter ~block_idx ~in_channels ~out_channels (node, acc) =
     List.init iter ~f:Fn.id
@@ -56,11 +56,20 @@ let style_grams input =
   in
   let acc_relus = List.rev acc_relus in
   load var_by_name ~filename:cpkt_filename;
-  List.map acc_relus ~f:(fun relus ->
-    let node, out_channels = List.hd_exn relus in
-    let node = Ops.reshape node (Ops.const_int ~type_:Int32 [ -1; out_channels ]) in
-    let size_ = float (out_channels * out_channels) in
-    Ops.(matMul ~transpose_a:true node node / f size_))
+  let style_grams =
+    List.map acc_relus ~f:(fun relus ->
+      let node, out_channels = List.hd_exn relus in
+      let node = Ops.reshape node (Ops.const_int ~type_:Int32 [ -1; out_channels ]) in
+      let size_ = float (out_channels * out_channels) in
+      Ops.(matMul ~transpose_a:true node node / f size_))
+  in
+  let content_nodes =
+    (* Block 4, conv 2. *)
+    List.map [ 4, 2 ] ~f:(fun (block_idx, conv_idx) ->
+      let block = List.nth_exn acc_relus (block_idx - 1) in
+      List.nth_exn block (conv_idx - 1) |> fst)
+  in
+  style_grams, content_nodes
 
 let imagenet_mean = function
   | `blue -> 103.939
@@ -116,7 +125,9 @@ let save_image tensor ~filename =
 
 let compute_grams ~filename =
   let input_placeholder = Ops.placeholder ~type_:Float [ img_size; img_size; 3 ] in
-  let style_grams = style_grams (Ops.Placeholder.to_node input_placeholder) in
+  let style_grams, _ =
+    style_grams_and_content_nodes (Ops.Placeholder.to_node input_placeholder)
+  in
   let input_tensor = load_image ~filename in
   save_image input_tensor ~filename:"cropped.png";
   List.map style_grams ~f:(fun node ->
@@ -141,8 +152,9 @@ let () =
   printf "Done computing target features...\n%!";
   let input_tensor = load_image ~filename:"input.png" in
   let input_var = create_and_set_var input_tensor in
-  let style_losses, inputs =
-    List.map2_exn (style_grams input_var) target_grams ~f:(fun gram_node target_gram ->
+  let style_grams, content_nodes = style_grams_and_content_nodes input_var in
+  let style_losses, style_inputs =
+    List.map2_exn style_grams target_grams ~f:(fun gram_node target_gram ->
       let dims = Tensor.dims target_gram |> Array.to_list in
       let placeholder = Ops.placeholder ~type_:Float dims in
       let diff = Ops.(-) gram_node (Ops.Placeholder.to_node placeholder) in
@@ -151,19 +163,32 @@ let () =
       Session.Input.float placeholder target_gram)
     |> List.unzip
   in
-  let style_loss = List.reduce_exn style_losses ~f:Ops.(+) in
+  let content_losses, content_inputs =
+    List.map content_nodes ~f:(fun content_node ->
+      let content_target = Session.run Session.Output.(float content_node) in
+      let dims = Tensor.dims content_target |> Array.to_list in
+      let placeholder = Ops.placeholder ~type_:Float dims in
+      let diff = Ops.(-) content_node (Ops.Placeholder.to_node placeholder) in
+      let total_dims = List.reduce_exn dims ~f:( * ) |> float in
+      Ops.(reduce_sum (diff * diff) / f total_dims),
+      Session.Input.float placeholder content_target)
+    |> List.unzip
+  in
+  let loss =
+    Ops.(List.reduce_exn style_losses ~f:(+) + List.reduce_exn content_losses ~f:(+))
+  in
   let gd =
-    Optimizers.adam_minimizer style_loss
+    Optimizers.adam_minimizer loss
       ~learning_rate:(Ops.f learning_rate)
       ~varsf:[ input_var ]
   in
   for epoch = 1 to epochs do
-    let output_tensor, style_loss =
+    let output_tensor, loss =
       Session.run
-        ~inputs
+        ~inputs:(style_inputs @ content_inputs)
         ~targets:gd
-        Session.Output.(both (float input_var) (scalar_float style_loss))
+        Session.Output.(both (float input_var) (scalar_float loss))
     in
-    printf "epoch: %d   loss: %f\n%!" epoch style_loss;
+    printf "epoch: %d   loss: %f\n%!" epoch loss;
     save_image output_tensor ~filename:(sprintf "out_%d.png" epoch);
   done
