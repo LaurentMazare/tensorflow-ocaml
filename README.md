@@ -19,8 +19,8 @@ Two possible ways to obtain it are:
     
       `git clone --recurse-submodules -b r1.0 https://github.com/tensorflow/tensorflow`
     1. In the `tensorflow` directory run `./configure` (you will be asked if you want to enable CUDA support).
-    1. Run `bazel build -c opt tensorflow:libtensorflow_c.so`.
-    1. The resulting library should then be in `bazel-bin/tensorflow/libtensorflow_c.so`.
+    1. Run `bazel build -c opt tensorflow:libtensorflow.so`.
+    1. The resulting library should then be in `bazel-bin/tensorflow/libtensorflow.so`.
 * You can download a prebuilt x86-64 linux binaries (CPU only) [libtensorflow.so.1.0](https://github.com/LaurentMazare/tensorflow-ocaml/releases/download/0.0.7/libtensorflow.so.1.0).
 
 ### Build a Simple Example
