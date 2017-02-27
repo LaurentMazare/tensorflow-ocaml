@@ -136,6 +136,24 @@ let compute_grams ~filename =
       ~targets:[ Node.P node ]
       (Session.Output.float node))
 
+let total_variation_loss input =
+  let input =
+    Ops.reshape input (Ops.const_int ~type_:Int32 [ img_size; img_size; 3 ])
+  in
+  let axis1_diff =
+    Ops.(-)
+      (Ops.slice input (Ops.ci32 [ 0; 0; 0 ]) (Ops.ci32 [ img_size-1; img_size; 3 ]))
+      (Ops.slice input (Ops.ci32 [ 1; 0; 0 ]) (Ops.ci32 [ img_size-1; img_size; 3 ]))
+  in
+  let axis2_diff =
+    Ops.(-)
+      (Ops.slice input (Ops.ci32 [ 0; 0; 0 ]) (Ops.ci32 [ img_size; img_size-1; 3 ]))
+      (Ops.slice input (Ops.ci32 [ 0; 1; 0 ]) (Ops.ci32 [ img_size; img_size-1; 3 ]))
+  in
+  Ops.(/)
+    Ops.(reduce_sum (axis1_diff * axis1_diff) + reduce_sum (axis2_diff * axis2_diff))
+    (Ops.f (float (img_size * img_size)))
+
 let create_and_set_var tensor =
   let input_var = Var.f_or_d [ img_size; img_size; 3 ] ~type_:Float 0. in
   let placeholder = Ops.placeholder [ img_size; img_size; 3 ] ~type_:Float in
@@ -175,7 +193,9 @@ let () =
     |> List.unzip
   in
   let loss =
-    Ops.(List.reduce_exn style_losses ~f:(+) + List.reduce_exn content_losses ~f:(+))
+    Ops.(List.reduce_exn style_losses ~f:(+)
+      + List.reduce_exn content_losses ~f:(+)
+      + total_variation_loss input_var)
   in
   let gd =
     Optimizers.adam_minimizer loss
