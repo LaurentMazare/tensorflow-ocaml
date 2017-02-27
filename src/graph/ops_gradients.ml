@@ -484,6 +484,19 @@ let pad_gradient ~self ~gradient =
     [ Some (N.P gradient); None ]
   | _ -> failwith "pad should have two single inputs"
 
+let slice_gradient ~self ~gradient =
+  match N.inputs self with
+  | [ `single (N.P x); `single start_idxs; `single sizes ] ->
+    let start_idxs = N.extract_exn start_idxs Int32 in
+    let sizes = N.extract_exn sizes Int32 in
+    let shape_ = Ops.pack [ Ops.rank x; Ops.one32 ] in
+    let before_pad = Ops.reshape start_idxs shape_ in
+    let after_pad = Ops.(reshape (shape ~type_:Int32 x -sizes - start_idxs) shape_) in
+    let paddings = Ops.concat Ops.one32 [ before_pad; after_pad ] in
+    let gradient = Ops.pad gradient paddings in
+    [ Some (N.P gradient); None; None ]
+  | _ -> failwith "slice should have three single inputs"
+
 let transpose_gradient ~self ~gradient =
   let gradients ~indices =
     [ Some (N.P (Ops.transpose gradient (Ops.invertPermutation indices))); None ]
@@ -537,6 +550,7 @@ let register_all () =
     ; O.sigmoid,     { f = sigmoid_gradient }
     ; O.sign,        { f = sign_gradient }
     ; O.sin,         { f = sin_gradient }
+    ; O.slice,       { f = slice_gradient }
     ; O.softmax,     { f = softmax_gradient }
     ; O.sqrt,        { f = sqrt_gradient }
     ; O.square,      { f = square_gradient }
