@@ -100,6 +100,9 @@ let d ?shape x = f_or_d ?shape ~type_:Double x
 let cf ?shape x = const_float ?shape ~type_:Float x
 let cd ?shape x = const_float ?shape ~type_:Double x
 
+let ci32 ?shape x = const_int ?shape ~type_:Int32 x
+let ci64 ?shape x = const_int ?shape ~type_:Int64 x
+
 let zero32 = const_int ~shape:[] ~type_:Int32 [ 0 ]
 let one32 = const_int ~shape:[] ~type_:Int32 [ 1 ]
 let two32 = const_int ~shape:[] ~type_:Int32 [ 2 ]

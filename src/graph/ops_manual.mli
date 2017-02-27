@@ -31,6 +31,8 @@ val d : ?shape:int list -> float -> [ `double ] Node.t
 (* Constant tensors using different values. *)
 val cf : ?shape:int list -> float list -> [ `float ] Node.t
 val cd : ?shape:int list -> float list -> [ `double ] Node.t
+val ci32 : ?shape:int list -> int list -> [ `int32 ] Node.t
+val ci64 : ?shape:int list -> int list -> [ `int64 ] Node.t
 
 (* Some more refined constant creation functions. *)
 val const_float
