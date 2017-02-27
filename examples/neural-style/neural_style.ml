@@ -17,8 +17,7 @@ let max_pool node =
 let load vars ~filename =
   let filename = Ops.const_string [ filename ] in
   let load_and_assign_nodes =
-    Hashtbl.to_alist vars
-    |> List.map ~f:(fun (var_name, var) ->
+    List.map vars ~f:(fun (var_name, var) ->
       Ops.restore
         ~type_:(Node.output_type var)
         filename
@@ -54,7 +53,7 @@ let style_grams_and_content_nodes input ~img_h ~img_w =
     |> block 4 ~block_idx:5 ~in_channels:512 ~out_channels:512
   in
   let acc_relus = List.rev acc_relus in
-  load var_by_name ~filename:cpkt_filename;
+  load (Hashtbl.to_alist var_by_name) ~filename:cpkt_filename;
   let style_grams =
     List.map acc_relus ~f:(fun relus ->
       let node, out_channels = List.hd_exn relus in
@@ -160,9 +159,10 @@ let total_variation_loss input ~img_h ~img_w =
   in
   Ops.(reduce_sum (axis1_diff * axis1_diff) + reduce_sum (axis2_diff * axis2_diff))
 
-let create_and_set_var tensor ~img_h ~img_w =
-  let input_var = Var.f_or_d [ img_h; img_w; 3 ] ~type_:Float 0. in
-  let placeholder = Ops.placeholder [ img_h; img_w; 3 ] ~type_:Float in
+let create_and_set_var tensor =
+  let dims = Tensor.dims tensor |> Array.to_list in
+  let input_var = Var.f_or_d dims ~type_:Float 0. in
+  let placeholder = Ops.placeholder dims ~type_:Float in
   let assign = Ops.assign input_var (Ops.Placeholder.to_node placeholder) in
   Session.run
     ~inputs:[ Session.Input.float placeholder tensor ]
@@ -179,8 +179,8 @@ let () =
   in
   printf "Computing target features...\n%!";
   let target_grams = compute_grams ~filename:"style.png" ~img_h ~img_w in
-  printf "Done computing target features...\n%!";
-  let input_var = create_and_set_var input_tensor ~img_h ~img_w in
+  printf "Done computing target features.\n%!";
+  let input_var = create_and_set_var input_tensor in
   let style_grams, content_nodes =
     style_grams_and_content_nodes input_var ~img_h ~img_w
   in

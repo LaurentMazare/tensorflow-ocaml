@@ -3,6 +3,7 @@
 *.o
 *.native
 *.cm*
+*.png
 _build
 lib/*.so
 scripts/data
