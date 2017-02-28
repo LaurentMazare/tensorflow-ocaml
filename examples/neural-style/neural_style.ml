@@ -1,8 +1,10 @@
 open Core_kernel.Std
 open Tensorflow
 
-let epochs = 1000
+let epochs = 10000
 let learning_rate = 1.
+let content_weight = 200.
+let style_weight = 1.
 let cpkt_filename = Sys.getcwd () ^ "/vgg19.cpkt"
 
 let conv2d node ~in_channels ~out_channels =
@@ -206,8 +208,8 @@ let () =
     |> List.unzip
   in
   let loss =
-    Ops.(List.reduce_exn style_losses ~f:(+)
-      + List.reduce_exn content_losses ~f:(+)
+    Ops.(List.reduce_exn style_losses ~f:(+) * f style_weight
+      + List.reduce_exn content_losses ~f:(+) * f content_weight
       + total_variation_loss input_var ~img_h ~img_w)
   in
   let gd =
@@ -223,5 +225,7 @@ let () =
         Session.Output.(both (float input_var) (scalar_float loss))
     in
     printf "epoch: %d   loss: %f\n%!" epoch loss;
-    save_image output_tensor ~filename:(sprintf "out_%d.png" epoch) ~img_h ~img_w;
+    if epoch mod 100 = 0
+    then
+      save_image output_tensor ~filename:(sprintf "out_%d.png" epoch) ~img_h ~img_w;
   done
