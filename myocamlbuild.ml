@@ -13,7 +13,7 @@ let () =
           Cmd (A(env "src/wrapper/%_gen.byte")));
       ocaml_lib "tensorflow";
       ocaml_lib "tensorflow_core";
-      dep ["link"; "ocaml"; "use_tensorflowcstubs"]
+      dep ["link"; "ocaml"; "link_tensorflowcstubs"]
         ["libtensorflowcstubs.a"];
       flag ["link"; "ocaml"; "use_tensorflowcstubs"]
         (S[A"-cclib"; A"-ltensorflowcstubs"; A"-cclib"; A"-ltensorflow"]);
