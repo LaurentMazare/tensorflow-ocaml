@@ -4,6 +4,7 @@
    It has been heavily inspired by https://github.com/karpathy/char-rnn
 *)
 open Core_kernel.Std
+open Tensorflow_core
 open Tensorflow
 
 let epochs = 100000

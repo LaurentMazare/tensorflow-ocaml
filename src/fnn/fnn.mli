@@ -1,4 +1,5 @@
 open Core_kernel.Std
+open Tensorflow_core
 
 type _1d
 type _2d

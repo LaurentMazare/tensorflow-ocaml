@@ -1,4 +1,5 @@
 open Core_kernel.Std
+open Tensorflow_core
 
 module Op_name : Identifiable = String_id
 

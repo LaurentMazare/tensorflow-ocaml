@@ -1,3 +1,4 @@
+open Tensorflow_core
 type t
 
 val create : unit -> t

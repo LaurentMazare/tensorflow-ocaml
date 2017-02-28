@@ -1,5 +1,6 @@
 (* The readers implemented here are very inefficient as they read bytes one at a time. *)
 open Core_kernel.Std
+open Tensorflow_core
 
 let image_dim = 28 * 28
 let label_count = 10

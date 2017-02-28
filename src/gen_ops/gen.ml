@@ -1,4 +1,5 @@
 open Core_kernel.Std
+open Tensorflow
 exception Not_supported of string
 
 let ops_file = "src/gen_ops/ops.pb"

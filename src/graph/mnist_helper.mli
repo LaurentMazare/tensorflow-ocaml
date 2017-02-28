@@ -1,3 +1,4 @@
+open Tensorflow_core
 type float32_tensor = (float, Bigarray.float32_elt) Tensor.t
 
 type t =

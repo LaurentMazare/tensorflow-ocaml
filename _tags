@@ -13,7 +13,6 @@ not <src/piqi/*>: warn_error()
 <src/gen_ops/*> or <src/graph/*> or <src/nn/*> or <src/fnn/*> or <examples/*> or <examples/*/*> or <tests/*>: package(core_kernel), thread
 <lib>: -traverse
 <lib2>: -traverse
-<src/piqi> or <src/wrapper> or <src/graph> or <src> or <src/nn> or <src/fnn>: include
 <src/*/*> and not <src/wrapper/*>: for-pack(Tensorflow)
 <src/wrapper/*>: for-pack(Tensorflow_core)
 <tensorflow.cm{x,}a>: use_tensorflowcstubs

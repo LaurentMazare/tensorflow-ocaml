@@ -1,1 +1,1 @@
-tf_stubs.o
+src/wrapper/tf_stubs.o

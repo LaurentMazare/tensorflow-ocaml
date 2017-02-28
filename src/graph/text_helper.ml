@@ -1,4 +1,5 @@
 open Core_kernel.Std
+open Tensorflow_core
 
 type 'a t =
   { content : (int, Bigarray.int8_unsigned_elt, Bigarray.c_layout) Bigarray.Array1.t

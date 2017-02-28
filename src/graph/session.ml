@@ -1,4 +1,5 @@
 open Core_kernel.Std
+open Tensorflow_core
 
 type t =
   { session : Wrapper.Session.t

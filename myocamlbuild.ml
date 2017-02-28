@@ -4,6 +4,7 @@ let () =
     | Before_options ->
       Options.use_ocamlfind := true
     | After_rules ->
+      Pathname.define_context "src/fnn" [ "src/graph"; "src/fnn" ];
       dep ["c"; "compile"] [ "src/wrapper/c_api.h" ];
       rule "cstubs"
         ~prods:["src/wrapper/%_stubs.c"; "src/wrapper/%_generated.ml"]

@@ -1,4 +1,5 @@
 open Core_kernel.Std
+open Tensorflow_core
 open Tensorflow
 
 let epochs = 10000
