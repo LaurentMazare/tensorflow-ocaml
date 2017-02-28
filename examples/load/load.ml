@@ -1,3 +1,4 @@
+open Tensorflow_core
 open Wrapper
 module Graph = Wrapper.Graph
 module Session = Wrapper.Session
