@@ -4,7 +4,7 @@ open Tensorflow
 
 let epochs = 10000
 let learning_rate = 1.
-let content_weight = 200.
+let content_weight = 1.
 let style_weight = 1.
 let cpkt_filename = Sys.getcwd () ^ "/vgg19.cpkt"
 
@@ -84,28 +84,11 @@ let unnormalize x ~channel =
   min 255 (int_of_float (x +. imagenet_mean channel))
   |> max 0
 
-let load_image ~filename ~resize =
+let load_image ~filename =
   let image = OImages.load filename [] in
   let image = OImages.rgb24 image in
-  let width = image # width in
-  let height = image # height in
-  let img_w, img_h, image =
-    match resize with
-    | None -> width, height, image
-    | Some (img_h, img_w) ->
-      let ratio = float img_h /. float img_w in
-      let target_height = Float.min (float width *. ratio) (float height) in
-      let target_width = target_height /. ratio |> Float.to_int in
-      let target_height = Float.to_int target_height in
-      let image =
-        image # sub
-          ((width-target_width) / 2)
-          ((height-target_height) / 2)
-          target_width
-          target_height
-      in
-      img_w, img_h, image # resize None img_w img_h
-  in
+  let img_w = image # width in
+  let img_h = image # height in
   let tensor = Tensor.create3 Float32 img_h img_w 3 in
   for i = 0 to img_h - 1 do
     for j = 0 to img_w - 1 do
@@ -115,7 +98,7 @@ let load_image ~filename ~resize =
       Tensor.set tensor [| i; j; 2 |] (normalize r ~channel:`red);
     done;
   done;
-  tensor
+  tensor, img_w, img_h
 
 let save_image tensor ~filename ~img_h ~img_w =
   let total_size = Array.fold (Tensor.dims tensor) ~init:1 ~f:( * ) in
@@ -132,14 +115,13 @@ let save_image tensor ~filename ~img_h ~img_w =
   done;
   image # save filename None []
 
-let compute_grams ~filename ~img_h ~img_w =
+let compute_grams ~filename =
+  let input_tensor, img_w, img_h = load_image ~filename in
   let input_placeholder = Ops.placeholder ~type_:Float [ img_h; img_w; 3 ] in
   let style_grams, _ =
     style_grams_and_content_nodes (Ops.Placeholder.to_node input_placeholder)
       ~img_h ~img_w
   in
-  let input_tensor = load_image ~filename ~resize:(Some (img_h, img_w)) in
-  save_image input_tensor ~filename:"cropped.png" ~img_h ~img_w;
   List.map style_grams ~f:(fun node ->
     Session.run
       ~inputs:[ Session.Input.float input_placeholder input_tensor ]
@@ -174,14 +156,9 @@ let create_and_set_var tensor =
   input_var
 
 let () =
-  let input_tensor = load_image ~filename:"input.png" ~resize:None in
-  let img_h, img_w =
-    match Tensor.dims input_tensor with
-    | [| img_h; img_w; _ |] -> img_h, img_w
-    | _ -> assert false
-  in
+  let input_tensor, img_w, img_h = load_image ~filename:"input.png" in
   printf "Computing target features...\n%!";
-  let target_grams = compute_grams ~filename:"style.png" ~img_h ~img_w in
+  let target_grams = compute_grams ~filename:"style.png" in
   printf "Done computing target features.\n%!";
   let input_var = create_and_set_var input_tensor in
   let style_grams, content_nodes =
@@ -226,7 +203,7 @@ let () =
         Session.Output.(both (float input_var) (scalar_float loss))
     in
     printf "epoch: %d   loss: %f\n%!" epoch loss;
-    if epoch mod 100 = 0
+    if epoch mod 10 = 0
     then
       save_image output_tensor ~filename:(sprintf "out_%d.png" epoch) ~img_h ~img_w;
   done
