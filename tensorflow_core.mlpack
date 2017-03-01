@@ -1,3 +1,4 @@
 src/wrapper/Protobuf
 src/wrapper/Tensor
+src/wrapper/Tf_bindings
 src/wrapper/Wrapper
