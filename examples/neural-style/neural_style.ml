@@ -2,12 +2,6 @@ open Core_kernel.Std
 open Tensorflow_core
 open Tensorflow
 
-let epochs = 10000
-let learning_rate = 1.
-let content_weight = 1.
-let style_weight = 1.
-let cpkt_filename = Sys.getcwd () ^ "/vgg19.cpkt"
-
 let conv2d node ~in_channels ~out_channels =
   let w = Var.f_or_d [ 3; 3; in_channels; out_channels ] ~type_:Float 0. in
   let b = Var.f_or_d [ out_channels ] ~type_:Float 0. in
@@ -33,7 +27,7 @@ let load vars ~filename =
     ~targets:load_and_assign_nodes
     Session.Output.empty
 
-let style_grams_and_content_nodes input ~img_h ~img_w =
+let style_grams_and_content_nodes input ~img_h ~img_w ~cpkt_filename =
   let var_by_name = String.Table.create () in
   let block iter ~block_idx ~in_channels ~out_channels (node, acc) =
     List.init iter ~f:Fn.id
@@ -115,12 +109,12 @@ let save_image tensor ~filename ~img_h ~img_w =
   done;
   image # save filename None []
 
-let compute_grams ~filename =
+let compute_grams ~filename ~cpkt_filename =
   let input_tensor, img_w, img_h = load_image ~filename in
   let input_placeholder = Ops.placeholder ~type_:Float [ img_h; img_w; 3 ] in
   let style_grams, _ =
     style_grams_and_content_nodes (Ops.Placeholder.to_node input_placeholder)
-      ~img_h ~img_w
+      ~img_h ~img_w ~cpkt_filename
   in
   List.map style_grams ~f:(fun node ->
     Session.run
@@ -155,14 +149,23 @@ let create_and_set_var tensor =
     Session.Output.empty;
   input_var
 
-let () =
-  let input_tensor, img_w, img_h = load_image ~filename:"input.png" in
+let run epochs learning_rate content_weight style_weight cpkt_filename input_filename style_filename =
+  let cpkt_filename =
+    if Filename.is_relative cpkt_filename
+    then Filename.concat (Sys.getcwd ()) cpkt_filename
+    else cpkt_filename
+  in
+  let suffix =
+    String.rsplit2 input_filename ~on:'.'
+    |> Option.value_map ~f:snd ~default:"jpg"
+  in
+  let input_tensor, img_w, img_h = load_image ~filename:input_filename in
   printf "Computing target features...\n%!";
-  let target_grams = compute_grams ~filename:"style.png" in
+  let target_grams = compute_grams ~filename:style_filename ~cpkt_filename in
   printf "Done computing target features.\n%!";
   let input_var = create_and_set_var input_tensor in
   let style_grams, content_nodes =
-    style_grams_and_content_nodes input_var ~img_h ~img_w
+    style_grams_and_content_nodes input_var ~img_h ~img_w ~cpkt_filename
   in
   let style_losses, style_inputs =
     List.map2_exn style_grams target_grams ~f:(fun gram_node target_gram ->
@@ -204,6 +207,50 @@ let () =
     in
     printf "epoch: %d   loss: %f\n%!" epoch loss;
     if epoch mod 10 = 0
-    then
-      save_image output_tensor ~filename:(sprintf "out_%d.png" epoch) ~img_h ~img_w;
+    then save_image output_tensor ~filename:(sprintf "out_%d.%s" epoch suffix) ~img_h ~img_w;
   done
+
+let () =
+  let open Cmdliner in
+  let default_cmd =
+    let epochs =
+      Arg.(value & opt int 10_000
+        & info [ "epochs" ] ~docv:"INT" ~doc:"Number of epochs to run")
+    in
+    let learning_rate =
+      Arg.(value & opt float 1.
+        & info [ "learning-rate" ] ~docv:"FLOAT" ~doc:"Learning rate for the Adam optimizer")
+    in
+    let content_weight =
+      Arg.(value & opt float 1.
+        & info [ "content-weight" ] ~docv:"FLOAT" ~doc:"Weight for the content loss")
+    in
+    let style_weight =
+      Arg.(value & opt float 1.
+        & info [ "style-weight" ] ~docv:"FLOAT" ~doc:"Weight for the style loss")
+    in
+    let cpkt_filename =
+      Arg.(value & opt file "vgg19.cpkt"
+        & info [ "cpkt-file" ] ~docv:"FILE" ~doc:"cpkt file containting the trained model weights")
+    in
+    let input_filename =
+      Arg.(value & opt file "input.jpg"
+        & info [ "input" ] ~docv:"FILE" ~doc:"input image file")
+    in
+    let style_filename =
+      Arg.(value & opt file "style.jpg"
+        & info [ "style" ] ~docv:"FILE" ~doc:"style image file")
+    in
+    Term.(const run
+      $ epochs
+      $ learning_rate
+      $ content_weight
+      $ style_weight
+      $ cpkt_filename
+      $ input_filename
+      $ style_filename),
+    Term.info "neural_style" ~version:"0" ~sdocs:"" ~doc:"Neural Style Transfer"
+  in
+  match Term.eval_choice default_cmd [] with
+  | `Error _ -> exit 1
+  | _ -> exit 0
