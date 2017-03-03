@@ -38,7 +38,7 @@ let style_grams_and_content_nodes input ~img_h ~img_w ~cpkt_filename =
       Hashtbl.set var_by_name ~key:(name ^ "/" ^ name ^ "_filters") ~data:w;
       Hashtbl.set var_by_name ~key:(name ^ "/" ^ name ^ "_biases") ~data:b;
       let relu = Ops.relu conv2d in
-      relu, (relu, out_channels) :: acc_relus)
+      relu, (relu, (`block_idx block_idx, `out_channels out_channels)) :: acc_relus)
     |> fun (node, acc_relus) -> max_pool node, List.rev acc_relus :: acc
   in
   let _model, acc_relus =
@@ -53,9 +53,10 @@ let style_grams_and_content_nodes input ~img_h ~img_w ~cpkt_filename =
   load (Hashtbl.to_alist var_by_name) ~filename:cpkt_filename;
   let style_grams =
     List.map acc_relus ~f:(fun relus ->
-      let node, out_channels = List.hd_exn relus in
+      let node, (`block_idx block_idx, `out_channels out_channels) = List.hd_exn relus in
       let node = Ops.reshape node (Ops.const_int ~type_:Int32 [ -1; out_channels ]) in
-      let size_ = float (out_channels * out_channels) in
+      let two = Int.pow 2 (block_idx - 1) in
+      let size_ = float (out_channels * (img_h/two) * (img_w/two)) in
       Ops.(matMul ~transpose_a:true node node / f size_))
   in
   let content_nodes =
@@ -172,8 +173,7 @@ let run epochs learning_rate content_weight style_weight cpkt_filename input_fil
       let dims = Tensor.dims target_gram |> Array.to_list in
       let placeholder = Ops.placeholder ~type_:Float dims in
       let diff = Ops.(-) gram_node (Ops.Placeholder.to_node placeholder) in
-      let total_dims = List.reduce_exn dims ~f:( * ) |> float in
-      Ops.(reduce_sum (diff * diff) / f total_dims),
+      Ops.(reduce_sum (diff * diff)),
       Session.Input.float placeholder target_gram)
     |> List.unzip
   in
@@ -206,7 +206,7 @@ let run epochs learning_rate content_weight style_weight cpkt_filename input_fil
         Session.Output.(both (float input_var) (scalar_float loss))
     in
     printf "epoch: %d   loss: %f\n%!" epoch loss;
-    if epoch mod 10 = 0
+    if epoch mod 100 = 0
     then save_image output_tensor ~filename:(sprintf "out_%d.%s" epoch suffix) ~img_h ~img_w;
   done
 
