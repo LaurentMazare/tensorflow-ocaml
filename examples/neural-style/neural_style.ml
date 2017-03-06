@@ -167,9 +167,10 @@ let run epochs learning_rate content_weight style_weight tv_weight npz_filename 
   let style_losses, style_inputs =
     List.map2_exn style_grams target_grams ~f:(fun gram_node target_gram ->
       let dims = Tensor.dims target_gram |> Array.to_list in
+      let size_ = List.reduce_exn dims ~f:( * ) in
       let placeholder = Ops.placeholder ~type_:Float dims in
       let diff = Ops.(-) gram_node (Ops.Placeholder.to_node placeholder) in
-      Ops.(reduce_sum (diff * diff)),
+      Ops.(reduce_sum (diff * diff) / f (float size_)),
       Session.Input.float placeholder target_gram)
     |> List.unzip
   in
@@ -201,7 +202,7 @@ let run epochs learning_rate content_weight style_weight tv_weight npz_filename 
         ~targets:gd
         Session.Output.(both (float input_var) (scalar_float loss))
     in
-    printf "epoch: %d   loss: %f\n%!" epoch loss;
+    printf "epoch: %d   loss: %g\n%!" epoch loss;
     if epoch mod 100 = 0
     then save_image output_tensor ~filename:(sprintf "out_%d.%s" epoch suffix) ~img_h ~img_w;
   done
