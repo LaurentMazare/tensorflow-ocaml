@@ -13,4 +13,6 @@ Compile [neural_style.ml](https://github.com/LaurentMazare/tensorflow-ocaml/tree
 ocamlbuild neural_style.native -pkg tensorflow -pkg cmdliner -pkg npy -pkg camlimages.jpeg -pkg camlimages.png -use-ocamlfind
 ```
 
+Download the [pre-trained weights](https://github.com/LaurentMazare/tensorflow-ocaml/releases/download/0.0.9/vgg19.npz) for the VGG-19 network.
+
 You can then run the executable neural_style.native.
