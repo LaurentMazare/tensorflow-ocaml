@@ -89,9 +89,9 @@ let load_image ~filename =
   for i = 0 to img_h - 1 do
     for j = 0 to img_w - 1 do
       let { Color.r; g; b } = image # get j i in
-      Tensor.set tensor [| i; j; 0 |] (normalize b ~channel:`blue);
+      Tensor.set tensor [| i; j; 0 |] (normalize r ~channel:`red);
       Tensor.set tensor [| i; j; 1 |] (normalize g ~channel:`green);
-      Tensor.set tensor [| i; j; 2 |] (normalize r ~channel:`red);
+      Tensor.set tensor [| i; j; 2 |] (normalize b ~channel:`blue);
     done;
   done;
   tensor, img_w, img_h
@@ -103,9 +103,9 @@ let save_image tensor ~filename ~img_h ~img_w =
   let image = new OImages.rgb24 img_w img_h in
   for i = 0 to img_h - 1 do
     for j = 0 to img_w - 1 do
-      let b = Tensor.get tensor [| i; j; 0 |] |> unnormalize ~channel:`blue in
+      let r = Tensor.get tensor [| i; j; 0 |] |> unnormalize ~channel:`red in
       let g = Tensor.get tensor [| i; j; 1 |] |> unnormalize ~channel:`green in
-      let r = Tensor.get tensor [| i; j; 2 |] |> unnormalize ~channel:`red in
+      let b = Tensor.get tensor [| i; j; 2 |] |> unnormalize ~channel:`blue in
       image # set j i { Color.r; g; b }
     done;
   done;
