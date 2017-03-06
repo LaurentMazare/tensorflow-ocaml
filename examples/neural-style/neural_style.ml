@@ -11,23 +11,24 @@ let conv2d node ~in_channels ~out_channels =
 let max_pool node =
   Ops.maxPool node ~ksize:[ 1; 2; 2; 1 ] ~strides:[ 1; 2; 2; 1 ] ~padding:"SAME"
 
-let load vars ~filename =
-  let filename = Ops.const_string [ filename ] in
-  let load_and_assign_nodes =
-    List.map vars ~f:(fun (var_name, var) ->
-      Ops.restore
-        ~type_:(Node.output_type var)
-        filename
-        (Ops.const_string [ var_name ])
-      |> Ops.assign var
-      |> fun node -> Node.P node)
+let load var_and_names ~npz_filename =
+  let npz = Npy.Npz.open_in npz_filename in
+  let inputs, targets =
+    List.map var_and_names ~f:(fun (var_name, var) ->
+      let Npy.P tensor = Npy.Npz.read npz var_name in
+      match Bigarray.Genarray.kind tensor, Bigarray.Genarray.layout tensor with
+      | Bigarray.Float32, Bigarray.C_layout ->
+        let tensor = Tensor.of_bigarray tensor ~scalar:false in
+        let shape = Tensor.dims tensor |> Array.to_list in
+        let ph = Ops.placeholder ~type_:Float shape in
+        Session.Input.float ph tensor, Node.P (Ops.assign var (Ops.Placeholder.to_node ph))
+      | _ -> failwith "Improper weight types or layout")
+    |> List.unzip
   in
-  Session.run
-    ~inputs:[]
-    ~targets:load_and_assign_nodes
-    Session.Output.empty
+  Session.run ~inputs ~targets Session.Output.empty;
+  Npy.Npz.close_in npz
 
-let style_grams_and_content_nodes input ~img_h ~img_w ~ckpt_filename =
+let style_grams_and_content_nodes input ~img_h ~img_w ~npz_filename =
   let var_by_name = String.Table.create () in
   let block iter ~block_idx ~in_channels ~out_channels (node, acc) =
     List.init iter ~f:Fn.id
@@ -35,8 +36,8 @@ let style_grams_and_content_nodes input ~img_h ~img_w ~ckpt_filename =
       let name = sprintf "conv%d_%d" block_idx (idx+1) in
       let in_channels = if idx = 0 then in_channels else out_channels in
       let conv2d, w, b = conv2d node ~in_channels ~out_channels in
-      Hashtbl.set var_by_name ~key:(name ^ "/" ^ name ^ "_filters") ~data:w;
-      Hashtbl.set var_by_name ~key:(name ^ "/" ^ name ^ "_biases") ~data:b;
+      Hashtbl.set var_by_name ~key:(name ^ "W") ~data:w;
+      Hashtbl.set var_by_name ~key:(name ^ "b") ~data:b;
       let relu = Ops.relu conv2d in
       relu, (relu, (`block_idx block_idx, `out_channels out_channels)) :: acc_relus)
     |> fun (node, acc_relus) -> max_pool node, List.rev acc_relus :: acc
@@ -50,7 +51,7 @@ let style_grams_and_content_nodes input ~img_h ~img_w ~ckpt_filename =
     |> block 4 ~block_idx:5 ~in_channels:512 ~out_channels:512
   in
   let acc_relus = List.rev acc_relus in
-  load (Hashtbl.to_alist var_by_name) ~filename:ckpt_filename;
+  load (Hashtbl.to_alist var_by_name) ~npz_filename;
   let style_grams =
     List.map acc_relus ~f:(fun relus ->
       let node, (`block_idx block_idx, `out_channels out_channels) = List.hd_exn relus in
@@ -110,12 +111,12 @@ let save_image tensor ~filename ~img_h ~img_w =
   done;
   image # save filename None []
 
-let compute_grams ~filename ~ckpt_filename =
+let compute_grams ~filename ~npz_filename =
   let input_tensor, img_w, img_h = load_image ~filename in
   let input_placeholder = Ops.placeholder ~type_:Float [ img_h; img_w; 3 ] in
   let style_grams, _ =
     style_grams_and_content_nodes (Ops.Placeholder.to_node input_placeholder)
-      ~img_h ~img_w ~ckpt_filename
+      ~img_h ~img_w ~npz_filename
   in
   List.map style_grams ~f:(fun node ->
     Session.run
@@ -150,23 +151,18 @@ let create_and_set_var tensor =
     Session.Output.empty;
   input_var
 
-let run epochs learning_rate content_weight style_weight tv_weight ckpt_filename input_filename style_filename =
-  let ckpt_filename =
-    if Filename.is_relative ckpt_filename
-    then Filename.concat (Sys.getcwd ()) ckpt_filename
-    else ckpt_filename
-  in
+let run epochs learning_rate content_weight style_weight tv_weight npz_filename input_filename style_filename =
   let suffix =
     String.rsplit2 input_filename ~on:'.'
     |> Option.value_map ~f:snd ~default:"jpg"
   in
   let input_tensor, img_w, img_h = load_image ~filename:input_filename in
   printf "Computing target features...\n%!";
-  let target_grams = compute_grams ~filename:style_filename ~ckpt_filename in
+  let target_grams = compute_grams ~filename:style_filename ~npz_filename in
   printf "Done computing target features.\n%!";
   let input_var = create_and_set_var input_tensor in
   let style_grams, content_nodes =
-    style_grams_and_content_nodes input_var ~img_h ~img_w ~ckpt_filename
+    style_grams_and_content_nodes input_var ~img_h ~img_w ~npz_filename
   in
   let style_losses, style_inputs =
     List.map2_exn style_grams target_grams ~f:(fun gram_node target_gram ->
@@ -233,9 +229,9 @@ let () =
       Arg.(value & opt float 1e-2
         & info [ "tv-weight" ] ~docv:"FLOAT" ~doc:"Weight for the total variation loss")
     in
-    let ckpt_filename =
-      Arg.(value & opt file "vgg19.ckpt"
-        & info [ "ckpt-file" ] ~docv:"FILE" ~doc:"ckpt file containting the trained model weights")
+    let npz_filename =
+      Arg.(value & opt file "vgg19.npz"
+        & info [ "npz-model-weights" ] ~docv:"FILE" ~doc:"npz file containing the trained model weights")
     in
     let input_filename =
       Arg.(value & opt file "input.jpg"
@@ -251,7 +247,7 @@ let () =
       $ content_weight
       $ style_weight
       $ tv_weight
-      $ ckpt_filename
+      $ npz_filename
       $ input_filename
       $ style_filename),
     Term.info "neural_style" ~version:"0" ~sdocs:"" ~doc:"Neural Style Transfer"
