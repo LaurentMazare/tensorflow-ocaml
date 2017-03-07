@@ -1,4 +1,4 @@
-This contains an implementation of [Neural Style transfer](https://arxiv.org/abs/1508.06576) in ocaml.
+This contains an ocaml implementation of [Neural Style transfer](https://arxiv.org/abs/1508.06576) using a VGG-19 convolutional network.
 
 ## Installation
 
@@ -17,7 +17,7 @@ ocamlbuild neural_style.native -pkg tensorflow -pkg cmdliner -pkg npy -pkg camli
 
 Download the [pre-trained weights](https://github.com/LaurentMazare/tensorflow-ocaml/releases/download/0.0.9/vgg19.npz) for the VGG-19 network.
 
-You can then run the executable neural_style.native.
+You can then run the executable neural_style.native. Depending on the input, the loss function may be tuned using the following command line arguments `--content-weight`, `--style-weight`, and `--tv-weight`.
 
 ### Example 1: Starry Brooklyn
 
