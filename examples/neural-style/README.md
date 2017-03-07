@@ -19,7 +19,21 @@ Download the [pre-trained weights](https://github.com/LaurentMazare/tensorflow-o
 
 You can then run the executable neural_style.native.
 
-### Examples
+### Example 1: Starry Brooklyn
+
+Original image
+
+#![Brooklyn](https://raw.githubusercontent.com/LaurentMazare/tensorflow-ocaml/master/examples/neural-style/samples/brooklyn.jpg)
+
+Style
+
+#![Starry](https://raw.githubusercontent.com/LaurentMazare/tensorflow-ocaml/master/examples/neural-style/samples/style-starry.jpg)
+
+Result
+
+#![Starry Brooklyn](https://raw.githubusercontent.com/LaurentMazare/tensorflow-ocaml/master/examples/neural-style/samples/brooklyn-starry.jpg)
+
+### Example 2: Cubist New-York
 
 Original image
 
