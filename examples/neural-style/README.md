@@ -1,3 +1,5 @@
+This contains an implementation of [Neural Style transfer](https://arxiv.org/abs/1508.06576) in ocaml.
+
 ## Installation
 
 Use [opam](https://opam.ocaml.org/) to install the tensorflow-ocaml package and the other necessary packages.
@@ -16,3 +18,17 @@ ocamlbuild neural_style.native -pkg tensorflow -pkg cmdliner -pkg npy -pkg camli
 Download the [pre-trained weights](https://github.com/LaurentMazare/tensorflow-ocaml/releases/download/0.0.9/vgg19.npz) for the VGG-19 network.
 
 You can then run the executable neural_style.native.
+
+### Examples
+
+Original image
+
+#![New-York](https://github.com/LaurentMazare/tensorflow-ocaml/tree/master/examples/neural-style/samples/new-york.jpg)
+
+Style
+
+#![Cubist](https://github.com/LaurentMazare/tensorflow-ocaml/tree/master/examples/neural-style/samples/cubist.jpg)
+
+Result
+
+#![Cubist New-York](https://github.com/LaurentMazare/tensorflow-ocaml/tree/master/examples/neural-style/samples/new-york-cubist.jpg)

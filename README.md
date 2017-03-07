@@ -131,6 +131,10 @@ There are also some MNIST based [examples](https://github.com/LaurentMazare/tens
 
 A simplified version of [char-rnn](https://github.com/karpathy/char-rnn) can also be found in the [examples directory](https://github.com/LaurentMazare/tensorflow-ocaml/blob/master/examples/char_rnn) which contains additional details.
 
+### Neural Style Transfer
+
+A stand-alone example of Neural Style transfer can be found in the [examples directory](https://github.com/LaurentMazare/tensorflow-ocaml/blob/master/examples/neural-style).
+
 ## Dependencies
 
 * [ocaml-ctypes](https://github.com/ocamllabs/ocaml-ctypes) is used for the C bindings.
