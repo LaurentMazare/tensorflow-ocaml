@@ -219,7 +219,7 @@ let () =
         & info [ "learning-rate" ] ~docv:"FLOAT" ~doc:"Learning rate for the Adam optimizer")
     in
     let content_weight =
-      Arg.(value & opt float 1.
+      Arg.(value & opt float 1e-3
         & info [ "content-weight" ] ~docv:"FLOAT" ~doc:"Weight for the content loss")
     in
     let style_weight =
@@ -227,7 +227,7 @@ let () =
         & info [ "style-weight" ] ~docv:"FLOAT" ~doc:"Weight for the style loss")
     in
     let tv_weight =
-      Arg.(value & opt float 1e-2
+      Arg.(value & opt float 1e-4
         & info [ "tv-weight" ] ~docv:"FLOAT" ~doc:"Weight for the total variation loss")
     in
     let npz_filename =
