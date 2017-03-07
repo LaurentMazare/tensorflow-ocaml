@@ -27,7 +27,7 @@ Original image
 
 Style
 
-#![Cubist](https://raw.githubusercontent.com/LaurentMazare/tensorflow-ocaml/master/examples/neural-style/samples/cubist.jpg)
+#![Cubist](https://raw.githubusercontent.com/LaurentMazare/tensorflow-ocaml/master/examples/neural-style/samples/style-cubist.jpg)
 
 Result
 
