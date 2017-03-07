@@ -23,12 +23,12 @@ You can then run the executable neural_style.native.
 
 Original image
 
-#![New-York](https://github.com/LaurentMazare/tensorflow-ocaml/tree/master/examples/neural-style/samples/new-york.jpg)
+#![New-York](https://raw.githubusercontent.com/LaurentMazare/tensorflow-ocaml/master/examples/neural-style/samples/new-york.jpg)
 
 Style
 
-#![Cubist](https://github.com/LaurentMazare/tensorflow-ocaml/tree/master/examples/neural-style/samples/cubist.jpg)
+#![Cubist](https://raw.githubusercontent.com/LaurentMazare/tensorflow-ocaml/master/examples/neural-style/samples/cubist.jpg)
 
 Result
 
-#![Cubist New-York](https://github.com/LaurentMazare/tensorflow-ocaml/tree/master/examples/neural-style/samples/new-york-cubist.jpg)
+#![Cubist New-York](https://raw.githubusercontent.com/LaurentMazare/tensorflow-ocaml/master/examples/neural-style/samples/new-york-cubist.jpg)
