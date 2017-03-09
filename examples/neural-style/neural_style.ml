@@ -2,6 +2,56 @@ open Core_kernel.Std
 open Tensorflow_core
 open Tensorflow
 
+module Image : sig
+  val load : string -> (float, Bigarray.float32_elt) Tensorflow_core.Tensor.t * int * int
+  val save : (float, Bigarray.float32_elt) Tensorflow_core.Tensor.t -> string -> unit
+end = struct
+  let imagenet_mean = function
+    | `blue -> 103.939
+    | `green -> 116.779
+    | `red -> 123.68
+
+  let normalize x ~channel =
+    float x -. imagenet_mean channel
+
+  let unnormalize x ~channel =
+    min 255 (int_of_float (x +. imagenet_mean channel))
+    |> max 0
+
+  let load filename =
+    let image = OImages.load filename [] in
+    let image = OImages.rgb24 image in
+    let img_w = image # width in
+    let img_h = image # height in
+    let tensor = Tensor.create3 Float32 img_h img_w 3 in
+    for i = 0 to img_h - 1 do
+      for j = 0 to img_w - 1 do
+        let { Color.r; g; b } = image # get j i in
+        Tensor.set tensor [| i; j; 0 |] (normalize r ~channel:`red);
+        Tensor.set tensor [| i; j; 1 |] (normalize g ~channel:`green);
+        Tensor.set tensor [| i; j; 2 |] (normalize b ~channel:`blue);
+      done;
+    done;
+    tensor, img_w, img_h
+
+  let save tensor filename =
+    let img_w, img_h =
+      match Tensor.dims tensor with
+      | [| img_h; img_w; 3 |] -> img_w, img_h
+      | _ -> failwith "Improper tensor dimensions"
+    in
+    let image = new OImages.rgb24 img_w img_h in
+    for i = 0 to img_h - 1 do
+      for j = 0 to img_w - 1 do
+        let r = Tensor.get tensor [| i; j; 0 |] |> unnormalize ~channel:`red in
+        let g = Tensor.get tensor [| i; j; 1 |] |> unnormalize ~channel:`green in
+        let b = Tensor.get tensor [| i; j; 2 |] |> unnormalize ~channel:`blue in
+        image # set j i { Color.r; g; b }
+      done;
+    done;
+    image # save filename None []
+end
+
 let conv2d node ~in_channels ~out_channels =
   let w = Var.f_or_d [ 3; 3; in_channels; out_channels ] ~type_:Float 0. in
   let b = Var.f_or_d [ out_channels ] ~type_:Float 0. in
@@ -68,51 +118,8 @@ let style_grams_and_content_nodes input ~img_h ~img_w ~npz_filename =
   in
   style_grams, content_nodes
 
-let imagenet_mean = function
-  | `blue -> 103.939
-  | `green -> 116.779
-  | `red -> 123.68
-
-let normalize x ~channel =
-  float x -. imagenet_mean channel
-
-let unnormalize x ~channel =
-  min 255 (int_of_float (x +. imagenet_mean channel))
-  |> max 0
-
-let load_image ~filename =
-  let image = OImages.load filename [] in
-  let image = OImages.rgb24 image in
-  let img_w = image # width in
-  let img_h = image # height in
-  let tensor = Tensor.create3 Float32 img_h img_w 3 in
-  for i = 0 to img_h - 1 do
-    for j = 0 to img_w - 1 do
-      let { Color.r; g; b } = image # get j i in
-      Tensor.set tensor [| i; j; 0 |] (normalize r ~channel:`red);
-      Tensor.set tensor [| i; j; 1 |] (normalize g ~channel:`green);
-      Tensor.set tensor [| i; j; 2 |] (normalize b ~channel:`blue);
-    done;
-  done;
-  tensor, img_w, img_h
-
-let save_image tensor ~filename ~img_h ~img_w =
-  let total_size = Array.fold (Tensor.dims tensor) ~init:1 ~f:( * ) in
-  if total_size <> img_h * img_w * 3
-  then failwith "Incorrect tensor size";
-  let image = new OImages.rgb24 img_w img_h in
-  for i = 0 to img_h - 1 do
-    for j = 0 to img_w - 1 do
-      let r = Tensor.get tensor [| i; j; 0 |] |> unnormalize ~channel:`red in
-      let g = Tensor.get tensor [| i; j; 1 |] |> unnormalize ~channel:`green in
-      let b = Tensor.get tensor [| i; j; 2 |] |> unnormalize ~channel:`blue in
-      image # set j i { Color.r; g; b }
-    done;
-  done;
-  image # save filename None []
-
 let compute_grams ~filename ~npz_filename =
-  let input_tensor, img_w, img_h = load_image ~filename in
+  let input_tensor, img_w, img_h = Image.load filename in
   let input_placeholder = Ops.placeholder ~type_:Float [ img_h; img_w; 3 ] in
   let style_grams, _ =
     style_grams_and_content_nodes (Ops.Placeholder.to_node input_placeholder)
@@ -156,7 +163,7 @@ let run epochs learning_rate content_weight style_weight tv_weight npz_filename 
     String.rsplit2 input_filename ~on:'.'
     |> Option.value_map ~f:snd ~default:"jpg"
   in
-  let input_tensor, img_w, img_h = load_image ~filename:input_filename in
+  let input_tensor, img_w, img_h = Image.load input_filename in
   printf "Computing target features...\n%!";
   let target_grams = compute_grams ~filename:style_filename ~npz_filename in
   printf "Done computing target features.\n%!";
@@ -204,7 +211,7 @@ let run epochs learning_rate content_weight style_weight tv_weight npz_filename 
     in
     printf "epoch: %d   loss: %g\n%!" epoch loss;
     if epoch mod 100 = 0
-    then save_image output_tensor ~filename:(sprintf "out_%d.%s" epoch suffix) ~img_h ~img_w;
+    then Image.save output_tensor (sprintf "out_%d.%s" epoch suffix)
   done
 
 let () =
