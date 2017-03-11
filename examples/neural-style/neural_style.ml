@@ -52,6 +52,19 @@ end = struct
     image # save filename None []
 end
 
+(* This is also available in [Session.Vars.set_float], however we keep this here for now
+   as the opam package does not include this change yet. *)
+let set_vars var_and_tensors =
+  let inputs, targets =
+    List.map var_and_tensors ~f:(fun (var, tensor) ->
+      let dims = Tensor.dims tensor |> Array.to_list in
+      let placeholder = Ops.placeholder dims ~type_:Float in
+      let assign = Ops.assign var (Ops.Placeholder.to_node placeholder) in
+      Session.Input.float placeholder tensor, Node.P assign)
+    |> List.unzip
+  in
+  Session.run ~inputs ~targets Session.Output.empty
+
 let load var_and_names ~npz_filename =
   let npz = Npy.Npz.open_in npz_filename in
   List.map var_and_names ~f:(fun (var_name, var) ->
@@ -60,7 +73,7 @@ let load var_and_names ~npz_filename =
     | Bigarray.Float32, Bigarray.C_layout ->
       var, (Tensor.of_bigarray tensor ~scalar:false : (float, Bigarray.float32_elt) Tensor.t)
     | _ -> failwith "Improper weight types or layout")
-  |> Session.Vars.set_float;
+  |> set_vars;
   Npy.Npz.close_in npz
 
 let conv2d node ~in_channels ~out_channels =
@@ -144,7 +157,7 @@ let total_variation_loss input ~img_h ~img_w =
 let create_and_set_var tensor =
   let dims = Tensor.dims tensor |> Array.to_list in
   let input_var = Var.f_or_d dims ~type_:Float 0. in
-  Session.Vars.set_float [ input_var, tensor ];
+  set_vars [ input_var, tensor ];
   input_var
 
 let run epochs learning_rate content_weight style_weight tv_weight npz_filename input_filename style_filename =
