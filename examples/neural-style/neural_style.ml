@@ -52,6 +52,28 @@ end = struct
     image # save filename None []
 end
 
+let set_vars var_and_tensors =
+  let inputs, targets =
+    List.map var_and_tensors ~f:(fun (var, tensor) ->
+      let dims = Tensor.dims tensor |> Array.to_list in
+      let placeholder = Ops.placeholder dims ~type_:Float in
+      let assign = Ops.assign var (Ops.Placeholder.to_node placeholder) in
+      Session.Input.float placeholder tensor, Node.P assign)
+    |> List.unzip
+  in
+  Session.run ~inputs ~targets Session.Output.empty
+
+let load var_and_names ~npz_filename =
+  let npz = Npy.Npz.open_in npz_filename in
+  List.map var_and_names ~f:(fun (var_name, var) ->
+    let Npy.P tensor = Npy.Npz.read npz var_name in
+    match Bigarray.Genarray.kind tensor, Bigarray.Genarray.layout tensor with
+    | Bigarray.Float32, Bigarray.C_layout ->
+      var, (Tensor.of_bigarray tensor ~scalar:false : (float, Bigarray.float32_elt) Tensor.t)
+    | _ -> failwith "Improper weight types or layout")
+  |> set_vars;
+  Npy.Npz.close_in npz
+
 let conv2d node ~in_channels ~out_channels =
   let w = Var.f_or_d [ 3; 3; in_channels; out_channels ] ~type_:Float 0. in
   let b = Var.f_or_d [ out_channels ] ~type_:Float 0. in
@@ -60,23 +82,6 @@ let conv2d node ~in_channels ~out_channels =
 
 let max_pool node =
   Ops.maxPool node ~ksize:[ 1; 2; 2; 1 ] ~strides:[ 1; 2; 2; 1 ] ~padding:"SAME"
-
-let load var_and_names ~npz_filename =
-  let npz = Npy.Npz.open_in npz_filename in
-  let inputs, targets =
-    List.map var_and_names ~f:(fun (var_name, var) ->
-      let Npy.P tensor = Npy.Npz.read npz var_name in
-      match Bigarray.Genarray.kind tensor, Bigarray.Genarray.layout tensor with
-      | Bigarray.Float32, Bigarray.C_layout ->
-        let tensor = Tensor.of_bigarray tensor ~scalar:false in
-        let shape = Tensor.dims tensor |> Array.to_list in
-        let ph = Ops.placeholder ~type_:Float shape in
-        Session.Input.float ph tensor, Node.P (Ops.assign var (Ops.Placeholder.to_node ph))
-      | _ -> failwith "Improper weight types or layout")
-    |> List.unzip
-  in
-  Session.run ~inputs ~targets Session.Output.empty;
-  Npy.Npz.close_in npz
 
 let style_grams_and_content_nodes input ~img_h ~img_w ~npz_filename =
   let var_by_name = String.Table.create () in
@@ -150,12 +155,7 @@ let total_variation_loss input ~img_h ~img_w =
 let create_and_set_var tensor =
   let dims = Tensor.dims tensor |> Array.to_list in
   let input_var = Var.f_or_d dims ~type_:Float 0. in
-  let placeholder = Ops.placeholder dims ~type_:Float in
-  let assign = Ops.assign input_var (Ops.Placeholder.to_node placeholder) in
-  Session.run
-    ~inputs:[ Session.Input.float placeholder tensor ]
-    ~targets:[ Node.P assign ]
-    Session.Output.empty;
+  set_vars [ input_var, tensor ];
   input_var
 
 let run epochs learning_rate content_weight style_weight tv_weight npz_filename input_filename style_filename =
