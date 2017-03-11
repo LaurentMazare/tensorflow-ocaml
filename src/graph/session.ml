@@ -272,3 +272,19 @@ let run ?inputs ?targets ?session output =
   in
   let outputs, k = Output.build_output output in
   k (run ?inputs ?targets ~outputs t)
+
+module Vars = struct
+  let set input_fn ?session var_and_tensors =
+    let inputs, targets =
+      List.map var_and_tensors ~f:(fun (var, tensor) ->
+        let dims = Tensor.dims tensor |> Array.to_list in
+        let placeholder = Ops.placeholder dims ~type_:(Node.output_type var) in
+        let assign = Ops.assign var (Ops.Placeholder.to_node placeholder) in
+        input_fn placeholder tensor, Node.P assign)
+      |> List.unzip
+    in
+    run ?session ~inputs ~targets Output.empty
+
+  let set_float = set Input.float
+  let set_double = set Input.double
+end

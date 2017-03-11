@@ -39,3 +39,15 @@ val run
   -> ?session:t
   -> 'a Output.t
   -> 'a
+
+module Vars : sig
+  val set_float
+    :  ?session:t
+    -> ([ `float ] Node.t * (float, Bigarray.float32_elt) Tensor.t) list
+    -> unit
+
+  val set_double
+    :  ?session:t
+    -> ([ `double ] Node.t * (float, Bigarray.float64_elt) Tensor.t) list
+    -> unit
+end
