@@ -46,3 +46,17 @@ Style
 Result
 
 #![Cubist New-York](https://raw.githubusercontent.com/LaurentMazare/tensorflow-ocaml/master/examples/neural-style/samples/new-york-cubist.jpg)
+
+### Example 3: Eschery London
+
+Original image
+
+#![Lond](https://raw.githubusercontent.com/LaurentMazare/tensorflow-ocaml/master/examples/neural-style/samples/london.jpg)
+
+Style
+
+#![Escher](https://raw.githubusercontent.com/LaurentMazare/tensorflow-ocaml/master/examples/neural-style/samples/style-escher.jpg)
+
+Result
+
+#![Eschery London](https://raw.githubusercontent.com/LaurentMazare/tensorflow-ocaml/master/examples/neural-style/samples/london-escher.jpg)
