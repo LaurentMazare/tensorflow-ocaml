@@ -21,7 +21,11 @@ let create () =
     ; variable_initializations = []
     }
 
-let default_session = lazy (create ())
+let maybe_use_default_session =
+  let default_session = lazy (create ()) in
+  function
+  | None -> Lazy.force default_session
+  | Some session -> session
 
 let add_attribute operation_description ~attr_name attr =
   match (attr : Node.attr) with
@@ -143,11 +147,7 @@ let run ?(inputs=[]) ?(outputs=[]) ?(targets=[]) t =
   |> Wrapper.Status.ok_exn
 
 let shape ?session node =
-  let t =
-    match session with
-    | None -> Lazy.force default_session
-    | Some session -> session
-  in
+  let t = maybe_use_default_session session in
   let output = build t node in
   Wrapper.Graph.shape t.graph (Wrapper.Graph.create_output output ~index:0)
   |> Wrapper.Status.ok_exn
@@ -272,11 +272,7 @@ module Output = struct
 end
 
 let run ?inputs ?targets ?session output =
-  let t =
-    match session with
-    | None -> Lazy.force default_session
-    | Some session -> session
-  in
+  let t = maybe_use_default_session session in
   let inputs =
     Option.map inputs ~f:(List.map ~f:(fun (Input.I (n, t)) ->
       Node.P (Ops.Placeholder.to_node n), Tensor.P t))
