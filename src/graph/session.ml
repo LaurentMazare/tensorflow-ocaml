@@ -5,6 +5,8 @@ type t =
   { session : Wrapper.Session.t
   ; graph : Wrapper.Graph.t
   ; nodes : Wrapper.Graph.operation Node.Id.Table.t
+  (* This list is always topologically sorted. *)
+  ; mutable variable_initializations : Wrapper.Graph.operation list
   }
 
 let create () =
@@ -16,6 +18,7 @@ let create () =
     { session
     ; graph
     ; nodes = Node.Id.Table.create ()
+    ; variable_initializations = []
     }
 
 let default_session = lazy (create ())
@@ -79,7 +82,7 @@ let add_attribute operation_description ~attr_name attr =
     Wrapper.Graph.set_attr_tensor_string operation_description ~attr_name tensor_str.values
     |> Wrapper.Status.ok_exn
 
-let rec build t node ~variable_initializations =
+let rec build t node =
   let id = Node.packed_id node in
   match Hashtbl.find t.nodes id with
   | Some op -> op
@@ -92,18 +95,18 @@ let rec build t node ~variable_initializations =
     in
     List.iter (Node.control_inputs u_node) ~f:(fun control_input ->
       Wrapper.Graph.add_control_input operation_description
-        (build t control_input ~variable_initializations));
+        (build t control_input));
     List.iter (Node.inputs u_node) ~f:(function
       | `single input ->
         Wrapper.Graph.add_input
           operation_description
-          (build t input ~variable_initializations)
+          (build t input)
           ~index:(Node.packed_output_idx input |> Option.value ~default:0)
       | `multi inputs ->
         let inputs =
           List.map inputs ~f:(fun input ->
             let index = Node.packed_output_idx input |> Option.value ~default:0 in
-            build t input ~variable_initializations, index)
+            build t input, index)
         in
         Wrapper.Graph.add_inputs operation_description inputs);
     List.iter (Node.attributes u_node) ~f:(fun (attr_name, attr) ->
@@ -115,30 +118,38 @@ let rec build t node ~variable_initializations =
     Hashtbl.set t.nodes ~key:id ~data:operation;
     Option.iter (Var.get_init u_node) ~f:(fun init_node ->
       let assign_node = Ops_generated.assign u_node init_node in
-      let assign_op = build t (P assign_node) ~variable_initializations in
-      variable_initializations := assign_op :: !variable_initializations);
+      let assign_op = build t (P assign_node) in
+      t.variable_initializations <- assign_op :: t.variable_initializations);
     operation
 
 let run ?(inputs=[]) ?(outputs=[]) ?(targets=[]) t =
-  let variable_initializations = ref [] in
   if List.contains_dup (List.map inputs ~f:fst)
   then failwith "Session.run: duplicate entry in [inputs].";
   let inputs =
     List.map inputs ~f:(fun (input, input_tensor) ->
-      let op = build t input ~variable_initializations in
+      let op = build t input in
       Wrapper.Graph.create_output op ~index:0, input_tensor)
   in
-  let outputs = List.map outputs ~f:(build t ~variable_initializations) in
-  let targets =
-    List.map targets ~f:(build t ~variable_initializations) @ outputs
-  in
+  let outputs = List.map outputs ~f:(build t) in
+  let targets = List.map targets ~f:(build t) @ outputs in
   let outputs = List.map outputs ~f:(fun op -> Wrapper.Graph.create_output op ~index:0) in
   (* [variable_initializations] is topologically sorted. *)
-  List.iter (List.rev !variable_initializations) ~f:(fun init_op ->
+  List.iter (List.rev t.variable_initializations) ~f:(fun init_op ->
     Wrapper.Session.run t.session ~inputs ~outputs:[] ~targets:[ init_op ]
     |> Wrapper.Status.ok_exn
     |> fun l -> assert (List.is_empty l));
+  t.variable_initializations <- [];
   Wrapper.Session.run t.session ~inputs ~outputs ~targets
+  |> Wrapper.Status.ok_exn
+
+let shape ?session node =
+  let t =
+    match session with
+    | None -> Lazy.force default_session
+    | Some session -> session
+  in
+  let output = build t node in
+  Wrapper.Graph.shape t.graph (Wrapper.Graph.create_output output ~index:0)
   |> Wrapper.Status.ok_exn
 
 module Input = struct

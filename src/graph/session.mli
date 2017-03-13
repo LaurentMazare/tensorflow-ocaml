@@ -40,6 +40,11 @@ val run
   -> 'a Output.t
   -> 'a
 
+val shape
+  :  ?session:t
+  -> Node.p
+  -> int list
+
 module Vars : sig
   val set_float
     :  ?session:t
