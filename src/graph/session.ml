@@ -203,7 +203,7 @@ module Output = struct
     both (both (both t1 t2) (both t3 t4)) (both t5 t6)
     |> map ~f:(fun (((t1, t2), (t3, t4)), (t5, t6)) -> t1, t2, t3, t4, t5, t6)
 
-  (* CR-someday noury: this could be just one function with modular implicits *)
+  (* TODO-someday noury: this could be just one function with modular implicits *)
   let float (node : [`float] Node.t) : (float, Bigarray.float32_elt) Tensor.t t =
     Compute node
     |> map ~f:(fun (Tensor.P tensor) ->
@@ -232,7 +232,7 @@ module Output = struct
       | Bigarray.Int64 -> (tensor : (Int64.t, Bigarray.int64_elt) Tensor.t)
       | _ -> failwith "PANIC: wrong kind in double")
 
-  (* CR noury: add more output types *)
+  (* TODO noury: add more output types *)
 
   let scalar_gen extract node =
     extract node |> map ~f:(fun t ->
