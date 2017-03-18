@@ -180,7 +180,7 @@ let packed_id (P t) = t.id
 let packed_output_idx (P t) = t.output_idx
 
 let get_attr t str =
-  List.Assoc.find t.attributes str
+  List.Assoc.find ~equal:String.equal t.attributes str
 
 let get_attr_bool t str =
   Option.bind (get_attr t str) (function
