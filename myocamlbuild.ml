@@ -16,7 +16,7 @@ let () =
       dep ["link"; "ocaml"; "link_tensorflowcstubs"]
         ["libtensorflowcstubs.a"];
       flag ["link"; "ocaml"; "use_tensorflowcstubs"]
-        (S[A"-cclib"; A"-ltensorflowcstubs"; A"-cclib"; A"-ltensorflow"]);
+        (S[A"-ccopt"; A"-L."; A"-ccopt"; A"-L../lib"; A"-cclib"; A"-ltensorflowcstubs"; A"-cclib"; A"-ltensorflow"]);
       flag ["link"; "ocaml"; "use_tensorflow"]
         (S[A"-ccopt"; A"-L."; A"-ccopt"; A"-L../lib"; A"-cclib"; A"-ltensorflow"]);
       flag ["link"; "ocaml"; "use_tensorflow_core"]
