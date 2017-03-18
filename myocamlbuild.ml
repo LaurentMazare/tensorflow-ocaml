@@ -15,6 +15,8 @@ let () =
       ocaml_lib "tensorflow_core";
       dep ["link"; "ocaml"; "link_tensorflowcstubs"]
         ["libtensorflowcstubs.a"];
+      dep ["link"; "ocaml"; "use_tensorflowcstubs"]
+        ["libtensorflowcstubs.a"];
       flag ["link"; "ocaml"; "use_tensorflowcstubs"]
         (S[A"-ccopt"; A"-L."; A"-ccopt"; A"-L../lib"; A"-cclib"; A"-ltensorflowcstubs"; A"-cclib"; A"-ltensorflow"]);
       flag ["link"; "ocaml"; "use_tensorflow"]
