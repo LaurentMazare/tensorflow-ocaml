@@ -120,7 +120,7 @@ let sigmoid_gradient ~self ~gradient =
 
 let matmul_gradient ~self ~gradient =
   let get_transpose str =
-    List.Assoc.find (N.attributes self) str
+    List.Assoc.find ~equal:String.equal (N.attributes self) str
     |> Option.value_map
         ~default:false
         ~f:(function
@@ -150,7 +150,7 @@ let matmul_gradient ~self ~gradient =
 
 let batch_matmul_gradient ~self ~gradient =
   let get_adj str =
-    List.Assoc.find (N.attributes self) str
+    List.Assoc.find ~equal:String.equal (N.attributes self) str
     |> Option.value_map
         ~default:false
         ~f:(function

@@ -170,7 +170,7 @@ module Op = struct
         else "'" ^ type_attr
       in
       let type_ =
-        match List.Assoc.find types type_attr with
+        match List.Assoc.find ~equal:String.equal types type_attr with
         | None -> Type.Polymorphic (alpha, `allow_all)
         | Some types ->
           Polymorphic (alpha, `allow_only types)
@@ -374,7 +374,7 @@ let handle_one_op (op : Op.t) out_channel =
     List.fold op.inputs ~init:type_attr ~f:(fun acc (input : Input.t) ->
       match input.type_name with
       | None -> acc
-      | Some type_name when List.Assoc.mem acc type_name -> acc
+      | Some type_name when List.Assoc.mem ~equal:String.equal acc type_name -> acc
       | Some type_name ->
         let name = Input.caml_comp_name input in
         (type_name, sprintf "(Node.output_type %s)" name) :: acc)
