@@ -1,0 +1,6 @@
+(jbuild_version 1)
+
+(library
+ ((name tensorflow_fnn)
+  (public_name tensorflow.fnn)
+  (libraries (bigarray core_kernel tensorflow.core tensorflow))))

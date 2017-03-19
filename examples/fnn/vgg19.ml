@@ -1,5 +1,6 @@
 open Core_kernel.Std
 open Tensorflow
+open Tensorflow_fnn
 
 let img_size = 224
 

@@ -1,4 +1,5 @@
 open Core_kernel.Std
+open Tensorflow
 
 val lstm
   :  size_c:int

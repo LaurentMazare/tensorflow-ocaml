@@ -1,5 +1,6 @@
 open Core_kernel.Std
 open Tensorflow
+open Tensorflow_fnn
 
 let epochs = 100000
 let size_c = 256

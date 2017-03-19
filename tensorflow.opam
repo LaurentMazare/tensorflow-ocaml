@@ -8,7 +8,7 @@ authors:      [ "Laurent Mazare" "Nicolas Oury" ]
 
 version: "dev"
 
-build:   [make "libtensorflowcstubs.a" "tensorflow_core.lib" "tensorflow.lib"]
+build: [["jbuilder" "build" "--only-packages" "npy" "--root" "." "-j" jobs "@install"]]
 install: []
 remove:  []
 
@@ -18,7 +18,7 @@ depends: [
   "ctypes" {>= "0.5"}
   "ctypes-foreign"
   "ocamlfind" {build}
-  "ocamlbuild" {build}
+  "jbuilder" {build}
 ]
 
 depopts: ["gnuplot"]

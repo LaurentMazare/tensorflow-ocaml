@@ -2,6 +2,7 @@
    for a simple description of LSTM networks.
 *)
 open Core_kernel.Std
+open Tensorflow
 
 let lstm_ ~type_ ~size_c ~size_x =
   let create_vars () =
