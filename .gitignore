@@ -10,3 +10,4 @@ scripts/data
 data
 data/train-images-idx3-ubyte
 data/train-labels-idx1-ubyte
+tensorflow.install

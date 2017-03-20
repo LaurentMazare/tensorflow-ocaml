@@ -8,7 +8,7 @@ authors:      [ "Laurent Mazare" "Nicolas Oury" ]
 
 version: "dev"
 
-build: [["jbuilder" "build" "--only-packages" "npy" "--root" "." "-j" jobs "@install"]]
+build: [["jbuilder" "build" "--only-packages" "tensorflow" "--root" "." "-j" jobs "@install"]]
 install: []
 remove:  []
 
