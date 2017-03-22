@@ -1,0 +1,14 @@
+B ../../_build/default/src/wrapper
+FLG -open Tensorflow_core -w -40
+PKG bigarray
+PKG bytes
+PKG ctypes
+PKG ctypes.foreign
+PKG ctypes.foreign.base
+PKG ctypes.foreign.threaded
+PKG ctypes.stubs
+PKG str
+PKG threads
+PKG threads.posix
+PKG unix
+S .

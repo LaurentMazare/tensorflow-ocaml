@@ -1,0 +1,9 @@
+B ../../_build/default/src/stubs
+FLG -w -40
+PKG bigarray
+PKG bytes
+PKG ctypes
+PKG ctypes.stubs
+PKG str
+PKG unix
+S .

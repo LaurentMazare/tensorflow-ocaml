@@ -1,7 +1,7 @@
 open Tensorflow_core
 open Tensorflow
 
-let filename = "mytensors"
+let filename = "./mytensors"
 
 let () =
   let pi = Ops.cf [ 3.; 1.; 4.; 1.; 5.; 9. ] in

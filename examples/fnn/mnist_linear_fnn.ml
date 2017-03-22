@@ -1,5 +1,6 @@
 open Core_kernel.Std
 open Tensorflow
+open Tensorflow_fnn
 
 (* This should reach ~92% accuracy. *)
 let image_dim = Mnist_helper.image_dim

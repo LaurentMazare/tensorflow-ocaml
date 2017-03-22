@@ -12,7 +12,7 @@ Install the TensorFlow library by following these [instructions](https://github.
 
 Compile [neural_style.ml](https://github.com/LaurentMazare/tensorflow-ocaml/tree/master/examples/neural-style/neural_style.ml) and the following command:
 ```bash
-ocamlbuild neural_style.native -pkg tensorflow -pkg cmdliner -pkg npy -pkg camlimages.jpeg -pkg camlimages.png -use-ocamlfind
+ocamlbuild neural_style.native -pkg tensorflow -pkg cmdliner -pkg npy -pkg camlimages.jpeg -pkg camlimages.png -use-ocamlfind -tag thread
 ```
 
 Download the [pre-trained weights](https://github.com/LaurentMazare/tensorflow-ocaml/releases/download/0.0.9/vgg19.npz) for the VGG-19 network.

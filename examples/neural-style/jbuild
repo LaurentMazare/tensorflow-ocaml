@@ -1,0 +1,5 @@
+(jbuild_version 1)
+
+(executables
+ ((names (neural_style))
+  (libraries (camlimages.jpeg camlimages.png cmdliner npy tensorflow))))

@@ -1,5 +1,6 @@
 open Core_kernel.Std
 open Tensorflow
+open Tensorflow_fnn
 
 let label_count = Mnist_helper.label_count
 let image_dim = Mnist_helper.image_dim
