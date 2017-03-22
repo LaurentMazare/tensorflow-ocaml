@@ -36,7 +36,7 @@ The releases are available in URLs of the form: `https://storage.googleapis.com/
 
 Download a [very simple example](https://github.com/LaurentMazare/tensorflow-ocaml/tree/master/examples/basics/forty_two.ml) and compile it with the following command:
 ```bash
-ocamlbuild forty_two.native -pkg tensorflow
+ocamlbuild forty_two.native -pkg tensorflow -tag thread
 ```
 
 Then run it via `./forty_two.native`. You should now be all set up, enjoy!
@@ -49,7 +49,7 @@ Then run it via `./forty_two.native`. You should now be all set up, enjoy!
 ```
 You should adjust your LIBRARY_PATH environment variable to include the directory in which you have added `libtensorflow.so` (and use this exact name). E.g. run:
 ```bash
-LIBRARY_PATH=/path/to/lib:$LIBRARY_PATH ocamlbuild forty_two.native -pkg tensorflow
+LIBRARY_PATH=/path/to/lib:$LIBRARY_PATH ocamlbuild forty_two.native -pkg tensorflow -tag thread
 ```
 - When running forty_two.native, I get the following error:
 ```bash

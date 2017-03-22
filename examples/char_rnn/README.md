@@ -14,7 +14,7 @@ A typical example would be the
 
 Compiling the example is done via the following command line:
 ```bash
-ocamlbuild examples/char_rnn/char_rnn.native
+jbuilder build examples/char_rnn/char_rnn.exe
 ```
 
 Training can be performed as follows:
