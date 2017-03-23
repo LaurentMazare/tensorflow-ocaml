@@ -1,4 +1,5 @@
 B ../../_build/default/examples/neural-style
+B ../../_build/default/src/fnn
 B ../../_build/default/src/graph
 B ../../_build/default/src/wrapper
 FLG -w -40
