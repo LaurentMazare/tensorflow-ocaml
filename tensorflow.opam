@@ -14,7 +14,8 @@ remove:  []
 
 depends: [
   "cmdliner"
-  "core_kernel"
+  "base"
+  "stdio"
   "ctypes" {>= "0.5"}
   "ctypes-foreign"
   "ocamlfind" {build}

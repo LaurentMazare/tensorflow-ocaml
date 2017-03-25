@@ -1,4 +1,4 @@
-open Core_kernel.Std
+open Base
 
 let init_table = Node.Weak_table.create ()
 
@@ -55,7 +55,7 @@ let uniformd = uniform ~type_:Double
 let get_init p = Node.Weak_table.find init_table p
 
 let get_all_vars node =
-  let processed_nodes = Node.Id.Hash_set.create () in
+  let processed_nodes = Hash_set.create (module Node.Id) () in
   (* Using references here make the following code quite consise. *)
   let all_vars = ref [] in
   let rec vars (Node.P node) =

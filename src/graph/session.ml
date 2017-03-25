@@ -1,10 +1,10 @@
-open Core_kernel.Std
+open Base
 open Tensorflow_core
 
 type t =
   { session : Wrapper.Session.t
   ; graph : Wrapper.Graph.t
-  ; nodes : Wrapper.Graph.operation Node.Id.Table.t
+  ; nodes : (Node.Id.t, Wrapper.Graph.operation) Hashtbl.t
   (* This list is always topologically sorted. *)
   ; mutable variable_initializations : Wrapper.Graph.operation list
   }
@@ -13,11 +13,11 @@ let create () =
   let graph = Wrapper.Graph.create () in
   match Wrapper.Session.create graph with
   | Error status ->
-    failwithf "Unable to generate session: %s" (Wrapper.Status.message status) ()
+    Printf.failwithf "Unable to generate session: %s" (Wrapper.Status.message status) ()
   | Ok session ->
     { session
     ; graph
-    ; nodes = Node.Id.Table.create ()
+    ; nodes = Hashtbl.create (module Node.Id) ()
     ; variable_initializations = []
     }
 

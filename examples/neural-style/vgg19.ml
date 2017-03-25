@@ -1,4 +1,4 @@
-open Core_kernel.Std
+open Base
 open Tensorflow_core
 open Tensorflow
 open Tensorflow_fnn
@@ -10,7 +10,7 @@ let vgg19 () =
     List.init iter ~f:Fn.id
     |> List.fold ~init:x ~f:(fun acc idx ->
       Fnn.conv2d () acc
-        ~name:(sprintf "conv%d_%d" block_idx (idx+1))
+        ~name:(Printf.sprintf "conv%d_%d" block_idx (idx+1))
         ~w_init:(`normal 0.1) ~filter:(3, 3) ~strides:(1, 1) ~padding:`same ~out_channels
       |> Fnn.relu)
     |> Fnn.max_pool ~filter:(2, 2) ~strides:(2, 2) ~padding:`same
@@ -71,12 +71,12 @@ let load_image ~filename =
 let () =
   let input_tensor = load_image ~filename:"input.jpg" in
   let input_id, model = vgg19 () in
-  Fnn.Model.load model ~filename:(Sys.getcwd () ^ "/vgg19.cpkt");
+  Fnn.Model.load model ~filename:(Caml.Sys.getcwd () ^ "/vgg19.cpkt");
   let results = Fnn.Model.predict model [ input_id, input_tensor ] in
   let pr, category =
     List.init 1000 ~f:(fun i ->
       Tensor.get results [| 0; i |], i+1)
     |> List.reduce_exn ~f:Pervasives.max
   in
-  printf "%d: %.2f%%\n" category (100. *. pr)
+  Format.printf "%d: %.2f%%\n" category (100. *. pr)
 

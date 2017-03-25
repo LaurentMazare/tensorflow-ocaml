@@ -2,4 +2,4 @@
 
 (executables
  ((names (gen))
-  (libraries (core_kernel tensorflow))))
+  (libraries (base tensorflow))))

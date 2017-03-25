@@ -1,4 +1,4 @@
-open Core_kernel.Std
+open Base
 open Tensorflow
 open Tensorflow_fnn
 
@@ -9,7 +9,7 @@ let batch_size = 128
 
 let all_vars_with_names node =
   Var.get_all_vars node
-  |> List.mapi ~f:(fun i var -> sprintf "V%d" i, var)
+  |> List.mapi ~f:(fun i var -> Printf.sprintf "V%d" i, var)
 
 let train filename learning_rate =
   let dataset = Text_helper.create filename Float32 in
@@ -62,7 +62,7 @@ let train filename learning_rate =
       Text_helper.batch_sequence dataset ~seq_len ~batch_size ~pos:90_000_000 ~len:5_000_000
     in
     let valid_bpc = run valid_sequence ~train:false in
-    printf "\nEpoch: %d IS: %.4fbpc   OoS: %.4fbpc\n%!" epoch train_bpc valid_bpc;
+    Format.printf "\nEpoch: %d IS: %.4fbpc   OoS: %.4fbpc\n%!" epoch train_bpc valid_bpc;
     Session.run ~targets:[ Node.P save_node ] Session.Output.empty;
   done
 

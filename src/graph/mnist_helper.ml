@@ -1,6 +1,7 @@
 (* The readers implemented here are very inefficient as they read bytes one at a time. *)
-open Core_kernel.Std
+open Base
 open Tensorflow_core
+module In_channel = Stdio.In_channel
 
 let image_dim = 28 * 28
 let label_count = 10
@@ -28,7 +29,7 @@ let read_images filename =
   let in_channel = In_channel.create filename in
   let magic_number = read_int32_be in_channel in
   if magic_number <> 2051
-  then failwithf "Incorrect magic number in %s: %d" filename magic_number ();
+  then Printf.failwithf "Incorrect magic number in %s: %d" filename magic_number ();
   let samples = read_int32_be in_channel in
   let rows = read_int32_be in_channel in
   let columns = read_int32_be in_channel in
@@ -38,7 +39,7 @@ let read_images filename =
   for sample = 0 to samples - 1 do
     for idx = 0 to rows * columns - 1 do
       let v = Option.value_exn (In_channel.input_byte in_channel) in
-      Bigarray.Array2.set data sample idx (float v /. 255.);
+      Bigarray.Array2.set data sample idx (Float.of_int v /. 255.);
     done;
   done;
   In_channel.close in_channel;
@@ -48,7 +49,7 @@ let read_labels filename =
   let in_channel = In_channel.create filename in
   let magic_number = read_int32_be in_channel in
   if magic_number <> 2049
-  then failwithf "Incorrect magic number in %s: %d" filename magic_number ();
+  then Printf.failwithf "Incorrect magic number in %s: %d" filename magic_number ();
   let samples = read_int32_be in_channel in
   let data = Bigarray.Array1.create Bigarray.int32 Bigarray.c_layout samples in
   for sample = 0 to samples - 1 do
@@ -109,7 +110,7 @@ let accuracy ys ys' =
     for l = 1 to label_count - 1 do
       let v = Bigarray.Array2.get ys n !best_idx in
       let v' = Bigarray.Array2.get ys n l in
-      if v' > v then best_idx := l
+      if Float.(>) v' v then best_idx := l
     done;
     !best_idx
   in

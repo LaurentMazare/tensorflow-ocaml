@@ -3,7 +3,7 @@
 (library
  ((name tensorflow)
   (public_name tensorflow)
-  (libraries (bigarray core_kernel tensorflow.core))))
+  (libraries (base bigarray tensorflow.core stdio))))
 
 (rule
  ((targets (ops_generated.ml ops_generated.mli))

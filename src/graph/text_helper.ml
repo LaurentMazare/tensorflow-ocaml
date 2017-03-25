@@ -1,9 +1,9 @@
-open Core_kernel.Std
+open Base
 open Tensorflow_core
 
 type 'a t =
   { content : (int, Bigarray.int8_unsigned_elt, Bigarray.c_layout) Bigarray.Array1.t
-  ; map : int Int.Map.t
+  ; map : int Int_map.t
   ; kind : (float, 'a) Bigarray.kind
   ; dim : int
   }
@@ -11,14 +11,14 @@ type 'a t =
 let create filename kind =
   let file_descr = Unix.openfile filename [ O_RDONLY ] 0 in
   let content = Bigarray.Array1.map_file file_descr Int8_unsigned C_layout false (-1) in
-  let table = Int.Table.create () in
+  let table = Hashtbl.Poly.create () in
   for i = 0 to Bigarray.Array1.dim content - 1 do
     let v = content.{i} in
     if not (Hashtbl.mem table v) then
       Hashtbl.add_exn table ~key:v ~data:(Hashtbl.length table)
   done;
   Unix.close file_descr;
-  let map = Hashtbl.to_alist table |> Int.Map.of_alist_exn in
+  let map = Hashtbl.to_alist table |> Map.of_alist_exn (module Int) in
   let dim = Map.length map in
   { content
   ; map

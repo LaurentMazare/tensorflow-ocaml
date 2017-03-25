@@ -1,4 +1,4 @@
-open Core_kernel.Std
+open Base
 open Tensorflow_core
 open Tensorflow
 
@@ -31,7 +31,7 @@ let () =
     | Shape_mismatch (dims, dims', str) ->
       let dims = List.map dims ~f:Int.to_string |> String.concat ~sep:", " in
       let dims' = List.map dims' ~f:Int.to_string |> String.concat ~sep:", " in
-      Some (sprintf "Shape mismatch %s: %s <> %s" str dims dims')
+      Some (Printf.sprintf "Shape mismatch %s: %s <> %s" str dims dims')
     | _ -> None)
 
 let shape_mismatch shape1 shape2 ~op_name =
@@ -163,7 +163,7 @@ let square     t = unary Square     t
 let neg        t = unary Neg        t
 
 let binary binary t1 t2 =
-  if t1.shape <> t2.shape
+  if Pervasives.(<>) t1.shape t2.shape
   then shape_mismatch t1.shape t2.shape ~op_name:(Binary.op_name binary);
   { shape = shape t1
   ; op = Binary (binary, t1, t2)
@@ -315,13 +315,13 @@ let create_var dims ~init ~type_ =
   | `truncated_normal stddev -> Var.truncated_normal dims ~stddev ~type_
 
 let build_node t ~type_ =
-  let inputs = Id.Table.create () in
-  let explicit_vars = Id.Table.create () in
-  let dense_vars = Id.Table.create () in
-  let conv_vars = Id.Table.create () in
-  let splits = Id.Table.create () in
-  let var_names = Node.Id.Table.create () in
-  let all_nodes = Id.Table.create () in
+  let inputs = Hashtbl.create (module Id) () in
+  let explicit_vars = Hashtbl.create (module Id) () in
+  let dense_vars = Hashtbl.create (module Id) () in
+  let conv_vars = Hashtbl.create (module Id) () in
+  let splits = Hashtbl.create (module Id) () in
+  let var_names = Hashtbl.create (module Node.Id) () in
+  let all_nodes = Hashtbl.create (module Id) () in
   let rec walk (P t) =
     let node =
       match t.op with
@@ -470,12 +470,12 @@ module Model = struct
     { session : Session.t
     ; node : 'b Node.t
     ; placeholder : 'b Ops.Placeholder.t
-    ; inputs : 'b Ops.Placeholder.t Id.Table.t
-    ; save_nodes : [ `unit ] Node.t String.Table.t
-    ; load_and_assign_nodes : Node.p list String.Table.t
-    ; var_names : string Node.Id.Table.t
-    ; explicit_vars : 'b Node.t Id.Table.t
-    ; all_nodes : 'b Node.t Id.Table.t
+    ; inputs : (Id.t, 'b Ops.Placeholder.t) Hashtbl.t
+    ; save_nodes : (string, [ `unit ] Node.t) Hashtbl.t
+    ; load_and_assign_nodes : (string, Node.p list) Hashtbl.t
+    ; var_names : (Node.Id.t, string) Hashtbl.t
+    ; explicit_vars : (Id.t, 'b Node.t) Hashtbl.t
+    ; all_nodes : (Id.t, 'b Node.t) Hashtbl.t
     ; eq : ('c * 'b) Tensor.eq
     }
 
@@ -488,8 +488,8 @@ module Model = struct
       ; node
       ; placeholder
       ; inputs
-      ; save_nodes = String.Table.create ()
-      ; load_and_assign_nodes = String.Table.create ()
+      ; save_nodes = Hashtbl.create (module String) ()
+      ; load_and_assign_nodes = Hashtbl.create (module String) ()
       ; var_names
       ; explicit_vars
       ; all_nodes
@@ -606,7 +606,7 @@ module Model = struct
           ~session:t.session
           (scalar_f_or_d loss)
       in
-      printf "Epoch: %6d/%-6d   Loss: %.2f\n%!" epoch epochs err
+      Format.printf "Epoch: %6d/%-6d   Loss: %.2f\n%!" epoch epochs err
     done
   in
   match Node.output_type t.node, t.eq with

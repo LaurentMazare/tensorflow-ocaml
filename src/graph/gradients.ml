@@ -1,4 +1,4 @@
-open Core_kernel.Std
+open Base
 
 exception No_derivative_for_op of Node.Op_name.t
 
@@ -8,7 +8,7 @@ exception No_derivative_for_op of Node.Op_name.t
    that contains only float/double nodes.
 *)
 let uses_per_node node with_respect_to =
-  let uses_per_node = Node.Id.Table.create () in
+  let uses_per_node = Hashtbl.create (module Node.Id) () in
   let rec is_useful node =
     let node_id = Node.packed_id node in
     let current_uses =
@@ -51,18 +51,18 @@ let aggregate_contributions = function
 let aggregate_contributions_multi gradients =
   List.map gradients ~f:(fun (output_idx, gradient) ->
     Option.value_exn output_idx, gradient)
-  |> Int.Map.of_alist_multi
+  |> Map.of_alist_multi (module Int)
   |> Map.map ~f:aggregate_contributions
 
 (* Compute the gradients of [node] with respect to [arg] using backpropagation.
    This only works when [node] is a scalar. *)
 let gradient node ~with_respect_to =
   let with_respect_to =
-    List.map with_respect_to ~f:Node.packed_id |> Node.Id.Set.of_list
+    List.map with_respect_to ~f:Node.packed_id |> Set.of_list (module Node.Id)
   in
   let uses_per_node = uses_per_node (P node) with_respect_to in
-  let contributions = Node.Id.Table.create () in
-  let output_gradients = Node.Id.Table.create () in
+  let contributions = Hashtbl.create (module Node.Id) () in
+  let output_gradients = Hashtbl.create (module Node.Id) () in
   let rec add_contribution node ~gradient =
     let node_id = Node.packed_id node in
     match Hashtbl.find uses_per_node node_id with

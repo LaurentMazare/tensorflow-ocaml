@@ -1,4 +1,4 @@
-open Core_kernel.Std
+open Base
 open Tensorflow
 
 val lstm

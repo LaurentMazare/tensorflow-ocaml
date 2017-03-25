@@ -1,22 +1,22 @@
-open Core_kernel.Std
+open Base
 open Tensorflow_core
 open Tensorflow
 module O = Ops
 
 let assert_equal_int value ~expected_value =
   if value <> expected_value
-  then failwithf "Got %d, expected %d" value expected_value ()
+  then Printf.failwithf "Got %d, expected %d" value expected_value ()
 
 let assert_equal value ~expected_value ~tol =
-  if Float.abs (value -. expected_value) > tol
-  then failwithf "Got %f, expected %f" value expected_value ()
+  if Float.(abs (value -. expected_value) > tol)
+  then Printf.failwithf "Got %f, expected %f" value expected_value ()
 
 let assert_scalar tensor ~expected_value ~tol =
   let index =
     match Tensor.dims tensor with
     | [||] -> [||]
     | [| 1 |] -> [| 0 |]
-    | [| n |] -> failwithf "Single dimension tensor with %d elements" n ()
+    | [| n |] -> Printf.failwithf "Single dimension tensor with %d elements" n ()
     | _ -> failwith "Multi-dimensional tensor."
   in
   assert_equal (Tensor.get tensor index) ~expected_value ~tol
@@ -155,7 +155,7 @@ let test_cond true_false =
     match Tensor.dims tensor with
     | [||] -> [||]
     | [| 1 |] -> [| 0 |]
-    | [| n |] -> failwithf "Single dimension tensor with %d elements" n ()
+    | [| n |] -> Printf.failwithf "Single dimension tensor with %d elements" n ()
     | _ -> failwith "Multi-dimensional tensor."
   in
   let value = Tensor.get tensor index |> Int32.to_int_exn in

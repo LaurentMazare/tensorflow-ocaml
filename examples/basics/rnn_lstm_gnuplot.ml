@@ -1,7 +1,7 @@
 (* See http://colah.github.io/posts/2015-08-Understanding-LSTMs
    for a simple description of LSTM networks.
 *)
-open Core_kernel.Std
+open Base
 open Tensorflow
 
 let train_size = 1000

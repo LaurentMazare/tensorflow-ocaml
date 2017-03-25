@@ -1,4 +1,4 @@
-open Core_kernel.Std
+open Base
 open Node
 
 module Placeholder = struct
@@ -12,7 +12,7 @@ let get_shape ?shape values =
     let vs = List.fold shape ~init:1 ~f:( * ) in
     let len = List.length values in
     if vs <> len
-    then raise (Invalid_argument (sprintf "Input length mismatch %d <> %d" vs len));
+    then raise (Invalid_argument (Printf.sprintf "Input length mismatch %d <> %d" vs len));
     shape
   | None -> [ List.length values ]
 

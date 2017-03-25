@@ -1,4 +1,4 @@
-open Core_kernel.Std
+open Base
 open Tensorflow
 exception Not_supported of string
 
@@ -445,7 +445,7 @@ let gen_ml ops =
   let out_channel = Out_channel.create (sprintf "%s.ml" output_file) in
   let p s = p out_channel s in
   p "%s" automatically_generated_file;
-  p "open Core_kernel.Std";
+  p "open Base";
   p "open Node";
   p "";
   p "module Op_names = struct";

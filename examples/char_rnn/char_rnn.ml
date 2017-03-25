@@ -3,7 +3,7 @@
 
    It has been heavily inspired by https://github.com/karpathy/char-rnn
 *)
-open Core_kernel.Std
+open Base
 open Tensorflow_core
 open Tensorflow
 open Tensorflow_fnn
@@ -74,7 +74,7 @@ let rnn ~size_c ~dim =
 
 let all_vars_with_names t =
   Var.get_all_vars t.sample_output
-  |> List.mapi ~f:(fun i var -> sprintf "V%d" i, var)
+  |> List.mapi ~f:(fun i var -> Printf.sprintf "V%d" i, var)
 
 let fit_and_evaluate ~dataset ~learning_rate ~checkpoint =
   let t = rnn ~size_c ~dim:(Text_helper.dim dataset) in
@@ -95,7 +95,7 @@ let fit_and_evaluate ~dataset ~learning_rate ~checkpoint =
         acc_err +. sum_err, acc_cnt + 1)
     in
     let bpc = sum_err /. (float batch_count *. float seq_len *. float batch_size *. log 2.) in
-    printf "Epoch: %d   %.4fbpc\n%!" epoch bpc;
+    Format.printf "Epoch: %d   %.4fbpc\n%!" epoch bpc;
     Session.run ~targets:[ Node.P save_node ] Session.Output.empty;
   done
 
@@ -135,7 +135,7 @@ let sample filename checkpoint gen_size temperature seed =
         then
           match Map.find index_by_char (String.get seed i |> Char.to_int) with
           | None ->
-            failwithf
+            Printf.failwithf
               "Cannot find seed character '%c' in the train file" (String.get seed i) ()
           | Some y -> y
         else begin
@@ -147,7 +147,7 @@ let sample filename checkpoint gen_size temperature seed =
           let acc = ref 0. in
           let y = ref 0 in
           for i = 0 to dim - 1 do
-            if !acc <= p then y := i;
+            if Float.(<=) !acc p then y := i;
             acc := !acc +. dist.(i)
           done;
           !y
@@ -162,7 +162,7 @@ let sample filename checkpoint gen_size temperature seed =
     inv_map.(data) <- Char.of_int_exn key);
   List.rev_map ys ~f:(fun i -> inv_map.(i))
   |> String.of_char_list
-  |> printf "%s\n\n%!"
+  |> Format.printf "%s\n\n%!"
 
 let () =
   Random.init 42;

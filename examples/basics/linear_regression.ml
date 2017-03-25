@@ -1,4 +1,4 @@
-open Core_kernel.Std
+open Base
 
 let () =
   let samples = 100 in

@@ -1,4 +1,4 @@
-open Core_kernel.Std
+open Base
 
 type 'a optimizer
   =  learning_rate:[ `float ] Node.t
@@ -11,7 +11,7 @@ type 'a optimizer
    Using this is an overapproximation as we would only need the variables that
    can be reached from the node via a 'derivable' path. *)
 let get_all_vars node =
-  let processed_nodes = Node.Id.Hash_set.create () in
+  let processed_nodes = Hash_set.create (module Node.Id) () in
   (* Using references here make the following code quite consise. *)
   let varsf = ref ([] : [ `float ] Node.t list) in
   let varsd = ref ([] : [ `double ] Node.t list) in
@@ -34,7 +34,7 @@ let get_all_vars node =
 let check_var (type a) (node : a Node.t) =
   if Node.Op_name.(<>) (Node.op_name node) Ops.Op_names.variable
   then
-    failwithf "Node %s is not a variable." (Node.Name.to_string (Node.name node)) ()
+    Printf.failwithf "Node %s is not a variable." (Node.Name.to_string (Node.name node)) ()
 
 let get_shape var =
   Option.value_exn (Node.get_shape var)

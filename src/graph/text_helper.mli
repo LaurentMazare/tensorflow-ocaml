@@ -1,4 +1,4 @@
-open Core_kernel.Std
+open Base
 open Tensorflow_core
 
 type 'a t
@@ -15,8 +15,8 @@ val batch_sequence
   -> seq_len:int
   -> batch_size:int
   -> ((float, 'a) Tensor.t * (float, 'a) Tensor.t) Sequence.t
-  
-val map : _ t -> int Int.Map.t
+
+val map : _ t -> int Int_map.t
 
 val length : _ t -> int
 

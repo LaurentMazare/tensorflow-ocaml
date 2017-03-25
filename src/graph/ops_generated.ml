@@ -1,5 +1,5 @@
 (* THIS FILE HAS BEEN AUTOMATICALLY GENERATED, DO NOT EDIT BY HAND! *)
-open Core_kernel.Std
+open Base
 open Node
 
 module Op_names = struct

@@ -1,21 +1,23 @@
-open Core_kernel.Std
+open Base
 open Tensorflow_core
 
-module Op_name : Identifiable = String_id
+module Op_name : Identifiable.S = String
 
-module Name : Identifiable = String_id
+module Name : Identifiable.S = String
 
 module Id : sig
-  include Identifiable
+  include Identifiable.S
   val create : unit -> t
 end = struct
   include Int
+  module Map = Map.M(Int)
   let create =
     let counter = ref 0 in
     fun () ->
       incr counter;
       !counter
 end
+module Id_table = Hashtbl.M(Id)
 
 module Type = struct
   (* We rely on all variants to be of the form | Variant : [ `variant ] t. *)
@@ -159,7 +161,7 @@ let control_inputs t = t.control_inputs
 let attributes t = t.attributes
 let output_idx t = t.output_idx
 let unique_name t =
-  sprintf "%s-%s" (Name.to_string t.name) (Id.to_string t.id)
+  Printf.sprintf "%s-%s" (Name.to_string t.name) (Id.to_string t.id)
 
 let packed_name (P t) = t.name
 let packed_inputs (P t) = t.inputs
@@ -231,16 +233,16 @@ let extract_exn p type_ =
 (* TODO noury: actually make weak *)
 module Weak_table = struct
   type 'a node = 'a t
-  type t = p Id.Table.t
+  type t = p Id_table.t
 
   let create () =
-    Id.Table.create ()
+    Hashtbl.create (module Id) ()
 
   let set t ~key ~data =
-    Id.Table.set t ~key:(id key) ~data:(P data)
+    Hashtbl.set t ~key:(id key) ~data:(P data)
 
   let find t key =
-    match Id.Table.find t (id key) with
+    match Hashtbl.find t (id key) with
     | None -> None
     | Some packed_node ->
       extract packed_node (output_type key)

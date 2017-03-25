@@ -1,4 +1,4 @@
-open Core_kernel.Std
+open Base
 open Tensorflow_core
 open Tensorflow
 
@@ -86,11 +86,11 @@ let max_pool node =
   Ops.maxPool node ~ksize:[ 1; 2; 2; 1 ] ~strides:[ 1; 2; 2; 1 ] ~padding:"SAME"
 
 let style_grams_and_content_nodes input ~img_h ~img_w ~npz_filename =
-  let var_by_name = String.Table.create () in
+  let var_by_name = Hashtbl.create (module String) () in
   let block iter ~block_idx ~in_channels ~out_channels (node, acc) =
     List.init iter ~f:Fn.id
     |> List.fold ~init:(node, []) ~f:(fun (node, acc_relus) idx ->
-      let name = sprintf "conv%d_%d" block_idx (idx+1) in
+      let name = Printf.sprintf "conv%d_%d" block_idx (idx+1) in
       let in_channels = if idx = 0 then in_channels else out_channels in
       let conv2d, w, b = conv2d node ~in_channels ~out_channels in
       Hashtbl.set var_by_name ~key:(name ^ "W") ~data:w;
@@ -166,9 +166,9 @@ let run epochs learning_rate content_weight style_weight tv_weight npz_filename 
     |> Option.value_map ~f:snd ~default:"jpg"
   in
   let input_tensor, img_w, img_h = Image.load input_filename in
-  printf "Computing target features...\n%!";
+  Format.printf "Computing target features...\n%!";
   let target_grams = compute_grams ~filename:style_filename ~npz_filename in
-  printf "Done computing target features.\n%!";
+  Format.printf "Done computing target features.\n%!";
   let input_var = create_and_set_var input_tensor in
   let style_grams, content_nodes =
     style_grams_and_content_nodes input_var ~img_h ~img_w ~npz_filename
@@ -211,9 +211,9 @@ let run epochs learning_rate content_weight style_weight tv_weight npz_filename 
         ~targets:gd
         Session.Output.(both (float input_var) (scalar_float loss))
     in
-    printf "epoch: %d   loss: %g\n%!" epoch loss;
+    Format.printf "epoch: %d   loss: %g\n%!" epoch loss;
     if epoch mod 100 = 0
-    then Image.save output_tensor (sprintf "out_%d.%s" epoch suffix)
+    then Image.save output_tensor (Printf.sprintf "out_%d.%s" epoch suffix)
   done
 
 let () =

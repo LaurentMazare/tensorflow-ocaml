@@ -6,7 +6,7 @@
 
    GRUs only have one hidden state that mixes long term and short term memory.
 *)
-open Core_kernel.Std
+open Base
 open Tensorflow
 
 let train_size = 1000

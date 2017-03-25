@@ -1,11 +1,11 @@
-open Core_kernel.Std
+open Base
 open Tensorflow_core
 
-module Op_name : Identifiable
+module Op_name : Identifiable.S
 
-module Name : Identifiable
+module Name : Identifiable.S
 
-module Id : Identifiable
+module Id : Identifiable.S
 
 module Type : sig
   type _ t =
