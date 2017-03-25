@@ -3,7 +3,7 @@ open Tensorflow_core
 
 type 'a t =
   { content : (int, Bigarray.int8_unsigned_elt, Bigarray.c_layout) Bigarray.Array1.t
-  ; map : int Int_map.t
+  ; map : int Map.M(Int).t
   ; kind : (float, 'a) Bigarray.kind
   ; dim : int
   }

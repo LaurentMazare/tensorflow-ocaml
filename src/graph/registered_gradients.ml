@@ -26,7 +26,7 @@ let table_multi = Hashtbl.create (module Node.Op_name) ()
 type multi =
   { g : 'a .
           (  self:([< `float | `double] as 'a) Node.t
-          -> gradients:'a Node.t Int_map.t
+          -> gradients:'a Node.t Map.M(Int).t
           -> Node.p option list)
   }
 
