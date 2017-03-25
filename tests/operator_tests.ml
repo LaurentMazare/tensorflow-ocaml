@@ -38,8 +38,8 @@ let test_scalar () =
     ; 0.,   O.(f 12. * f 3.), 36.
     ; 0.,   O.(f 7. / (neg (f 2.))), -3.5
     ; 0.,   O.(pow (f 2.) (f 10.) - square (f 10.)), 924.
-    ; 1e-7, O.(sin (f 1.) + cos (f 2.) - tanh (f 3.)), sin 1. +. cos 2. -. tanh 3.
-    ; 0.,   O.(reduce_mean (pow (cf (List.init 100 ~f:float)) (f 3.))), 245025.
+    ; 1e-7, O.(sin (f 1.) + cos (f 2.) - tanh (f 3.)), Float.sin 1. +. Float.cos 2. -. Float.tanh 3.
+    ; 0.,   O.(reduce_mean (pow (cf (List.init 100 ~f:Float.of_int)) (f 3.))), 245025.
     ; 0.,   O.(reduce_sum (range (const_int ~shape:[] ~type_:Int32 [ 10 ])
               |> cast ~type_:Float)), 45.
     ; 0.,   O.(maximum (f 2.) (f 3.) - minimum (f 5.) (f (-5.))), 8.
