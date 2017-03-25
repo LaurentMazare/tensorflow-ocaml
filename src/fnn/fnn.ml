@@ -163,7 +163,7 @@ let square     t = unary Square     t
 let neg        t = unary Neg        t
 
 let binary binary t1 t2 =
-  if Pervasives.(<>) t1.shape t2.shape
+  if Caml.(<>) t1.shape t2.shape
   then shape_mismatch t1.shape t2.shape ~op_name:(Binary.op_name binary);
   { shape = shape t1
   ; op = Binary (binary, t1, t2)

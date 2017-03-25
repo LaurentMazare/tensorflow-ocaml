@@ -39,7 +39,7 @@ let read_images filename =
   for sample = 0 to samples - 1 do
     for idx = 0 to rows * columns - 1 do
       let v = Option.value_exn (In_channel.input_byte in_channel) in
-      Bigarray.Array2.set data sample idx (Float.of_int v /. 255.);
+      Bigarray.Array2.set data sample idx Float.(of_int v / 255.);
     done;
   done;
   In_channel.close in_channel;
@@ -95,7 +95,7 @@ let read_files
 
 let train_batch { train_images; train_labels; _ } ~batch_size ~batch_idx =
   let train_size = (Tensor.dims train_images).(0) in
-  let start_batch = (batch_size * batch_idx) mod (train_size - batch_size) in
+  let start_batch = Int.(%) (batch_size * batch_idx) (train_size - batch_size) in
   let batch_images = Tensor.sub_left train_images start_batch batch_size in
   let batch_labels = Tensor.sub_left train_labels start_batch batch_size in
   batch_images, batch_labels
@@ -117,6 +117,6 @@ let accuracy ys ys' =
   for n = 0 to nsamples - 1 do
     let idx = find_best_idx ys n in
     let idx' = find_best_idx ys' n in
-    res := !res +. if idx = idx' then 1. else 0.
+    res := Float.(+) !res (if idx = idx' then 1. else 0.)
   done;
-  !res /. float nsamples
+  Float.(!res / of_int nsamples)

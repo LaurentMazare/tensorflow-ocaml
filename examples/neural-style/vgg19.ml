@@ -76,7 +76,7 @@ let () =
   let pr, category =
     List.init 1000 ~f:(fun i ->
       Tensor.get results [| 0; i |], i+1)
-    |> List.reduce_exn ~f:Pervasives.max
+    |> List.reduce_exn ~f:Caml.max
   in
   Format.printf "%d: %.2f%%\n" category (100. *. pr)
 
