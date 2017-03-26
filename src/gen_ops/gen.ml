@@ -1,11 +1,12 @@
 open Base
+open Stdio
 open Tensorflow
 exception Not_supported of string
 
 let ops_file = "src/gen_ops/ops.pb"
 let output_file = "src/graph/ops_generated"
 let do_not_generate_these_ops =
-  String.Set.of_list
+  Set.of_list (module String)
     [ "Const"
     ]
 
@@ -22,8 +23,8 @@ module Type = struct
     | Polymorphic (alpha, `allow_only types) ->
       List.map types ~f:types_to_string
       |> String.concat ~sep:" | "
-      |> fun types -> sprintf "([< %s ] as %s)" types alpha
-    | Fixed type_ -> sprintf "[ %s ]" (types_to_string type_)
+      |> fun types -> Printf.sprintf "([< %s ] as %s)" types alpha
+    | Fixed type_ -> Printf.sprintf "[ %s ]" (types_to_string type_)
 end
 
 module Input = struct
@@ -45,8 +46,8 @@ module Input = struct
 
   let caml_comp_name t =
     let name = caml_name t in
-    if t.number_attr = None then name
-    else sprintf "(List.hd_exn %s)" name
+    if Option.equal String.equal t.number_attr None then name
+    else Printf.sprintf "(List.hd_exn %s)" name
 end
 
 module Attribute = struct
@@ -127,16 +128,16 @@ module Attribute = struct
       let caml_name =
         match t.match_input_length with
         | None -> caml_name
-        | Some input -> sprintf "(List.length %s)" (Input.caml_name input)
+        | Some input -> Printf.sprintf "(List.length %s)" (Input.caml_name input)
       in
-      sprintf "(\"%s\", %s) :: %s"
+      Printf.sprintf "(\"%s\", %s) :: %s"
         t.name
         (constr caml_name t.attr_type)
         attribute_var
     in
-    if t.has_default_value && t.match_input_length = None
+    if t.has_default_value && Option.is_none t.match_input_length
     then
-      sprintf "match %s with | None -> %s | Some %s -> %s"
+      Printf.sprintf "match %s with | None -> %s | Some %s -> %s"
         caml_name
         attribute_var
         caml_name
@@ -165,7 +166,7 @@ module Op = struct
     | Some type_attr ->
       let alpha =
         let type_attr = String.uncapitalize type_attr in
-        if type_attr = "type"
+        if String.(=) type_attr "type"
         then "'type__"
         else "'" ^ type_attr
       in
@@ -201,7 +202,7 @@ module Op = struct
             | Some allowed_values ->
               List.filter_map allowed_values.type_ ~f:Node.Type.of_dt_type
         in
-        if allowed_values = []
+        if List.is_empty allowed_values
         then None
         else Some (name, allowed_values)
       | _ -> None)
@@ -213,7 +214,7 @@ module Op = struct
       let match_input_length =
         List.find inputs ~f:(fun (input : Input.t) ->
           match input.number_attr with
-          | Some number when number = name -> true
+          | Some number when String.(=) number name -> true
           | _ -> false)
       in
       { Attribute.name
@@ -231,7 +232,7 @@ module Op = struct
           let type_name, type_ = read_type types input_arg in
           let name =
             match input_arg.name with
-            | None -> sprintf "x%d" idx
+            | None -> Printf.sprintf "x%d" idx
             | Some name -> name
           in
           { Input.name
@@ -266,7 +267,7 @@ module Op = struct
         }
     with
     | Not_supported str ->
-      Error (sprintf "%s: %s" name str)
+      Error (Printf.sprintf "%s: %s" name str)
 
   let caml_name t =
     match t.name with
@@ -277,20 +278,20 @@ end
 let same_input_and_output_type (op : Op.t) ~alpha =
   List.find_map op.inputs ~f:(fun input ->
     match input.type_ with
-    | Polymorphic (alpha', _) when alpha = alpha' -> Some input
+    | Polymorphic (alpha', _) when String.(=) alpha alpha' -> Some input
     | _ -> None)
 
 let type_variable ~idx =
   if idx = 0
   then "type_"
-  else sprintf "type_%d" idx
+  else Printf.sprintf "type_%d" idx
 
 let output_type_string op output_type ~idx =
   match (output_type : Type.t) with
   | Fixed p -> "Type." ^ Node.Type.to_string p
   | Polymorphic (alpha, _) ->
     match same_input_and_output_type op ~alpha with
-    | Some input -> sprintf "(Node.output_type %s)" (Input.caml_comp_name input)
+    | Some input -> Printf.sprintf "(Node.output_type %s)" (Input.caml_comp_name input)
     | None -> type_variable ~idx
 
 let needs_variable_for_output_type op output_type =
@@ -303,7 +304,7 @@ let automatically_generated_file =
   "(* THIS FILE HAS BEEN AUTOMATICALLY GENERATED, DO NOT EDIT BY HAND! *)"
 
 let p out_channel s =
-  ksprintf (fun line ->
+  Printf.ksprintf (fun line ->
     Out_channel.output_string out_channel line;
     Out_channel.output_char out_channel '\n') s
 
@@ -313,7 +314,7 @@ let escape_comment s =
   |> String.tr ~target:'"' ~replacement:'\''
 
 let gen_mli ops =
-  let out_channel = Out_channel.create (sprintf "%s.mli" output_file) in
+  let out_channel = Out_channel.create (Printf.sprintf "%s.mli" output_file) in
   let p s = p out_channel s in
   let handle_one_op (op : Op.t) =
     Option.iter op.summary ~f:(fun summary -> p "(* %s *)" (escape_comment summary));
@@ -332,7 +333,7 @@ let gen_mli ops =
     if List.is_empty op.inputs
     then p "  -> unit";
     p "  -> %s" (List.map op.output_types ~f:(fun output_type ->
-      sprintf "%s t%s"
+      Printf.sprintf "%s t%s"
         (Type.to_string output_type.type_)
         (if Option.is_some output_type.number_attr then " list" else "")
       ) |> String.concat ~sep:" * ");
@@ -377,9 +378,9 @@ let handle_one_op (op : Op.t) out_channel =
       | Some type_name when List.Assoc.mem ~equal:String.equal acc type_name -> acc
       | Some type_name ->
         let name = Input.caml_comp_name input in
-        (type_name, sprintf "(Node.output_type %s)" name) :: acc)
+        (type_name, Printf.sprintf "(Node.output_type %s)" name) :: acc)
     |> List.map ~f:(fun (type_name, type_string) ->
-      sprintf " \"%s\", Type (P %s) " type_name type_string)
+      Printf.sprintf " \"%s\", Type (P %s) " type_name type_string)
     |> String.concat ~sep:"; "
   in
   p "  let attributes = [%s] in" type_attr;
@@ -392,12 +393,12 @@ let handle_one_op (op : Op.t) out_channel =
   p "  let op_name = Op_names.%s in" (Op.caml_name op);
   let inputs =
     List.map op.inputs ~f:(fun input ->
-      if input.number_attr = None
-      then sprintf "(`single (P %s))" (Input.caml_name input)
-      else sprintf "(`multi (List.map ~f:(fun n -> P n) %s))" (Input.caml_name input)
+      if Option.is_none input.number_attr
+      then Printf.sprintf "(`single (P %s))" (Input.caml_name input)
+      else Printf.sprintf "(`multi (List.map ~f:(fun n -> P n) %s))" (Input.caml_name input)
     )
     |> String.concat ~sep:"; "
-    |> sprintf "[ %s ]"
+    |> Printf.sprintf "[ %s ]"
   in
   p "  let inputs = %s in" inputs;
   let multiple_outputs = 1 < List.length op.output_types in
@@ -406,11 +407,11 @@ let handle_one_op (op : Op.t) out_channel =
     | [ { number_attr = Some number_attr; _ } as output_type ] ->
       let output_type_string = output_type_string op output_type.type_ ~idx:0 in
       let number_attr =
-        List.find_exn op.attributes ~f:(fun attr -> attr.name = number_attr)
+        List.find_exn op.attributes ~f:(fun attr -> String.(=) attr.name number_attr)
       in
       let number_value =
         match number_attr.match_input_length with
-        | Some input -> sprintf "(List.length %s)" input.name
+        | Some input -> Printf.sprintf "(List.length %s)" input.name
         | None -> number_attr.name
       in
       p "  let node =";
@@ -436,13 +437,13 @@ let handle_one_op (op : Op.t) out_channel =
         p "    ~inputs";
         p "    ~control_inputs";
         p "    ~attributes";
-        p "    ~output_idx:%s" (if multiple_outputs then sprintf "(Some %d)" idx else "None");
+        p "    ~output_idx:%s" (if multiple_outputs then Printf.sprintf "(Some %d)" idx else "None");
       );
   end;
   p ""
 
 let gen_ml ops =
-  let out_channel = Out_channel.create (sprintf "%s.ml" output_file) in
+  let out_channel = Out_channel.create (Printf.sprintf "%s.ml" output_file) in
   let p s = p out_channel s in
   p "%s" automatically_generated_file;
   p "open Base";
