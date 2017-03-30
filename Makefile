@@ -28,4 +28,5 @@ runtests: tests/operator_tests.exe tests/gradient_tests.exe
 	DYLD_LIBRARY_PATH=./lib:$(DYLD_LIBRARY_PATH) LD_LIBRARY_PATH=./lib:$(LD_LIBRARY_PATH) _build/default/tests/operator_tests.exe
 	DYLD_LIBRARY_PATH=./lib:$(DYLD_LIBRARY_PATH) LD_LIBRARY_PATH=./lib:$(LD_LIBRARY_PATH) _build/default/tests/gradient_tests.exe
 
-all: $(ALL)
+all: .FORCE
+	jbuilder build --dev $(ALL)
