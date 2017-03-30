@@ -4,10 +4,12 @@
    It has been heavily inspired by https://github.com/karpathy/char-rnn
 *)
 open Base
+open Float.O_dot
 open Tensorflow_core
 open Tensorflow
 open Tensorflow_fnn
 
+let float = Float.of_int
 let epochs = 100000
 let size_c = 256
 let seq_len = 180
@@ -94,8 +96,8 @@ let fit_and_evaluate ~dataset ~learning_rate ~checkpoint =
         in
         acc_err +. sum_err, acc_cnt + 1)
     in
-    let bpc = sum_err /. (float batch_count *. float seq_len *. float batch_size *. log 2.) in
-    Format.printf "Epoch: %d   %.4fbpc\n%!" epoch bpc;
+    let bpc = sum_err /. (float batch_count *. float seq_len *. float batch_size *. Float.log 2.) in
+    Caml.Format.printf "Epoch: %d   %.4fbpc\n%!" epoch bpc;
     Session.run ~targets:[ Node.P save_node ] Session.Output.empty;
   done
 
@@ -141,7 +143,7 @@ let sample filename checkpoint gen_size temperature seed =
         else begin
           let dist =
             Array.init dim ~f:(fun i ->
-              (Tensor.get y_res [| 0; i |]) ** (1. /. temperature))
+              (Tensor.get y_res [| 0; i |]) **. (1. /. temperature))
           in
           let p = Random.float (Array.reduce_exn dist ~f:(+.)) in
           let acc = ref 0. in
@@ -162,7 +164,7 @@ let sample filename checkpoint gen_size temperature seed =
     inv_map.(data) <- Char.of_int_exn key);
   List.rev_map ys ~f:(fun i -> inv_map.(i))
   |> String.of_char_list
-  |> Format.printf "%s\n\n%!"
+  |> Caml.Format.printf "%s\n\n%!"
 
 let () =
   Random.init 42;
@@ -234,5 +236,5 @@ let () =
   in
   let cmds = [ train_cmd; sample_cmd ] in
   match Term.eval_choice default_cmd cmds with
-  | `Error _ -> exit 1
-  | _ -> exit 0
+  | `Error _ -> Caml.exit 1
+  | _ -> Caml.exit 0

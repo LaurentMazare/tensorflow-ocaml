@@ -1,6 +1,6 @@
 B ../../_build/default/src/graph
 B ../../_build/default/src/wrapper
-FLG -open Tensorflow -w -40
+FLG -open Tensorflow -w @a-4-29-40-41-42-44-45-48-58-59-40 -strict-sequence -strict-formats
 PKG base
 PKG base.caml
 PKG base.shadow_stdlib
@@ -11,6 +11,7 @@ PKG ctypes.foreign
 PKG ctypes.foreign.base
 PKG ctypes.foreign.threaded
 PKG ctypes.stubs
+PKG sexplib.0
 PKG stdio
 PKG str
 PKG threads

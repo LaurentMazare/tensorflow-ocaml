@@ -1,4 +1,5 @@
 open Base
+open Float.O_dot
 open Tensorflow
 
 let image_dim = Mnist_helper.image_dim
@@ -52,7 +53,7 @@ let () =
         ~inputs:train_inputs
         (Session.Output.scalar_float accuracy)
     in
-    Format.printf "epoch %d, accuracy %.2f%% train accuracy %.2f%%\n%!"
+    Caml.Format.printf "epoch %d, accuracy %.2f%% train accuracy %.2f%%\n%!"
       n
       (100. *. vaccuracy)
       (100. *. taccuracy)

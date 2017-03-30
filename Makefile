@@ -14,7 +14,7 @@ ALL = $(MNIST_ALL) \
       examples/load/load.exe
 
 %.exe: .FORCE
-	jbuilder build $@
+	jbuilder build --dev $@
 
 src/graph/ops_generated: _build/default/src/gen_ops/gen.exe
 	DYLD_LIBRARY_PATH=./lib:$(DYLD_LIBRARY_PATH) LD_LIBRARY_PATH=./lib:$(LD_LIBRARY_PATH) _build/default/src/gen_ops/gen.exe

@@ -1,4 +1,5 @@
 open Base
+open Float.O_dot
 open Tensorflow_core
 open Tensorflow
 module O = Ops

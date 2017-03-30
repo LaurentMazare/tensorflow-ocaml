@@ -10,7 +10,6 @@ module Id : sig
   val create : unit -> t
 end = struct
   include Int
-  module Map = Map.M(Int)
   let create =
     let counter = ref 0 in
     fun () ->
@@ -185,27 +184,27 @@ let get_attr t str =
   List.Assoc.find ~equal:String.equal t.attributes str
 
 let get_attr_bool t str =
-  Option.bind (get_attr t str) (function
+  Option.bind (get_attr t str) ~f:(function
     | Bool b -> Some b
     | _ -> None)
 
 let get_attr_string t str =
-  Option.bind (get_attr t str) (function
+  Option.bind (get_attr t str) ~f:(function
     | String s -> Some s
     | _ -> None)
 
 let get_attr_int t str =
-  Option.bind (get_attr t str) (function
+  Option.bind (get_attr t str) ~f:(function
     | Int l -> Some l
     | _ -> None)
 
 let get_attr_int_list t str =
-  Option.bind (get_attr t str) (function
+  Option.bind (get_attr t str) ~f:(function
     | List (Int l) -> Some l
     | _ -> None)
 
 let get_shape t =
-  Option.bind (get_attr t "shape") (function
+  Option.bind (get_attr t "shape") ~f:(function
     | Shape shape -> Some shape
     | _ -> None)
 

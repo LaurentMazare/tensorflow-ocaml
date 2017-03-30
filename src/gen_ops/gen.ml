@@ -208,7 +208,7 @@ module Op = struct
       | _ -> None)
 
   let get_attr (attr : Op_def_piqi.Op_def_attr_def.t) ~inputs =
-    Option.bind attr.type_ Attribute.of_dtype
+    Option.bind attr.type_ ~f:Attribute.of_dtype
     |> Option.map ~f:(fun attr_type ->
       let name = Option.value_exn attr.name in
       let match_input_length =
@@ -459,7 +459,7 @@ let gen_ml ops =
 
 let run () =
   let ops =
-    open_in ops_file
+    Caml.open_in ops_file
     |> Piqirun.init_from_channel
     |> Op_def_piqi.parse_op_list
     |> fun op_list -> op_list.op

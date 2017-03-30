@@ -1,7 +1,9 @@
 open Base
+open Float.O_dot
 open Tensorflow
 open Tensorflow_fnn
 
+let float = Float.of_int
 let epochs = 100000
 let size_c = 256
 let seq_len = 180
@@ -51,7 +53,7 @@ let train filename learning_rate =
         let sum_err = Session.run ~inputs ~targets Session.Output.(scalar_float cross_entropy) in
         acc_err +. sum_err, acc_cnt + 1)
     in
-    sum_err /. (float batch_count *. float seq_len *. float batch_size *. log 2.)
+    sum_err /. (float batch_count *. float seq_len *. float batch_size *. Float.log 2.)
   in
   for epoch = 1 to epochs do
     let train_sequence =
@@ -62,7 +64,7 @@ let train filename learning_rate =
       Text_helper.batch_sequence dataset ~seq_len ~batch_size ~pos:90_000_000 ~len:5_000_000
     in
     let valid_bpc = run valid_sequence ~train:false in
-    Format.printf "\nEpoch: %d IS: %.4fbpc   OoS: %.4fbpc\n%!" epoch train_bpc valid_bpc;
+    Caml.Format.printf "\nEpoch: %d IS: %.4fbpc   OoS: %.4fbpc\n%!" epoch train_bpc valid_bpc;
     Session.run ~targets:[ Node.P save_node ] Session.Output.empty;
   done
 
@@ -96,6 +98,5 @@ let () =
   in
   let cmds = [ train_cmd ] in
   match Term.eval_choice default_cmd cmds with
-  | `Error _ -> exit 1
-  | _ -> exit 0
-
+  | `Error _ -> Caml.exit 1
+  | _ -> Caml.exit 0

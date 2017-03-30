@@ -1,4 +1,5 @@
 open Base
+open Float.O_dot
 
 let init_table = Node.Weak_table.create ()
 

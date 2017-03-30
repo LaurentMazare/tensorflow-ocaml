@@ -1,8 +1,10 @@
 open Base
+open Float.O_dot
 open Tensorflow_core
-open Tensorflow
+open! Tensorflow
 open Tensorflow_fnn
 
+let float = Float.of_int
 let img_size = 224
 
 let vgg19 () =
@@ -78,5 +80,4 @@ let () =
       Tensor.get results [| 0; i |], i+1)
     |> List.reduce_exn ~f:Caml.max
   in
-  Format.printf "%d: %.2f%%\n" category (100. *. pr)
-
+  Caml.Format.printf "%d: %.2f%%\n" category (100. *. pr)

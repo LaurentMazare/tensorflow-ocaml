@@ -1,6 +1,6 @@
 open Base
 open Tensorflow_core
-open Tensorflow
+open! Tensorflow
 
 type _1d
 type _2d
@@ -527,7 +527,7 @@ module Model = struct
       (predict Session.Input.float Session.Output.float : (float, b) Tensor.t)
     | Node.Type.Double, Tensor.Double ->
       (predict Session.Input.double Session.Output.double : (float, b) Tensor.t)
-    | _ -> assert false
+    | _ -> .
 
   let fit (type a) (type b)
         ?(addn_inputs : (Input_id.t * (float, b) Tensor.t) list option)
@@ -594,7 +594,7 @@ module Model = struct
         match batch_size with
         | None -> inputs ~xs ~ys
         | Some batch_size ->
-          let offset = ((epoch-1) * batch_size) mod (samples - batch_size) in
+          let offset = ((epoch-1) * batch_size) % (samples - batch_size) in
           let xs = Tensor.sub_left xs offset batch_size in
           let ys = Tensor.sub_left ys offset batch_size in
           inputs ~xs ~ys
@@ -606,7 +606,7 @@ module Model = struct
           ~session:t.session
           (scalar_f_or_d loss)
       in
-      Format.printf "Epoch: %6d/%-6d   Loss: %.2f\n%!" epoch epochs err
+      Caml.Format.printf "Epoch: %6d/%-6d   Loss: %.2f\n%!" epoch epochs err
     done
   in
   match Node.output_type t.node, t.eq with
@@ -614,7 +614,7 @@ module Model = struct
     fit t.placeholder t.node Session.Input.float Session.Output.scalar_float
   | Node.Type.Double, Tensor.Double ->
     fit t.placeholder t.node Session.Input.double Session.Output.scalar_double
-  | _ -> assert false
+  | _ -> .
 
   let all_vars_with_names t =
     Var.get_all_vars t.node
@@ -641,7 +641,7 @@ module Model = struct
           Session.Input.float placeholder tensor
         | Node.Type.Double, Tensor.Double ->
           Session.Input.double placeholder tensor
-        | _ -> assert false)
+        | _ -> .)
 
   let save ?(inputs = []) t ~filename =
     let save_node =
