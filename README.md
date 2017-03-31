@@ -59,6 +59,7 @@ You should adjust your LD_LIBRARY_PATH environment variable in the same way LIBR
 ```bash
 LD_LIBRARY_PATH=/path/to/lib:$LD_LIBRARY_PATH ./forty_two.native
 ```
+Note that on OS X, you should adjust your DYLD_LIBRARY_PATH environment variable
 
 ## Examples
 
