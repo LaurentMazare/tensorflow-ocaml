@@ -13,7 +13,6 @@ PKG ctypes.foreign
 PKG ctypes.foreign.base
 PKG ctypes.foreign.threaded
 PKG ctypes.stubs
-PKG sexplib.0
 PKG stdio
 PKG str
 PKG threads
