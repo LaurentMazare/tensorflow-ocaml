@@ -1,4 +1,5 @@
 open Base
+open Float.O_dot
 module N = Node
 module T = Node.Type
 

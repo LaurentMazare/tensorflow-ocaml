@@ -1,6 +1,6 @@
 open Base
 open Tensorflow_core
-open Tensorflow
+open! Tensorflow
 
 type _1d
 type _2d

@@ -1,4 +1,5 @@
 open Base
+open Float.O_dot
 
 let batch_normalization ?(decay = 0.9) t ~update_moments ~dims ~feature_count =
   let type_ = Node.output_type t in

@@ -1,4 +1,5 @@
 open Base
+open Float.O_dot
 open Tensorflow_core
 open Tensorflow
 module O = Ops
@@ -69,7 +70,7 @@ let () =
         ~inputs:train_inputs
         (Session.Output.scalar_float accuracy)
     in
-    Format.printf "epoch %d, vaccuracy %.2f%% taccuracy: %.2f%%\n%!" n (100. *. vaccuracy) (100. *. taccuracy)
+    Caml.Format.printf "epoch %d, vaccuracy %.2f%% taccuracy: %.2f%%\n%!" n (100. *. vaccuracy) (100. *. taccuracy)
   in
   for batch_idx = 1 to epochs do
     let batch_images, batch_labels =

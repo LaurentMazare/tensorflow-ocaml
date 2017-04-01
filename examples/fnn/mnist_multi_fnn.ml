@@ -1,4 +1,5 @@
 open Base
+open Float.O_dot
 open Tensorflow
 open Tensorflow_fnn
 
@@ -28,4 +29,4 @@ let () =
     ~xs:train_images
     ~ys:train_labels;
   let test_results = Fnn.Model.predict model [ input_id, test_images ] in
-  Format.printf "Accuracy: %.2f%%\n%!" (100. *. Mnist_helper.accuracy test_results test_labels)
+  Caml.Format.printf "Accuracy: %.2f%%\n%!" (100. *. Mnist_helper.accuracy test_results test_labels)

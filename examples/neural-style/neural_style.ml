@@ -1,6 +1,9 @@
 open Base
+open Float.O_dot
 open Tensorflow_core
 open Tensorflow
+
+let float = Float.of_int
 
 module Image : sig
   val load : string -> (float, Bigarray.float32_elt) Tensorflow_core.Tensor.t * int * int
@@ -15,7 +18,7 @@ end = struct
     float x -. imagenet_mean channel
 
   let unnormalize x ~channel =
-    min 255 (int_of_float (x +. imagenet_mean channel))
+    min 255 (Int.of_float (x +. imagenet_mean channel))
     |> max 0
 
   let load filename =
@@ -166,9 +169,9 @@ let run epochs learning_rate content_weight style_weight tv_weight npz_filename 
     |> Option.value_map ~f:snd ~default:"jpg"
   in
   let input_tensor, img_w, img_h = Image.load input_filename in
-  Format.printf "Computing target features...\n%!";
+  Caml.Format.printf "Computing target features...\n%!";
   let target_grams = compute_grams ~filename:style_filename ~npz_filename in
-  Format.printf "Done computing target features.\n%!";
+  Caml.Format.printf "Done computing target features.\n%!";
   let input_var = create_and_set_var input_tensor in
   let style_grams, content_nodes =
     style_grams_and_content_nodes input_var ~img_h ~img_w ~npz_filename
@@ -211,8 +214,8 @@ let run epochs learning_rate content_weight style_weight tv_weight npz_filename 
         ~targets:gd
         Session.Output.(both (float input_var) (scalar_float loss))
     in
-    Format.printf "epoch: %d   loss: %g\n%!" epoch loss;
-    if epoch mod 100 = 0
+    Caml.Format.printf "epoch: %d   loss: %g\n%!" epoch loss;
+    if epoch % 100 = 0
     then Image.save output_tensor (Printf.sprintf "out_%d.%s" epoch suffix)
   done
 
@@ -263,5 +266,5 @@ let () =
     Term.info "neural_style" ~version:"0" ~sdocs:"" ~doc:"Neural Style Transfer"
   in
   match Term.eval_choice default_cmd [] with
-  | `Error _ -> exit 1
-  | _ -> exit 0
+  | `Error _ -> Caml.exit 1
+  | _ -> Caml.exit 0
