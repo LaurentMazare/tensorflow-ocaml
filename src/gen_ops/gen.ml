@@ -459,7 +459,7 @@ let gen_ml ops =
 
 let run () =
   let ops =
-    Caml.open_in ops_file
+    Stdio.In_channel.create ops_file
     |> Piqirun.init_from_channel
     |> Op_def_piqi.parse_op_list
     |> fun op_list -> op_list.op
