@@ -80,4 +80,4 @@ let () =
       Tensor.get results [| 0; i |], i+1)
     |> List.reduce_exn ~f:Caml.max
   in
-  Caml.Format.printf "%d: %.2f%%\n" category (100. *. pr)
+  Stdio.printf "%d: %.2f%%\n" category (100. *. pr)

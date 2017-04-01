@@ -37,7 +37,7 @@ let () =
         ~inputs:validation_inputs
         (Session.Output.scalar_float accuracy)
     in
-    Caml.Format.printf "epoch %d, accuracy %.2f%%\n%!" n (100. *. accuracy)
+    Stdio.printf "epoch %d, accuracy %.2f%%\n%!" n (100. *. accuracy)
   in
   for i = 1 to epochs do
     if i % 50 = 0 then print_err i;

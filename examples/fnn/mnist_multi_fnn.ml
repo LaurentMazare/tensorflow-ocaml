@@ -29,4 +29,4 @@ let () =
     ~xs:train_images
     ~ys:train_labels;
   let test_results = Fnn.Model.predict model [ input_id, test_images ] in
-  Caml.Format.printf "Accuracy: %.2f%%\n%!" (100. *. Mnist_helper.accuracy test_results test_labels)
+  Stdio.printf "Accuracy: %.2f%%\n%!" (100. *. Mnist_helper.accuracy test_results test_labels)

@@ -606,7 +606,7 @@ module Model = struct
           ~session:t.session
           (scalar_f_or_d loss)
       in
-      Caml.Format.printf "Epoch: %6d/%-6d   Loss: %.2f\n%!" epoch epochs err
+      Stdio.printf "Epoch: %6d/%-6d   Loss: %.2f\n%!" epoch epochs err
     done
   in
   match Node.output_type t.node, t.eq with

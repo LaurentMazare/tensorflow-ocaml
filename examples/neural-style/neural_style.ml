@@ -169,9 +169,9 @@ let run epochs learning_rate content_weight style_weight tv_weight npz_filename 
     |> Option.value_map ~f:snd ~default:"jpg"
   in
   let input_tensor, img_w, img_h = Image.load input_filename in
-  Caml.Format.printf "Computing target features...\n%!";
+  Stdio.printf "Computing target features...\n%!";
   let target_grams = compute_grams ~filename:style_filename ~npz_filename in
-  Caml.Format.printf "Done computing target features.\n%!";
+  Stdio.printf "Done computing target features.\n%!";
   let input_var = create_and_set_var input_tensor in
   let style_grams, content_nodes =
     style_grams_and_content_nodes input_var ~img_h ~img_w ~npz_filename
@@ -214,7 +214,7 @@ let run epochs learning_rate content_weight style_weight tv_weight npz_filename 
         ~targets:gd
         Session.Output.(both (float input_var) (scalar_float loss))
     in
-    Caml.Format.printf "epoch: %d   loss: %g\n%!" epoch loss;
+    Stdio.printf "epoch: %d   loss: %g\n%!" epoch loss;
     if epoch % 100 = 0
     then Image.save output_tensor (Printf.sprintf "out_%d.%s" epoch suffix)
   done

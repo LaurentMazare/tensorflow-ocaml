@@ -64,7 +64,7 @@ let train filename learning_rate =
       Text_helper.batch_sequence dataset ~seq_len ~batch_size ~pos:90_000_000 ~len:5_000_000
     in
     let valid_bpc = run valid_sequence ~train:false in
-    Caml.Format.printf "\nEpoch: %d IS: %.4fbpc   OoS: %.4fbpc\n%!" epoch train_bpc valid_bpc;
+    Stdio.printf "\nEpoch: %d IS: %.4fbpc   OoS: %.4fbpc\n%!" epoch train_bpc valid_bpc;
     Session.run ~targets:[ Node.P save_node ] Session.Output.empty;
   done
 

@@ -53,7 +53,7 @@ let () =
         ~inputs:train_inputs
         (Session.Output.scalar_float accuracy)
     in
-    Caml.Format.printf "epoch %d, accuracy %.2f%% train accuracy %.2f%%\n%!"
+    Stdio.printf "epoch %d, accuracy %.2f%% train accuracy %.2f%%\n%!"
       n
       (100. *. vaccuracy)
       (100. *. taccuracy)

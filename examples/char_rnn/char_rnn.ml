@@ -97,7 +97,7 @@ let fit_and_evaluate ~dataset ~learning_rate ~checkpoint =
         acc_err +. sum_err, acc_cnt + 1)
     in
     let bpc = sum_err /. (float batch_count *. float seq_len *. float batch_size *. Float.log 2.) in
-    Caml.Format.printf "Epoch: %d   %.4fbpc\n%!" epoch bpc;
+    Stdio.printf "Epoch: %d   %.4fbpc\n%!" epoch bpc;
     Session.run ~targets:[ Node.P save_node ] Session.Output.empty;
   done
 
@@ -164,7 +164,7 @@ let sample filename checkpoint gen_size temperature seed =
     inv_map.(data) <- Char.of_int_exn key);
   List.rev_map ys ~f:(fun i -> inv_map.(i))
   |> String.of_char_list
-  |> Caml.Format.printf "%s\n\n%!"
+  |> Stdio.printf "%s\n\n%!"
 
 let () =
   Random.init 42;
