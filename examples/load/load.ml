@@ -34,11 +34,9 @@ let () =
       ~inputs:[]
       ~outputs:[]
       ~targets:
-        [ find_operation "dense_1_b/Assign"
-        ; find_operation "dense_1_W/Assign"
-        ; find_operation "lstm_1_W/Assign"
-        ; find_operation "lstm_1_b/Assign"
-        ; find_operation "lstm_1_U/Assign"
+        [ find_operation "lstm_1/init"
+          ; find_operation "time_distributed_1/kernel/Assign"
+          ; find_operation "time_distributed_1/bias/Assign"
         ]
     |> ok_exn ~context:"session run"
   in
@@ -50,9 +48,22 @@ let () =
   let output =
     Session.run
       session
-      ~inputs:[ Graph.create_output (find_operation "lstm_input_1") ~index:0, input_tensor ]
-      ~outputs:[ Graph.create_output (find_operation "Sigmoid") ~index:0 ]
-      ~targets:[ find_operation "Variable/Assign" ]
+      ~inputs:[ Graph.create_output (find_operation "lstm_1_input") ~index:0, input_tensor ]
+      ~outputs:[ Graph.create_output (find_operation "time_distributed_1/Sigmoid") ~index:0 ]
+      ~targets:[ find_operation "lstm_1/init" ]
+    |> ok_exn ~context:"session run"
+  in
+  begin
+    match output with
+    | [ output ] -> Tensor.print output
+    | _ -> assert false
+  end;
+  let output =
+    Session.run
+      session
+      ~inputs:[ Graph.create_output (find_operation "lstm_1_input") ~index:0, input_tensor ]
+      ~outputs:[ Graph.create_output (find_operation "time_distributed_1/Sigmoid") ~index:0 ]
+      ~targets:[ find_operation "lstm_1/init" ]
     |> ok_exn ~context:"session run"
   in
   begin
@@ -60,3 +71,4 @@ let () =
     | [ output ] -> Tensor.print output
     | _ -> assert false
   end
+
