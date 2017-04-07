@@ -5,7 +5,6 @@
 *.cm*
 *.png
 _build
-lib/*.so
 scripts/data
 data
 data/train-images-idx3-ubyte

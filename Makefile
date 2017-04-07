@@ -17,7 +17,7 @@ ALL = $(MNIST_ALL) \
 	jbuilder build --dev $@
 
 src/graph/ops_generated: _build/default/src/gen_ops/gen.exe
-	DYLD_LIBRARY_PATH=./lib:$(DYLD_LIBRARY_PATH) LD_LIBRARY_PATH=./lib:$(LD_LIBRARY_PATH) _build/default/src/gen_ops/gen.exe
+	_build/default/src/gen_ops/gen.exe
 
 clean:
 	rm -Rf _build/ *.exe
@@ -25,8 +25,8 @@ clean:
 .FORCE:
 
 runtests: tests/operator_tests.exe tests/gradient_tests.exe
-	DYLD_LIBRARY_PATH=./lib:$(DYLD_LIBRARY_PATH) LD_LIBRARY_PATH=./lib:$(LD_LIBRARY_PATH) _build/default/tests/operator_tests.exe
-	DYLD_LIBRARY_PATH=./lib:$(DYLD_LIBRARY_PATH) LD_LIBRARY_PATH=./lib:$(LD_LIBRARY_PATH) _build/default/tests/gradient_tests.exe
+	_build/default/tests/operator_tests.exe
+	_build/default/tests/gradient_tests.exe
 
 all: .FORCE
 	jbuilder build --dev $(ALL)

@@ -4,7 +4,7 @@
  ((name tensorflow_core)
   (public_name tensorflow.core)
   (c_names (tf_stubs))
-  (c_library_flags (-L../../lib -ltensorflow))
+  (c_library_flags (-ltensorflow))
   (libraries (bigarray ctypes.foreign ctypes.stubs ctypes))))
 
 (rule
