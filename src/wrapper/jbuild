@@ -5,6 +5,8 @@
   (public_name tensorflow.core)
   (c_names (tf_stubs))
   (c_library_flags (-ltensorflow))
+  (no_dynlink)
+  (modes (native))
   (libraries (bigarray ctypes.foreign ctypes.stubs ctypes))))
 
 (rule
