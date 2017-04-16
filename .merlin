@@ -1,4 +1,0 @@
-PKG cmdliner core_kernel ctypes ctypes.foreign
-FLG -short-paths
-B _build/examples
-B _build/src/*
