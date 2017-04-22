@@ -140,7 +140,7 @@ let vgg19 () =
   in
   input_id, model
 ```
-This model is used in the [following example](https://github.com/LaurentMazare/tensorflow-ocaml/blob/master/examples/fnn/vgg19.ml) to classify any input image, in order to use it you will have to download some [pre-trained weights](https://github.com/LaurentMazare/tensorflow-ocaml/releases/download/0.0.7/vgg19.cpkt).
+This model can be used to classify an input image. In order to use it you will have to download the [pre-trained weights](https://github.com/LaurentMazare/tensorflow-ocaml/releases/download/0.0.7/vgg19.cpkt).
 
 
 There are also some MNIST based [examples](https://github.com/LaurentMazare/tensorflow-ocaml/tree/master/examples/fnn).
