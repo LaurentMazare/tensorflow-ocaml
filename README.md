@@ -42,11 +42,9 @@ Two possible ways to obtain it are:
 
 Once you have obtained the library, you should install it system-wise, or add it to the environment variables `LIBRARY_PATH` and `LD_LIBRARY_PATH`:
 
-    ```
     export LIBRARY_PATH={path_to_folder_with_libtensorflow.so}:$LIBRARY_PATH
     export LD_LIBRARY_PATH={path_to_folder_with_libtensorflow.so}:$LD_LIBRARY_PATH
-    ```
-
+    
 ### Build a Simple Example
 
 Download a [very simple example](https://github.com/LaurentMazare/tensorflow-ocaml/tree/master/examples/basics/forty_two.ml) and compile it with the following command:
