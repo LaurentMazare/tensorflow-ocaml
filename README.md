@@ -1,8 +1,8 @@
-The tensorflow-ocaml project provides some [OCaml](http://ocaml.org) bindings for [TensorFlow](http://tensorflow.org).
+The __tensorflow-ocaml__ project provides some [OCaml](http://ocaml.org) bindings for [TensorFlow](http://tensorflow.org).
 
 ## Installation
 
-Use [opam](https://opam.ocaml.org/) to install the tensorflow-ocaml package.
+Use [opam](https://opam.ocaml.org/) to install the __tensorflow-ocaml__ package.
 
 ```bash
 opam install tensorflow
@@ -13,30 +13,45 @@ opam install tensorflow
 The opam package starting from version 0.0.8 requires the version 1.0 of the TensorFlow library to be installed on your system under the name `libtensorflow.so`.
 Two possible ways to obtain it are:
 
-* You can build this library from source by following these steps:
-    1. [Install the Bazel build system](http://bazel.io/docs/install.html)
-    1. Clone the TensorFlow repo.
+* __Build the library from source__. Perform the following steps:
+    1. Install the [Bazel build system](http://bazel.io/docs/install.html);
+    1. Clone the TensorFlow repo:
+
+        `git clone --recurse-submodules -b r1.0 https://github.com/tensorflow/tensorflow`
+    1. Configure the build (you will be asked if you want to enable CUDA support):
     
-      `git clone --recurse-submodules -b r1.0 https://github.com/tensorflow/tensorflow`
-    1. In the `tensorflow` directory run `./configure` (you will be asked if you want to enable CUDA support).
-    1. Run `bazel build -c opt tensorflow:libtensorflow.so`.
-    1. The resulting library should then be in `bazel-bin/tensorflow/libtensorflow.so`.
-* You can download prebuilt binaries from Google:
-The releases are available in URLs of the form: `https://storage.googleapis.com/tensorflow/libtensorflow/libtensorflow-TYPE-OS-ARCH-VERSION.tar.gz`. For example:
+        ```
+        cd tensorflow/
+        ./configure
+        ```
+    1. Compile the library:
+
+       `bazel build -c opt tensorflow:libtensorflow.so`
+       
+       The binary should appear under `bazel-bin/tensorflow/libtensorflow.so`;
+
+* __Use prebuilt binaries from Google__. The releases are available for download in URLs of the form: `https://storage.googleapis.com/tensorflow/libtensorflow/libtensorflow-TYPE-OS-ARCH-VERSION.tar.gz`. For example:
     * CPU-only, Linux, x86_64, 1.0.0.
-    [https://storage.googleapis.com/tensorflow/libtensorflow/libtensorflow-cpu-linux-x86_64-1.0.0.tar.gz](https://storage.googleapis.com/tensorflow/libtensorflow/libtensorflow-cpu-linux-x86_64-1.0.0.tar.gz)
+    [[link]](https://storage.googleapis.com/tensorflow/libtensorflow/libtensorflow-cpu-linux-x86_64-1.0.0.tar.gz)
     * GPU-enabled, Linux, x86_64, 1.0.0.
-    [https://storage.googleapis.com/tensorflow/libtensorflow/libtensorflow-gpu-linux-x86_64-1.0.0.tar.gz](https://storage.googleapis.com/tensorflow/libtensorflow/libtensorflow-gpu-linux-x86_64-1.0.0.tar.gz)
+    [[link]](https://storage.googleapis.com/tensorflow/libtensorflow/libtensorflow-gpu-linux-x86_64-1.0.0.tar.gz)
     * CPU-only, OS X, x86_64, 1.0.0.
-    [https://storage.googleapis.com/tensorflow/libtensorflow/libtensorflow-cpu-darwin-x86_64-1.0.0.tar.gz](https://storage.googleapis.com/tensorflow/libtensorflow/libtensorflow-cpu-darwin-x86_64-1.0.0.tar.gz)
+    [[link]](https://storage.googleapis.com/tensorflow/libtensorflow/libtensorflow-cpu-darwin-x86_64-1.0.0.tar.gz)
     * GPU-enabled, OS X, x86_64, 1.0.0:
-    [https://storage.googleapis.com/tensorflow/libtensorflow/libtensorflow-gpu-darwin-x86_64-1.0.0.tar.gz](https://storage.googleapis.com/tensorflow/libtensorflow/libtensorflow-gpu-darwin-x86_64-1.0.0.tar.gz)
+    [[link]](https://storage.googleapis.com/tensorflow/libtensorflow/libtensorflow-gpu-darwin-x86_64-1.0.0.tar.gz)
+
+Once you have obtained the library, you should install it system-wise, or add it to the environment variables `LIBRARY_PATH` and `LD_LIBRARY_PATH`:
+
+    ```
+    export LIBRARY_PATH={path_to_folder_with_libtensorflow.so}:$LIBRARY_PATH
+    export LD_LIBRARY_PATH={path_to_folder_with_libtensorflow.so}:$LD_LIBRARY_PATH
+    ```
 
 ### Build a Simple Example
 
 Download a [very simple example](https://github.com/LaurentMazare/tensorflow-ocaml/tree/master/examples/basics/forty_two.ml) and compile it with the following command:
 ```bash
-ocamlbuild forty_two.native -pkg tensorflow -tag thread
+ocamlbuild forty_two.native -use-ocamlfind -pkg tensorflow -tag thread
 ```
 
 Then run it via `./forty_two.native`. You should now be all set up, enjoy!
@@ -44,32 +59,39 @@ Then run it via `./forty_two.native`. You should now be all set up, enjoy!
 ### Frequent Problems
 
 - When compiling the example with ocamlbuild, I get the following error:
-```bash
-/usr/bin/ld: cannot find -ltensorflow
-```
-You should adjust your LIBRARY_PATH environment variable to include the directory in which you have added `libtensorflow.so` (and use this exact name). E.g. run:
-```bash
-LIBRARY_PATH=/path/to/lib:$LIBRARY_PATH ocamlbuild forty_two.native -pkg tensorflow -tag thread
-```
-- When running forty_two.native, I get the following error:
-```bash
-./forty_two.native: error while loading shared libraries: libtensorflow.so: cannot open shared object file: No such file or directory
-```
-You should adjust your LD_LIBRARY_PATH environment variable in the same way LIBRARY_PATH was adjusted in the previous case. E.g. run:
-```bash
-LD_LIBRARY_PATH=/path/to/lib:$LD_LIBRARY_PATH ./forty_two.native
-```
-Note that on OS X, you should adjust your DYLD_LIBRARY_PATH environment variable
+
+    ```bash
+    /usr/bin/ld: cannot find -ltensorflow
+    ```
+
+    You should adjust your `LIBRARY_PATH` environment variable to include the directory in which you have added `libtensorflow.so`. E.g. run:
+
+    ```bash
+    LIBRARY_PATH=/path/to/lib:$LIBRARY_PATH ocamlbuild forty_two.native -use-ocamlfind -pkg tensorflow -tag thread
+    ```
+- When running `forty_two.native`, I get the following error:
+    ```bash
+    ./forty_two.native: error while loading shared libraries: libtensorflow.so: cannot open shared object file: No such file or directory
+    ```
+
+    You should adjust your `LD_LIBRARY_PATH` environment variable in the same way `LIBRARY_PATH` was adjusted in the previous case. E.g. run:
+
+    ```bash
+    LD_LIBRARY_PATH=/path/to/lib:$LD_LIBRARY_PATH ./forty_two.native
+    ```
+
+    Note that on OS X, you should adjust your `DYLD_LIBRARY_PATH` environment variable.
 
 ## Examples
 
-Tensorflow-ocaml includes two different APIs to write graphs.
+__Tensorflow-ocaml__ includes two different APIs to write graphs.
 
 ### Using the Graph API
 
 The graph API is very close to the original TensorFlow API.
+
 * Some MNIST based tutorials are available in the [examples directory](https://github.com/LaurentMazare/tensorflow-ocaml/tree/master/examples/mnist).
-* `examples/load/load.ml` contains a simple example where the TensorFlow graph is loaded from a file (this graph has been generated by `examples/load.py`).
+* `examples/load/load.ml` contains a simple example where the TensorFlow graph is loaded from a file (this graph has been generated by `examples/load.py`),
 * `examples/basics` contains some curve fitting examples. You will need gnuplot to be installed via opam to run the gnuplot versions.
 
 ### Using the FNN API
@@ -123,7 +145,7 @@ let vgg19 () =
   in
   input_id, model
 ```
-This model is used in the [following example](https://github.com/LaurentMazare/tensorflow-ocaml/blob/master/examples/fnn/vgg19.ml) to classify any input image, in order to use it you will have to download some [pre-trained weights](https://github.com/LaurentMazare/tensorflow-ocaml/releases/download/0.0.7/vgg19.cpkt).
+This model is used in the [following example](https://github.com/LaurentMazare/tensorflow-ocaml/blob/master/examples/neural-style/vgg19.ml) to classify an input image. In order to use it you will have to download the [pre-trained weights](https://github.com/LaurentMazare/tensorflow-ocaml/releases/download/0.0.7/vgg19.cpkt).
 
 
 There are also some MNIST based [examples](https://github.com/LaurentMazare/tensorflow-ocaml/tree/master/examples/fnn).
