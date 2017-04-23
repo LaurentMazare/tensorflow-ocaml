@@ -14,7 +14,7 @@ The opam package starting from version 0.0.8 requires the version 1.0 of the Ten
 Two possible ways to obtain it are:
 
 * __Build the library from source__. Perform the following steps:
-    1. Install the [Bazel build system](http://bazel.io/docs/install.html);
+    1. Install the [Bazel build system](http://bazel.io/docs/install.html).
     1. Clone the TensorFlow repo:
 
         `git clone --recurse-submodules -b r1.0 https://github.com/tensorflow/tensorflow`
@@ -28,7 +28,7 @@ Two possible ways to obtain it are:
 
        `bazel build -c opt tensorflow:libtensorflow.so`
        
-       The binary should appear under `bazel-bin/tensorflow/libtensorflow.so`;
+       The binary should appear under `bazel-bin/tensorflow/libtensorflow.so`.
 
 * __Use prebuilt binaries from Google__. The releases are available for download in URLs of the form: `https://storage.googleapis.com/tensorflow/libtensorflow/libtensorflow-TYPE-OS-ARCH-VERSION.tar.gz`. For example:
     * CPU-only, Linux, x86_64, 1.0.0.
