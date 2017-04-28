@@ -158,8 +158,9 @@ A stand-alone example of Neural Style transfer can be found in the [examples dir
 
 ## Dependencies
 
+* [jbuilder](https://github.com/janestreet/jbuilder) is used as a build system.
 * [ocaml-ctypes](https://github.com/ocamllabs/ocaml-ctypes) is used for the C bindings.
-* [Base](https://github.com/janestreet/base) is only necessary when generating the graph from OCaml, the wrapper itself does not need it.
+* [Base](https://github.com/janestreet/base) is only necessary when generating the TensorFlow graph from OCaml, the wrapper itself does not need it.
 * The code in the piqi directory comes from the [Piqi project](http://piqi.org). There is no need to install piqi though.
 * [Cmdliner](https://github.com/dbuenzli/cmdliner) is used for command line interfaces.
 * [Gnuplot-ocaml](https://bitbucket.org/ogu/gnuplot-ocaml) is an optional dependency used by a couple examples.
