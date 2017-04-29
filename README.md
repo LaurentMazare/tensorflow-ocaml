@@ -164,3 +164,5 @@ A stand-alone example of Neural Style transfer can be found in the [examples dir
 * The code in the piqi directory comes from the [Piqi project](http://piqi.org). There is no need to install piqi though.
 * [Cmdliner](https://github.com/dbuenzli/cmdliner) is used for command line interfaces.
 * [Gnuplot-ocaml](https://bitbucket.org/ogu/gnuplot-ocaml) is an optional dependency used by a couple examples.
+* [npy-ocaml](https://github.com/LaurentMazare/npy-ocaml) is used to read/write from npy/npz files.
+* [camlimages](http://gallium.inria.fr/camlimages/) handles loading and writing image files in jpeg/png format.

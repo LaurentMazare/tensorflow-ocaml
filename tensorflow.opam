@@ -22,7 +22,11 @@ depends: [
   "jbuilder" {build}
 ]
 
-depopts: ["gnuplot"]
+depopts: [
+  "camlimages"
+  "gnuplot"
+  "npy"
+]
 
 conflicts: [
 ]
