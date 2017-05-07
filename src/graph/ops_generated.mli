@@ -31,6 +31,7 @@ module Op_names : sig
   val applyProximalAdagrad : Op_name.t
   val applyProximalGradientDescent : Op_name.t
   val applyRMSProp : Op_name.t
+  val approximateEqual : Op_name.t
   val argMax : Op_name.t
   val argMin : Op_name.t
   val asString : Op_name.t
@@ -79,6 +80,7 @@ module Op_names : sig
   val biasAdd : Op_name.t
   val biasAddGrad : Op_name.t
   val biasAddV1 : Op_name.t
+  val bincount : Op_name.t
   val bitcast : Op_name.t
   val broadcastArgs : Op_name.t
   val broadcastGradientArgs : Op_name.t
@@ -195,6 +197,9 @@ module Op_names : sig
   val iFFT : Op_name.t
   val iFFT2D : Op_name.t
   val iFFT3D : Op_name.t
+  val iRFFT : Op_name.t
+  val iRFFT2D : Op_name.t
+  val iRFFT3D : Op_name.t
   val identity : Op_name.t
   val identityReader : Op_name.t
   val igamma : Op_name.t
@@ -290,6 +295,7 @@ module Op_names : sig
   val prod : Op_name.t
   val qr : Op_name.t
   val quantizeAndDequantize : Op_name.t
+  val quantizeAndDequantizeV2 : Op_name.t
   val quantizeDownAndShrinkRange : Op_name.t
   val quantizeV2 : Op_name.t
   val quantizedAvgPool : Op_name.t
@@ -300,15 +306,20 @@ module Op_names : sig
   val quantizedInstanceNorm : Op_name.t
   val quantizedMatMul : Op_name.t
   val quantizedMaxPool : Op_name.t
+  val quantizedMul : Op_name.t
   val quantizedRelu : Op_name.t
   val quantizedRelu6 : Op_name.t
   val quantizedReluX : Op_name.t
   val quantizedReshape : Op_name.t
   val queueClose : Op_name.t
   val queueSize : Op_name.t
+  val rFFT : Op_name.t
+  val rFFT2D : Op_name.t
+  val rFFT3D : Op_name.t
   val rGBToHSV : Op_name.t
   val randomCrop : Op_name.t
   val randomGamma : Op_name.t
+  val randomPoisson : Op_name.t
   val randomShuffle : Op_name.t
   val randomShuffleQueue : Op_name.t
   val randomStandardNormal : Op_name.t
@@ -328,6 +339,7 @@ module Op_names : sig
   val realDiv : Op_name.t
   val reciprocal : Op_name.t
   val reciprocalGrad : Op_name.t
+  val recordInput : Op_name.t
   val reduceJoin : Op_name.t
   val refEnter : Op_name.t
   val refExit : Op_name.t
@@ -507,6 +519,7 @@ module Op_names : sig
   val unique : Op_name.t
   val uniqueWithCounts : Op_name.t
   val unpack : Op_name.t
+  val unsortedSegmentMax : Op_name.t
   val unsortedSegmentSum : Op_name.t
   val variable : Op_name.t
   val variableV2 : Op_name.t
@@ -964,6 +977,15 @@ val applyRMSProp
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
+
+(* Returns the truth value of abs(x-y) < tolerance element-wise. *)
+val approximateEqual
+  :  ?name:string
+  -> ?tolerance:float
+  -> ?control_inputs:Node.p list
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
+  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
+  -> [ `bool ] t
 
 (* Returns the index with the largest value across dimensions of a tensor. *)
 val argMax
@@ -1471,6 +1493,22 @@ val biasAddV1
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
 
+(* Counts the number of occurrences of each value in an integer array. *)
+(* Outputs a vector with length `size` and the same dtype as `weights`. If
+`weights` are empty, then index `i` stores the number of times the value `i` is
+counted in `arr`. If `weights` are non-empty, then index `i` stores the sum of
+the value in `weights` at each index where the corresponding value in `arr` is
+`i`.
+
+Values in `arr` outside of the range [0, size) are ignored. *)
+val bincount
+  :  ?name:string
+  -> ?control_inputs:Node.p list
+  -> [ `int32 ] t
+  -> [ `int32 ] t
+  -> ([< `int32 | `int64 | `float | `double ] as 't) t
+  -> ([< `int32 | `int64 | `float | `double ] as 't) t
+
 (* Bitcasts a tensor from one type to another without copying data. *)
 (* Given a tensor `input`, this operation returns a tensor that has the same buffer
 data as `input` with datatype `type`.
@@ -1514,7 +1552,7 @@ val broadcastGradientArgs
 (* A note about the attribute merge_repeated: if enabled, when
 consecutive logits' maximum indices are the same, only the first of
 these is emitted.  Labeling the blank '*', the sequence 'A B B * B B'
-becomes 'A B' if merge_repeated = True and 'A B B B B' if
+becomes 'A B B' if merge_repeated = True and 'A B B B B' if
 merge_repeated = False.
 
 Regardless of the value of merge_repeated, if the maximum index of a given
@@ -1934,7 +1972,7 @@ tf.cumprod([a, b, c]) ==> [a, a * b, a * b * c]
 By setting the `exclusive` kwarg to `True`, an exclusive cumprod is
 performed instead:
 ```prettyprint
-tf.cumprod([a, b, c], exclusive=True) ==> [0, a, a * b]
+tf.cumprod([a, b, c], exclusive=True) ==> [1, a, a * b]
 ```
 
 By setting the `reverse` kwarg to `True`, the cumprod is performed in the
@@ -1946,7 +1984,7 @@ This is more efficient than using separate `tf.reverse` ops.
 
 The `reverse` and `exclusive` kwargs can also be combined:
 ```prettyprint
-tf.cumprod([a, b, c], exclusive=True, reverse=True) ==> [b * c, c, 0]
+tf.cumprod([a, b, c], exclusive=True, reverse=True) ==> [b * c, c, 1]
 ``` *)
 val cumprod
   :  ?name:string
@@ -2013,6 +2051,9 @@ val debugNanCount
 val debugNumericSummary
   :  ?name:string
   -> ?tensor_name:string
+  -> ?lower_bound:float
+  -> ?upper_bound:float
+  -> ?mute_if_healthy:bool
   -> ?control_inputs:Node.p list
   -> 't t
   -> [ `double ] t
@@ -2227,6 +2268,7 @@ val depthwiseConv2dNative
   :  ?name:string
   -> strides:int list
   -> padding:string
+  -> ?data_format:string
   -> ?control_inputs:Node.p list
   -> ([< `float | `double ] as 't) t
   -> ([< `float | `double ] as 't) t
@@ -2237,6 +2279,7 @@ val depthwiseConv2dNativeBackpropFilter
   :  ?name:string
   -> strides:int list
   -> padding:string
+  -> ?data_format:string
   -> ?control_inputs:Node.p list
   -> ([< `float | `double ] as 't) t
   -> [ `int32 ] t
@@ -2248,6 +2291,7 @@ val depthwiseConv2dNativeBackpropInput
   :  ?name:string
   -> strides:int list
   -> padding:string
+  -> ?data_format:string
   -> ?control_inputs:Node.p list
   -> [ `int32 ] t
   -> ([< `float | `double ] as 't) t
@@ -2879,9 +2923,8 @@ val fakeQuantWithMinMaxArgsGradient
   -> [ `float ] t
   -> [ `float ] t
 
-(* Fake-quantize the 'inputs' tensor of type float and shape `[b, h, w, d]` via *)
-(* global float scalars `min` and `max` to 'outputs' tensor of same shape as
-`inputs`.
+(* Fake-quantize the 'inputs' tensor of type float via global float scalars `min` *)
+(* and `max` to 'outputs' tensor of same shape as `inputs`.
 
 [min; max] is the clamping range for the 'inputs' data.  Op divides this range
 into 255 steps (total of 256 values), then replaces each 'inputs' value with the
@@ -3318,7 +3361,6 @@ val gatherNd
   -> ([< `int32 | `int64 ] as 'tindices) t
   -> 'tparams t
 
-(* Store the input tensor in the state of the current session. *)
 val getSessionHandle
   :  ?name:string
   -> ?control_inputs:Node.p list
@@ -3414,6 +3456,54 @@ val iFFT3D
   -> ?control_inputs:Node.p list
   -> [ `complex64 ] t
   -> [ `complex64 ] t
+
+(* Compute the inverse 1-dimensional discrete Fourier Transform of a real-valued *)
+(* signal over the inner-most dimension of `input`.
+
+The inner-most dimension of `input` is assumed to be the result of `RFFT`: the
+`fft_length / 2 + 1` unique components of the DFT of a real-valued signal. If
+`fft_length` is not provided, it is computed from the size of the inner-most
+dimension of `input` (`fft_length = 2 * (inner - 1)`). If the FFT length used to
+compute `input` is odd, it should be provided since it cannot be inferred
+properly. *)
+val iRFFT
+  :  ?name:string
+  -> ?control_inputs:Node.p list
+  -> [ `complex64 ] t
+  -> [ `int32 ] t
+  -> [ `float ] t
+
+(* Compute the inverse 2-dimensional discrete Fourier Transform of a real-valued *)
+(* signal over the inner-most 2 dimensions of `input`.
+
+The inner-most 2 dimensions of `input` are assumed to be the result of `RFFT2D`:
+The inner-most dimension contains the `fft_length / 2 + 1` unique components of
+the DFT of a real-valued signal. If `fft_length` is not provided, it is computed
+from the size of the inner-most 2 dimensions of `input`. If the FFT length used
+to compute `input` is odd, it should be provided since it cannot be inferred
+properly. *)
+val iRFFT2D
+  :  ?name:string
+  -> ?control_inputs:Node.p list
+  -> [ `complex64 ] t
+  -> [ `int32 ] t
+  -> [ `float ] t
+
+(* Compute the inverse 3-dimensional discrete Fourier Transform of a real-valued *)
+(* signal over the inner-most 3 dimensions of `input`.
+
+The inner-most 3 dimensions of `input` are assumed to be the result of `RFFT3D`:
+The inner-most dimension contains the `fft_length / 2 + 1` unique components of
+the DFT of a real-valued signal. If `fft_length` is not provided, it is computed
+from the size of the inner-most 3 dimensions of `input`. If the FFT length used
+to compute `input` is odd, it should be provided since it cannot be inferred
+properly. *)
+val iRFFT3D
+  :  ?name:string
+  -> ?control_inputs:Node.p list
+  -> [ `complex64 ] t
+  -> [ `int32 ] t
+  -> [ `float ] t
 
 (* Return a tensor with the same shape and contents as the input tensor or value. *)
 val identity
@@ -3974,7 +4064,7 @@ val matMul
   -> ([< `float | `double | `int32 | `complex64 ] as 't) t
   -> ([< `float | `double | `int32 | `complex64 ] as 't) t
 
-(* Returns the set of files matching a pattern. *)
+(* Returns the set of files matching one or more glob patterns. *)
 (* Note that this routine only supports wildcard characters in the
 basename portion of the pattern, not in the directory portion. *)
 val matchingFiles
@@ -4180,14 +4270,14 @@ matrix and right-hand sides in the batch:
 If `fast` is `True`, then the solution is computed by solving the normal
 equations using Cholesky decomposition. Specifically, if \\(m \ge n\\) then
 \\(X = (A^T A + \lambda I)^{-1} A^T B\\), which solves the least-squares
-problem \\(X = \mathrm{argmin}_{Z \in \Re^{n \times k}} ||A Z - B||_F^2 +
+problem \\(X = \mathrm{argmin}_{Z \in \Re^{n \times k} } ||A Z - B||_F^2 +
 \lambda ||Z||_F^2\\). If \\(m \lt n\\) then `output` is computed as
 \\(X = A^T (A A^T + \lambda I)^{-1} B\\), which (for \\(\lambda = 0\\)) is the
 minimum-norm solution to the under-determined linear system, i.e.
-\\(X = \mathrm{argmin}_{Z \in \Re^{n \times k}} ||Z||_F^2 \\), subject to
+\\(X = \mathrm{argmin}_{Z \in \Re^{n \times k} } ||Z||_F^2 \\), subject to
 \\(A Z = B\\). Notice that the fast path is only numerically stable when
 \\(A\\) is numerically full rank and has a condition number
-\\(\mathrm{cond}(A) \lt \frac{1}{\sqrt{\epsilon_{mach}}}\\) or\\(\lambda\\) is
+\\(\mathrm{cond}(A) \lt \frac{1}{\sqrt{\epsilon_{mach} } }\\) or\\(\lambda\\) is
 sufficiently large.
 
 If `fast` is `False` an algorithm based on the numerically robust complete
@@ -4902,6 +4992,7 @@ op exists to prevent subtle bugs from silently returning unimplemented
 gradients in some corner cases. *)
 val preventGradient
   :  ?name:string
+  -> ?message:string
   -> ?control_inputs:Node.p list
   -> 't t
   -> 't t
@@ -4954,6 +5045,18 @@ val qr
   -> ([< `double | `float | `complex64 ] as 't) t
   -> ([< `double | `float | `complex64 ] as 't) t * ([< `double | `float | `complex64 ] as 't) t
 
+(* Use QuantizeAndDequantizeV2 instead. *)
+val quantizeAndDequantize
+  :  ?name:string
+  -> ?signed_input:bool
+  -> ?num_bits:int
+  -> ?range_given:bool
+  -> ?input_min:float
+  -> ?input_max:float
+  -> ?control_inputs:Node.p list
+  -> ([< `float | `double ] as 't) t
+  -> ([< `float | `double ] as 't) t
+
 (* Quantizes then dequantizes a tensor. *)
 (* This op simulates the precision loss from the quantized forward pass by:
 1. Quantizing the tensor to fixed point numbers, which should match the target
@@ -4970,7 +5073,7 @@ To perform this op, we first find the range of values in our tensor. The range
 we use is always centered on 0, so we find m such that
 
 1. m = max(abs(input_min), abs(input_max)) if range_given is true,
-2. m = max(max(abs(min_elem(input)), abs(max_elem(input))) otherwise.
+2. m = max(abs(min_elem(input)), abs(max_elem(input))) otherwise.
 
 Our input tensor range is then [-m, m].
 
@@ -5004,14 +5107,14 @@ For example, suppose num_bits = 8 and m = 1.  Then
 
 Given the vector {-1, -0.5, 0, 0.3}, this is quantized to
 {-127, -63, 0, 38}, and dequantized to {-1, -63.0/127, 0, 38.0/127}. *)
-val quantizeAndDequantize
+val quantizeAndDequantizeV2
   :  ?name:string
   -> ?signed_input:bool
   -> ?num_bits:int
   -> ?range_given:bool
-  -> ?input_min:float
-  -> ?input_max:float
   -> ?control_inputs:Node.p list
+  -> ([< `float | `double ] as 't) t
+  -> ([< `float | `double ] as 't) t
   -> ([< `float | `double ] as 't) t
   -> ([< `float | `double ] as 't) t
 
@@ -5233,6 +5336,19 @@ val quantizedMaxPool
   -> [ `float ] t
   -> 't t * [ `float ] t * [ `float ] t
 
+(* Returns x * y element-wise, working on quantized buffers. *)
+val quantizedMul
+  :  ?name:string
+  -> type_:'toutput Type.t
+  -> ?control_inputs:Node.p list
+  -> 't1 t
+  -> 't2 t
+  -> [ `float ] t
+  -> [ `float ] t
+  -> [ `float ] t
+  -> [ `float ] t
+  -> 'toutput t * [ `float ] t * [ `float ] t
+
 (* Computes Quantized Rectified Linear: `max(features, 0)` *)
 val quantizedRelu
   :  ?name:string
@@ -5295,6 +5411,47 @@ val queueSize
   -> [ `string ] t
   -> [ `int32 ] t
 
+(* Compute the 1-dimensional discrete Fourier Transform of a real-valued signal *)
+(* over the inner-most dimension of `input`.
+
+Since the DFT of a real signal is Hermitian-symmetric, `RFFT` only returns the
+`fft_length / 2 + 1` unique components of the FFT: the zero-frequency term,
+followed by the `fft_length / 2` positive-frequency terms. *)
+val rFFT
+  :  ?name:string
+  -> ?control_inputs:Node.p list
+  -> [ `float ] t
+  -> [ `int32 ] t
+  -> [ `complex64 ] t
+
+(* Compute the 2-dimensional discrete Fourier Transform of a real-valued signal *)
+(* over the inner-most 2 dimensions of `input`.
+
+Since the DFT of a real signal is Hermitian-symmetric, `RFFT2D` only returns the
+`fft_length / 2 + 1` unique components of the FFT for the inner-most dimension
+of `output`: the zero-frequency term, followed by the `fft_length / 2`
+positive-frequency terms. *)
+val rFFT2D
+  :  ?name:string
+  -> ?control_inputs:Node.p list
+  -> [ `float ] t
+  -> [ `int32 ] t
+  -> [ `complex64 ] t
+
+(* Compute the 3-dimensional discrete Fourier Transform of a real-valued signal *)
+(* over the inner-most 3 dimensions of `input`.
+
+Since the DFT of a real signal is Hermitian-symmetric, `RFFT3D` only returns the
+`fft_length / 2 + 1` unique components of the FFT for the inner-most dimension
+of `output`: the zero-frequency term, followed by the `fft_length / 2`
+positive-frequency terms. *)
+val rFFT3D
+  :  ?name:string
+  -> ?control_inputs:Node.p list
+  -> [ `float ] t
+  -> [ `int32 ] t
+  -> [ `complex64 ] t
+
 (* Converts one or more images from RGB to HSV. *)
 (* Outputs a tensor of the same shape as the `images` tensor, containing the HSV
 value of the pixels. The output is only well defined if the value in `images`
@@ -5337,6 +5494,25 @@ val randomGamma
   -> ([< `int32 | `int64 ] as 's) t
   -> ([< `float | `double ] as 't) t
   -> ([< `float | `double ] as 't) t
+
+(* Outputs random values from the Poisson distribution(s) described by rate. *)
+(* This op uses two algorithms, depending on rate. If rate >= 10, then
+the algorithm by Hormann is used to acquire samples via
+transformation-rejection.
+See http://www.sciencedirect.com/science/article/pii/0167668793909974.
+
+Otherwise, Knuth's algorithm is used to acquire samples via multiplying uniform
+random variables.
+See Donald E. Knuth (1969). Seminumerical Algorithms. The Art of Computer
+Programming, Volume 2. Addison Wesley *)
+val randomPoisson
+  :  ?name:string
+  -> ?seed:int
+  -> ?seed2:int
+  -> ?control_inputs:Node.p list
+  -> ([< `int32 | `int64 ] as 's) t
+  -> ([< `float | `double ] as 'dtype) t
+  -> ([< `float | `double ] as 'dtype) t
 
 (* Randomly shuffles a tensor along its first dimension. *)
 (*   The tensor is shuffled along dimension 0, such that each `value[j]` is mapped
@@ -5573,6 +5749,19 @@ val reciprocalGrad
   -> ([< `float | `double | `complex64 ] as 't) t
   -> ([< `float | `double | `complex64 ] as 't) t
   -> ([< `float | `double | `complex64 ] as 't) t
+
+(* Emits randomized records. *)
+val recordInput
+  :  ?name:string
+  -> file_pattern:string
+  -> ?file_random_seed:int
+  -> ?file_shuffle_shift_ratio:float
+  -> ?file_buffer_size:int
+  -> ?file_parallelism:int
+  -> ?batch_size:int
+  -> ?control_inputs:Node.p list
+  -> unit
+  -> [ `string ] t
 
 (* Joins a string Tensor across the given dimensions. *)
 (* Computes the string join across dimensions in the given string Tensor of shape
@@ -5953,7 +6142,7 @@ val reverse
 slice `i`, reverses the first `seq_lengths[i]` elements along
 the dimension `seq_dim`.
 
-The elements of `seq_lengths` must obey `seq_lengths[i] < input.dims[seq_dim]`,
+The elements of `seq_lengths` must obey `seq_lengths[i] <= input.dims[seq_dim]`,
 and `seq_lengths` must be a vector of length `input.dims[batch_dim]`.
 
 The output slice `i` along dimension `batch_dim` is then given by input
@@ -6555,6 +6744,8 @@ Computes a tensor such that
 \\(output_i = \max_j(data_j)\\) where `max` is over `j` such
 that `segment_ids[j] == i`.
 
+If the max is empty for a given segment ID `i`, `output[i] = 0`.
+
 <div style='width:70%; margin:auto; margin-bottom:10px; margin-top:20px;'>
 <img style='width:100%' src='../../images/SegmentMax.png' alt>
 </div> *)
@@ -6575,6 +6766,8 @@ Computes a tensor such that
 over `j` such that `segment_ids[j] == i` and `N` is the total number of
 values summed.
 
+If the mean is empty for a given segment ID `i`, `output[i] = 0`.
+
 <div style='width:70%; margin:auto; margin-bottom:10px; margin-top:20px;'>
 <img style='width:100%' src='../../images/SegmentMean.png' alt>
 </div> *)
@@ -6593,6 +6786,8 @@ of segments.
 Computes a tensor such that
 \\(output_i = \min_j(data_j)\\) where `min` is over `j` such
 that `segment_ids[j] == i`.
+
+If the min is empty for a given segment ID `i`, `output[i] = 0`.
 
 <div style='width:70%; margin:auto; margin-bottom:10px; margin-top:20px;'>
 <img style='width:100%' src='../../images/SegmentMin.png' alt>
@@ -6613,6 +6808,8 @@ Computes a tensor such that
 \\(output_i = \prod_j data_j\\) where the product is over `j` such
 that `segment_ids[j] == i`.
 
+If the product is empty for a given segment ID `i`, `output[i] = 1`.
+
 <div style='width:70%; margin:auto; margin-bottom:10px; margin-top:20px;'>
 <img style='width:100%' src='../../images/SegmentProd.png' alt>
 </div> *)
@@ -6630,6 +6827,8 @@ for an explanation of segments.
 Computes a tensor such that
 \\(output_i = \sum_j data_j\\) where sum is over `j` such
 that `segment_ids[j] == i`.
+
+If the sum is empty for a given segment ID `i`, `output[i] = 0`.
 
 <div style='width:70%; margin:auto; margin-bottom:10px; margin-top:20px;'>
 <img style='width:100%' src='../../images/SegmentSum.png' alt>
@@ -8125,7 +8324,7 @@ defines the key of the hash function. `key` is an array of 2 elements.
 A strong hash is important when inputs may be malicious, e.g. URLs with
 additional components. Adversaries could try to make their inputs hash to the
 same bucket for a denial-of-service attack or to skew the results. A strong
-hash prevents this by making it dificult, if not infeasible, to compute inputs
+hash prevents this by making it difficult, if not infeasible, to compute inputs
 that hash to the same bucket. This comes at a cost of roughly 4x higher compute
 time than `tf.string_to_hash_bucket_fast`. *)
 val stringToHashBucketStrong
@@ -8694,9 +8893,7 @@ row (resp. vector along the last dimension).  Thus,
 
     values.shape = indices.shape = input.shape[:-1] + [k]
 
-If two elements are equal, the lower-index element appears first.
-
-This is the same as `TopK`, but takes `k` as in input rather than an attr. *)
+If two elements are equal, the lower-index element appears first. *)
 val topKV2
   :  ?name:string
   -> ?sorted:bool
@@ -8848,16 +9045,42 @@ val unpack
   -> 't t
   -> 't t list
 
-(* Computes the sum along segments of a tensor. *)
+(* Computes the Max along segments of a tensor. *)
+(* Read [the section on
+Segmentation](../../api_docs/python/math_ops.md#segmentation) for an explanation
+of segments.
+
+This operator is similar to the [unsorted segment sum operator](../../api_docs/python/math_ops.md#UnsortedSegmentSum).
+Instead of computing the sum over segments, it computes the maximum
+such that:
+
+\\(output_i = \max_j data_j\\) where max is over `j` such
+that `segment_ids[j] == i`.
+
+If the maximum is empty for a given segment ID `i`, it outputs the smallest possible value for specific numeric type,
+ `output[i] = numeric_limits<T>::min()`.
+
+<div style='width:70%; margin:auto; margin-bottom:10px; margin-top:20px;'>
+<img style='width:100%' src='../../images/UnsortedSegmentSum.png' alt>
+</div> *)
+val unsortedSegmentMax
+  :  ?name:string
+  -> ?control_inputs:Node.p list
+  -> ([< `float | `double | `int32 | `int64 ] as 't) t
+  -> ([< `int32 | `int64 ] as 'tindices) t
+  -> [ `int32 ] t
+  -> ([< `float | `double | `int32 | `int64 ] as 't) t
+
+(* Computes the max along segments of a tensor. *)
 (* Read [the section on
 Segmentation](../../api_docs/python/math_ops.md#segmentation) for an explanation
 of segments.
 
 Computes a tensor such that
-`(output[i] = sum_{j...} data[j...]` where the sum is over tuples `j...` such
-that `segment_ids[j...] == i`.  Unlike `SegmentSum`, `segment_ids`
+\\(output_i = \sum_j data_j\\) where sum is over `j` such
+that `segment_ids[j] == i`. Unlike `SegmentSum`, `segment_ids`
 need not be sorted and need not cover all values in the full
-range of valid values.
+  range of valid values.
 
 If the sum is empty for a given segment ID `i`, `output[i] = 0`.
 
@@ -8869,10 +9092,10 @@ If the sum is empty for a given segment ID `i`, `output[i] = 0`.
 val unsortedSegmentSum
   :  ?name:string
   -> ?control_inputs:Node.p list
-  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
+  -> ([< `float | `double | `int64 | `int32 ] as 't) t
   -> ([< `int32 | `int64 ] as 'tindices) t
   -> [ `int32 ] t
-  -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
+  -> ([< `float | `double | `int64 | `int32 ] as 't) t
 
 (* Use VariableV2 instead. *)
 val variable
