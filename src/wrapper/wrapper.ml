@@ -556,6 +556,19 @@ module Graph = struct
       let dims = CArray.to_list shape |> List.map Int64.to_int in
       Status.result_or_error status dims
     | _ -> Error status
+
+  let add_gradients t ys ~xs =
+    let status = Status.create () in
+    let nx = List.length xs in
+    let ny = List.length ys in
+    let xs = CArray.(of_list Tf_output.t xs |> start) in
+    let ys = CArray.(of_list Tf_output.t ys |> start) in
+    let dys = CArray.make Tf_output.t nx in
+    Tf_graph.tf_addgradients t ys ny xs nx (from_voidp Tf_output.t null) status (CArray.start dys);
+    keep_alive t;
+    match Status.result_or_error status () with
+    | Ok () -> Status.Ok (CArray.to_list dys)
+    | Error _ as err -> err
 end
 
 module Session_options = struct

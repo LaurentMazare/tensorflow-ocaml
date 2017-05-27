@@ -185,6 +185,12 @@ module Graph : sig
     :  t
     -> output
     -> int list Status.result
+
+  val add_gradients
+    :  t
+    -> output list
+    -> xs:output list
+    -> output list Status.result
 end
 
 module Session : sig
