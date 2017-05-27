@@ -134,7 +134,7 @@ let test_batch_normalization () =
   done
 
 let test_cond true_false =
-  let testing = Ops.placeholder ~type_:Bool [ 1 ] in
+  let testing = Ops.placeholder ~type_:Bool [] in
   let true_false = if true_false then 1 else 0 in
   let int32_with_control_inputs ~control_inputs v =
     Ops.const_int ~shape:[] ~type_:Int32 ~control_inputs [ v ]
