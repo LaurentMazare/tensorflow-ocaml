@@ -10,7 +10,7 @@ opam install tensorflow
 
 ### Get the TensorFlow Library
 
-The opam package starting from version 0.0.8 requires the version 1.0 of the TensorFlow library to be installed on your system under the name `libtensorflow.so`.
+The opam package starting from version 0.0.8 requires the version 1.0 of the TensorFlow library to be installed on your system under the name `libtensorflow.so` (the current github tip requires 1.2).
 Two possible ways to obtain it are:
 
 * __Build the library from source__. Perform the following steps:
