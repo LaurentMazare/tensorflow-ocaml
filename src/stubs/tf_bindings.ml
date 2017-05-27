@@ -145,6 +145,18 @@ module C(F: Cstubs.FOREIGN) = struct
         @-> int
         @-> Tf_status.t
         @-> returning void)
+
+    let tf_addgradients =
+      foreign "TF_AddGradients"
+        (t
+        @-> ptr Tf_output.t
+        @-> int
+        @-> ptr Tf_output.t
+        @-> int
+        @-> ptr Tf_output.t
+        @-> Tf_status.t
+        @-> ptr Tf_output.t
+        @-> returning void)
   end
 
   module Tf_operationdescription = struct
@@ -291,4 +303,3 @@ module C(F: Cstubs.FOREIGN) = struct
         @-> returning void)
   end
 end
-
