@@ -16,8 +16,8 @@ let all_vars_with_names node =
 let train filename learning_rate =
   let dataset = Text_helper.create filename Float32 in
   let dim = Text_helper.dim dataset in
-  let placeholder_x = Ops.placeholder ~type_:Float [] in
-  let placeholder_y = Ops.placeholder ~type_:Float [] in
+  let placeholder_x = Ops.placeholder ~type_:Float [ -1; seq_len ] in
+  let placeholder_y = Ops.placeholder ~type_:Float [ -1 ] in
   let cross_entropy =
     let wy, by =
       Var.normalf [ size_c; dim ] ~stddev:0.1, Var.f [ dim ] 0.

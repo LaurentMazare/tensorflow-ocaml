@@ -32,10 +32,10 @@ let tensor_zero size =
   tensor
 
 let rnn ~size_c ~dim =
-  let train_placeholder_x    = Ops.placeholder ~type_:Float [] in
-  let train_placeholder_y    = Ops.placeholder ~type_:Float [] in
-  let sample_placeholder_mem = Ops.placeholder ~type_:Float [] in
-  let sample_placeholder_x   = Ops.placeholder ~type_:Float [] in
+  let train_placeholder_x    = Ops.placeholder ~type_:Float [ -1; seq_len ] in
+  let train_placeholder_y    = Ops.placeholder ~type_:Float [ -1 ] in
+  let sample_placeholder_mem = Ops.placeholder ~type_:Float [ -1; seq_len ] in
+  let sample_placeholder_x   = Ops.placeholder ~type_:Float [ -1 ] in
   (* Two LSTM specific code. *)
   let wy, by =
     Var.normalf [ size_c; dim ] ~stddev:0.1, Var.f [ dim ] 0.
@@ -112,12 +112,12 @@ let sample filename checkpoint gen_size temperature seed =
   let index_by_char = Text_helper.map dataset in
   let t = rnn ~size_c ~dim in
   let load_and_assign_nodes =
-    let checkpoint = Ops.const_string [ checkpoint ] in
+    let checkpoint = Ops.const_string0 checkpoint in
     List.map (all_vars_with_names t) ~f:(fun (var_name, (Node.P var)) ->
       Ops.restore
         ~type_:(Node.output_type var)
         checkpoint
-        (Ops.const_string [ var_name ])
+        (Ops.const_string0 var_name)
       |> Ops.assign var
       |> fun node -> Node.P node)
   in
