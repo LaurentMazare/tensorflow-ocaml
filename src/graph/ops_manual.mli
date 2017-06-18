@@ -57,6 +57,11 @@ val const_string
   -> string list
   -> [ `string ] Node.t
 
+val const_string0
+  :  ?name:string
+  -> string
+  -> [ `string ] Node.t
+
 val scalar
   :  ?empty_shape:unit
   -> type_:([< `float | `double ] as 'dtype) Node.Type.t

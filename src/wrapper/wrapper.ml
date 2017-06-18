@@ -182,7 +182,7 @@ module Tensor = struct
     in
     loop 0 int
 
-  let c_tensor_of_strings strings =
+  let c_tensor_of_strings strings ~shape =
     let nstrings = List.length strings in
     let bigarray, size =
       let start_offset_len = nstrings * 8 in
@@ -222,7 +222,8 @@ module Tensor = struct
     in
     let id = Id.create () in
     let dims =
-      CArray.of_list int64_t [ Int64.of_int nstrings ]
+      List.map Int64.of_int shape
+      |> CArray.of_list int64_t
       |> CArray.start
     in
     Hashtbl.add live_tensors id (`string_tensor bigarray);
@@ -231,7 +232,7 @@ module Tensor = struct
     then Gc.full_major ();
     tf_newtensor (data_type_to_int TF_STRING)
       dims
-      1
+      (List.length shape)
       start
       (Unsigned.Size_t.of_int size)
       deallocate
@@ -502,8 +503,8 @@ module Graph = struct
     keep_alive graph;
     Status.result_or_error status ()
 
-  let set_attr_tensor_string (graph, od) ~attr_name strings =
-    let tensor = Tensor.c_tensor_of_strings strings in
+  let set_attr_tensor_string (graph, od) ~attr_name ~shape strings =
+    let tensor = Tensor.c_tensor_of_strings strings ~shape in
     let status = Status.create () in
     Tf_operationdescription.tf_setattrtensor
       od

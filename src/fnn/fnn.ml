@@ -657,12 +657,12 @@ module Model = struct
   let load ?(inputs = []) t ~filename =
     let load_and_assign_nodes =
       Hashtbl.find_or_add t.load_and_assign_nodes filename ~default:(fun () ->
-        let filename = Ops.const_string [ filename ] in
+        let filename = Ops.const_string0 filename in
         List.map (all_vars_with_names t) ~f:(fun (var_name, (Node.P var)) ->
           Ops.restore
             ~type_:(Node.output_type var)
             filename
-            (Ops.const_string [ var_name ])
+            (Ops.const_string0 var_name)
           |> Ops.assign var
           |> fun node -> Node.P node))
     in

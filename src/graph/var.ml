@@ -14,7 +14,9 @@ let create shape ~type_ ~init =
 
 let load ~type_ shape ~filename ~tensor =
   let init =
-    Ops.restore ~type_ (Ops.const_string [ filename ]) (Ops.const_string [ tensor ])
+    Ops.restore ~type_
+      (Ops.const_string0 filename)
+      (Ops.const_string0 tensor)
   in
   create shape ~type_ ~init
 let load_f = load ~type_:Float

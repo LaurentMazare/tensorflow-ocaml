@@ -74,6 +74,8 @@ let const_string
     ]
     ~output_idx:None
 
+let const_string0 ?name value = const_string ?name ~shape:[] [ value ]
+
 let scalar ?empty_shape ~type_ f =
   const_float
     ~type_
@@ -174,7 +176,7 @@ let save_
 let save ~filename named_tensors =
   let tensor_names, tensors = List.unzip named_tensors in
   save_
-    (const_string [ filename ])
+    (const_string0 filename)
     (const_string tensor_names)
     tensors
 

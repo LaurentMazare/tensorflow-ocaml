@@ -156,6 +156,7 @@ module Graph : sig
   val set_attr_tensor_string
     :  operation_description
     -> attr_name:string
+    -> shape:int list
     -> string list
     -> unit Status.result
 
