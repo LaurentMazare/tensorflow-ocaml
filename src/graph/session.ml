@@ -27,99 +27,35 @@ let maybe_use_default_session =
   | None -> Lazy.force default_session
   | Some session -> session
 
-let add_attribute operation_description ~attr_name attr =
-  match (attr : Node.attr) with
-  | String str ->
-    Wrapper.Graph.set_attr_string operation_description ~attr_name str
-  | Type dtype ->
-    let dtype = Node.Type.to_data_type dtype in
-    Wrapper.Graph.set_attr_type operation_description ~attr_name dtype
-  | Tensor_float tensor_float ->
-    let set_attr kind =
-      let tensor = Tensor.create kind (Array.of_list tensor_float.shape) in
-      Tensor.copy_elt_list tensor tensor_float.values;
-      Wrapper.Graph.set_attr_tensor operation_description ~attr_name (Tensor.P tensor)
-      |> Wrapper.Status.ok_exn
-    in
-    begin
-      match tensor_float.type_ with
-      | Node.Type.P Node.Type.Float -> set_attr Float32
-      | Node.Type.P Node.Type.Double -> set_attr Float64
-      | Node.Type.P _ -> assert false
-    end
-  | Tensor_int tensor_int ->
-    let tensor =
-      match tensor_int.type_ with
-      | Node.Type.P Node.Type.Int32 ->
-        let tensor = Tensor.create Int32 (Array.of_list tensor_int.shape) in
-        Tensor.copy_elt_list tensor (List.map tensor_int.values ~f:Int32.of_int_exn);
-        Tensor.P tensor
-      | Node.Type.P Node.Type.Int64 ->
-        let tensor = Tensor.create Int64 (Array.of_list tensor_int.shape) in
-        Tensor.copy_elt_list tensor (List.map tensor_int.values ~f:Int64.of_int_exn);
-        Tensor.P tensor
-      | Node.Type.P _ -> assert false
-    in
-    Wrapper.Graph.set_attr_tensor operation_description ~attr_name tensor
-    |> Wrapper.Status.ok_exn
-  | Int i ->
-    Wrapper.Graph.set_attr_int operation_description ~attr_name i
-  | Float f ->
-    Wrapper.Graph.set_attr_float operation_description ~attr_name f
-  | Bool b ->
-    Wrapper.Graph.set_attr_bool operation_description ~attr_name b
-  | Shape shape ->
-    let shape = List.map shape ~f:(fun dim -> dim.size) in
-    Wrapper.Graph.set_attr_shape operation_description ~attr_name shape
-  | List (Int is) ->
-    Wrapper.Graph.set_attr_int_list operation_description ~attr_name is
-  | List (Float fs) ->
-    Wrapper.Graph.set_attr_float_list operation_description ~attr_name fs
-  | List (Bool bs) ->
-    Wrapper.Graph.set_attr_bool_list operation_description ~attr_name bs
-  | List (Type dtypes) ->
-    let dtypes = List.map ~f:Node.Type.to_data_type dtypes in
-    Wrapper.Graph.set_attr_type_list operation_description ~attr_name dtypes
-  | List (String _) -> failwith "List String attributes are not supported yet."
-  | List (Shape _) -> failwith "List Shape attributes are not supported yet."
-  | Tensor_string tensor_str ->
-    Wrapper.Graph.set_attr_tensor_string operation_description tensor_str.values
-      ~attr_name
-      ~shape:tensor_str.shape
-    |> Wrapper.Status.ok_exn
-
 let rec build t node =
   let id = Node.packed_id node in
   match Hashtbl.find t.nodes id with
   | Some op -> op
   | None ->
     let Node.P u_node = node in
-    let operation_description =
-      Wrapper.Graph.new_operation t.graph
-        ~op_name:(Node.op_name u_node |> Node.Op_name.to_string)
-        ~name:(Node.unique_name u_node)
+    let control_inputs =
+      List.map (Node.control_inputs u_node) ~f:(fun control_input -> build t control_input)
     in
-    List.iter (Node.control_inputs u_node) ~f:(fun control_input ->
-      Wrapper.Graph.add_control_input operation_description
-        (build t control_input));
-    List.iter (Node.inputs u_node) ~f:(function
-      | `single input ->
-        Wrapper.Graph.add_input
-          operation_description
-          (build t input)
-          ~index:(Node.packed_output_idx input |> Option.value ~default:0)
-      | `multi inputs ->
-        let inputs =
-          List.map inputs ~f:(fun input ->
-            let index = Node.packed_output_idx input |> Option.value ~default:0 in
-            build t input, index)
-        in
-        Wrapper.Graph.add_inputs operation_description inputs);
-    List.iter (Node.attributes u_node) ~f:(fun (attr_name, attr) ->
-      add_attribute operation_description ~attr_name attr);
+    let inputs, input_lists =
+      List.partition_map (Node.inputs u_node) ~f:(function
+        | `single input ->
+          `Fst (build t input, Node.packed_output_idx input |> Option.value ~default:0)
+        | `multi inputs ->
+          let input_lists =
+            List.map inputs ~f:(fun input ->
+              let index = Node.packed_output_idx input |> Option.value ~default:0 in
+              build t input, index)
+          in
+          `Snd input_lists)
+    in
     let operation =
-      Wrapper.Graph.finish_operation operation_description
-      |> Wrapper.Status.ok_exn
+      Operation.create t.graph
+        ~op_name:(Node.op_name u_node |> Node.Op_name.to_string)
+        ~unique_name:(Node.unique_name u_node)
+        ~control_inputs
+        ~inputs
+        ~input_lists
+        ~attributes:(Node.attributes u_node)
     in
     Hashtbl.set t.nodes ~key:id ~data:operation;
     Option.iter (Var.get_init u_node) ~f:(fun init_node ->
