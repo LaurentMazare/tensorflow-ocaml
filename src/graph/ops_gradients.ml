@@ -1,5 +1,6 @@
 open Base
 open Float.O_dot
+module O = Tensorflow_core.Operation
 module N = Node
 module T = Node.Type
 
@@ -125,7 +126,7 @@ let matmul_gradient ~self ~gradient =
     |> Option.value_map
         ~default:false
         ~f:(function
-          | N.Bool b -> b
+          | O.Bool b -> b
           | _ -> assert false)
   in
   let transpose_a = get_transpose "transpose_a" in
@@ -155,7 +156,7 @@ let batch_matmul_gradient ~self ~gradient =
     |> Option.value_map
         ~default:false
         ~f:(function
-          | N.Bool b -> b
+          | O.Bool b -> b
           | _ -> assert false)
   in
   let adj_x = get_adj "adj_x" in

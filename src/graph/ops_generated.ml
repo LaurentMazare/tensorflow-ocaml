@@ -1,5 +1,6 @@
 (* THIS FILE HAS BEEN AUTOMATICALLY GENERATED, DO NOT EDIT BY HAND! *)
 open Base
+open Tensorflow_core.Operation
 open Node
 
 module Op_names = struct

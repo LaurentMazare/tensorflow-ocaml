@@ -447,6 +447,7 @@ let gen_ml ops =
   let p s = p out_channel s in
   p "%s" automatically_generated_file;
   p "open Base";
+  p "open Tensorflow_core.Operation";
   p "open Node";
   p "";
   p "module Op_names = struct";
