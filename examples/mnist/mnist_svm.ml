@@ -18,7 +18,7 @@ let () =
   let b = Var.f [ label_count ] 0. in
   let ys_ = Ops.(Placeholder.to_node xs *^ w - b) in
   let accuracy =
-    Ops.equal (Ops.argMax ys_ Ops.one32) (Ops.argMax ys_node Ops.one32)
+    Ops.equal (Ops.argMax ~type_:Int32 ys_ Ops.one32) (Ops.argMax ~type_:Int32 ys_node Ops.one32)
     |> Ops.cast ~type_:Float
     |> Ops.reduce_mean
   in

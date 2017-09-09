@@ -20,7 +20,7 @@ let () =
   let ys_ = O.(Placeholder.to_node xs *^ w + b) |> O.softmax in
   let cross_entropy = O.cross_entropy ~ys:ys_node ~y_hats:ys_ `mean in
   let accuracy =
-    O.(equal (argMax ys_ O.one32) (argMax ys_node O.one32))
+    O.(equal (argMax ~type_:Int32 ys_ O.one32) (argMax ~type_:Int32 ys_node O.one32))
     |> O.cast ~type_:Float
     |> O.reduce_mean
   in

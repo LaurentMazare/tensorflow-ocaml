@@ -498,7 +498,7 @@ module Model = struct
     in
     match eq with
     | Tensor.Float -> (create Float ~type_:Float : (_, a, b) t)
-    | Tensor.Double -> create Double ~type_:Double
+    | Tensor.Double -> failwith "The Double type is not supported."
 
   let predict (type a) (type b)
         (t : (_, a, b) t)

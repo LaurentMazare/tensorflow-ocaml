@@ -303,30 +303,34 @@ let erfc_gradient (type a) ~self ~(gradient : a N.t) =
   in
   unary_wrapper_exn ~self ~gradient ~t
 
-let conv2d_gradient ~self ~gradient =
-  let inputs0, inputs1 = binary_extract_exn self in
-  let strides = Option.value_exn (N.get_attr_int_list self "strides") in
-  let use_cudnn_on_gpu = N.get_attr_bool self "use_cudnn_on_gpu" in
-  let padding = Option.value_exn (N.get_attr_string self "padding") in
-  let gradient_input =
-    Ops.conv2DBackpropInput
-      (Ops.shape32 inputs0)
-      inputs1
-      gradient
-      ~strides
-      ?use_cudnn_on_gpu
-      ~padding
-  in
-  let gradient_filter =
-    Ops.conv2DBackpropFilter
-      inputs0
-      (Ops.shape32 inputs1)
-      gradient
-      ~strides
-      ?use_cudnn_on_gpu
-      ~padding
-  in
-  all [ N.P gradient_input; N.P gradient_filter ]
+let conv2d_gradient : type a. self:a N.t -> gradient:a N.t -> N.p option list
+  = fun ~self ~gradient ->
+  match N.output_type self, N.output_type gradient with
+  | N.Type.Float, N.Type.Float ->
+    let inputs0, inputs1 = binary_extract_exn self in
+    let strides = Option.value_exn (N.get_attr_int_list self "strides") in
+    let use_cudnn_on_gpu = N.get_attr_bool self "use_cudnn_on_gpu" in
+    let padding = Option.value_exn (N.get_attr_string self "padding") in
+    let gradient_input =
+      Ops.conv2DBackpropInput
+        (Ops.shape32 inputs0)
+        inputs1
+        gradient
+        ~strides
+        ?use_cudnn_on_gpu
+        ~padding
+    in
+    let gradient_filter =
+      Ops.conv2DBackpropFilter
+        inputs0
+        (Ops.shape32 inputs1)
+        gradient
+        ~strides
+        ?use_cudnn_on_gpu
+        ~padding
+    in
+    all [ N.P gradient_input; N.P gradient_filter ]
+  | _, _ -> failwith "Inconsistent types"
 
 let avgpool_gradient : type a. self:a N.t -> gradient:a N.t -> N.p option list
   = fun ~self ~gradient ->

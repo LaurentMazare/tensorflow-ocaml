@@ -47,7 +47,7 @@ let () =
   let ys_ = O.(h_fc1_dropout *^ w_fc2 + b_fc2) |> O.softmax in
   let cross_entropy = O.cross_entropy ~ys:(O.Placeholder.to_node ys) ~y_hats:ys_ `sum in
   let accuracy =
-    O.(equal (argMax ys_ one32) (argMax (O.Placeholder.to_node ys) one32))
+    O.(equal (argMax ~type_:Int32 ys_ one32) (argMax ~type_:Int32 (O.Placeholder.to_node ys) one32))
     |> O.cast ~type_:Float
     |> O.reduce_mean
   in
