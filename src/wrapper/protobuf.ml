@@ -9,4 +9,4 @@ let read_file filename =
   let content = Bytes.create size in
   really_input input_channel content 0 size;
   close_in input_channel;
-  content
+  Bytes.to_string content

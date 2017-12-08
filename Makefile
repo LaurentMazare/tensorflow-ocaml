@@ -14,7 +14,7 @@ ALL = $(MNIST_ALL) \
       examples/load/load.exe
 
 %.exe: .FORCE
-	jbuilder build --dev $@
+	jbuilder build $@
 
 src/graph/ops_generated: _build/default/src/gen_ops/gen.exe
 	_build/default/src/gen_ops/gen.exe
