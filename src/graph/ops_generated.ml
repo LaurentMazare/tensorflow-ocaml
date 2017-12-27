@@ -22,6 +22,7 @@ module Op_names = struct
   let adjustSaturation = Op_name.of_string "AdjustSaturation"
   let all = Op_name.of_string "All"
   let allCandidateSampler = Op_name.of_string "AllCandidateSampler"
+  let angle = Op_name.of_string "Angle"
   let any = Op_name.of_string "Any"
   let applyAdadelta = Op_name.of_string "ApplyAdadelta"
   let applyAdagrad = Op_name.of_string "ApplyAdagrad"
@@ -131,6 +132,7 @@ module Op_names = struct
   let cross = Op_name.of_string "Cross"
   let cumprod = Op_name.of_string "Cumprod"
   let cumsum = Op_name.of_string "Cumsum"
+  let debugGradientIdentity = Op_name.of_string "DebugGradientIdentity"
   let debugIdentity = Op_name.of_string "DebugIdentity"
   let debugNanCount = Op_name.of_string "DebugNanCount"
   let debugNumericSummary = Op_name.of_string "DebugNumericSummary"
@@ -175,6 +177,7 @@ module Op_names = struct
   let expm1 = Op_name.of_string "Expm1"
   let extractGlimpse = Op_name.of_string "ExtractGlimpse"
   let extractImagePatches = Op_name.of_string "ExtractImagePatches"
+  let extractJpegShape = Op_name.of_string "ExtractJpegShape"
   let fFT = Op_name.of_string "FFT"
   let fFT2D = Op_name.of_string "FFT2D"
   let fFT3D = Op_name.of_string "FFT3D"
@@ -198,11 +201,14 @@ module Op_names = struct
   let fractionalMaxPoolGrad = Op_name.of_string "FractionalMaxPoolGrad"
   let fusedBatchNorm = Op_name.of_string "FusedBatchNorm"
   let fusedBatchNormGrad = Op_name.of_string "FusedBatchNormGrad"
+  let fusedBatchNormGradV2 = Op_name.of_string "FusedBatchNormGradV2"
+  let fusedBatchNormV2 = Op_name.of_string "FusedBatchNormV2"
   let fusedPadConv2D = Op_name.of_string "FusedPadConv2D"
   let fusedResizeAndPadConv2D = Op_name.of_string "FusedResizeAndPadConv2D"
   let gather = Op_name.of_string "Gather"
   let gatherNd = Op_name.of_string "GatherNd"
   let gatherV2 = Op_name.of_string "GatherV2"
+  let generateVocabRemapping = Op_name.of_string "GenerateVocabRemapping"
   let getSessionHandle = Op_name.of_string "GetSessionHandle"
   let getSessionTensor = Op_name.of_string "GetSessionTensor"
   let greater = Op_name.of_string "Greater"
@@ -224,6 +230,7 @@ module Op_names = struct
   let imageSummary = Op_name.of_string "ImageSummary"
   let immutableConst = Op_name.of_string "ImmutableConst"
   let inTopK = Op_name.of_string "InTopK"
+  let inTopKV2 = Op_name.of_string "InTopKV2"
   let initializeTable = Op_name.of_string "InitializeTable"
   let initializeTableFromTextFile = Op_name.of_string "InitializeTableFromTextFile"
   let inv = Op_name.of_string "Inv"
@@ -244,8 +251,10 @@ module Op_names = struct
   let lgamma = Op_name.of_string "Lgamma"
   let linSpace = Op_name.of_string "LinSpace"
   let listDiff = Op_name.of_string "ListDiff"
+  let loadAndRemapMatrix = Op_name.of_string "LoadAndRemapMatrix"
   let log = Op_name.of_string "Log"
   let log1p = Op_name.of_string "Log1p"
+  let logMatrixDeterminant = Op_name.of_string "LogMatrixDeterminant"
   let logSoftmax = Op_name.of_string "LogSoftmax"
   let logUniformCandidateSampler = Op_name.of_string "LogUniformCandidateSampler"
   let logicalAnd = Op_name.of_string "LogicalAnd"
@@ -278,8 +287,11 @@ module Op_names = struct
   let maxPool3DGradGrad = Op_name.of_string "MaxPool3DGradGrad"
   let maxPoolGrad = Op_name.of_string "MaxPoolGrad"
   let maxPoolGradGrad = Op_name.of_string "MaxPoolGradGrad"
+  let maxPoolGradGradV2 = Op_name.of_string "MaxPoolGradGradV2"
   let maxPoolGradGradWithArgmax = Op_name.of_string "MaxPoolGradGradWithArgmax"
+  let maxPoolGradV2 = Op_name.of_string "MaxPoolGradV2"
   let maxPoolGradWithArgmax = Op_name.of_string "MaxPoolGradWithArgmax"
+  let maxPoolV2 = Op_name.of_string "MaxPoolV2"
   let maxPoolWithArgmax = Op_name.of_string "MaxPoolWithArgmax"
   let maximum = Op_name.of_string "Maximum"
   let mean = Op_name.of_string "Mean"
@@ -314,6 +326,7 @@ module Op_names = struct
   let padV2 = Op_name.of_string "PadV2"
   let paddingFIFOQueue = Op_name.of_string "PaddingFIFOQueue"
   let parallelConcat = Op_name.of_string "ParallelConcat"
+  let parallelDynamicStitch = Op_name.of_string "ParallelDynamicStitch"
   let parameterizedTruncatedNormal = Op_name.of_string "ParameterizedTruncatedNormal"
   let parseTensor = Op_name.of_string "ParseTensor"
   let placeholder = Op_name.of_string "Placeholder"
@@ -355,6 +368,7 @@ module Op_names = struct
   let randomCrop = Op_name.of_string "RandomCrop"
   let randomGamma = Op_name.of_string "RandomGamma"
   let randomPoisson = Op_name.of_string "RandomPoisson"
+  let randomPoissonV2 = Op_name.of_string "RandomPoissonV2"
   let randomShuffle = Op_name.of_string "RandomShuffle"
   let randomShuffleQueue = Op_name.of_string "RandomShuffleQueue"
   let randomStandardNormal = Op_name.of_string "RandomStandardNormal"
@@ -392,6 +406,7 @@ module Op_names = struct
   let reshape = Op_name.of_string "Reshape"
   let resizeArea = Op_name.of_string "ResizeArea"
   let resizeBicubic = Op_name.of_string "ResizeBicubic"
+  let resizeBicubicGrad = Op_name.of_string "ResizeBicubicGrad"
   let resizeBilinear = Op_name.of_string "ResizeBilinear"
   let resizeBilinearGrad = Op_name.of_string "ResizeBilinearGrad"
   let resizeNearestNeighbor = Op_name.of_string "ResizeNearestNeighbor"
@@ -428,8 +443,11 @@ module Op_names = struct
   let select = Op_name.of_string "Select"
   let selfAdjointEig = Op_name.of_string "SelfAdjointEig"
   let selfAdjointEigV2 = Op_name.of_string "SelfAdjointEigV2"
+  let selu = Op_name.of_string "Selu"
+  let seluGrad = Op_name.of_string "SeluGrad"
   let serializeManySparse = Op_name.of_string "SerializeManySparse"
   let serializeSparse = Op_name.of_string "SerializeSparse"
+  let serializeTensor = Op_name.of_string "SerializeTensor"
   let setSize = Op_name.of_string "SetSize"
   let shape = Op_name.of_string "Shape"
   let shapeN = Op_name.of_string "ShapeN"
@@ -989,6 +1007,25 @@ let allCandidateSampler
     ~control_inputs
     ~attributes
     ~output_idx:(Some 2)
+
+let angle
+    ?(name = "Angle")
+    ~type_
+    ?(control_inputs = [])
+    (input : ([< `complex64 ] as 't) t)
+  =
+  let attributes = [ "T", Type (P (Node.output_type input)) ;  "Tout", Type (P type_) ] in
+  let name = Name.of_string name in
+  let op_name = Op_names.angle in
+  let inputs = [ (`single (P input)) ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:type_
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:None
 
 let any
     ?(name = "Any")
@@ -3726,6 +3763,24 @@ let cumsum
     ~attributes
     ~output_idx:None
 
+let debugGradientIdentity
+    ?(name = "DebugGradientIdentity")
+    ?(control_inputs = [])
+    (input : 't t)
+  =
+  let attributes = [ "T", Type (P (Node.output_type input)) ] in
+  let name = Name.of_string name in
+  let op_name = Op_names.debugGradientIdentity in
+  let inputs = [ (`single (P input)) ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type input)
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:None
+
 let debugIdentity
     ?(name = "DebugIdentity")
     ?device_name
@@ -4058,12 +4113,16 @@ let denseToSparseSetOperation
 let depthToSpace
     ?(name = "DepthToSpace")
     ~block_size
+    ?data_format
     ?(control_inputs = [])
     (input : 't t)
   =
   let attributes = [ "T", Type (P (Node.output_type input)) ] in
   let attributes =
     ("block_size", Int block_size) :: attributes
+  in
+  let attributes =
+    match data_format with | None -> attributes | Some data_format -> ("data_format", String data_format) :: attributes
   in
   let name = Name.of_string name in
   let op_name = Op_names.depthToSpace in
@@ -4837,6 +4896,25 @@ let extractImagePatches
     ~name
     ~op_name
     ~output_type:(Node.output_type images)
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:None
+
+let extractJpegShape
+    ?(name = "ExtractJpegShape")
+    ~type_
+    ?(control_inputs = [])
+    (contents : [ `string ] t)
+  =
+  let attributes = [ "output_type", Type (P type_) ] in
+  let name = Name.of_string name in
+  let op_name = Op_names.extractJpegShape in
+  let inputs = [ (`single (P contents)) ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:type_
     ~inputs
     ~control_inputs
     ~attributes
@@ -5683,6 +5761,146 @@ let fusedBatchNormGrad
     ~attributes
     ~output_idx:(Some 4)
 
+let fusedBatchNormGradV2
+    ?(name = "FusedBatchNormGradV2")
+    ?epsilon
+    ?data_format
+    ?is_training
+    ?(control_inputs = [])
+    (y_backprop : ([< `float ] as 't) t)
+    (x : ([< `float ] as 't) t)
+    (scale : [ `float ] t)
+    (reserve_space_1 : ([< `float ] as 'u) t)
+    (reserve_space_2 : ([< `float ] as 'u) t)
+  =
+  let attributes = [ "T", Type (P (Node.output_type y_backprop)) ;  "U", Type (P (Node.output_type reserve_space_1)) ;  "U", Type (P (Node.output_type reserve_space_1)) ;  "U", Type (P (Node.output_type reserve_space_1)) ;  "U", Type (P (Node.output_type reserve_space_1)) ] in
+  let attributes =
+    match epsilon with | None -> attributes | Some epsilon -> ("epsilon", Float epsilon) :: attributes
+  in
+  let attributes =
+    match data_format with | None -> attributes | Some data_format -> ("data_format", String data_format) :: attributes
+  in
+  let attributes =
+    match is_training with | None -> attributes | Some is_training -> ("is_training", Bool is_training) :: attributes
+  in
+  let name = Name.of_string name in
+  let op_name = Op_names.fusedBatchNormGradV2 in
+  let inputs = [ (`single (P y_backprop)); (`single (P x)); (`single (P scale)); (`single (P reserve_space_1)); (`single (P reserve_space_2)) ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type y_backprop)
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:(Some 0)
+  ,
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type reserve_space_1)
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:(Some 1)
+  ,
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type reserve_space_1)
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:(Some 2)
+  ,
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type reserve_space_1)
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:(Some 3)
+  ,
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type reserve_space_1)
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:(Some 4)
+
+let fusedBatchNormV2
+    ?(name = "FusedBatchNormV2")
+    ?epsilon
+    ?data_format
+    ?is_training
+    ?(control_inputs = [])
+    (x : ([< `float ] as 't) t)
+    (scale : ([< `float ] as 'u) t)
+    (offset : ([< `float ] as 'u) t)
+    (mean : ([< `float ] as 'u) t)
+    (variance : ([< `float ] as 'u) t)
+  =
+  let attributes = [ "T", Type (P (Node.output_type x)) ;  "U", Type (P (Node.output_type scale)) ;  "U", Type (P (Node.output_type scale)) ;  "U", Type (P (Node.output_type scale)) ;  "U", Type (P (Node.output_type scale)) ] in
+  let attributes =
+    match epsilon with | None -> attributes | Some epsilon -> ("epsilon", Float epsilon) :: attributes
+  in
+  let attributes =
+    match data_format with | None -> attributes | Some data_format -> ("data_format", String data_format) :: attributes
+  in
+  let attributes =
+    match is_training with | None -> attributes | Some is_training -> ("is_training", Bool is_training) :: attributes
+  in
+  let name = Name.of_string name in
+  let op_name = Op_names.fusedBatchNormV2 in
+  let inputs = [ (`single (P x)); (`single (P scale)); (`single (P offset)); (`single (P mean)); (`single (P variance)) ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type x)
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:(Some 0)
+  ,
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type scale)
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:(Some 1)
+  ,
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type scale)
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:(Some 2)
+  ,
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type scale)
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:(Some 3)
+  ,
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type scale)
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:(Some 4)
+
 let fusedPadConv2D
     ?(name = "FusedPadConv2D")
     ~mode
@@ -5813,6 +6031,42 @@ let gatherV2
     ~control_inputs
     ~attributes
     ~output_idx:None
+
+let generateVocabRemapping
+    ?(name = "GenerateVocabRemapping")
+    ~new_vocab_offset
+    ~num_new_vocab
+    ?(control_inputs = [])
+    (new_vocab_file : [ `string ] t)
+    (old_vocab_file : [ `string ] t)
+  =
+  let attributes = [] in
+  let attributes =
+    ("new_vocab_offset", Int new_vocab_offset) :: attributes
+  in
+  let attributes =
+    ("num_new_vocab", Int num_new_vocab) :: attributes
+  in
+  let name = Name.of_string name in
+  let op_name = Op_names.generateVocabRemapping in
+  let inputs = [ (`single (P new_vocab_file)); (`single (P old_vocab_file)) ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Int64
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:(Some 0)
+  ,
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Int32
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:(Some 1)
 
 let getSessionHandle
     ?(name = "GetSessionHandle")
@@ -6173,7 +6427,7 @@ let imageSummary
     ?max_images
     ?(control_inputs = [])
     (tag : [ `string ] t)
-    (tensor : ([< `float ] as 't) t)
+    (tensor : ([< `float | `double ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type tensor)) ] in
   let attributes =
@@ -6232,6 +6486,26 @@ let inTopK
   let name = Name.of_string name in
   let op_name = Op_names.inTopK in
   let inputs = [ (`single (P predictions)); (`single (P targets)) ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Bool
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:None
+
+let inTopKV2
+    ?(name = "InTopKV2")
+    ?(control_inputs = [])
+    (predictions : [ `float ] t)
+    (targets : ([< `int32 | `int64 ] as 't) t)
+    (k : ([< `int32 | `int64 ] as 't) t)
+  =
+  let attributes = [ "T", Type (P (Node.output_type targets)) ] in
+  let name = Name.of_string name in
+  let op_name = Op_names.inTopKV2 in
+  let inputs = [ (`single (P predictions)); (`single (P targets)); (`single (P k)) ] in
   Node.create
     ~name
     ~op_name
@@ -6317,17 +6591,17 @@ let inv
 let invGrad
     ?(name = "InvGrad")
     ?(control_inputs = [])
-    (x : ([< `float | `double | `complex64 ] as 't) t)
     (y : ([< `float | `double | `complex64 ] as 't) t)
+    (dy : ([< `float | `double | `complex64 ] as 't) t)
   =
-  let attributes = [ "T", Type (P (Node.output_type x)) ] in
+  let attributes = [ "T", Type (P (Node.output_type y)) ] in
   let name = Name.of_string name in
   let op_name = Op_names.invGrad in
-  let inputs = [ (`single (P x)); (`single (P y)) ] in
+  let inputs = [ (`single (P y)); (`single (P dy)) ] in
   Node.create
     ~name
     ~op_name
-    ~output_type:(Node.output_type x)
+    ~output_type:(Node.output_type y)
     ~inputs
     ~control_inputs
     ~attributes
@@ -6720,6 +6994,40 @@ let listDiff
     ~attributes
     ~output_idx:(Some 1)
 
+let loadAndRemapMatrix
+    ?(name = "LoadAndRemapMatrix")
+    ~num_rows
+    ~num_cols
+    ?max_rows_in_memory
+    ?(control_inputs = [])
+    (ckpt_path : [ `string ] t)
+    (old_tensor_name : [ `string ] t)
+    (row_remapping : [ `int64 ] t)
+    (col_remapping : [ `int64 ] t)
+    (initializing_values : [ `float ] t)
+  =
+  let attributes = [] in
+  let attributes =
+    ("num_rows", Int num_rows) :: attributes
+  in
+  let attributes =
+    ("num_cols", Int num_cols) :: attributes
+  in
+  let attributes =
+    match max_rows_in_memory with | None -> attributes | Some max_rows_in_memory -> ("max_rows_in_memory", Int max_rows_in_memory) :: attributes
+  in
+  let name = Name.of_string name in
+  let op_name = Op_names.loadAndRemapMatrix in
+  let inputs = [ (`single (P ckpt_path)); (`single (P old_tensor_name)); (`single (P row_remapping)); (`single (P col_remapping)); (`single (P initializing_values)) ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Float
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:None
+
 let log
     ?(name = "Log")
     ?(control_inputs = [])
@@ -6755,6 +7063,33 @@ let log1p
     ~control_inputs
     ~attributes
     ~output_idx:None
+
+let logMatrixDeterminant
+    ?(name = "LogMatrixDeterminant")
+    ?(control_inputs = [])
+    (input : ([< `float | `double | `complex64 ] as 't) t)
+  =
+  let attributes = [ "T", Type (P (Node.output_type input)) ;  "T", Type (P (Node.output_type input)) ] in
+  let name = Name.of_string name in
+  let op_name = Op_names.logMatrixDeterminant in
+  let inputs = [ (`single (P input)) ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type input)
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:(Some 0)
+  ,
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type input)
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:(Some 1)
 
 let logSoftmax
     ?(name = "LogSoftmax")
@@ -7316,8 +7651,8 @@ let matrixSolveLs
     ?(name = "MatrixSolveLs")
     ?fast
     ?(control_inputs = [])
-    (matrix : ([< `double | `float ] as 't) t)
-    (rhs : ([< `double | `float ] as 't) t)
+    (matrix : ([< `double | `float | `complex64 ] as 't) t)
+    (rhs : ([< `double | `float | `complex64 ] as 't) t)
     (l2_regularizer : [ `double ] t)
   =
   let attributes = [ "T", Type (P (Node.output_type matrix)) ] in
@@ -7598,6 +7933,36 @@ let maxPoolGradGrad
     ~attributes
     ~output_idx:None
 
+let maxPoolGradGradV2
+    ?(name = "MaxPoolGradGradV2")
+    ~padding
+    ?data_format
+    ?(control_inputs = [])
+    (orig_input : ([< `float | `double | `int32 | `int64 ] as 't) t)
+    (orig_output : ([< `float | `double | `int32 | `int64 ] as 't) t)
+    (grad : ([< `float | `double | `int32 | `int64 ] as 't) t)
+    (ksize : [ `int32 ] t)
+    (strides : [ `int32 ] t)
+  =
+  let attributes = [ "T", Type (P (Node.output_type orig_input)) ] in
+  let attributes =
+    ("padding", String padding) :: attributes
+  in
+  let attributes =
+    match data_format with | None -> attributes | Some data_format -> ("data_format", String data_format) :: attributes
+  in
+  let name = Name.of_string name in
+  let op_name = Op_names.maxPoolGradGradV2 in
+  let inputs = [ (`single (P orig_input)); (`single (P orig_output)); (`single (P grad)); (`single (P ksize)); (`single (P strides)) ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type orig_input)
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:None
+
 let maxPoolGradGradWithArgmax
     ?(name = "MaxPoolGradGradWithArgmax")
     ~ksize
@@ -7630,6 +7995,36 @@ let maxPoolGradGradWithArgmax
     ~attributes
     ~output_idx:None
 
+let maxPoolGradV2
+    ?(name = "MaxPoolGradV2")
+    ~padding
+    ?data_format
+    ?(control_inputs = [])
+    (orig_input : ([< `float | `double | `int32 | `int64 ] as 't) t)
+    (orig_output : ([< `float | `double | `int32 | `int64 ] as 't) t)
+    (grad : ([< `float | `double | `int32 | `int64 ] as 't) t)
+    (ksize : [ `int32 ] t)
+    (strides : [ `int32 ] t)
+  =
+  let attributes = [ "T", Type (P (Node.output_type orig_input)) ] in
+  let attributes =
+    ("padding", String padding) :: attributes
+  in
+  let attributes =
+    match data_format with | None -> attributes | Some data_format -> ("data_format", String data_format) :: attributes
+  in
+  let name = Name.of_string name in
+  let op_name = Op_names.maxPoolGradV2 in
+  let inputs = [ (`single (P orig_input)); (`single (P orig_output)); (`single (P grad)); (`single (P ksize)); (`single (P strides)) ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type orig_input)
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:None
+
 let maxPoolGradWithArgmax
     ?(name = "MaxPoolGradWithArgmax")
     ~ksize
@@ -7653,6 +8048,34 @@ let maxPoolGradWithArgmax
   let name = Name.of_string name in
   let op_name = Op_names.maxPoolGradWithArgmax in
   let inputs = [ (`single (P input)); (`single (P grad)); (`single (P argmax)) ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type input)
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:None
+
+let maxPoolV2
+    ?(name = "MaxPoolV2")
+    ~padding
+    ?data_format
+    ?(control_inputs = [])
+    (input : ([< `float | `double | `int32 | `int64 ] as 't) t)
+    (ksize : [ `int32 ] t)
+    (strides : [ `int32 ] t)
+  =
+  let attributes = [ "T", Type (P (Node.output_type input)) ] in
+  let attributes =
+    ("padding", String padding) :: attributes
+  in
+  let attributes =
+    match data_format with | None -> attributes | Some data_format -> ("data_format", String data_format) :: attributes
+  in
+  let name = Name.of_string name in
+  let op_name = Op_names.maxPoolV2 in
+  let inputs = [ (`single (P input)); (`single (P ksize)); (`single (P strides)) ] in
   Node.create
     ~name
     ~op_name
@@ -8539,6 +8962,28 @@ let parallelConcat
     ~name
     ~op_name
     ~output_type:(Node.output_type (List.hd_exn values))
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:None
+
+let parallelDynamicStitch
+    ?(name = "ParallelDynamicStitch")
+    ?(control_inputs = [])
+    (indices : [ `int32 ] t list)
+    (data : 't t list)
+  =
+  let attributes = [ "T", Type (P (Node.output_type (List.hd_exn data))) ] in
+  let attributes =
+    ("N", Int (List.length indices)) :: attributes
+  in
+  let name = Name.of_string name in
+  let op_name = Op_names.parallelDynamicStitch in
+  let inputs = [ (`multi (List.map ~f:(fun n -> P n) indices)); (`multi (List.map ~f:(fun n -> P n) data)) ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type (List.hd_exn data))
     ~inputs
     ~control_inputs
     ~attributes
@@ -9893,6 +10338,34 @@ let randomPoisson
     ~attributes
     ~output_idx:None
 
+let randomPoissonV2
+    ?(name = "RandomPoissonV2")
+    ~type_
+    ?seed
+    ?seed2
+    ?(control_inputs = [])
+    (shape : ([< `int32 | `int64 ] as 's) t)
+    (rate : ([< `float | `double | `int32 | `int64 ] as 'r) t)
+  =
+  let attributes = [ "R", Type (P (Node.output_type rate)) ;  "S", Type (P (Node.output_type shape)) ;  "dtype", Type (P type_) ] in
+  let attributes =
+    match seed with | None -> attributes | Some seed -> ("seed", Int seed) :: attributes
+  in
+  let attributes =
+    match seed2 with | None -> attributes | Some seed2 -> ("seed2", Int seed2) :: attributes
+  in
+  let name = Name.of_string name in
+  let op_name = Op_names.randomPoissonV2 in
+  let inputs = [ (`single (P shape)); (`single (P rate)) ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:type_
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:None
+
 let randomShuffle
     ?(name = "RandomShuffle")
     ?seed
@@ -10314,17 +10787,17 @@ let reciprocal
 let reciprocalGrad
     ?(name = "ReciprocalGrad")
     ?(control_inputs = [])
-    (x : ([< `float | `double | `complex64 ] as 't) t)
     (y : ([< `float | `double | `complex64 ] as 't) t)
+    (dy : ([< `float | `double | `complex64 ] as 't) t)
   =
-  let attributes = [ "T", Type (P (Node.output_type x)) ] in
+  let attributes = [ "T", Type (P (Node.output_type y)) ] in
   let name = Name.of_string name in
   let op_name = Op_names.reciprocalGrad in
-  let inputs = [ (`single (P x)); (`single (P y)) ] in
+  let inputs = [ (`single (P y)); (`single (P dy)) ] in
   Node.create
     ~name
     ~op_name
-    ~output_type:(Node.output_type x)
+    ~output_type:(Node.output_type y)
     ~inputs
     ~control_inputs
     ~attributes
@@ -10772,6 +11245,29 @@ let resizeBicubic
     ~attributes
     ~output_idx:None
 
+let resizeBicubicGrad
+    ?(name = "ResizeBicubicGrad")
+    ?align_corners
+    ?(control_inputs = [])
+    (grads : [ `float ] t)
+    (original_image : ([< `float | `double ] as 't) t)
+  =
+  let attributes = [ "T", Type (P (Node.output_type original_image)) ] in
+  let attributes =
+    match align_corners with | None -> attributes | Some align_corners -> ("align_corners", Bool align_corners) :: attributes
+  in
+  let name = Name.of_string name in
+  let op_name = Op_names.resizeBicubicGrad in
+  let inputs = [ (`single (P grads)); (`single (P original_image)) ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type original_image)
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:None
+
 let resizeBilinear
     ?(name = "ResizeBilinear")
     ?align_corners
@@ -11035,17 +11531,17 @@ let rsqrt
 let rsqrtGrad
     ?(name = "RsqrtGrad")
     ?(control_inputs = [])
-    (x : ([< `float | `double | `complex64 ] as 't) t)
     (y : ([< `float | `double | `complex64 ] as 't) t)
+    (dy : ([< `float | `double | `complex64 ] as 't) t)
   =
-  let attributes = [ "T", Type (P (Node.output_type x)) ] in
+  let attributes = [ "T", Type (P (Node.output_type y)) ] in
   let name = Name.of_string name in
   let op_name = Op_names.rsqrtGrad in
-  let inputs = [ (`single (P x)); (`single (P y)) ] in
+  let inputs = [ (`single (P y)); (`single (P dy)) ] in
   Node.create
     ~name
     ~op_name
-    ~output_type:(Node.output_type x)
+    ~output_type:(Node.output_type y)
     ~inputs
     ~control_inputs
     ~attributes
@@ -11640,6 +12136,43 @@ let selfAdjointEigV2
     ~attributes
     ~output_idx:(Some 1)
 
+let selu
+    ?(name = "Selu")
+    ?(control_inputs = [])
+    (features : ([< `float | `double ] as 't) t)
+  =
+  let attributes = [ "T", Type (P (Node.output_type features)) ] in
+  let name = Name.of_string name in
+  let op_name = Op_names.selu in
+  let inputs = [ (`single (P features)) ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type features)
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:None
+
+let seluGrad
+    ?(name = "SeluGrad")
+    ?(control_inputs = [])
+    (gradients : ([< `float | `double ] as 't) t)
+    (outputs : ([< `float | `double ] as 't) t)
+  =
+  let attributes = [ "T", Type (P (Node.output_type gradients)) ] in
+  let name = Name.of_string name in
+  let op_name = Op_names.seluGrad in
+  let inputs = [ (`single (P gradients)); (`single (P outputs)) ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type gradients)
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:None
+
 let serializeManySparse
     ?(name = "SerializeManySparse")
     ?(control_inputs = [])
@@ -11671,6 +12204,24 @@ let serializeSparse
   let name = Name.of_string name in
   let op_name = Op_names.serializeSparse in
   let inputs = [ (`single (P sparse_indices)); (`single (P sparse_values)); (`single (P sparse_shape)) ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.String
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:None
+
+let serializeTensor
+    ?(name = "SerializeTensor")
+    ?(control_inputs = [])
+    (tensor : 't t)
+  =
+  let attributes = [ "T", Type (P (Node.output_type tensor)) ] in
+  let name = Name.of_string name in
+  let op_name = Op_names.serializeTensor in
+  let inputs = [ (`single (P tensor)) ] in
   Node.create
     ~name
     ~op_name
@@ -11809,17 +12360,17 @@ let sigmoid
 let sigmoidGrad
     ?(name = "SigmoidGrad")
     ?(control_inputs = [])
-    (x : ([< `float | `double | `complex64 ] as 't) t)
     (y : ([< `float | `double | `complex64 ] as 't) t)
+    (dy : ([< `float | `double | `complex64 ] as 't) t)
   =
-  let attributes = [ "T", Type (P (Node.output_type x)) ] in
+  let attributes = [ "T", Type (P (Node.output_type y)) ] in
   let name = Name.of_string name in
   let op_name = Op_names.sigmoidGrad in
-  let inputs = [ (`single (P x)); (`single (P y)) ] in
+  let inputs = [ (`single (P y)); (`single (P dy)) ] in
   Node.create
     ~name
     ~op_name
-    ~output_type:(Node.output_type x)
+    ~output_type:(Node.output_type y)
     ~inputs
     ~control_inputs
     ~attributes
@@ -12176,12 +12727,16 @@ let spaceToBatchND
 let spaceToDepth
     ?(name = "SpaceToDepth")
     ~block_size
+    ?data_format
     ?(control_inputs = [])
     (input : 't t)
   =
   let attributes = [ "T", Type (P (Node.output_type input)) ] in
   let attributes =
     ("block_size", Int block_size) :: attributes
+  in
+  let attributes =
+    match data_format with | None -> attributes | Some data_format -> ("data_format", String data_format) :: attributes
   in
   let name = Name.of_string name in
   let op_name = Op_names.spaceToDepth in
@@ -13521,17 +14076,17 @@ let sqrt
 let sqrtGrad
     ?(name = "SqrtGrad")
     ?(control_inputs = [])
-    (x : ([< `float | `double | `complex64 ] as 't) t)
     (y : ([< `float | `double | `complex64 ] as 't) t)
+    (dy : ([< `float | `double | `complex64 ] as 't) t)
   =
-  let attributes = [ "T", Type (P (Node.output_type x)) ] in
+  let attributes = [ "T", Type (P (Node.output_type y)) ] in
   let name = Name.of_string name in
   let op_name = Op_names.sqrtGrad in
-  let inputs = [ (`single (P x)); (`single (P y)) ] in
+  let inputs = [ (`single (P y)); (`single (P dy)) ] in
   Node.create
     ~name
     ~op_name
-    ~output_type:(Node.output_type x)
+    ~output_type:(Node.output_type y)
     ~inputs
     ~control_inputs
     ~attributes
@@ -13984,11 +14539,15 @@ let stringJoin
 
 let stringSplit
     ?(name = "StringSplit")
+    ?skip_empty
     ?(control_inputs = [])
     (input : [ `string ] t)
     (delimiter : [ `string ] t)
   =
   let attributes = [] in
+  let attributes =
+    match skip_empty with | None -> attributes | Some skip_empty -> ("skip_empty", Bool skip_empty) :: attributes
+  in
   let name = Name.of_string name in
   let op_name = Op_names.stringSplit in
   let inputs = [ (`single (P input)); (`single (P delimiter)) ] in
@@ -14356,17 +14915,17 @@ let tanh
 let tanhGrad
     ?(name = "TanhGrad")
     ?(control_inputs = [])
-    (x : ([< `float | `double | `complex64 ] as 't) t)
     (y : ([< `float | `double | `complex64 ] as 't) t)
+    (dy : ([< `float | `double | `complex64 ] as 't) t)
   =
-  let attributes = [ "T", Type (P (Node.output_type x)) ] in
+  let attributes = [ "T", Type (P (Node.output_type y)) ] in
   let name = Name.of_string name in
   let op_name = Op_names.tanhGrad in
-  let inputs = [ (`single (P x)); (`single (P y)) ] in
+  let inputs = [ (`single (P y)); (`single (P dy)) ] in
   Node.create
     ~name
     ~op_name
-    ~output_type:(Node.output_type x)
+    ~output_type:(Node.output_type y)
     ~inputs
     ~control_inputs
     ~attributes

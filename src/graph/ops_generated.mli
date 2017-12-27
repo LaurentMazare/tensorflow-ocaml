@@ -20,6 +20,7 @@ module Op_names : sig
   val adjustSaturation : Op_name.t
   val all : Op_name.t
   val allCandidateSampler : Op_name.t
+  val angle : Op_name.t
   val any : Op_name.t
   val applyAdadelta : Op_name.t
   val applyAdagrad : Op_name.t
@@ -129,6 +130,7 @@ module Op_names : sig
   val cross : Op_name.t
   val cumprod : Op_name.t
   val cumsum : Op_name.t
+  val debugGradientIdentity : Op_name.t
   val debugIdentity : Op_name.t
   val debugNanCount : Op_name.t
   val debugNumericSummary : Op_name.t
@@ -173,6 +175,7 @@ module Op_names : sig
   val expm1 : Op_name.t
   val extractGlimpse : Op_name.t
   val extractImagePatches : Op_name.t
+  val extractJpegShape : Op_name.t
   val fFT : Op_name.t
   val fFT2D : Op_name.t
   val fFT3D : Op_name.t
@@ -196,11 +199,14 @@ module Op_names : sig
   val fractionalMaxPoolGrad : Op_name.t
   val fusedBatchNorm : Op_name.t
   val fusedBatchNormGrad : Op_name.t
+  val fusedBatchNormGradV2 : Op_name.t
+  val fusedBatchNormV2 : Op_name.t
   val fusedPadConv2D : Op_name.t
   val fusedResizeAndPadConv2D : Op_name.t
   val gather : Op_name.t
   val gatherNd : Op_name.t
   val gatherV2 : Op_name.t
+  val generateVocabRemapping : Op_name.t
   val getSessionHandle : Op_name.t
   val getSessionTensor : Op_name.t
   val greater : Op_name.t
@@ -222,6 +228,7 @@ module Op_names : sig
   val imageSummary : Op_name.t
   val immutableConst : Op_name.t
   val inTopK : Op_name.t
+  val inTopKV2 : Op_name.t
   val initializeTable : Op_name.t
   val initializeTableFromTextFile : Op_name.t
   val inv : Op_name.t
@@ -242,8 +249,10 @@ module Op_names : sig
   val lgamma : Op_name.t
   val linSpace : Op_name.t
   val listDiff : Op_name.t
+  val loadAndRemapMatrix : Op_name.t
   val log : Op_name.t
   val log1p : Op_name.t
+  val logMatrixDeterminant : Op_name.t
   val logSoftmax : Op_name.t
   val logUniformCandidateSampler : Op_name.t
   val logicalAnd : Op_name.t
@@ -276,8 +285,11 @@ module Op_names : sig
   val maxPool3DGradGrad : Op_name.t
   val maxPoolGrad : Op_name.t
   val maxPoolGradGrad : Op_name.t
+  val maxPoolGradGradV2 : Op_name.t
   val maxPoolGradGradWithArgmax : Op_name.t
+  val maxPoolGradV2 : Op_name.t
   val maxPoolGradWithArgmax : Op_name.t
+  val maxPoolV2 : Op_name.t
   val maxPoolWithArgmax : Op_name.t
   val maximum : Op_name.t
   val mean : Op_name.t
@@ -312,6 +324,7 @@ module Op_names : sig
   val padV2 : Op_name.t
   val paddingFIFOQueue : Op_name.t
   val parallelConcat : Op_name.t
+  val parallelDynamicStitch : Op_name.t
   val parameterizedTruncatedNormal : Op_name.t
   val parseTensor : Op_name.t
   val placeholder : Op_name.t
@@ -353,6 +366,7 @@ module Op_names : sig
   val randomCrop : Op_name.t
   val randomGamma : Op_name.t
   val randomPoisson : Op_name.t
+  val randomPoissonV2 : Op_name.t
   val randomShuffle : Op_name.t
   val randomShuffleQueue : Op_name.t
   val randomStandardNormal : Op_name.t
@@ -390,6 +404,7 @@ module Op_names : sig
   val reshape : Op_name.t
   val resizeArea : Op_name.t
   val resizeBicubic : Op_name.t
+  val resizeBicubicGrad : Op_name.t
   val resizeBilinear : Op_name.t
   val resizeBilinearGrad : Op_name.t
   val resizeNearestNeighbor : Op_name.t
@@ -426,8 +441,11 @@ module Op_names : sig
   val select : Op_name.t
   val selfAdjointEig : Op_name.t
   val selfAdjointEigV2 : Op_name.t
+  val selu : Op_name.t
+  val seluGrad : Op_name.t
   val serializeManySparse : Op_name.t
   val serializeSparse : Op_name.t
+  val serializeTensor : Op_name.t
   val setSize : Op_name.t
   val shape : Op_name.t
   val shapeN : Op_name.t
@@ -819,6 +837,31 @@ val allCandidateSampler
   -> ?control_inputs:Node.p list
   -> [ `int64 ] t
   -> [ `int64 ] t * [ `float ] t * [ `float ] t
+
+(* Returns the argument of a complex number. *)
+(* Given a tensor `input` of complex numbers, this operation returns a tensor of
+type `float` that is the argument of each element in `input`. All elements in
+`input` must be complex numbers of the form \\(a + bj\\), where *a*
+is the real part and *b* is the imaginary part.
+
+The argument returned by this operation is of the form \\(atan2(b, a)\\).
+
+For example:
+
+```
+# tensor 'input' is [-2.25 + 4.75j, 3.25 + 5.75j]
+tf.angle(input) ==> [2.0132, 1.056]
+```
+
+@compatibility(numpy)
+Equivalent to np.angle.
+@end_compatibility *)
+val angle
+  :  ?name:string
+  -> type_:([< `float | `double ] as 'tout) Type.t
+  -> ?control_inputs:Node.p list
+  -> ([< `complex64 ] as 't) t
+  -> ([< `float | `double ] as 'tout) t
 
 (* Computes the 'logical or' of elements across dimensions of a tensor. *)
 (* Reduces `input` along the dimensions given in `reduction_indices`. Unless
@@ -2265,6 +2308,15 @@ val cumsum
   -> ([< `int32 | `int64 ] as 'tidx) t
   -> ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t
 
+(* Identity op for gradient debugging. *)
+(* This op is hidden from public in Python. It is used by TensorFlow Debugger to
+register gradient tensors for gradient debugging. *)
+val debugGradientIdentity
+  :  ?name:string
+  -> ?control_inputs:Node.p list
+  -> 't t
+  -> 't t
+
 (* Debug Identity Op. *)
 (* Provides an identity mapping of the non-Ref type input tensor for debugging. *)
 val debugIdentity
@@ -2441,23 +2493,34 @@ The attr `block_size` indicates the input block size and how the data is moved.
     into non-overlapping blocks of size `block_size x block_size`
   * The width the output tensor is `input_depth * block_size`, whereas the
     height is `input_height * block_size`.
+  * The Y, X coordinates within each block of the output image are determined
+    by the high order component of the input channel index.
   * The depth of the input tensor must be divisible by
     `block_size * block_size`.
 
-That is, assuming the input is in the shape:
-`[batch, height, width, depth]`,
-the shape of the output will be:
-`[batch, height*block_size, width*block_size, depth/(block_size*block_size)]`
+The `data_format` attr specifies the layout of the input and output tensors
+with the following options:
+  'NHWC': `[ batch, height, width, channels ]`
+  'NCHW': `[ batch, channels, height, width ]`
+  'NCHW_VECT_C':
+      `qint8 [ batch, channels / 4, height, width, channels % 4 ]`
 
-This operation requires that the input tensor be of rank 4, and that
-`block_size` be >=1 and that `block_size * block_size` be a divisor of the
-input depth.
+It is useful to consider the operation as transforming a 6-D Tensor.
+e.g. for data_format = NHWC,
+     Each element in the input tensor can be specified via 6 coordinates,
+     ordered by decreasing memory layout significance as:
+     n,iY,iX,bY,bX,oC  (where n=batch index, iX, iY means X or Y coordinates
+                        within the input image, bX, bY means coordinates
+                        within the output block, oC means output channels).
+     The output would be the input transposed to the following layout:
+     n,iY,bY,iX,bX,oC
 
 This operation is useful for resizing the activations between convolutions
 (but keeping all data), e.g. instead of pooling. It is also useful for training
 purely convolutional models.
 
-For example, given this input of shape `[1, 1, 1, 4]`, and a block size of 2:
+For example, given an input of shape `[1, 1, 1, 4]`, data_format = 'NHWC' and
+block_size = 2:
 
 ```
 x = [[[[1, 2, 3, 4]]]]
@@ -2503,15 +2566,16 @@ x =  [[[[1, 2, 3, 4],
 the operator will return the following tensor of shape `[1 4 4 1]`:
 
 ```
-x = [[ [1],   [2],  [5],  [6]],
-     [ [3],   [4],  [7],  [8]],
-     [ [9],  [10], [13],  [14]],
-     [ [11], [12], [15],  [16]]]
+x = [[[ [1],   [2],  [5],  [6]],
+      [ [3],   [4],  [7],  [8]],
+      [ [9],  [10], [13],  [14]],
+      [ [11], [12], [15],  [16]]]]
 
 ``` *)
 val depthToSpace
   :  ?name:string
   -> block_size:int
+  -> ?data_format:string
   -> ?control_inputs:Node.p list
   -> 't t
   -> 't t
@@ -2601,6 +2665,47 @@ range = (range_max - range_min) * range_adjust
 range_scale = range / number_of_steps
 const double offset_input = static_cast<double>(input) - lowest_quantized;
 result = range_min + ((input - numeric_limits<T>::min()) * range_scale)
+```
+
+*SCALED mode Example*
+
+`SCALED` mode matches the quantization approach used in
+`QuantizeAndDequantize{V2|V3}`.
+
+If the mode is `SCALED`, we do not use the full range of the output type,
+choosing to elide the lowest possible value for symmetry (e.g., output range is
+-127 to 127, not -128 to 127 for signed 8 bit quantization), so that 0.0 maps to
+0.
+
+We first find the range of values in our tensor. The
+range we use is always centered on 0, so we find m such that
+```c++
+  m = max(abs(input_min), abs(input_max))
+```
+
+Our input tensor range is then `[-m, m]`.
+
+Next, we choose our fixed-point quantization buckets, `[min_fixed, max_fixed]`.
+If T is signed, this is
+```
+  num_bits = sizeof(T) * 8
+  [min_fixed, max_fixed] =
+      [-(1 << (num_bits - 1) - 1), (1 << (num_bits - 1)) - 1]
+```
+
+Otherwise, if T is unsigned, the fixed-point range is
+```
+  [min_fixed, max_fixed] = [0, (1 << num_bits) - 1]
+```
+
+From this we compute our scaling factor, s:
+```c++
+  s = (2 * m) / (max_fixed - min_fixed)
+```
+
+Now we can dequantize the elements of our tensor:
+```c++
+result = input * s
 ``` *)
 val dequantize
   :  ?name:string
@@ -2807,9 +2912,9 @@ bounding box in `boxes` are encoded as `[y_min, x_min, y_max, x_max]`. The
 bounding box coordinates are floats in `[0.0, 1.0]` relative to the width and
 height of the underlying image.
 
-For example, if an image is 100 x 200 pixels and the bounding box is
-`[0.1, 0.2, 0.5, 0.9]`, the bottom-left and upper-right coordinates of the
-bounding box will be `(10, 40)` to `(50, 180)`.
+For example, if an image is 100 x 200 pixels (height x width) and the bounding
+box is `[0.1, 0.2, 0.5, 0.9]`, the upper-left and bottom-right coordinates of
+the bounding box will be `(40, 10)` to `(100, 50)` (in (x,y) coordinates).
 
 Parts of the bounding box may fall outside the image. *)
 val drawBoundingBoxes
@@ -2891,7 +2996,8 @@ must have `data[i].shape = indices[i].shape + constant`.  In terms of this
 
 Values are merged in order, so if an index appears in both `indices[m][i]` and
 `indices[n][j]` for `(m,i) < (n,j)` the slice `data[n][j]` will appear in the
-merged result.
+merged result. If you do not need this guarantee, ParallelDynamicStitch might
+perform better on some devices.
 
 For example:
 
@@ -3161,6 +3267,15 @@ val extractImagePatches
   -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int32 | `int64 ] as 't) t
   -> ([< `float | `double | `int32 | `int64 ] as 't) t
+
+(* Extract the shape information of a JPEG-encoded image. *)
+(* This op only parses the image header, so it is much faster than DecodeJpeg. *)
+val extractJpegShape
+  :  ?name:string
+  -> type_:([< `int32 | `int64 ] as 'output_type) Type.t
+  -> ?control_inputs:Node.p list
+  -> [ `string ] t
+  -> ([< `int32 | `int64 ] as 'output_type) t
 
 (* Fast Fourier transform. *)
 (* Computes the 1-dimensional discrete Fourier transform over the inner-most
@@ -3516,6 +3631,38 @@ val fusedBatchNormGrad
   -> ([< `float ] as 't) t
   -> ([< `float ] as 't) t * ([< `float ] as 't) t * ([< `float ] as 't) t * ([< `float ] as 't) t * ([< `float ] as 't) t
 
+(* Gradient for batch normalization. *)
+(* Note that the size of 4D Tensors are defined by either 'NHWC' or 'NCHW'.
+The size of 1D Tensors matches the dimension C of the 4D Tensors. *)
+val fusedBatchNormGradV2
+  :  ?name:string
+  -> ?epsilon:float
+  -> ?data_format:string
+  -> ?is_training:bool
+  -> ?control_inputs:Node.p list
+  -> ([< `float ] as 't) t
+  -> ([< `float ] as 't) t
+  -> [ `float ] t
+  -> ([< `float ] as 'u) t
+  -> ([< `float ] as 'u) t
+  -> ([< `float ] as 't) t * ([< `float ] as 'u) t * ([< `float ] as 'u) t * ([< `float ] as 'u) t * ([< `float ] as 'u) t
+
+(* Batch normalization. *)
+(* Note that the size of 4D Tensors are defined by either 'NHWC' or 'NCHW'.
+The size of 1D Tensors matches the dimension C of the 4D Tensors. *)
+val fusedBatchNormV2
+  :  ?name:string
+  -> ?epsilon:float
+  -> ?data_format:string
+  -> ?is_training:bool
+  -> ?control_inputs:Node.p list
+  -> ([< `float ] as 't) t
+  -> ([< `float ] as 'u) t
+  -> ([< `float ] as 'u) t
+  -> ([< `float ] as 'u) t
+  -> ([< `float ] as 'u) t
+  -> ([< `float ] as 't) t * ([< `float ] as 'u) t * ([< `float ] as 'u) t * ([< `float ] as 'u) t * ([< `float ] as 'u) t
+
 (* Performs a padding as a preprocess during a convolution. *)
 (* Similar to FusedResizeAndPadConv2d, this op allows for an optimized
 implementation where the spatial padding transformation stage is fused with the
@@ -3732,6 +3879,40 @@ val gatherV2
   -> ([< `int32 | `int64 ] as 'tindices) t
   -> ([< `int32 | `int64 ] as 'taxis) t
   -> 'tparams t
+
+(* Given a path to new and old vocabulary files, returns a remapping Tensor of *)
+(* length `num_new_vocab`, where `remapping[i]` contains the row number in the old
+vocabulary that corresponds to row `i` in the new vocabulary (starting at line
+`new_vocab_offset` and up to `num_new_vocab` entities), or `-1` if entry `i`
+in the new vocabulary is not in the old vocabulary.  `num_vocab_offset` enables
+use in the partitioned variable case, and should generally be set through
+examining partitioning info.  The format of the files should be a text file,
+with each line containing a single entity within the vocabulary.
+
+For example, with `new_vocab_file` a text file containing each of the following
+elements on a single line: `[f0, f1, f2, f3]`, old_vocab_file = [f1, f0, f3],
+`num_new_vocab = 3, new_vocab_offset = 1`, the returned remapping would be
+`[0, -1, 2]`.
+
+The op also returns a count of how many entries in the new vocabulary
+were present in the old vocabulary, which is used to calculate the number of
+values to initialize in a weight matrix remapping
+
+This functionality can be used to remap both row vocabularies (typically,
+features) and column vocabularies (typically, classes) from TensorFlow
+checkpoints.  Note that the partitioning logic relies on contiguous vocabularies
+corresponding to div-partitioned variables.  Moreover, the underlying remapping
+uses an IndexTable (as opposed to an inexact CuckooTable), so client code should
+use the corresponding index_table_from_file() as the FeatureColumn framework
+does (as opposed to tf.feature_to_id(), which uses a CuckooTable). *)
+val generateVocabRemapping
+  :  ?name:string
+  -> new_vocab_offset:int
+  -> num_new_vocab:int
+  -> ?control_inputs:Node.p list
+  -> [ `string ] t
+  -> [ `string ] t
+  -> [ `int64 ] t * [ `int32 ] t
 
 (* Store the input tensor in the state of the current session. *)
 val getSessionHandle
@@ -4015,7 +4196,7 @@ val imageSummary
   -> ?max_images:int
   -> ?control_inputs:Node.p list
   -> [ `string ] t
-  -> ([< `float ] as 't) t
+  -> ([< `float | `double ] as 't) t
   -> [ `string ] t
 
 (* Returns immutable tensor from memory region. *)
@@ -4049,6 +4230,29 @@ val inTopK
   -> k:int
   -> ?control_inputs:Node.p list
   -> [ `float ] t
+  -> ([< `int32 | `int64 ] as 't) t
+  -> [ `bool ] t
+
+(* Says whether the targets are in the top `K` predictions. *)
+(* This outputs a `batch_size` bool array, an entry `out[i]` is `true` if the
+prediction for the target class is among the top `k` predictions among
+all predictions for example `i`. Note that the behavior of `InTopK` differs
+from the `TopK` op in its handling of ties; if multiple classes have the
+same prediction value and straddle the top-`k` boundary, all of those
+classes are considered to be in the top `k`.
+
+More formally, let
+
+  \\(predictions_i\\) be the predictions for all classes for example `i`,
+  \\(targets_i\\) be the target class for example `i`,
+  \\(out_i\\) be the output for example `i`,
+
+$$out_i = predictions_{i, targets_i} \in TopKIncludingTies(predictions_i)$$ *)
+val inTopKV2
+  :  ?name:string
+  -> ?control_inputs:Node.p list
+  -> [ `float ] t
+  -> ([< `int32 | `int64 ] as 't) t
   -> ([< `int32 | `int64 ] as 't) t
   -> [ `bool ] t
 
@@ -4321,6 +4525,54 @@ val listDiff
   -> 't t
   -> 't t * ([< `int32 | `int64 ] as 'out_idx) t
 
+(* Loads a 2-D (matrix) `Tensor` with name `old_tensor_name` from the checkpoint *)
+(* at `ckpt_path` and potentially reorders its rows and columns using the
+specified remappings.
+
+Most users should use one of the wrapper initializers (such as
+`tf.contrib.framework.load_and_remap_matrix_initializer`) instead of this
+function directly.
+
+The remappings are 1-D tensors with the following properties:
+
+* `row_remapping` must have exactly `num_rows` entries. Row `i` of the output
+  matrix will be initialized from the row corresponding to index
+  `row_remapping[i]` in the old `Tensor` from the checkpoint.
+* `col_remapping` must have either 0 entries (indicating that no column
+  reordering is needed) or `num_cols` entries. If specified, column `j` of the
+  output matrix will be initialized from the column corresponding to index
+  `col_remapping[j]` in the old `Tensor` from the checkpoint.
+* A value of -1 in either of the remappings signifies a 'missing' entry. In that
+  case, values from the `initializing_values` tensor will be used to fill that
+  missing row or column. If `row_remapping` has `r` missing entries and
+  `col_remapping` has `c` missing entries, then the following condition must be
+  true:
+
+`(r * num_cols) + (c * num_rows) - (r * c) == len(initializing_values)`
+
+The remapping tensors can be generated using the GenerateVocabRemapping op.
+
+As an example, with row_remapping = [1, 0, -1], col_remapping = [0, 2, -1],
+initializing_values = [0.5, -0.5, 0.25, -0.25, 42], and w(i, j) representing
+the value from row i, column j of the old tensor in the checkpoint, the output
+matrix will look like the following:
+
+[[w(1, 0),  w(1, 2),  0.5],
+ [w(0, 0),  w(0, 2), -0.5],
+ [0.25,    -0.25,      42]] *)
+val loadAndRemapMatrix
+  :  ?name:string
+  -> num_rows:int
+  -> num_cols:int
+  -> ?max_rows_in_memory:int
+  -> ?control_inputs:Node.p list
+  -> [ `string ] t
+  -> [ `string ] t
+  -> [ `int64 ] t
+  -> [ `int64 ] t
+  -> [ `float ] t
+  -> [ `float ] t
+
 (* Computes natural logarithm of x element-wise. *)
 (* I.e., \\(y = \log_e x\\). *)
 val log
@@ -4336,6 +4588,22 @@ val log1p
   -> ?control_inputs:Node.p list
   -> ([< `float | `double | `complex64 ] as 't) t
   -> ([< `float | `double | `complex64 ] as 't) t
+
+(* Computes the sign and the log of the absolute value of the determinant of *)
+(* one or more square matrices.
+
+The input is a tensor of shape `[N, M, M]` whose inner-most 2 dimensions
+form square matrices. The outputs are two tensors containing the signs and
+absolute values of the log determinants for all N input submatrices
+`[..., :, :]` such that the determinant = sign*exp(log_abs_determinant).
+The log_abs_determinant is computed as det(P)*sum(log(diag(LU))) where LU
+is the LU decomposition of the input and P is the corresponding
+permutation matrix. *)
+val logMatrixDeterminant
+  :  ?name:string
+  -> ?control_inputs:Node.p list
+  -> ([< `float | `double | `complex64 ] as 't) t
+  -> ([< `float | `double | `complex64 ] as 't) t * ([< `float | `double | `complex64 ] as 't) t
 
 (* Computes log softmax activations. *)
 (* For each batch `i` and class `j` we have
@@ -4567,7 +4835,7 @@ val matrixBandPart
   -> [ `int64 ] t
   -> 't t
 
-(* Computes the determinant of one ore more square matrices. *)
+(* Computes the determinant of one or more square matrices. *)
 (* The input is a tensor of shape `[..., M, M]` whose inner-most 2 dimensions
 form square matrices. The output is a tensor containing the determinants
 for all input submatrices `[..., :, :]`. *)
@@ -4701,28 +4969,31 @@ val matrixSolve
 
 (* Solves one or more linear least-squares problems. *)
 (* `matrix` is a tensor of shape `[..., M, N]` whose inner-most 2 dimensions
-form matrices of size `[M, N]`. Rhs is a tensor of shape `[..., M, K]`.
+form real or complex matrices of size `[M, N]`. `Rhs` is a tensor of the same
+type as `matrix` and shape `[..., M, K]`.
 The output is a tensor shape `[..., N, K]` where each output matrix solves
-each of the equations matrix[..., :, :] * output[..., :, :] = rhs[..., :, :]
+each of the equations
+`matrix[..., :, :]` * `output[..., :, :]` = `rhs[..., :, :]`
 in the least squares sense.
 
-matrix and right-hand sides in the batch:
+We use the following notation for (complex) matrix and right-hand sides
+in the batch:
 
-`matrix`=\\(A \in \Re^{m \times n}\\),
-`rhs`=\\(B  \in \Re^{m \times k}\\),
-`output`=\\(X  \in \Re^{n \times k}\\),
-`l2_regularizer`=\\(\lambda\\).
+`matrix`=\\(A \in \mathbb{C}^{m \times n}\\),
+`rhs`=\\(B  \in \mathbb{C}^{m \times k}\\),
+`output`=\\(X  \in \mathbb{C}^{n \times k}\\),
+`l2_regularizer`=\\(\lambda \in \mathbb{R}\\).
 
 If `fast` is `True`, then the solution is computed by solving the normal
 equations using Cholesky decomposition. Specifically, if \\(m \ge n\\) then
-\\(X = (A^T A + \lambda I)^{-1} A^T B\\), which solves the least-squares
+\\(X = (A^H A + \lambda I)^{-1} A^H B\\), which solves the least-squares
 problem \\(X = \mathrm{argmin}_{Z \in \Re^{n \times k} } ||A Z - B||_F^2 +
 \lambda ||Z||_F^2\\). If \\(m \lt n\\) then `output` is computed as
-\\(X = A^T (A A^T + \lambda I)^{-1} B\\), which (for \\(\lambda = 0\\)) is the
+\\(X = A^H (A A^H + \lambda I)^{-1} B\\), which (for \\(\lambda = 0\\)) is the
 minimum-norm solution to the under-determined linear system, i.e.
-\\(X = \mathrm{argmin}_{Z \in \Re^{n \times k} } ||Z||_F^2 \\), subject to
-\\(A Z = B\\). Notice that the fast path is only numerically stable when
-\\(A\\) is numerically full rank and has a condition number
+\\(X = \mathrm{argmin}_{Z \in \mathbb{C}^{n \times k} } ||Z||_F^2 \\),
+subject to \\(A Z = B\\). Notice that the fast path is only numerically stable
+when \\(A\\) is numerically full rank and has a condition number
 \\(\mathrm{cond}(A) \lt \frac{1}{\sqrt{\epsilon_{mach} } }\\) or\\(\lambda\\) is
 sufficiently large.
 
@@ -4735,10 +5006,10 @@ val matrixSolveLs
   :  ?name:string
   -> ?fast:bool
   -> ?control_inputs:Node.p list
-  -> ([< `double | `float ] as 't) t
-  -> ([< `double | `float ] as 't) t
+  -> ([< `double | `float | `complex64 ] as 't) t
+  -> ([< `double | `float | `complex64 ] as 't) t
   -> [ `double ] t
-  -> ([< `double | `float ] as 't) t
+  -> ([< `double | `float | `complex64 ] as 't) t
 
 (* Solves systems of linear equations with upper or lower triangular matrices by *)
 (* backsubstitution.
@@ -4751,7 +5022,7 @@ matrix is assumed to be zero and not accessed.
 `rhs` is a tensor of shape `[..., M, K]`.
 
 The output is a tensor of shape `[..., M, K]`. If `adjoint` is
-`True` then the innermost matrices in output` satisfy matrix equations
+`True` then the innermost matrices in `output` satisfy matrix equations
 `matrix[..., :, :] * output[..., :, :] = rhs[..., :, :]`.
 If `adjoint` is `False` then the strictly then the  innermost matrices in
 `output` satisfy matrix equations
@@ -4853,6 +5124,19 @@ val maxPoolGradGrad
   -> ([< `float | `double | `int32 | `int64 ] as 't) t
 
 (* Computes second-order gradients of the maxpooling function. *)
+val maxPoolGradGradV2
+  :  ?name:string
+  -> padding:string
+  -> ?data_format:string
+  -> ?control_inputs:Node.p list
+  -> ([< `float | `double | `int32 | `int64 ] as 't) t
+  -> ([< `float | `double | `int32 | `int64 ] as 't) t
+  -> ([< `float | `double | `int32 | `int64 ] as 't) t
+  -> [ `int32 ] t
+  -> [ `int32 ] t
+  -> ([< `float | `double | `int32 | `int64 ] as 't) t
+
+(* Computes second-order gradients of the maxpooling function. *)
 val maxPoolGradGradWithArgmax
   :  ?name:string
   -> ksize:int list
@@ -4865,6 +5149,19 @@ val maxPoolGradGradWithArgmax
   -> ([< `float | `double | `int32 | `int64 ] as 't) t
 
 (* Computes gradients of the maxpooling function. *)
+val maxPoolGradV2
+  :  ?name:string
+  -> padding:string
+  -> ?data_format:string
+  -> ?control_inputs:Node.p list
+  -> ([< `float | `double | `int32 | `int64 ] as 't) t
+  -> ([< `float | `double | `int32 | `int64 ] as 't) t
+  -> ([< `float | `double | `int32 | `int64 ] as 't) t
+  -> [ `int32 ] t
+  -> [ `int32 ] t
+  -> ([< `float | `double | `int32 | `int64 ] as 't) t
+
+(* Computes gradients of the maxpooling function. *)
 val maxPoolGradWithArgmax
   :  ?name:string
   -> ksize:int list
@@ -4874,6 +5171,17 @@ val maxPoolGradWithArgmax
   -> ([< `float | `double | `int32 | `int64 ] as 't) t
   -> ([< `float | `double | `int32 | `int64 ] as 't) t
   -> ([< `int32 | `int64 ] as 'targmax) t
+  -> ([< `float | `double | `int32 | `int64 ] as 't) t
+
+(* Performs max pooling on the input. *)
+val maxPoolV2
+  :  ?name:string
+  -> padding:string
+  -> ?data_format:string
+  -> ?control_inputs:Node.p list
+  -> ([< `float | `double | `int32 | `int64 ] as 't) t
+  -> [ `int32 ] t
+  -> [ `int32 ] t
   -> ([< `float | `double | `int32 | `int64 ] as 't) t
 
 (* Performs max pooling on the input and outputs both max values and indices. *)
@@ -5512,6 +5820,75 @@ val parallelConcat
   -> 't t list
   -> 't t
 
+(* Interleave the values from the `data` tensors into a single tensor. *)
+(* Builds a merged tensor such that
+
+```python
+    merged[indices[m][i, ..., j], ...] = data[m][i, ..., j, ...]
+```
+
+For example, if each `indices[m]` is scalar or vector, we have
+
+```python
+    # Scalar indices:
+    merged[indices[m], ...] = data[m][...]
+
+    # Vector indices:
+    merged[indices[m][i], ...] = data[m][i, ...]
+```
+
+Each `data[i].shape` must start with the corresponding `indices[i].shape`,
+and the rest of `data[i].shape` must be constant w.r.t. `i`.  That is, we
+must have `data[i].shape = indices[i].shape + constant`.  In terms of this
+`constant`, the output shape is
+
+    merged.shape = [max(indices)] + constant
+
+Values may be merged in parallel, so if an index appears in both `indices[m][i]`
+and `indices[n][j]`, the result may be invalid. This differs from the normal
+DynamicStitch operator that defines the behavior in that case.
+
+For example:
+
+```python
+    indices[0] = 6
+    indices[1] = [4, 1]
+    indices[2] = [[5, 2], [0, 3]]
+    data[0] = [61, 62]
+    data[1] = [[41, 42], [11, 12]]
+    data[2] = [[[51, 52], [21, 22]], [[1, 2], [31, 32]]]
+    merged = [[1, 2], [11, 12], [21, 22], [31, 32], [41, 42],
+              [51, 52], [61, 62]]
+```
+
+This method can be used to merge partitions created by `dynamic_partition`
+as illustrated on the following example:
+
+```python
+    # Apply function (increments x_i) on elements for which a certain condition
+    # apply (x_i != -1 in this example).
+    x=tf.constant([0.1, -1., 5.2, 4.3, -1., 7.4])
+    condition_mask=tf.not_equal(x,tf.constant(-1.))
+    partitioned_data = tf.dynamic_partition(
+        x, tf.cast(condition_mask, tf.int32) , 2)
+    partitioned_data[1] = partitioned_data[1] + 1.0
+    condition_indices = tf.dynamic_partition(
+        tf.range(tf.shape(x)[0]), tf.cast(condition_mask, tf.int32) , 2)
+    x = tf.dynamic_stitch(condition_indices, partitioned_data)
+    # Here x=[1.1, -1., 6.2, 5.3, -1, 8.4], the -1. values remain
+    # unchanged.
+```
+
+<div style='width:70%; margin:auto; margin-bottom:10px; margin-top:20px;'>
+<img style='width:100%' src='https://www.tensorflow.org/images/DynamicStitch.png' alt>
+</div> *)
+val parallelDynamicStitch
+  :  ?name:string
+  -> ?control_inputs:Node.p list
+  -> [ `int32 ] t list
+  -> 't t list
+  -> 't t
+
 (* Outputs random values from a normal distribution. The parameters may each be a *)
 (* scalar which applies to the entire output, or a vector of length shape[0] which
 stores the parameters for each batch. *)
@@ -5820,6 +6197,47 @@ The biggest difference between this and MIN_COMBINED is that the minimum range
 is rounded first, before it's subtracted from the rounded value. With
 MIN_COMBINED, a small bias is introduced where repeated iterations of quantizing
 and dequantizing will introduce a larger and larger error.
+
+*SCALED mode Example*
+
+`SCALED` mode matches the quantization approach used in
+`QuantizeAndDequantize{V2|V3}`.
+
+If the mode is `SCALED`, we do not use the full range of the output type,
+choosing to elide the lowest possible value for symmetry (e.g., output range is
+-127 to 127, not -128 to 127 for signed 8 bit quantization), so that 0.0 maps to
+0.
+
+We first find the range of values in our tensor. The
+range we use is always centered on 0, so we find m such that
+```c++
+  m = max(abs(input_min), abs(input_max))
+```
+
+Our input tensor range is then `[-m, m]`.
+
+Next, we choose our fixed-point quantization buckets, `[min_fixed, max_fixed]`.
+If T is signed, this is
+```
+  num_bits = sizeof(T) * 8
+  [min_fixed, max_fixed] =
+      [-(1 << (num_bits - 1) - 1), (1 << (num_bits - 1)) - 1]
+```
+
+Otherwise, if T is unsigned, the fixed-point range is
+```
+  [min_fixed, max_fixed] = [0, (1 << num_bits) - 1]
+```
+
+From this we compute our scaling factor, s:
+```c++
+  s = (max_fixed - min_fixed) / (2 * m)
+```
+
+Now we can quantize the elements of our tensor:
+```c++
+result = (input * s).round_to_nearest()
+```
 
 One thing to watch out for is that the operator may choose to adjust the
 requested minimum and maximum values slightly during the quantization process,
@@ -6191,6 +6609,26 @@ val randomPoisson
   -> ([< `int32 | `int64 ] as 's) t
   -> ([< `float | `double ] as 'dtype) t
   -> ([< `float | `double ] as 'dtype) t
+
+(* Outputs random values from the Poisson distribution(s) described by rate. *)
+(* This op uses two algorithms, depending on rate. If rate >= 10, then
+the algorithm by Hormann is used to acquire samples via
+transformation-rejection.
+See http://www.sciencedirect.com/science/article/pii/0167668793909974.
+
+Otherwise, Knuth's algorithm is used to acquire samples via multiplying uniform
+random variables.
+See Donald E. Knuth (1969). Seminumerical Algorithms. The Art of Computer
+Programming, Volume 2. Addison Wesley *)
+val randomPoissonV2
+  :  ?name:string
+  -> type_:([< `float | `double | `int32 | `int64 ] as 'dtype) Type.t
+  -> ?seed:int
+  -> ?seed2:int
+  -> ?control_inputs:Node.p list
+  -> ([< `int32 | `int64 ] as 's) t
+  -> ([< `float | `double | `int32 | `int64 ] as 'r) t
+  -> ([< `float | `double | `int32 | `int64 ] as 'dtype) t
 
 (* Randomly shuffles a tensor along its first dimension. *)
 (*   The tensor is shuffled along dimension 0, such that each `value[j]` is mapped
@@ -6664,7 +7102,12 @@ val reshape
   -> 't t
 
 (* Resize `images` to `size` using area interpolation. *)
-(* Input images can be of different types but output images are always float. *)
+(* Input images can be of different types but output images are always float.
+
+Each output pixel is computed by first transforming the pixel's footprint into
+the input tensor and then averaging the pixels that intersect the footprint. An
+input pixel's contribution to the average is weighted by the fraction of its
+area that intersects the footprint.  This is the same as OpenCV's INTER_AREA. *)
 val resizeArea
   :  ?name:string
   -> ?align_corners:bool
@@ -6682,6 +7125,15 @@ val resizeBicubic
   -> ([< `int32 | `int64 | `float | `double ] as 't) t
   -> [ `int32 ] t
   -> [ `float ] t
+
+(* Computes the gradient of bicubic interpolation. *)
+val resizeBicubicGrad
+  :  ?name:string
+  -> ?align_corners:bool
+  -> ?control_inputs:Node.p list
+  -> [ `float ] t
+  -> ([< `float | `double ] as 't) t
+  -> ([< `float | `double ] as 't) t
 
 (* Resize `images` to `size` using bilinear interpolation. *)
 (* Input images can be of different types but output images are always float. *)
@@ -7701,6 +8153,24 @@ val selfAdjointEigV2
   -> ([< `double | `float | `complex64 ] as 't) t
   -> ([< `double | `float | `complex64 ] as 't) t * ([< `double | `float | `complex64 ] as 't) t
 
+(* Computes scaled exponential linear: `scale * alpha * (exp(features) - 1)` *)
+(* if < 0, `scale * features` otherwise.
+
+See [Self-Normalizing Neural Networks](https://arxiv.org/abs/1706.02515) *)
+val selu
+  :  ?name:string
+  -> ?control_inputs:Node.p list
+  -> ([< `float | `double ] as 't) t
+  -> ([< `float | `double ] as 't) t
+
+(* Computes gradients for the scaled exponential linear (Selu) operation. *)
+val seluGrad
+  :  ?name:string
+  -> ?control_inputs:Node.p list
+  -> ([< `float | `double ] as 't) t
+  -> ([< `float | `double ] as 't) t
+  -> ([< `float | `double ] as 't) t
+
 (* Serialize an `N`-minibatch `SparseTensor` into an `[N, 3]` string `Tensor`. *)
 (* The `SparseTensor` must have rank `R` greater than 1, and the first dimension
 is treated as the minibatch dimension.  Elements of the `SparseTensor`
@@ -7724,6 +8194,13 @@ val serializeSparse
   -> [ `int64 ] t
   -> 't t
   -> [ `int64 ] t
+  -> [ `string ] t
+
+(* Transforms a Tensor into a serialized TensorProto proto. *)
+val serializeTensor
+  :  ?name:string
+  -> ?control_inputs:Node.p list
+  -> 't t
   -> [ `string ] t
 
 (* Number of unique elements along last dimension of input `set`. *)
@@ -7957,26 +8434,38 @@ val spaceToBatchND
 (* Rearranges blocks of spatial data, into depth. More specifically,
 this op outputs a copy of the input tensor where values from the `height`
 and `width` dimensions are moved to the `depth` dimension.
-The attr `block_size` indicates the input block size and how the data is moved.
+The attr `block_size` indicates the input block size.
 
   * Non-overlapping blocks of size `block_size x block size` are rearranged
     into depth at each location.
-  * The depth of the output tensor is `input_depth * block_size * block_size`.
+  * The depth of the output tensor is `block_size * block_size * input_depth`.
+  * The Y, X coordinates within each block of the input become the high order
+    component of the output channel index.
   * The input tensor's height and width must be divisible by block_size.
 
-That is, assuming the input is in the shape:
-`[batch, height, width, depth]`,
-the shape of the output will be:
-`[batch, height/block_size, width/block_size, depth*block_size*block_size]`
+The `data_format` attr specifies the layout of the input and output tensors
+with the following options:
+  'NHWC': `[ batch, height, width, channels ]`
+  'NCHW': `[ batch, channels, height, width ]`
+  'NCHW_VECT_C':
+      `qint8 [ batch, channels / 4, height, width, channels % 4 ]`
 
-This operation requires that the input tensor be of rank 4, and that
-`block_size` be >=1 and a divisor of both the input `height` and `width`.
+It is useful to consider the operation as transforming a 6-D Tensor.
+e.g. for data_format = NHWC,
+     Each element in the input tensor can be specified via 6 coordinates,
+     ordered by decreasing memory layout significance as:
+     n,oY,bY,oX,bX,iC  (where n=batch index, oX, oY means X or Y coordinates
+                        within the output image, bX, bY means coordinates
+                        within the input block, iC means input channels).
+     The output would be a transpose to the following layout:
+     n,oY,oX,bY,bX,iC
 
 This operation is useful for resizing the activations between convolutions
 (but keeping all data), e.g. instead of pooling. It is also useful for training
 purely convolutional models.
 
-For example, given this input of shape `[1, 2, 2, 1]`, and block_size of 2:
+For example, given an input of shape `[1, 2, 2, 1]`, data_format = 'NHWC' and
+block_size = 2:
 
 ```
 x = [[[[1], [2]],
@@ -8028,6 +8517,7 @@ x = [[[[1, 2, 3, 4],
 val spaceToDepth
   :  ?name:string
   -> block_size:int
+  -> ?data_format:string
   -> ?control_inputs:Node.p list
   -> 't t
   -> 't t
@@ -9296,6 +9786,7 @@ For example:
   values = ['hello', 'world', 'a', 'b', 'c'] *)
 val stringSplit
   :  ?name:string
+  -> ?skip_empty:bool
   -> ?control_inputs:Node.p list
   -> [ `string ] t
   -> [ `string ] t
@@ -10085,7 +10576,7 @@ If the maximum is empty for a given segment ID `i`, it outputs the smallest poss
  `output[i] = numeric_limits<T>::min()`.
 
 <div style='width:70%; margin:auto; margin-bottom:10px; margin-top:20px;'>
-<img style='width:100%' src='https://www.tensorflow.org/images/UnsortedSegmentSum.png' alt>
+<img style='width:100%' src='https://www.tensorflow.org/images/UnsortedSegmentMax.png' alt>
 </div> *)
 val unsortedSegmentMax
   :  ?name:string
