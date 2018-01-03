@@ -1,5 +1,7 @@
 The __tensorflow-ocaml__ project provides some [OCaml](http://ocaml.org) bindings for [TensorFlow](http://tensorflow.org).
 
+An experimental ocaml binding for [TensorFlow Eager mode](https://research.googleblog.com/2017/10/eager-execution-imperative-define-by.html) can be found in the [ocaml-tf repo](https://github.com/LaurentMazare/ocaml-tf).
+
 ## Installation
 
 Use [opam](https://opam.ocaml.org/) to install the __tensorflow-ocaml__ package.
