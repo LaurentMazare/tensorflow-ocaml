@@ -631,6 +631,7 @@ module Session = struct
       null
       status;
     Graph.keep_alive graph;
+    List.iter C.Tf_tensor.tf_deletetensor input_tensors;
     match Status.result_or_error status () with
     | Ok () ->
       let output_tensors =
