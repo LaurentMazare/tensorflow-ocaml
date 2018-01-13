@@ -10,7 +10,7 @@ type 'a t =
 
 let create filename kind =
   let file_descr = Unix.openfile filename [ O_RDONLY ] 0 in
-  let content = Bigarray.Array1.map_file file_descr Int8_unsigned C_layout false (-1) in
+  let content = Unix.map_file file_descr Int8_unsigned C_layout false [|-1|] |> Bigarray.array1_of_genarray in
   let table = Hashtbl.Poly.create () in
   for i = 0 to Bigarray.Array1.dim content - 1 do
     let v = content.{i} in

@@ -30,6 +30,8 @@ module rec Op_def_piqi:
         | `dt_half
         | `dt_resource
         | `dt_variant
+        | `dt_uint32
+        | `dt_uint64
         | `dt_float_ref
         | `dt_double_ref
         | `dt_int32_ref
@@ -481,6 +483,8 @@ and parse_data_type x =
     | 19l -> `dt_half
     | 20l -> `dt_resource
     | 21l -> `dt_variant
+    | 22l -> `dt_uint32
+    | 23l -> `dt_uint64
     | 101l -> `dt_float_ref
     | 102l -> `dt_double_ref
     | 103l -> `dt_int32_ref
@@ -526,6 +530,8 @@ and packed_parse_data_type x =
     | 19l -> `dt_half
     | 20l -> `dt_resource
     | 21l -> `dt_variant
+    | 22l -> `dt_uint32
+    | 23l -> `dt_uint64
     | 101l -> `dt_float_ref
     | 102l -> `dt_double_ref
     | 103l -> `dt_int32_ref
@@ -713,6 +719,8 @@ and gen__data_type code x =
     | `dt_half -> 19l
     | `dt_resource -> 20l
     | `dt_variant -> 21l
+    | `dt_uint32 -> 22l
+    | `dt_uint64 -> 23l
     | `dt_float_ref -> 101l
     | `dt_double_ref -> 102l
     | `dt_int32_ref -> 103l
@@ -757,7 +765,9 @@ and packed_gen__data_type x =
     | `dt_complex128 -> 18l
     | `dt_half -> 19l
     | `dt_resource -> 20l
-    | `dt_resource -> 21l
+    | `dt_variant -> 21l
+    | `dt_uint32 -> 22l
+    | `dt_uint64 -> 23l
     | `dt_float_ref -> 101l
     | `dt_double_ref -> 102l
     | `dt_int32_ref -> 103l

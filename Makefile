@@ -8,8 +8,8 @@ ALL = $(MNIST_ALL) \
       $(BASICS_ALL) \
       examples/char_rnn/char_rnn.exe \
       examples/rnn/rnn.exe \
-      examples/neural-style/neural_style.exe \
-      examples/neural-style/vgg19.exe \
+#      examples/neural-style/neural_style.exe \
+#      examples/neural-style/vgg19.exe \
       tests/operator_tests.exe tests/gradient_tests.exe \
       examples/load/load.exe
 
