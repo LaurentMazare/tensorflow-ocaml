@@ -4,6 +4,8 @@ open Tensorflow_core
 open Tensorflow
 module O = Ops
 
+let image_dim = Mnist_helper.image_dim
+let label_count = Mnist_helper.label_count
 let scalar_tensor f =
   let array = Tensor.create1 Bigarray.float32 1 in
   Tensor.set array [| 0 |] f;
@@ -21,8 +23,8 @@ let max_pool_2x2 x =
 let () =
   let mnist = Mnist_helper.read_files () in
   let keep_prob = O.placeholder [] ~type_:Float in
-  let xs = O.placeholder [] ~type_:Float in
-  let ys = O.placeholder [] ~type_:Float in
+  let xs = O.placeholder [-1; image_dim] ~type_:Float in
+  let ys = O.placeholder [-1; label_count] ~type_:Float in
 
   let x_image = O.reshape (O.Placeholder.to_node xs) (O.const_int ~type_:Int32 [ -1; 28; 28; 1 ]) in
   let w_conv1 = Var.normalf [ 5; 5; 1; 32 ] ~stddev:0.1 in

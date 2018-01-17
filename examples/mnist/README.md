@@ -20,8 +20,8 @@ tensors when calling `Session.run`. Train images and labels are used when traini
 Test images and labels are used to estimate the validation error.
 
 ```ocaml
-  let xs = O.placeholder [] ~type_:Float in
-  let ys = O.placeholder [] ~type_:Float in
+  let xs = O.placeholder [-1; image_dim] ~type_:Float in
+  let ys = O.placeholder [-1; label_count] ~type_:Float in
   let train_inputs = Session.Input.[ float xs train_images; float ys train_labels ] in
   let validation_inputs =
     Session.Input.[ float xs test_images; float ys test_labels ]

@@ -13,8 +13,8 @@ let () =
   let { Mnist_helper.train_images; train_labels; test_images; test_labels } =
     Mnist_helper.read_files ()
   in
-  let xs = O.placeholder [] ~type_:Float in
-  let ys = O.placeholder [] ~type_:Float in
+  let xs = O.placeholder [-1; image_dim] ~type_:Float in
+  let ys = O.placeholder [-1; label_count] ~type_:Float in
   let ys_node = O.Placeholder.to_node ys in
   let w1 = Var.normalf [ image_dim; hidden_nodes ] ~stddev:0.1 in
   let b1 = Var.f [ hidden_nodes ] 0. in
