@@ -343,7 +343,7 @@ let build_node t ~type_ =
         Ops.(walk (P input) *^ w + b)
       | Input ->
         Hashtbl.find_or_add inputs t.id ~default:(fun () ->
-          Ops.placeholder ~type_ (Shape.dim_list t.shape))
+          Ops.placeholder ~type_ (-1 :: Shape.dim_list t.shape))
         |> Ops.Placeholder.to_node
       | Pool (pool, t) ->
         let filter_height, filter_width = pool.filter in
