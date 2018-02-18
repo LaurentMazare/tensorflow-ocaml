@@ -646,7 +646,10 @@ module Model = struct
   let save ?(inputs = []) t ~filename =
     let save_node =
       Hashtbl.find_or_add t.save_nodes filename ~default:(fun () ->
-        Ops.save ~filename (all_vars_with_names t))
+        let all_vars_with_names = all_vars_with_names t in
+        if List.is_empty all_vars_with_names then
+          failwith "No variable to save can be found (only named variables are saved)";
+        Ops.save ~filename all_vars_with_names)
     in
     Session.run
       ~session:t.session
