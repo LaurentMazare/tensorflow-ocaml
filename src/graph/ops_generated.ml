@@ -140,10 +140,12 @@ module Op_names = struct
   let dataFormatDimMap = Op_name.of_string "DataFormatDimMap"
   let dataFormatVecPermute = Op_name.of_string "DataFormatVecPermute"
   let debugGradientIdentity = Op_name.of_string "DebugGradientIdentity"
+  let debugGradientRefIdentity = Op_name.of_string "DebugGradientRefIdentity"
   let debugIdentity = Op_name.of_string "DebugIdentity"
   let debugNanCount = Op_name.of_string "DebugNanCount"
   let debugNumericSummary = Op_name.of_string "DebugNumericSummary"
   let decodeBase64 = Op_name.of_string "DecodeBase64"
+  let decodeCompressed = Op_name.of_string "DecodeCompressed"
   let decodeJSONExample = Op_name.of_string "DecodeJSONExample"
   let decodePng = Op_name.of_string "DecodePng"
   let decodeRaw = Op_name.of_string "DecodeRaw"
@@ -288,6 +290,7 @@ module Op_names = struct
   let matrixDiagPart = Op_name.of_string "MatrixDiagPart"
   let matrixExponential = Op_name.of_string "MatrixExponential"
   let matrixInverse = Op_name.of_string "MatrixInverse"
+  let matrixLogarithm = Op_name.of_string "MatrixLogarithm"
   let matrixSetDiag = Op_name.of_string "MatrixSetDiag"
   let matrixSolve = Op_name.of_string "MatrixSolve"
   let matrixSolveLs = Op_name.of_string "MatrixSolveLs"
@@ -410,6 +413,7 @@ module Op_names = struct
   let refNextIteration = Op_name.of_string "RefNextIteration"
   let refSelect = Op_name.of_string "RefSelect"
   let refSwitch = Op_name.of_string "RefSwitch"
+  let regexReplace = Op_name.of_string "RegexReplace"
   let relu = Op_name.of_string "Relu"
   let relu6 = Op_name.of_string "Relu6"
   let relu6Grad = Op_name.of_string "Relu6Grad"
@@ -431,6 +435,7 @@ module Op_names = struct
   let reverseV2 = Op_name.of_string "ReverseV2"
   let rightShift = Op_name.of_string "RightShift"
   let rint = Op_name.of_string "Rint"
+  let roll = Op_name.of_string "Roll"
   let round = Op_name.of_string "Round"
   let rsqrt = Op_name.of_string "Rsqrt"
   let rsqrtGrad = Op_name.of_string "RsqrtGrad"
@@ -595,17 +600,21 @@ module Op_names = struct
   let threadUnsafeUnigramCandidateSampler = Op_name.of_string "ThreadUnsafeUnigramCandidateSampler"
   let tile = Op_name.of_string "Tile"
   let tileGrad = Op_name.of_string "TileGrad"
+  let timestamp = Op_name.of_string "Timestamp"
   let topK = Op_name.of_string "TopK"
   let topKV2 = Op_name.of_string "TopKV2"
   let transpose = Op_name.of_string "Transpose"
   let truncateDiv = Op_name.of_string "TruncateDiv"
   let truncateMod = Op_name.of_string "TruncateMod"
   let truncatedNormal = Op_name.of_string "TruncatedNormal"
+  let unbatch = Op_name.of_string "Unbatch"
+  let unbatchGrad = Op_name.of_string "UnbatchGrad"
   let uniformCandidateSampler = Op_name.of_string "UniformCandidateSampler"
   let unique = Op_name.of_string "Unique"
   let uniqueV2 = Op_name.of_string "UniqueV2"
   let uniqueWithCounts = Op_name.of_string "UniqueWithCounts"
   let unpack = Op_name.of_string "Unpack"
+  let unravelIndex = Op_name.of_string "UnravelIndex"
   let unsortedSegmentMax = Op_name.of_string "UnsortedSegmentMax"
   let unsortedSegmentSum = Op_name.of_string "UnsortedSegmentSum"
   let variable = Op_name.of_string "Variable"
@@ -665,7 +674,7 @@ let accumulateNV2
     ?(name = "AccumulateNV2")
     ~shape
     ?(control_inputs = [])
-    (inputs__ : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t list)
+    (inputs__ : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t list)
   =
   let attributes = [ "T", Type (P (Node.output_type (List.hd_exn inputs__))) ] in
   let attributes =
@@ -691,7 +700,7 @@ let accumulatorApplyGradient
     ?(control_inputs = [])
     (handle : [ `string ] t)
     (local_step : [ `int64 ] t)
-    (gradient : ([< `float | `double | `int64 | `int32 | `complex64 ] as 'dtype) t)
+    (gradient : ([< `float | `double | `int32 | `complex64 | `int64 ] as 'dtype) t)
   =
   let attributes = [ "dtype", Type (P (Node.output_type gradient)) ] in
   let name = Name.of_string name in
@@ -849,7 +858,7 @@ let addManySparseToTensorsMap
 let addN
     ?(name = "AddN")
     ?(control_inputs = [])
-    (inputs__ : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t list)
+    (inputs__ : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t list)
   =
   let attributes = [ "T", Type (P (Node.output_type (List.hd_exn inputs__))) ] in
   let attributes =
@@ -1117,13 +1126,13 @@ let applyAdadelta
     ?(name = "ApplyAdadelta")
     ?use_locking
     ?(control_inputs = [])
-    (var : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (accum : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (accum_update : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (lr : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (rho : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (epsilon : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (grad : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (var : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (accum : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (accum_update : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (lr : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (rho : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (epsilon : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (grad : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type var)) ] in
   let attributes =
@@ -1145,10 +1154,10 @@ let applyAdagrad
     ?(name = "ApplyAdagrad")
     ?use_locking
     ?(control_inputs = [])
-    (var : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (accum : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (lr : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (grad : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (var : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (accum : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (lr : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (grad : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type var)) ] in
   let attributes =
@@ -1170,13 +1179,13 @@ let applyAdagradDA
     ?(name = "ApplyAdagradDA")
     ?use_locking
     ?(control_inputs = [])
-    (var : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (gradient_accumulator : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (gradient_squared_accumulator : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (grad : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (lr : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (l1 : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (l2 : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (var : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (gradient_accumulator : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (gradient_squared_accumulator : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (grad : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (lr : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (l1 : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (l2 : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
     (global_step : [ `int64 ] t)
   =
   let attributes = [ "T", Type (P (Node.output_type var)) ] in
@@ -1200,16 +1209,16 @@ let applyAdam
     ?use_locking
     ?use_nesterov
     ?(control_inputs = [])
-    (var : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (m : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (v : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (beta1_power : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (beta2_power : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (lr : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (beta1 : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (beta2 : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (epsilon : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (grad : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (var : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (m : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (v : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (beta1_power : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (beta2_power : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (lr : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (beta1 : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (beta2 : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (epsilon : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (grad : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type var)) ] in
   let attributes =
@@ -1234,13 +1243,13 @@ let applyAddSign
     ?(name = "ApplyAddSign")
     ?use_locking
     ?(control_inputs = [])
-    (var : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (m : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (lr : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (alpha : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (sign_decay : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (beta : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (grad : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (var : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (m : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (lr : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (alpha : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (sign_decay : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (beta : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (grad : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type var)) ] in
   let attributes =
@@ -1262,15 +1271,15 @@ let applyCenteredRMSProp
     ?(name = "ApplyCenteredRMSProp")
     ?use_locking
     ?(control_inputs = [])
-    (var : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (mg : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (ms : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (mom : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (lr : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (rho : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (momentum : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (epsilon : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (grad : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (var : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (mg : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (ms : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (mom : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (lr : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (rho : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (momentum : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (epsilon : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (grad : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type var)) ] in
   let attributes =
@@ -1292,14 +1301,14 @@ let applyFtrl
     ?(name = "ApplyFtrl")
     ?use_locking
     ?(control_inputs = [])
-    (var : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (accum : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (linear : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (grad : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (lr : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (l1 : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (l2 : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (lr_power : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (var : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (accum : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (linear : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (grad : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (lr : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (l1 : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (l2 : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (lr_power : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type var)) ] in
   let attributes =
@@ -1321,15 +1330,15 @@ let applyFtrlV2
     ?(name = "ApplyFtrlV2")
     ?use_locking
     ?(control_inputs = [])
-    (var : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (accum : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (linear : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (grad : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (lr : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (l1 : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (l2 : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (l2_shrinkage : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (lr_power : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (var : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (accum : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (linear : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (grad : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (lr : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (l1 : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (l2 : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (l2_shrinkage : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (lr_power : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type var)) ] in
   let attributes =
@@ -1351,9 +1360,9 @@ let applyGradientDescent
     ?(name = "ApplyGradientDescent")
     ?use_locking
     ?(control_inputs = [])
-    (var : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (alpha : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (delta : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (var : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (alpha : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (delta : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type var)) ] in
   let attributes =
@@ -1376,11 +1385,11 @@ let applyMomentum
     ?use_locking
     ?use_nesterov
     ?(control_inputs = [])
-    (var : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (accum : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (lr : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (grad : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (momentum : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (var : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (accum : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (lr : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (grad : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (momentum : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type var)) ] in
   let attributes =
@@ -1405,13 +1414,13 @@ let applyPowerSign
     ?(name = "ApplyPowerSign")
     ?use_locking
     ?(control_inputs = [])
-    (var : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (m : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (lr : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (logbase : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (sign_decay : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (beta : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (grad : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (var : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (m : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (lr : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (logbase : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (sign_decay : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (beta : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (grad : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type var)) ] in
   let attributes =
@@ -1433,12 +1442,12 @@ let applyProximalAdagrad
     ?(name = "ApplyProximalAdagrad")
     ?use_locking
     ?(control_inputs = [])
-    (var : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (accum : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (lr : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (l1 : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (l2 : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (grad : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (var : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (accum : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (lr : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (l1 : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (l2 : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (grad : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type var)) ] in
   let attributes =
@@ -1460,11 +1469,11 @@ let applyProximalGradientDescent
     ?(name = "ApplyProximalGradientDescent")
     ?use_locking
     ?(control_inputs = [])
-    (var : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (alpha : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (l1 : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (l2 : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (delta : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (var : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (alpha : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (l1 : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (l2 : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (delta : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type var)) ] in
   let attributes =
@@ -1486,14 +1495,14 @@ let applyRMSProp
     ?(name = "ApplyRMSProp")
     ?use_locking
     ?(control_inputs = [])
-    (var : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (ms : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (mom : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (lr : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (rho : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (momentum : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (epsilon : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (grad : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (var : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (ms : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (mom : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (lr : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (rho : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (momentum : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (epsilon : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (grad : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type var)) ] in
   let attributes =
@@ -1515,8 +1524,8 @@ let approximateEqual
     ?(name = "ApproximateEqual")
     ?tolerance
     ?(control_inputs = [])
-    (x : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (y : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (x : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (y : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type x)) ] in
   let attributes =
@@ -1538,7 +1547,7 @@ let argMax
     ?(name = "ArgMax")
     ~type_
     ?(control_inputs = [])
-    (input : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (input : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
     (dimension : ([< `int32 | `int64 ] as 'tidx) t)
   =
   let attributes = [ "Tidx", Type (P (Node.output_type dimension)) ;  "T", Type (P (Node.output_type input)) ;  "output_type", Type (P type_) ] in
@@ -1558,7 +1567,7 @@ let argMin
     ?(name = "ArgMin")
     ~type_
     ?(control_inputs = [])
-    (input : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (input : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
     (dimension : ([< `int32 | `int64 ] as 'tidx) t)
   =
   let attributes = [ "Tidx", Type (P (Node.output_type dimension)) ;  "T", Type (P (Node.output_type input)) ;  "output_type", Type (P type_) ] in
@@ -1679,8 +1688,8 @@ let assignAdd
     ?(name = "AssignAdd")
     ?use_locking
     ?(control_inputs = [])
-    (ref : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (value : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (ref : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (value : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type ref)) ] in
   let attributes =
@@ -1702,8 +1711,8 @@ let assignSub
     ?(name = "AssignSub")
     ?use_locking
     ?(control_inputs = [])
-    (ref : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (value : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (ref : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (value : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type ref)) ] in
   let attributes =
@@ -2481,11 +2490,11 @@ let batchNormWithGlobalNormalization
     ~variance_epsilon
     ~scale_after_normalization
     ?(control_inputs = [])
-    (t : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (m : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (v : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (beta : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (gamma : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (t : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (m : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (v : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (beta : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (gamma : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type t)) ] in
   let attributes =
@@ -2511,11 +2520,11 @@ let batchNormWithGlobalNormalizationGrad
     ~variance_epsilon
     ~scale_after_normalization
     ?(control_inputs = [])
-    (t : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (m : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (v : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (gamma : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (backprop : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (t : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (m : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (v : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (gamma : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (backprop : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type t)) ;  "T", Type (P (Node.output_type t)) ;  "T", Type (P (Node.output_type t)) ;  "T", Type (P (Node.output_type t)) ;  "T", Type (P (Node.output_type t)) ] in
   let attributes =
@@ -2732,8 +2741,8 @@ let biasAdd
     ?(name = "BiasAdd")
     ?data_format
     ?(control_inputs = [])
-    (value : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (bias : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (value : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (bias : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type value)) ] in
   let attributes =
@@ -2755,7 +2764,7 @@ let biasAddGrad
     ?(name = "BiasAddGrad")
     ?data_format
     ?(control_inputs = [])
-    (out_backprop : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (out_backprop : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type out_backprop)) ] in
   let attributes =
@@ -2776,8 +2785,8 @@ let biasAddGrad
 let biasAddV1
     ?(name = "BiasAddV1")
     ?(control_inputs = [])
-    (value : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (bias : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (value : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (bias : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type value)) ] in
   let name = Name.of_string name in
@@ -3876,7 +3885,7 @@ let cumprod
     ?exclusive
     ?reverse
     ?(control_inputs = [])
-    (x : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (x : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
     (axis : ([< `int32 | `int64 ] as 'tidx) t)
   =
   let attributes = [ "Tidx", Type (P (Node.output_type axis)) ;  "T", Type (P (Node.output_type x)) ] in
@@ -3903,7 +3912,7 @@ let cumsum
     ?exclusive
     ?reverse
     ?(control_inputs = [])
-    (x : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (x : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
     (axis : ([< `int32 | `int64 ] as 'tidx) t)
   =
   let attributes = [ "Tidx", Type (P (Node.output_type axis)) ;  "T", Type (P (Node.output_type x)) ] in
@@ -3985,6 +3994,24 @@ let debugGradientIdentity
   let attributes = [ "T", Type (P (Node.output_type input)) ] in
   let name = Name.of_string name in
   let op_name = Op_names.debugGradientIdentity in
+  let inputs = [ (`single (P input)) ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type input)
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:None
+
+let debugGradientRefIdentity
+    ?(name = "DebugGradientRefIdentity")
+    ?(control_inputs = [])
+    (input : 't t)
+  =
+  let attributes = [ "T", Type (P (Node.output_type input)) ] in
+  let name = Name.of_string name in
+  let op_name = Op_names.debugGradientRefIdentity in
   let inputs = [ (`single (P input)) ] in
   Node.create
     ~name
@@ -4106,6 +4133,28 @@ let decodeBase64
   let name = Name.of_string name in
   let op_name = Op_names.decodeBase64 in
   let inputs = [ (`single (P input)) ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.String
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:None
+
+let decodeCompressed
+    ?(name = "DecodeCompressed")
+    ?compression_type
+    ?(control_inputs = [])
+    (bytes : [ `string ] t)
+  =
+  let attributes = [] in
+  let attributes =
+    match compression_type with | None -> attributes | Some compression_type -> ("compression_type", String compression_type) :: attributes
+  in
+  let name = Name.of_string name in
+  let op_name = Op_names.decodeCompressed in
+  let inputs = [ (`single (P bytes)) ] in
   Node.create
     ~name
     ~op_name
@@ -5515,10 +5564,10 @@ let fakeQuantWithMinMaxVarsPerChannelGradient
 let fill
     ?(name = "Fill")
     ?(control_inputs = [])
-    (dims : [ `int32 ] t)
+    (dims : ([< `int32 | `int64 ] as 'index_type) t)
     (value : 't t)
   =
-  let attributes = [ "T", Type (P (Node.output_type value)) ] in
+  let attributes = [ "index_type", Type (P (Node.output_type dims)) ;  "T", Type (P (Node.output_type value)) ] in
   let name = Name.of_string name in
   let op_name = Op_names.fill in
   let inputs = [ (`single (P dims)); (`single (P value)) ] in
@@ -7838,10 +7887,10 @@ let matrixBandPart
     ?(name = "MatrixBandPart")
     ?(control_inputs = [])
     (input : 't t)
-    (num_lower : [ `int64 ] t)
-    (num_upper : [ `int64 ] t)
+    (num_lower : ([< `int32 | `int64 ] as 'tindex) t)
+    (num_upper : ([< `int32 | `int64 ] as 'tindex) t)
   =
-  let attributes = [ "T", Type (P (Node.output_type input)) ] in
+  let attributes = [ "Tindex", Type (P (Node.output_type num_lower)) ;  "T", Type (P (Node.output_type input)) ] in
   let name = Name.of_string name in
   let op_name = Op_names.matrixBandPart in
   let inputs = [ (`single (P input)); (`single (P num_lower)); (`single (P num_upper)) ] in
@@ -7938,6 +7987,24 @@ let matrixInverse
   in
   let name = Name.of_string name in
   let op_name = Op_names.matrixInverse in
+  let inputs = [ (`single (P input)) ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type input)
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:None
+
+let matrixLogarithm
+    ?(name = "MatrixLogarithm")
+    ?(control_inputs = [])
+    (input : ([< `complex64 ] as 't) t)
+  =
+  let attributes = [ "T", Type (P (Node.output_type input)) ] in
+  let name = Name.of_string name in
+  let op_name = Op_names.matrixLogarithm in
   let inputs = [ (`single (P input)) ] in
   Node.create
     ~name
@@ -8045,7 +8112,7 @@ let max
     ?(name = "Max")
     ?keep_dims
     ?(control_inputs = [])
-    (input : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (input : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
     (reduction_indices : ([< `int32 | `int64 ] as 'tidx) t)
   =
   let attributes = [ "Tidx", Type (P (Node.output_type reduction_indices)) ;  "T", Type (P (Node.output_type input)) ] in
@@ -8491,7 +8558,7 @@ let mean
     ?(name = "Mean")
     ?keep_dims
     ?(control_inputs = [])
-    (input : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (input : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
     (reduction_indices : ([< `int32 | `int64 ] as 'tidx) t)
   =
   let attributes = [ "Tidx", Type (P (Node.output_type reduction_indices)) ;  "T", Type (P (Node.output_type input)) ] in
@@ -8623,7 +8690,7 @@ let min
     ?(name = "Min")
     ?keep_dims
     ?(control_inputs = [])
-    (input : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (input : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
     (reduction_indices : ([< `int32 | `int64 ] as 'tidx) t)
   =
   let attributes = [ "Tidx", Type (P (Node.output_type reduction_indices)) ;  "T", Type (P (Node.output_type input)) ] in
@@ -9575,7 +9642,7 @@ let prod
     ?(name = "Prod")
     ?keep_dims
     ?(control_inputs = [])
-    (input : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (input : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
     (reduction_indices : ([< `int32 | `int64 ] as 'tidx) t)
   =
   let attributes = [ "Tidx", Type (P (Node.output_type reduction_indices)) ;  "T", Type (P (Node.output_type input)) ] in
@@ -11186,6 +11253,7 @@ let recordInput
     ?file_buffer_size
     ?file_parallelism
     ?batch_size
+    ?compression_type
     ?(control_inputs = [])
     ()
   =
@@ -11207,6 +11275,9 @@ let recordInput
   in
   let attributes =
     match batch_size with | None -> attributes | Some batch_size -> ("batch_size", Int batch_size) :: attributes
+  in
+  let attributes =
+    match compression_type with | None -> attributes | Some compression_type -> ("compression_type", String compression_type) :: attributes
   in
   let name = Name.of_string name in
   let op_name = Op_names.recordInput in
@@ -11410,6 +11481,30 @@ let refSwitch
     ~control_inputs
     ~attributes
     ~output_idx:(Some 1)
+
+let regexReplace
+    ?(name = "RegexReplace")
+    ?replace_global
+    ?(control_inputs = [])
+    (input : [ `string ] t)
+    (pattern : [ `string ] t)
+    (rewrite : [ `string ] t)
+  =
+  let attributes = [] in
+  let attributes =
+    match replace_global with | None -> attributes | Some replace_global -> ("replace_global", Bool replace_global) :: attributes
+  in
+  let name = Name.of_string name in
+  let op_name = Op_names.regexReplace in
+  let inputs = [ (`single (P input)); (`single (P pattern)); (`single (P rewrite)) ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.String
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:None
 
 let relu
     ?(name = "Relu")
@@ -11886,6 +11981,26 @@ let rint
     ~attributes
     ~output_idx:None
 
+let roll
+    ?(name = "Roll")
+    ?(control_inputs = [])
+    (input : 't t)
+    (shift : ([< `int32 | `int64 ] as 'tshift) t)
+    (axis : ([< `int32 | `int64 ] as 'taxis) t)
+  =
+  let attributes = [ "Taxis", Type (P (Node.output_type axis)) ;  "Tshift", Type (P (Node.output_type shift)) ;  "T", Type (P (Node.output_type input)) ] in
+  let name = Name.of_string name in
+  let op_name = Op_names.roll in
+  let inputs = [ (`single (P input)); (`single (P shift)); (`single (P axis)) ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type input)
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:None
+
 let round
     ?(name = "Round")
     ?(control_inputs = [])
@@ -12091,9 +12206,9 @@ let scatterAdd
     ?(name = "ScatterAdd")
     ?use_locking
     ?(control_inputs = [])
-    (ref : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (ref : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
     (indices : ([< `int32 | `int64 ] as 'tindices) t)
-    (updates : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (updates : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
   =
   let attributes = [ "Tindices", Type (P (Node.output_type indices)) ;  "T", Type (P (Node.output_type ref)) ] in
   let attributes =
@@ -12115,9 +12230,9 @@ let scatterDiv
     ?(name = "ScatterDiv")
     ?use_locking
     ?(control_inputs = [])
-    (ref : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (ref : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
     (indices : ([< `int32 | `int64 ] as 'tindices) t)
-    (updates : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (updates : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
   =
   let attributes = [ "Tindices", Type (P (Node.output_type indices)) ;  "T", Type (P (Node.output_type ref)) ] in
   let attributes =
@@ -12139,9 +12254,9 @@ let scatterMul
     ?(name = "ScatterMul")
     ?use_locking
     ?(control_inputs = [])
-    (ref : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (ref : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
     (indices : ([< `int32 | `int64 ] as 'tindices) t)
-    (updates : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (updates : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
   =
   let attributes = [ "Tindices", Type (P (Node.output_type indices)) ;  "T", Type (P (Node.output_type ref)) ] in
   let attributes =
@@ -12183,9 +12298,9 @@ let scatterNdAdd
     ?(name = "ScatterNdAdd")
     ?use_locking
     ?(control_inputs = [])
-    (ref : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (ref : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
     (indices : ([< `int32 | `int64 ] as 'tindices) t)
-    (updates : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (updates : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
   =
   let attributes = [ "Tindices", Type (P (Node.output_type indices)) ;  "T", Type (P (Node.output_type ref)) ] in
   let attributes =
@@ -12206,9 +12321,9 @@ let scatterNdAdd
 let scatterNdNonAliasingAdd
     ?(name = "ScatterNdNonAliasingAdd")
     ?(control_inputs = [])
-    (input : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (input : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
     (indices : ([< `int32 | `int64 ] as 'tindices) t)
-    (updates : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (updates : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
   =
   let attributes = [ "Tindices", Type (P (Node.output_type indices)) ;  "T", Type (P (Node.output_type input)) ] in
   let name = Name.of_string name in
@@ -12227,9 +12342,9 @@ let scatterNdSub
     ?(name = "ScatterNdSub")
     ?use_locking
     ?(control_inputs = [])
-    (ref : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (ref : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
     (indices : ([< `int32 | `int64 ] as 'tindices) t)
-    (updates : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (updates : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
   =
   let attributes = [ "Tindices", Type (P (Node.output_type indices)) ;  "T", Type (P (Node.output_type ref)) ] in
   let attributes =
@@ -12275,9 +12390,9 @@ let scatterSub
     ?(name = "ScatterSub")
     ?use_locking
     ?(control_inputs = [])
-    (ref : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (ref : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
     (indices : ([< `int32 | `int64 ] as 'tindices) t)
-    (updates : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (updates : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
   =
   let attributes = [ "Tindices", Type (P (Node.output_type indices)) ;  "T", Type (P (Node.output_type ref)) ] in
   let attributes =
@@ -12426,7 +12541,7 @@ let segmentMin
 let segmentProd
     ?(name = "SegmentProd")
     ?(control_inputs = [])
-    (data : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (data : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
     (segment_ids : ([< `int32 | `int64 ] as 'tindices) t)
   =
   let attributes = [ "Tindices", Type (P (Node.output_type segment_ids)) ;  "T", Type (P (Node.output_type data)) ] in
@@ -12445,7 +12560,7 @@ let segmentProd
 let segmentSum
     ?(name = "SegmentSum")
     ?(control_inputs = [])
-    (data : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (data : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
     (segment_ids : ([< `int32 | `int64 ] as 'tindices) t)
   =
   let attributes = [ "Tindices", Type (P (Node.output_type segment_ids)) ;  "T", Type (P (Node.output_type data)) ] in
@@ -13171,7 +13286,7 @@ let sparseAccumulatorApplyGradient
     (handle : [ `string ] t)
     (local_step : [ `int64 ] t)
     (gradient_indices : [ `int64 ] t)
-    (gradient_values : ([< `float | `double | `int64 | `int32 | `complex64 ] as 'dtype) t)
+    (gradient_values : ([< `float | `double | `int32 | `complex64 | `int64 ] as 'dtype) t)
     (gradient_shape : [ `int64 ] t)
   =
   let attributes = [ "dtype", Type (P (Node.output_type gradient_values)) ] in
@@ -13232,10 +13347,10 @@ let sparseAdd
     ?(name = "SparseAdd")
     ?(control_inputs = [])
     (a_indices : [ `int64 ] t)
-    (a_values : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (a_values : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
     (a_shape : [ `int64 ] t)
     (b_indices : [ `int64 ] t)
-    (b_values : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (b_values : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
     (b_shape : [ `int64 ] t)
     (thresh : ([< `float | `double | `int32 | `int64 ] as 'treal) t)
   =
@@ -13273,7 +13388,7 @@ let sparseAdd
 let sparseAddGrad
     ?(name = "SparseAddGrad")
     ?(control_inputs = [])
-    (backprop_val_grad : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (backprop_val_grad : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
     (a_indices : [ `int64 ] t)
     (b_indices : [ `int64 ] t)
     (sum_indices : [ `int64 ] t)
@@ -13304,13 +13419,13 @@ let sparseApplyAdadelta
     ?(name = "SparseApplyAdadelta")
     ?use_locking
     ?(control_inputs = [])
-    (var : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (accum : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (accum_update : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (lr : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (rho : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (epsilon : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (grad : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (var : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (accum : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (accum_update : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (lr : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (rho : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (epsilon : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (grad : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
     (indices : ([< `int32 | `int64 ] as 'tindices) t)
   =
   let attributes = [ "Tindices", Type (P (Node.output_type indices)) ;  "T", Type (P (Node.output_type var)) ] in
@@ -13333,10 +13448,10 @@ let sparseApplyAdagrad
     ?(name = "SparseApplyAdagrad")
     ?use_locking
     ?(control_inputs = [])
-    (var : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (accum : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (lr : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (grad : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (var : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (accum : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (lr : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (grad : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
     (indices : ([< `int32 | `int64 ] as 'tindices) t)
   =
   let attributes = [ "Tindices", Type (P (Node.output_type indices)) ;  "T", Type (P (Node.output_type var)) ] in
@@ -13359,14 +13474,14 @@ let sparseApplyAdagradDA
     ?(name = "SparseApplyAdagradDA")
     ?use_locking
     ?(control_inputs = [])
-    (var : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (gradient_accumulator : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (gradient_squared_accumulator : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (grad : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (var : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (gradient_accumulator : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (gradient_squared_accumulator : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (grad : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
     (indices : ([< `int32 | `int64 ] as 'tindices) t)
-    (lr : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (l1 : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (l2 : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (lr : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (l1 : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (l2 : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
     (global_step : [ `int64 ] t)
   =
   let attributes = [ "Tindices", Type (P (Node.output_type indices)) ;  "T", Type (P (Node.output_type var)) ] in
@@ -13389,15 +13504,15 @@ let sparseApplyCenteredRMSProp
     ?(name = "SparseApplyCenteredRMSProp")
     ?use_locking
     ?(control_inputs = [])
-    (var : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (mg : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (ms : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (mom : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (lr : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (rho : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (momentum : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (epsilon : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (grad : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (var : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (mg : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (ms : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (mom : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (lr : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (rho : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (momentum : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (epsilon : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (grad : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
     (indices : ([< `int32 | `int64 ] as 'tindices) t)
   =
   let attributes = [ "Tindices", Type (P (Node.output_type indices)) ;  "T", Type (P (Node.output_type var)) ] in
@@ -13420,15 +13535,15 @@ let sparseApplyFtrl
     ?(name = "SparseApplyFtrl")
     ?use_locking
     ?(control_inputs = [])
-    (var : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (accum : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (linear : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (grad : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (var : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (accum : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (linear : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (grad : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
     (indices : ([< `int32 | `int64 ] as 'tindices) t)
-    (lr : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (l1 : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (l2 : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (lr_power : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (lr : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (l1 : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (l2 : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (lr_power : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
   =
   let attributes = [ "Tindices", Type (P (Node.output_type indices)) ;  "T", Type (P (Node.output_type var)) ] in
   let attributes =
@@ -13450,16 +13565,16 @@ let sparseApplyFtrlV2
     ?(name = "SparseApplyFtrlV2")
     ?use_locking
     ?(control_inputs = [])
-    (var : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (accum : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (linear : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (grad : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (var : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (accum : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (linear : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (grad : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
     (indices : ([< `int32 | `int64 ] as 'tindices) t)
-    (lr : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (l1 : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (l2 : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (l2_shrinkage : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (lr_power : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (lr : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (l1 : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (l2 : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (l2_shrinkage : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (lr_power : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
   =
   let attributes = [ "Tindices", Type (P (Node.output_type indices)) ;  "T", Type (P (Node.output_type var)) ] in
   let attributes =
@@ -13482,12 +13597,12 @@ let sparseApplyMomentum
     ?use_locking
     ?use_nesterov
     ?(control_inputs = [])
-    (var : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (accum : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (lr : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (grad : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (var : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (accum : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (lr : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (grad : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
     (indices : ([< `int32 | `int64 ] as 'tindices) t)
-    (momentum : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (momentum : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
   =
   let attributes = [ "Tindices", Type (P (Node.output_type indices)) ;  "T", Type (P (Node.output_type var)) ] in
   let attributes =
@@ -13512,12 +13627,12 @@ let sparseApplyProximalAdagrad
     ?(name = "SparseApplyProximalAdagrad")
     ?use_locking
     ?(control_inputs = [])
-    (var : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (accum : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (lr : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (l1 : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (l2 : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (grad : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (var : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (accum : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (lr : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (l1 : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (l2 : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (grad : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
     (indices : ([< `int32 | `int64 ] as 'tindices) t)
   =
   let attributes = [ "Tindices", Type (P (Node.output_type indices)) ;  "T", Type (P (Node.output_type var)) ] in
@@ -13540,11 +13655,11 @@ let sparseApplyProximalGradientDescent
     ?(name = "SparseApplyProximalGradientDescent")
     ?use_locking
     ?(control_inputs = [])
-    (var : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (alpha : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (l1 : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (l2 : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (grad : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (var : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (alpha : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (l1 : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (l2 : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (grad : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
     (indices : ([< `int32 | `int64 ] as 'tindices) t)
   =
   let attributes = [ "Tindices", Type (P (Node.output_type indices)) ;  "T", Type (P (Node.output_type var)) ] in
@@ -13567,14 +13682,14 @@ let sparseApplyRMSProp
     ?(name = "SparseApplyRMSProp")
     ?use_locking
     ?(control_inputs = [])
-    (var : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (ms : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (mom : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (lr : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (rho : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (momentum : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (epsilon : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
-    (grad : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (var : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (ms : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (mom : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (lr : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (rho : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (momentum : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (epsilon : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (grad : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
     (indices : ([< `int32 | `int64 ] as 'tindices) t)
   =
   let attributes = [ "Tindices", Type (P (Node.output_type indices)) ;  "T", Type (P (Node.output_type var)) ] in
@@ -13672,9 +13787,9 @@ let sparseDenseCwiseAdd
     ?(name = "SparseDenseCwiseAdd")
     ?(control_inputs = [])
     (sp_indices : [ `int64 ] t)
-    (sp_values : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (sp_values : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
     (sp_shape : [ `int64 ] t)
-    (dense : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (dense : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type sp_values)) ] in
   let name = Name.of_string name in
@@ -13693,9 +13808,9 @@ let sparseDenseCwiseDiv
     ?(name = "SparseDenseCwiseDiv")
     ?(control_inputs = [])
     (sp_indices : [ `int64 ] t)
-    (sp_values : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (sp_values : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
     (sp_shape : [ `int64 ] t)
-    (dense : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (dense : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type sp_values)) ] in
   let name = Name.of_string name in
@@ -13714,9 +13829,9 @@ let sparseDenseCwiseMul
     ?(name = "SparseDenseCwiseMul")
     ?(control_inputs = [])
     (sp_indices : [ `int64 ] t)
-    (sp_values : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (sp_values : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
     (sp_shape : [ `int64 ] t)
-    (dense : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (dense : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type sp_values)) ] in
   let name = Name.of_string name in
@@ -13915,7 +14030,7 @@ let sparseReduceSum
     ?keep_dims
     ?(control_inputs = [])
     (input_indices : [ `int64 ] t)
-    (input_values : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (input_values : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
     (input_shape : [ `int64 ] t)
     (reduction_axes : [ `int32 ] t)
   =
@@ -13940,7 +14055,7 @@ let sparseReduceSumSparse
     ?keep_dims
     ?(control_inputs = [])
     (input_indices : [ `int64 ] t)
-    (input_values : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (input_values : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
     (input_shape : [ `int64 ] t)
     (reduction_axes : [ `int32 ] t)
   =
@@ -14325,10 +14440,10 @@ let sparseSparseMinimum
     ?(name = "SparseSparseMinimum")
     ?(control_inputs = [])
     (a_indices : [ `int64 ] t)
-    (a_values : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (a_values : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
     (a_shape : [ `int64 ] t)
     (b_indices : [ `int64 ] t)
-    (b_values : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (b_values : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
     (b_shape : [ `int64 ] t)
   =
   let attributes = [ "T", Type (P (Node.output_type a_values)) ] in
@@ -14357,9 +14472,9 @@ let sparseTensorDenseAdd
     ?(name = "SparseTensorDenseAdd")
     ?(control_inputs = [])
     (a_indices : ([< `int32 | `int64 ] as 'tindices) t)
-    (a_values : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (a_values : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
     (a_shape : ([< `int32 | `int64 ] as 'tindices) t)
-    (b : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (b : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
   =
   let attributes = [ "Tindices", Type (P (Node.output_type a_indices)) ;  "T", Type (P (Node.output_type a_values)) ] in
   let name = Name.of_string name in
@@ -15187,7 +15302,7 @@ let sum
     ?(name = "Sum")
     ?keep_dims
     ?(control_inputs = [])
-    (input : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (input : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
     (reduction_indices : ([< `int32 | `int64 ] as 'tidx) t)
   =
   let attributes = [ "Tidx", Type (P (Node.output_type reduction_indices)) ;  "T", Type (P (Node.output_type input)) ] in
@@ -16125,6 +16240,24 @@ let tileGrad
     ~attributes
     ~output_idx:None
 
+let timestamp
+    ?(name = "Timestamp")
+    ?(control_inputs = [])
+    ()
+  =
+  let attributes = [] in
+  let name = Name.of_string name in
+  let op_name = Op_names.timestamp in
+  let inputs = [  ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Double
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:None
+
 let topK
     ?(name = "TopK")
     ~k
@@ -16276,6 +16409,67 @@ let truncatedNormal
     ~attributes
     ~output_idx:None
 
+let unbatch
+    ?(name = "Unbatch")
+    ~timeout_micros
+    ?container
+    ?shared_name
+    ?(control_inputs = [])
+    (batched_tensor : 't t)
+    (batch_index : [ `int64 ] t)
+    (id : [ `int64 ] t)
+  =
+  let attributes = [ "T", Type (P (Node.output_type batched_tensor)) ] in
+  let attributes =
+    ("timeout_micros", Int timeout_micros) :: attributes
+  in
+  let attributes =
+    match container with | None -> attributes | Some container -> ("container", String container) :: attributes
+  in
+  let attributes =
+    match shared_name with | None -> attributes | Some shared_name -> ("shared_name", String shared_name) :: attributes
+  in
+  let name = Name.of_string name in
+  let op_name = Op_names.unbatch in
+  let inputs = [ (`single (P batched_tensor)); (`single (P batch_index)); (`single (P id)) ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type batched_tensor)
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:None
+
+let unbatchGrad
+    ?(name = "UnbatchGrad")
+    ?container
+    ?shared_name
+    ?(control_inputs = [])
+    (original_input : 't t)
+    (batch_index : [ `int64 ] t)
+    (grad : 't t)
+    (id : [ `int64 ] t)
+  =
+  let attributes = [ "T", Type (P (Node.output_type original_input)) ] in
+  let attributes =
+    match container with | None -> attributes | Some container -> ("container", String container) :: attributes
+  in
+  let attributes =
+    match shared_name with | None -> attributes | Some shared_name -> ("shared_name", String shared_name) :: attributes
+  in
+  let name = Name.of_string name in
+  let op_name = Op_names.unbatchGrad in
+  let inputs = [ (`single (P original_input)); (`single (P batch_index)); (`single (P grad)); (`single (P id)) ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type original_input)
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:None
+
 let uniformCandidateSampler
     ?(name = "UniformCandidateSampler")
     ~num_true
@@ -16369,9 +16563,9 @@ let uniqueV2
     ~type_1
     ?(control_inputs = [])
     (x : 't t)
-    (axis : [ `int64 ] t)
+    (axis : ([< `int32 | `int64 ] as 'taxis) t)
   =
-  let attributes = [ "T", Type (P (Node.output_type x)) ;  "out_idx", Type (P type_1) ] in
+  let attributes = [ "Taxis", Type (P (Node.output_type axis)) ;  "T", Type (P (Node.output_type x)) ;  "out_idx", Type (P type_1) ] in
   let name = Name.of_string name in
   let op_name = Op_names.uniqueV2 in
   let inputs = [ (`single (P x)); (`single (P axis)) ] in
@@ -16461,6 +16655,25 @@ let unpack
   List.init num ~f:(fun output_idx ->
     set_output_idx node (Some output_idx))
 
+let unravelIndex
+    ?(name = "UnravelIndex")
+    ?(control_inputs = [])
+    (indices : ([< `int32 | `int64 ] as 'tidx) t)
+    (dims : ([< `int32 | `int64 ] as 'tidx) t)
+  =
+  let attributes = [ "Tidx", Type (P (Node.output_type indices)) ] in
+  let name = Name.of_string name in
+  let op_name = Op_names.unravelIndex in
+  let inputs = [ (`single (P indices)); (`single (P dims)) ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type indices)
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:None
+
 let unsortedSegmentMax
     ?(name = "UnsortedSegmentMax")
     ?(control_inputs = [])
@@ -16484,7 +16697,7 @@ let unsortedSegmentMax
 let unsortedSegmentSum
     ?(name = "UnsortedSegmentSum")
     ?(control_inputs = [])
-    (data : ([< `float | `double | `int64 | `int32 | `complex64 ] as 't) t)
+    (data : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
     (segment_ids : ([< `int32 | `int64 ] as 'tindices) t)
     (num_segments : ([< `int32 | `int64 ] as 'tnumsegments) t)
   =
@@ -16566,7 +16779,7 @@ let variableV2
 let where
     ?(name = "Where")
     ?(control_inputs = [])
-    (input : ([< `float | `double | `int64 | `int32 | `complex64 | `bool ] as 't) t)
+    (input : ([< `float | `double | `int32 | `complex64 | `int64 | `bool ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type input)) ] in
   let name = Name.of_string name in
