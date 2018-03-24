@@ -17,7 +17,7 @@ let create () =
   | Ok session ->
     { session
     ; graph
-    ; nodes = Hashtbl.create (module Node.Id) ()
+    ; nodes = Hashtbl.create (module Node.Id)
     ; variable_initializations = []
     }
 
@@ -65,7 +65,8 @@ let rec build t node =
     operation
 
 let run ?(inputs=[]) ?(outputs=[]) ?(targets=[]) t =
-  if List.contains_dup (List.map inputs ~f:fst)
+  let cmp (Node.P n1) (Node.P n2) = Node.Id.compare (Node.id n1) (Node.id n2) in
+  if List.contains_dup ~compare:cmp (List.map inputs ~f:fst)
   then failwith "Session.run: duplicate entry in [inputs].";
   let inputs =
     List.map inputs ~f:(fun (input, input_tensor) ->

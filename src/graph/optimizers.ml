@@ -11,7 +11,7 @@ type 'a optimizer
    Using this is an overapproximation as we would only need the variables that
    can be reached from the node via a 'derivable' path. *)
 let get_all_vars node =
-  let processed_nodes = Hash_set.create (module Node.Id) () in
+  let processed_nodes = Hash_set.create (module Node.Id) in
   (* Using references here make the following code quite consise. *)
   let varsf = ref ([] : [ `float ] Node.t list) in
   let varsd = ref ([] : [ `double ] Node.t list) in

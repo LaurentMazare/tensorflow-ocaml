@@ -1,6 +1,6 @@
 open Base
 
-let table = Hashtbl.create (module Node.Op_name) ()
+let table = Hashtbl.create (module Node.Op_name)
 
 type t =
   { f : 'a .
@@ -21,7 +21,7 @@ let add op t =
 
 let find = Hashtbl.find table
 
-let table_multi = Hashtbl.create (module Node.Op_name) ()
+let table_multi = Hashtbl.create (module Node.Op_name)
 
 type multi =
   { g : 'a .

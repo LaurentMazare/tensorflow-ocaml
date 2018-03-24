@@ -315,13 +315,13 @@ let create_var dims ~init ~type_ =
   | `truncated_normal stddev -> Var.truncated_normal dims ~stddev ~type_
 
 let build_node t ~type_ =
-  let inputs = Hashtbl.create (module Id) () in
-  let explicit_vars = Hashtbl.create (module Id) () in
-  let dense_vars = Hashtbl.create (module Id) () in
-  let conv_vars = Hashtbl.create (module Id) () in
-  let splits = Hashtbl.create (module Id) () in
-  let var_names = Hashtbl.create (module Node.Id) () in
-  let all_nodes = Hashtbl.create (module Id) () in
+  let inputs = Hashtbl.create (module Id) in
+  let explicit_vars = Hashtbl.create (module Id) in
+  let dense_vars = Hashtbl.create (module Id) in
+  let conv_vars = Hashtbl.create (module Id) in
+  let splits = Hashtbl.create (module Id) in
+  let var_names = Hashtbl.create (module Node.Id) in
+  let all_nodes = Hashtbl.create (module Id) in
   let rec walk (P t) =
     let node =
       match t.op with
@@ -488,8 +488,8 @@ module Model = struct
       ; node
       ; placeholder
       ; inputs
-      ; save_nodes = Hashtbl.create (module String) ()
-      ; load_and_assign_nodes = Hashtbl.create (module String) ()
+      ; save_nodes = Hashtbl.create (module String)
+      ; load_and_assign_nodes = Hashtbl.create (module String)
       ; var_names
       ; explicit_vars
       ; all_nodes
