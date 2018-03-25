@@ -14,7 +14,7 @@ remove:  []
 
 depends: [
   "cmdliner"
-  "base"
+  "base" {>= "0.11.0"}
   "stdio"
   "ctypes" {>= "0.5"}
   "ctypes-foreign"

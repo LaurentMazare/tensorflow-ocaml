@@ -65,8 +65,8 @@ let rec build t node =
     operation
 
 let run ?(inputs=[]) ?(outputs=[]) ?(targets=[]) t =
-  let cmp (Node.P n1) (Node.P n2) = Node.Id.compare (Node.id n1) (Node.id n2) in
-  if List.contains_dup ~compare:cmp (List.map inputs ~f:fst)
+  let cmp (Node.P n1, _) (Node.P n2, _) = Node.Id.compare (Node.id n1) (Node.id n2) in
+  if List.contains_dup ~compare:cmp inputs
   then failwith "Session.run: duplicate entry in [inputs].";
   let inputs =
     List.map inputs ~f:(fun (input, input_tensor) ->
