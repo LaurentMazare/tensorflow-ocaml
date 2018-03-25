@@ -144,7 +144,7 @@ module Weak_table = struct
   type t = p Id_table.t
 
   let create () =
-    Hashtbl.create (module Id) ()
+    Hashtbl.create (module Id)
 
   let set t ~key ~data =
     Hashtbl.set t ~key:(id key) ~data:(P data)

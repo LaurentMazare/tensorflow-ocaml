@@ -8,7 +8,7 @@ exception No_derivative_for_op of Node.Op_name.t
    that contains only float/double nodes.
 *)
 let uses_per_node node with_respect_to =
-  let uses_per_node = Hashtbl.create (module Node.Id) () in
+  let uses_per_node = Hashtbl.create (module Node.Id) in
   let rec is_useful node =
     let node_id = Node.packed_id node in
     let current_uses =
@@ -61,8 +61,8 @@ let gradient node ~with_respect_to =
     List.map with_respect_to ~f:Node.packed_id |> Set.of_list (module Node.Id)
   in
   let uses_per_node = uses_per_node (P node) with_respect_to in
-  let contributions = Hashtbl.create (module Node.Id) () in
-  let output_gradients = Hashtbl.create (module Node.Id) () in
+  let contributions = Hashtbl.create (module Node.Id) in
+  let output_gradients = Hashtbl.create (module Node.Id) in
   let rec add_contribution node ~gradient =
     let node_id = Node.packed_id node in
     match Hashtbl.find uses_per_node node_id with
