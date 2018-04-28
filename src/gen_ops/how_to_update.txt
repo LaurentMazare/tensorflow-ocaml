@@ -3,9 +3,9 @@ in this directory using as input the ops.pbtxt file from the TensorFlow distribu
 To update this for new TensorFlow releases:
 - Copy the new ops.pbtxt in src/gen_ops.
 - Convert it to an ops.pb file using protoc3 [1]. This can be done with something like:
-    protoc
-      --encode=tensorflow.OpList
-      --proto_path $TFPATH $TFPATH/tensorflow/core/framework/op_def.proto
+    protoc \
+      --encode=tensorflow.OpList \
+      --proto_path $TFPATH $TFPATH/tensorflow/core/framework/op_def.proto \
       < $TFPATH/tensorflow/core/ops/ops.pbtxt > ops.pb
 - Generate the updated ocaml wrapper with 'make src/graph/ops_generated'.
 

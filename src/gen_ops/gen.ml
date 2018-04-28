@@ -42,6 +42,7 @@ module Input = struct
     | "end" -> "end__"
     | "in" -> "in__"
     | "inputs" -> "inputs__"
+    | "method" -> "method__"
     | name -> name
 
   let caml_comp_name t =

@@ -96,6 +96,7 @@ module Op_names : sig
   val bitwiseAnd : Op_name.t
   val bitwiseOr : Op_name.t
   val bitwiseXor : Op_name.t
+  val boostedTreesMakeStatsSummary : Op_name.t
   val broadcastArgs : Op_name.t
   val broadcastGradientArgs : Op_name.t
   val bucketize : Op_name.t
@@ -106,6 +107,9 @@ module Op_names : sig
   val checkNumerics : Op_name.t
   val cholesky : Op_name.t
   val choleskyGrad : Op_name.t
+  val collectiveBcastRecv : Op_name.t
+  val collectiveBcastSend : Op_name.t
+  val collectiveReduce : Op_name.t
   val complex : Op_name.t
   val complexAbs : Op_name.t
   val computeAccidentalHits : Op_name.t
@@ -133,6 +137,10 @@ module Op_names : sig
   val cropAndResizeGradBoxes : Op_name.t
   val cropAndResizeGradImage : Op_name.t
   val cross : Op_name.t
+  val cudnnRNN : Op_name.t
+  val cudnnRNNBackprop : Op_name.t
+  val cudnnRNNCanonicalToParams : Op_name.t
+  val cudnnRNNParamsSize : Op_name.t
   val cumprod : Op_name.t
   val cumsum : Op_name.t
   val dataFormatDimMap : Op_name.t
@@ -148,6 +156,7 @@ module Op_names : sig
   val decodePng : Op_name.t
   val decodeRaw : Op_name.t
   val decodeWav : Op_name.t
+  val deepCopy : Op_name.t
   val deleteSessionTensor : Op_name.t
   val denseToDenseSetOperation : Op_name.t
   val denseToSparseSetOperation : Op_name.t
@@ -172,6 +181,7 @@ module Op_names : sig
   val editDistance : Op_name.t
   val elu : Op_name.t
   val eluGrad : Op_name.t
+  val empty : Op_name.t
   val encodeBase64 : Op_name.t
   val encodePng : Op_name.t
   val encodeWav : Op_name.t
@@ -243,6 +253,9 @@ module Op_names : sig
   val inTopKV2 : Op_name.t
   val initializeTable : Op_name.t
   val initializeTableFromTextFile : Op_name.t
+  val inplaceAdd : Op_name.t
+  val inplaceSub : Op_name.t
+  val inplaceUpdate : Op_name.t
   val inv : Op_name.t
   val invGrad : Op_name.t
   val invert : Op_name.t
@@ -435,6 +448,7 @@ module Op_names : sig
   val rint : Op_name.t
   val roll : Op_name.t
   val round : Op_name.t
+  val rpc : Op_name.t
   val rsqrt : Op_name.t
   val rsqrtGrad : Op_name.t
   val sampleDistortedBoundingBox : Op_name.t
@@ -442,6 +456,8 @@ module Op_names : sig
   val scalarSummary : Op_name.t
   val scatterAdd : Op_name.t
   val scatterDiv : Op_name.t
+  val scatterMax : Op_name.t
+  val scatterMin : Op_name.t
   val scatterMul : Op_name.t
   val scatterNd : Op_name.t
   val scatterNdAdd : Op_name.t
@@ -605,15 +621,19 @@ module Op_names : sig
   val truncateDiv : Op_name.t
   val truncateMod : Op_name.t
   val truncatedNormal : Op_name.t
+  val tryRpc : Op_name.t
   val unbatch : Op_name.t
   val unbatchGrad : Op_name.t
   val uniformCandidateSampler : Op_name.t
   val unique : Op_name.t
   val uniqueV2 : Op_name.t
   val uniqueWithCounts : Op_name.t
+  val uniqueWithCountsV2 : Op_name.t
   val unpack : Op_name.t
   val unravelIndex : Op_name.t
   val unsortedSegmentMax : Op_name.t
+  val unsortedSegmentMin : Op_name.t
+  val unsortedSegmentProd : Op_name.t
   val unsortedSegmentSum : Op_name.t
   val variable : Op_name.t
   val variableV2 : Op_name.t
@@ -1422,6 +1442,17 @@ val bitwiseXor
   -> ([< `int32 | `int64 ] as 't) t
   -> ([< `int32 | `int64 ] as 't) t
 
+val boostedTreesMakeStatsSummary
+  :  ?name:string
+  -> max_splits:int
+  -> num_buckets:int
+  -> ?control_inputs:Node.p list
+  -> [ `int32 ] t
+  -> [ `float ] t
+  -> [ `float ] t
+  -> [ `int32 ] t list
+  -> [ `float ] t
+
 val broadcastArgs
   :  ?name:string
   -> ?control_inputs:Node.p list
@@ -1495,6 +1526,39 @@ val choleskyGrad
   -> ([< `float | `double ] as 't) t
   -> ([< `float | `double ] as 't) t
   -> ([< `float | `double ] as 't) t
+
+val collectiveBcastRecv
+  :  ?name:string
+  -> type_:([< `float | `double | `int32 | `int64 ] as 't) Type.t
+  -> group_size:int
+  -> group_key:int
+  -> instance_key:int
+  -> shape:Dim.t list
+  -> ?control_inputs:Node.p list
+  -> unit
+  -> ([< `float | `double | `int32 | `int64 ] as 't) t
+
+val collectiveBcastSend
+  :  ?name:string
+  -> group_size:int
+  -> group_key:int
+  -> instance_key:int
+  -> shape:Dim.t list
+  -> ?control_inputs:Node.p list
+  -> ([< `float | `double | `int32 | `int64 ] as 't) t
+  -> ([< `float | `double | `int32 | `int64 ] as 't) t
+
+val collectiveReduce
+  :  ?name:string
+  -> group_size:int
+  -> group_key:int
+  -> instance_key:int
+  -> merge_op:string
+  -> final_op:string
+  -> subdiv_offsets:int list
+  -> ?control_inputs:Node.p list
+  -> ([< `float | `double | `int32 | `int64 ] as 't) t
+  -> ([< `float | `double | `int32 | `int64 ] as 't) t
 
 val complex
   :  ?name:string
@@ -1578,9 +1642,9 @@ val conv2D
   -> ?data_format:string
   -> ?dilations:int list
   -> ?control_inputs:Node.p list
-  -> ([< `float ] as 't) t
-  -> ([< `float ] as 't) t
-  -> ([< `float ] as 't) t
+  -> ([< `float | `double ] as 't) t
+  -> ([< `float | `double ] as 't) t
+  -> ([< `float | `double ] as 't) t
 
 val conv2DBackpropFilter
   :  ?name:string
@@ -1590,10 +1654,10 @@ val conv2DBackpropFilter
   -> ?data_format:string
   -> ?dilations:int list
   -> ?control_inputs:Node.p list
-  -> ([< `float ] as 't) t
+  -> ([< `float | `double ] as 't) t
   -> [ `int32 ] t
-  -> ([< `float ] as 't) t
-  -> ([< `float ] as 't) t
+  -> ([< `float | `double ] as 't) t
+  -> ([< `float | `double ] as 't) t
 
 val conv2DBackpropInput
   :  ?name:string
@@ -1604,9 +1668,9 @@ val conv2DBackpropInput
   -> ?dilations:int list
   -> ?control_inputs:Node.p list
   -> [ `int32 ] t
-  -> ([< `float ] as 't) t
-  -> ([< `float ] as 't) t
-  -> ([< `float ] as 't) t
+  -> ([< `float | `double ] as 't) t
+  -> ([< `float | `double ] as 't) t
+  -> ([< `float | `double ] as 't) t
 
 val conv3D
   :  ?name:string
@@ -1751,6 +1815,75 @@ val cross
   -> ([< `float | `double | `int32 | `int64 ] as 't) t
   -> ([< `float | `double | `int32 | `int64 ] as 't) t
 
+val cudnnRNN
+  :  ?name:string
+  -> ?rnn_mode:string
+  -> ?input_mode:string
+  -> ?direction:string
+  -> ?dropout:float
+  -> ?seed:int
+  -> ?seed2:int
+  -> ?is_training:bool
+  -> ?control_inputs:Node.p list
+  -> ([< `float | `double ] as 't) t
+  -> ([< `float | `double ] as 't) t
+  -> ([< `float | `double ] as 't) t
+  -> ([< `float | `double ] as 't) t
+  -> ([< `float | `double ] as 't) t * ([< `float | `double ] as 't) t * ([< `float | `double ] as 't) t * ([< `float | `double ] as 't) t
+
+val cudnnRNNBackprop
+  :  ?name:string
+  -> ?rnn_mode:string
+  -> ?input_mode:string
+  -> ?direction:string
+  -> ?dropout:float
+  -> ?seed:int
+  -> ?seed2:int
+  -> ?control_inputs:Node.p list
+  -> ([< `float | `double ] as 't) t
+  -> ([< `float | `double ] as 't) t
+  -> ([< `float | `double ] as 't) t
+  -> ([< `float | `double ] as 't) t
+  -> ([< `float | `double ] as 't) t
+  -> ([< `float | `double ] as 't) t
+  -> ([< `float | `double ] as 't) t
+  -> ([< `float | `double ] as 't) t
+  -> ([< `float | `double ] as 't) t
+  -> ([< `float | `double ] as 't) t
+  -> ([< `float | `double ] as 't) t
+  -> ([< `float | `double ] as 't) t * ([< `float | `double ] as 't) t * ([< `float | `double ] as 't) t * ([< `float | `double ] as 't) t
+
+val cudnnRNNCanonicalToParams
+  :  ?name:string
+  -> ?rnn_mode:string
+  -> ?input_mode:string
+  -> ?direction:string
+  -> ?dropout:float
+  -> ?seed:int
+  -> ?seed2:int
+  -> ?control_inputs:Node.p list
+  -> [ `int32 ] t
+  -> [ `int32 ] t
+  -> [ `int32 ] t
+  -> ([< `float | `double ] as 't) t list
+  -> ([< `float | `double ] as 't) t list
+  -> ([< `float | `double ] as 't) t
+
+val cudnnRNNParamsSize
+  :  ?name:string
+  -> type_:([< `int32 | `int64 ] as 's) Type.t
+  -> ?rnn_mode:string
+  -> ?input_mode:string
+  -> ?direction:string
+  -> ?dropout:float
+  -> ?seed:int
+  -> ?seed2:int
+  -> ?control_inputs:Node.p list
+  -> [ `int32 ] t
+  -> [ `int32 ] t
+  -> [ `int32 ] t
+  -> ([< `int32 | `int64 ] as 's) t
+
 val cumprod
   :  ?name:string
   -> ?exclusive:bool
@@ -1875,6 +2008,12 @@ val decodeWav
   -> ?control_inputs:Node.p list
   -> [ `string ] t
   -> [ `float ] t * [ `int32 ] t
+
+val deepCopy
+  :  ?name:string
+  -> ?control_inputs:Node.p list
+  -> 't t
+  -> 't t
 
 val deleteSessionTensor
   :  ?name:string
@@ -2078,6 +2217,14 @@ val eluGrad
   -> ([< `float | `double ] as 't) t
   -> ([< `float | `double ] as 't) t
   -> ([< `float | `double ] as 't) t
+
+val empty
+  :  ?name:string
+  -> type_:'dtype Type.t
+  -> ?init:bool
+  -> ?control_inputs:Node.p list
+  -> [ `int32 ] t
+  -> 'dtype t
 
 val encodeBase64
   :  ?name:string
@@ -2679,6 +2826,30 @@ val initializeTableFromTextFile
   -> [ `string ] t
   -> [ `string ] t
   -> [ `unit ] t
+
+val inplaceAdd
+  :  ?name:string
+  -> ?control_inputs:Node.p list
+  -> 't t
+  -> [ `int32 ] t
+  -> 't t
+  -> 't t
+
+val inplaceSub
+  :  ?name:string
+  -> ?control_inputs:Node.p list
+  -> 't t
+  -> [ `int32 ] t
+  -> 't t
+  -> 't t
+
+val inplaceUpdate
+  :  ?name:string
+  -> ?control_inputs:Node.p list
+  -> 't t
+  -> [ `int32 ] t
+  -> 't t
+  -> 't t
 
 val inv
   :  ?name:string
@@ -4294,6 +4465,17 @@ val round
   -> ([< `float | `double | `int32 | `int64 | `complex64 ] as 't) t
   -> ([< `float | `double | `int32 | `int64 | `complex64 ] as 't) t
 
+val rpc
+  :  ?name:string
+  -> ?protocol:string
+  -> ?fail_fast:bool
+  -> ?timeout_in_ms:int
+  -> ?control_inputs:Node.p list
+  -> [ `string ] t
+  -> [ `string ] t
+  -> [ `string ] t
+  -> [ `string ] t
+
 val rsqrt
   :  ?name:string
   -> ?control_inputs:Node.p list
@@ -4359,6 +4541,24 @@ val scatterDiv
   -> ([< `int32 | `int64 ] as 'tindices) t
   -> ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t
   -> ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t
+
+val scatterMax
+  :  ?name:string
+  -> ?use_locking:bool
+  -> ?control_inputs:Node.p list
+  -> ([< `float | `double | `int32 | `int64 ] as 't) t
+  -> ([< `int32 | `int64 ] as 'tindices) t
+  -> ([< `float | `double | `int32 | `int64 ] as 't) t
+  -> ([< `float | `double | `int32 | `int64 ] as 't) t
+
+val scatterMin
+  :  ?name:string
+  -> ?use_locking:bool
+  -> ?control_inputs:Node.p list
+  -> ([< `float | `double | `int32 | `int64 ] as 't) t
+  -> ([< `int32 | `int64 ] as 'tindices) t
+  -> ([< `float | `double | `int32 | `int64 ] as 't) t
+  -> ([< `float | `double | `int32 | `int64 ] as 't) t
 
 val scatterMul
   :  ?name:string
@@ -5762,6 +5962,17 @@ val truncatedNormal
   -> ([< `int32 | `int64 ] as 't) t
   -> ([< `float | `double ] as 'dtype) t
 
+val tryRpc
+  :  ?name:string
+  -> ?protocol:string
+  -> ?fail_fast:bool
+  -> ?timeout_in_ms:int
+  -> ?control_inputs:Node.p list
+  -> [ `string ] t
+  -> [ `string ] t
+  -> [ `string ] t
+  -> [ `string ] t * [ `int32 ] t * [ `string ] t
+
 val unbatch
   :  ?name:string
   -> timeout_micros:int
@@ -5819,6 +6030,15 @@ val uniqueWithCounts
   -> 't t
   -> 't t * ([< `int32 | `int64 ] as 'out_idx) t * ([< `int32 | `int64 ] as 'out_idx) t
 
+val uniqueWithCountsV2
+  :  ?name:string
+  -> type_1:([< `int32 | `int64 ] as 'out_idx) Type.t
+  -> type_2:([< `int32 | `int64 ] as 'out_idx) Type.t
+  -> ?control_inputs:Node.p list
+  -> 't t
+  -> ([< `int32 | `int64 ] as 'taxis) t
+  -> 't t * ([< `int32 | `int64 ] as 'out_idx) t * ([< `int32 | `int64 ] as 'out_idx) t
+
 val unpack
   :  ?name:string
   -> num:int
@@ -5835,6 +6055,22 @@ val unravelIndex
   -> ([< `int32 | `int64 ] as 'tidx) t
 
 val unsortedSegmentMax
+  :  ?name:string
+  -> ?control_inputs:Node.p list
+  -> ([< `float | `double | `int32 | `int64 ] as 't) t
+  -> ([< `int32 | `int64 ] as 'tindices) t
+  -> ([< `int32 | `int64 ] as 'tnumsegments) t
+  -> ([< `float | `double | `int32 | `int64 ] as 't) t
+
+val unsortedSegmentMin
+  :  ?name:string
+  -> ?control_inputs:Node.p list
+  -> ([< `float | `double | `int32 | `int64 ] as 't) t
+  -> ([< `int32 | `int64 ] as 'tindices) t
+  -> ([< `int32 | `int64 ] as 'tnumsegments) t
+  -> ([< `float | `double | `int32 | `int64 ] as 't) t
+
+val unsortedSegmentProd
   :  ?name:string
   -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int32 | `int64 ] as 't) t

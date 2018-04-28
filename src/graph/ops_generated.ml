@@ -98,6 +98,7 @@ module Op_names = struct
   let bitwiseAnd = Op_name.of_string "BitwiseAnd"
   let bitwiseOr = Op_name.of_string "BitwiseOr"
   let bitwiseXor = Op_name.of_string "BitwiseXor"
+  let boostedTreesMakeStatsSummary = Op_name.of_string "BoostedTreesMakeStatsSummary"
   let broadcastArgs = Op_name.of_string "BroadcastArgs"
   let broadcastGradientArgs = Op_name.of_string "BroadcastGradientArgs"
   let bucketize = Op_name.of_string "Bucketize"
@@ -108,6 +109,9 @@ module Op_names = struct
   let checkNumerics = Op_name.of_string "CheckNumerics"
   let cholesky = Op_name.of_string "Cholesky"
   let choleskyGrad = Op_name.of_string "CholeskyGrad"
+  let collectiveBcastRecv = Op_name.of_string "CollectiveBcastRecv"
+  let collectiveBcastSend = Op_name.of_string "CollectiveBcastSend"
+  let collectiveReduce = Op_name.of_string "CollectiveReduce"
   let complex = Op_name.of_string "Complex"
   let complexAbs = Op_name.of_string "ComplexAbs"
   let computeAccidentalHits = Op_name.of_string "ComputeAccidentalHits"
@@ -135,6 +139,10 @@ module Op_names = struct
   let cropAndResizeGradBoxes = Op_name.of_string "CropAndResizeGradBoxes"
   let cropAndResizeGradImage = Op_name.of_string "CropAndResizeGradImage"
   let cross = Op_name.of_string "Cross"
+  let cudnnRNN = Op_name.of_string "CudnnRNN"
+  let cudnnRNNBackprop = Op_name.of_string "CudnnRNNBackprop"
+  let cudnnRNNCanonicalToParams = Op_name.of_string "CudnnRNNCanonicalToParams"
+  let cudnnRNNParamsSize = Op_name.of_string "CudnnRNNParamsSize"
   let cumprod = Op_name.of_string "Cumprod"
   let cumsum = Op_name.of_string "Cumsum"
   let dataFormatDimMap = Op_name.of_string "DataFormatDimMap"
@@ -150,6 +158,7 @@ module Op_names = struct
   let decodePng = Op_name.of_string "DecodePng"
   let decodeRaw = Op_name.of_string "DecodeRaw"
   let decodeWav = Op_name.of_string "DecodeWav"
+  let deepCopy = Op_name.of_string "DeepCopy"
   let deleteSessionTensor = Op_name.of_string "DeleteSessionTensor"
   let denseToDenseSetOperation = Op_name.of_string "DenseToDenseSetOperation"
   let denseToSparseSetOperation = Op_name.of_string "DenseToSparseSetOperation"
@@ -174,6 +183,7 @@ module Op_names = struct
   let editDistance = Op_name.of_string "EditDistance"
   let elu = Op_name.of_string "Elu"
   let eluGrad = Op_name.of_string "EluGrad"
+  let empty = Op_name.of_string "Empty"
   let encodeBase64 = Op_name.of_string "EncodeBase64"
   let encodePng = Op_name.of_string "EncodePng"
   let encodeWav = Op_name.of_string "EncodeWav"
@@ -245,6 +255,9 @@ module Op_names = struct
   let inTopKV2 = Op_name.of_string "InTopKV2"
   let initializeTable = Op_name.of_string "InitializeTable"
   let initializeTableFromTextFile = Op_name.of_string "InitializeTableFromTextFile"
+  let inplaceAdd = Op_name.of_string "InplaceAdd"
+  let inplaceSub = Op_name.of_string "InplaceSub"
+  let inplaceUpdate = Op_name.of_string "InplaceUpdate"
   let inv = Op_name.of_string "Inv"
   let invGrad = Op_name.of_string "InvGrad"
   let invert = Op_name.of_string "Invert"
@@ -437,6 +450,7 @@ module Op_names = struct
   let rint = Op_name.of_string "Rint"
   let roll = Op_name.of_string "Roll"
   let round = Op_name.of_string "Round"
+  let rpc = Op_name.of_string "Rpc"
   let rsqrt = Op_name.of_string "Rsqrt"
   let rsqrtGrad = Op_name.of_string "RsqrtGrad"
   let sampleDistortedBoundingBox = Op_name.of_string "SampleDistortedBoundingBox"
@@ -444,6 +458,8 @@ module Op_names = struct
   let scalarSummary = Op_name.of_string "ScalarSummary"
   let scatterAdd = Op_name.of_string "ScatterAdd"
   let scatterDiv = Op_name.of_string "ScatterDiv"
+  let scatterMax = Op_name.of_string "ScatterMax"
+  let scatterMin = Op_name.of_string "ScatterMin"
   let scatterMul = Op_name.of_string "ScatterMul"
   let scatterNd = Op_name.of_string "ScatterNd"
   let scatterNdAdd = Op_name.of_string "ScatterNdAdd"
@@ -607,15 +623,19 @@ module Op_names = struct
   let truncateDiv = Op_name.of_string "TruncateDiv"
   let truncateMod = Op_name.of_string "TruncateMod"
   let truncatedNormal = Op_name.of_string "TruncatedNormal"
+  let tryRpc = Op_name.of_string "TryRpc"
   let unbatch = Op_name.of_string "Unbatch"
   let unbatchGrad = Op_name.of_string "UnbatchGrad"
   let uniformCandidateSampler = Op_name.of_string "UniformCandidateSampler"
   let unique = Op_name.of_string "Unique"
   let uniqueV2 = Op_name.of_string "UniqueV2"
   let uniqueWithCounts = Op_name.of_string "UniqueWithCounts"
+  let uniqueWithCountsV2 = Op_name.of_string "UniqueWithCountsV2"
   let unpack = Op_name.of_string "Unpack"
   let unravelIndex = Op_name.of_string "UnravelIndex"
   let unsortedSegmentMax = Op_name.of_string "UnsortedSegmentMax"
+  let unsortedSegmentMin = Op_name.of_string "UnsortedSegmentMin"
+  let unsortedSegmentProd = Op_name.of_string "UnsortedSegmentProd"
   let unsortedSegmentSum = Op_name.of_string "UnsortedSegmentSum"
   let variable = Op_name.of_string "Variable"
   let variableV2 = Op_name.of_string "VariableV2"
@@ -2897,6 +2917,38 @@ let bitwiseXor
     ~attributes
     ~output_idx:None
 
+let boostedTreesMakeStatsSummary
+    ?(name = "BoostedTreesMakeStatsSummary")
+    ~max_splits
+    ~num_buckets
+    ?(control_inputs = [])
+    (node_ids : [ `int32 ] t)
+    (gradients : [ `float ] t)
+    (hessians : [ `float ] t)
+    (bucketized_features_list : [ `int32 ] t list)
+  =
+  let attributes = [] in
+  let attributes =
+    ("max_splits", Int max_splits) :: attributes
+  in
+  let attributes =
+    ("num_buckets", Int num_buckets) :: attributes
+  in
+  let attributes =
+    ("num_features", Int (List.length bucketized_features_list)) :: attributes
+  in
+  let name = Name.of_string name in
+  let op_name = Op_names.boostedTreesMakeStatsSummary in
+  let inputs = [ (`single (P node_ids)); (`single (P gradients)); (`single (P hessians)); (`multi (List.map ~f:(fun n -> P n) bucketized_features_list)) ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Float
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:None
+
 let broadcastArgs
     ?(name = "BroadcastArgs")
     ?(control_inputs = [])
@@ -3154,6 +3206,117 @@ let choleskyGrad
     ~attributes
     ~output_idx:None
 
+let collectiveBcastRecv
+    ?(name = "CollectiveBcastRecv")
+    ~type_
+    ~group_size
+    ~group_key
+    ~instance_key
+    ~shape
+    ?(control_inputs = [])
+    ()
+  =
+  let attributes = [ "T", Type (P type_) ] in
+  let attributes =
+    ("group_size", Int group_size) :: attributes
+  in
+  let attributes =
+    ("group_key", Int group_key) :: attributes
+  in
+  let attributes =
+    ("instance_key", Int instance_key) :: attributes
+  in
+  let attributes =
+    ("shape", Shape shape) :: attributes
+  in
+  let name = Name.of_string name in
+  let op_name = Op_names.collectiveBcastRecv in
+  let inputs = [  ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:type_
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:None
+
+let collectiveBcastSend
+    ?(name = "CollectiveBcastSend")
+    ~group_size
+    ~group_key
+    ~instance_key
+    ~shape
+    ?(control_inputs = [])
+    (input : ([< `float | `double | `int32 | `int64 ] as 't) t)
+  =
+  let attributes = [ "T", Type (P (Node.output_type input)) ] in
+  let attributes =
+    ("group_size", Int group_size) :: attributes
+  in
+  let attributes =
+    ("group_key", Int group_key) :: attributes
+  in
+  let attributes =
+    ("instance_key", Int instance_key) :: attributes
+  in
+  let attributes =
+    ("shape", Shape shape) :: attributes
+  in
+  let name = Name.of_string name in
+  let op_name = Op_names.collectiveBcastSend in
+  let inputs = [ (`single (P input)) ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type input)
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:None
+
+let collectiveReduce
+    ?(name = "CollectiveReduce")
+    ~group_size
+    ~group_key
+    ~instance_key
+    ~merge_op
+    ~final_op
+    ~subdiv_offsets
+    ?(control_inputs = [])
+    (input : ([< `float | `double | `int32 | `int64 ] as 't) t)
+  =
+  let attributes = [ "T", Type (P (Node.output_type input)) ] in
+  let attributes =
+    ("group_size", Int group_size) :: attributes
+  in
+  let attributes =
+    ("group_key", Int group_key) :: attributes
+  in
+  let attributes =
+    ("instance_key", Int instance_key) :: attributes
+  in
+  let attributes =
+    ("merge_op", String merge_op) :: attributes
+  in
+  let attributes =
+    ("final_op", String final_op) :: attributes
+  in
+  let attributes =
+    ("subdiv_offsets", List (Int subdiv_offsets)) :: attributes
+  in
+  let name = Name.of_string name in
+  let op_name = Op_names.collectiveReduce in
+  let inputs = [ (`single (P input)) ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type input)
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:None
+
 let complex
     ?(name = "Complex")
     ~type_
@@ -3405,8 +3568,8 @@ let conv2D
     ?data_format
     ?dilations
     ?(control_inputs = [])
-    (input : ([< `float ] as 't) t)
-    (filter : ([< `float ] as 't) t)
+    (input : ([< `float | `double ] as 't) t)
+    (filter : ([< `float | `double ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type input)) ] in
   let attributes =
@@ -3444,9 +3607,9 @@ let conv2DBackpropFilter
     ?data_format
     ?dilations
     ?(control_inputs = [])
-    (input : ([< `float ] as 't) t)
+    (input : ([< `float | `double ] as 't) t)
     (filter_sizes : [ `int32 ] t)
-    (out_backprop : ([< `float ] as 't) t)
+    (out_backprop : ([< `float | `double ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type input)) ] in
   let attributes =
@@ -3485,8 +3648,8 @@ let conv2DBackpropInput
     ?dilations
     ?(control_inputs = [])
     (input_sizes : [ `int32 ] t)
-    (filter : ([< `float ] as 't) t)
-    (out_backprop : ([< `float ] as 't) t)
+    (filter : ([< `float | `double ] as 't) t)
+    (out_backprop : ([< `float | `double ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type filter)) ] in
   let attributes =
@@ -3880,6 +4043,255 @@ let cross
     ~attributes
     ~output_idx:None
 
+let cudnnRNN
+    ?(name = "CudnnRNN")
+    ?rnn_mode
+    ?input_mode
+    ?direction
+    ?dropout
+    ?seed
+    ?seed2
+    ?is_training
+    ?(control_inputs = [])
+    (input : ([< `float | `double ] as 't) t)
+    (input_h : ([< `float | `double ] as 't) t)
+    (input_c : ([< `float | `double ] as 't) t)
+    (params : ([< `float | `double ] as 't) t)
+  =
+  let attributes = [ "T", Type (P (Node.output_type input)) ;  "T", Type (P (Node.output_type input)) ;  "T", Type (P (Node.output_type input)) ;  "T", Type (P (Node.output_type input)) ] in
+  let attributes =
+    match rnn_mode with | None -> attributes | Some rnn_mode -> ("rnn_mode", String rnn_mode) :: attributes
+  in
+  let attributes =
+    match input_mode with | None -> attributes | Some input_mode -> ("input_mode", String input_mode) :: attributes
+  in
+  let attributes =
+    match direction with | None -> attributes | Some direction -> ("direction", String direction) :: attributes
+  in
+  let attributes =
+    match dropout with | None -> attributes | Some dropout -> ("dropout", Float dropout) :: attributes
+  in
+  let attributes =
+    match seed with | None -> attributes | Some seed -> ("seed", Int seed) :: attributes
+  in
+  let attributes =
+    match seed2 with | None -> attributes | Some seed2 -> ("seed2", Int seed2) :: attributes
+  in
+  let attributes =
+    match is_training with | None -> attributes | Some is_training -> ("is_training", Bool is_training) :: attributes
+  in
+  let name = Name.of_string name in
+  let op_name = Op_names.cudnnRNN in
+  let inputs = [ (`single (P input)); (`single (P input_h)); (`single (P input_c)); (`single (P params)) ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type input)
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:(Some 0)
+  ,
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type input)
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:(Some 1)
+  ,
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type input)
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:(Some 2)
+  ,
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type input)
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:(Some 3)
+
+let cudnnRNNBackprop
+    ?(name = "CudnnRNNBackprop")
+    ?rnn_mode
+    ?input_mode
+    ?direction
+    ?dropout
+    ?seed
+    ?seed2
+    ?(control_inputs = [])
+    (input : ([< `float | `double ] as 't) t)
+    (input_h : ([< `float | `double ] as 't) t)
+    (input_c : ([< `float | `double ] as 't) t)
+    (params : ([< `float | `double ] as 't) t)
+    (output : ([< `float | `double ] as 't) t)
+    (output_h : ([< `float | `double ] as 't) t)
+    (output_c : ([< `float | `double ] as 't) t)
+    (output_backprop : ([< `float | `double ] as 't) t)
+    (output_h_backprop : ([< `float | `double ] as 't) t)
+    (output_c_backprop : ([< `float | `double ] as 't) t)
+    (reserve_space : ([< `float | `double ] as 't) t)
+  =
+  let attributes = [ "T", Type (P (Node.output_type input)) ;  "T", Type (P (Node.output_type input)) ;  "T", Type (P (Node.output_type input)) ;  "T", Type (P (Node.output_type input)) ] in
+  let attributes =
+    match rnn_mode with | None -> attributes | Some rnn_mode -> ("rnn_mode", String rnn_mode) :: attributes
+  in
+  let attributes =
+    match input_mode with | None -> attributes | Some input_mode -> ("input_mode", String input_mode) :: attributes
+  in
+  let attributes =
+    match direction with | None -> attributes | Some direction -> ("direction", String direction) :: attributes
+  in
+  let attributes =
+    match dropout with | None -> attributes | Some dropout -> ("dropout", Float dropout) :: attributes
+  in
+  let attributes =
+    match seed with | None -> attributes | Some seed -> ("seed", Int seed) :: attributes
+  in
+  let attributes =
+    match seed2 with | None -> attributes | Some seed2 -> ("seed2", Int seed2) :: attributes
+  in
+  let name = Name.of_string name in
+  let op_name = Op_names.cudnnRNNBackprop in
+  let inputs = [ (`single (P input)); (`single (P input_h)); (`single (P input_c)); (`single (P params)); (`single (P output)); (`single (P output_h)); (`single (P output_c)); (`single (P output_backprop)); (`single (P output_h_backprop)); (`single (P output_c_backprop)); (`single (P reserve_space)) ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type input)
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:(Some 0)
+  ,
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type input)
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:(Some 1)
+  ,
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type input)
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:(Some 2)
+  ,
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type input)
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:(Some 3)
+
+let cudnnRNNCanonicalToParams
+    ?(name = "CudnnRNNCanonicalToParams")
+    ?rnn_mode
+    ?input_mode
+    ?direction
+    ?dropout
+    ?seed
+    ?seed2
+    ?(control_inputs = [])
+    (num_layers : [ `int32 ] t)
+    (num_units : [ `int32 ] t)
+    (input_size : [ `int32 ] t)
+    (weights : ([< `float | `double ] as 't) t list)
+    (biases : ([< `float | `double ] as 't) t list)
+  =
+  let attributes = [ "T", Type (P (Node.output_type (List.hd_exn weights))) ] in
+  let attributes =
+    ("num_params", Int (List.length weights)) :: attributes
+  in
+  let attributes =
+    match rnn_mode with | None -> attributes | Some rnn_mode -> ("rnn_mode", String rnn_mode) :: attributes
+  in
+  let attributes =
+    match input_mode with | None -> attributes | Some input_mode -> ("input_mode", String input_mode) :: attributes
+  in
+  let attributes =
+    match direction with | None -> attributes | Some direction -> ("direction", String direction) :: attributes
+  in
+  let attributes =
+    match dropout with | None -> attributes | Some dropout -> ("dropout", Float dropout) :: attributes
+  in
+  let attributes =
+    match seed with | None -> attributes | Some seed -> ("seed", Int seed) :: attributes
+  in
+  let attributes =
+    match seed2 with | None -> attributes | Some seed2 -> ("seed2", Int seed2) :: attributes
+  in
+  let name = Name.of_string name in
+  let op_name = Op_names.cudnnRNNCanonicalToParams in
+  let inputs = [ (`single (P num_layers)); (`single (P num_units)); (`single (P input_size)); (`multi (List.map ~f:(fun n -> P n) weights)); (`multi (List.map ~f:(fun n -> P n) biases)) ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type (List.hd_exn weights))
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:None
+
+let cudnnRNNParamsSize
+    ?(name = "CudnnRNNParamsSize")
+    ~type_
+    ?rnn_mode
+    ?input_mode
+    ?direction
+    ?dropout
+    ?seed
+    ?seed2
+    ?(control_inputs = [])
+    (num_layers : [ `int32 ] t)
+    (num_units : [ `int32 ] t)
+    (input_size : [ `int32 ] t)
+  =
+  let attributes = [ "S", Type (P type_) ] in
+  let attributes =
+    match rnn_mode with | None -> attributes | Some rnn_mode -> ("rnn_mode", String rnn_mode) :: attributes
+  in
+  let attributes =
+    match input_mode with | None -> attributes | Some input_mode -> ("input_mode", String input_mode) :: attributes
+  in
+  let attributes =
+    match direction with | None -> attributes | Some direction -> ("direction", String direction) :: attributes
+  in
+  let attributes =
+    match dropout with | None -> attributes | Some dropout -> ("dropout", Float dropout) :: attributes
+  in
+  let attributes =
+    match seed with | None -> attributes | Some seed -> ("seed", Int seed) :: attributes
+  in
+  let attributes =
+    match seed2 with | None -> attributes | Some seed2 -> ("seed2", Int seed2) :: attributes
+  in
+  let name = Name.of_string name in
+  let op_name = Op_names.cudnnRNNParamsSize in
+  let inputs = [ (`single (P num_layers)); (`single (P num_units)); (`single (P input_size)) ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:type_
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:None
+
 let cumprod
     ?(name = "Cumprod")
     ?exclusive
@@ -4262,6 +4674,24 @@ let decodeWav
     ~control_inputs
     ~attributes
     ~output_idx:(Some 1)
+
+let deepCopy
+    ?(name = "DeepCopy")
+    ?(control_inputs = [])
+    (x : 't t)
+  =
+  let attributes = [ "T", Type (P (Node.output_type x)) ] in
+  let name = Name.of_string name in
+  let op_name = Op_names.deepCopy in
+  let inputs = [ (`single (P x)) ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type x)
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:None
 
 let deleteSessionTensor
     ?(name = "DeleteSessionTensor")
@@ -4921,6 +5351,29 @@ let eluGrad
     ~name
     ~op_name
     ~output_type:(Node.output_type gradients)
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:None
+
+let empty
+    ?(name = "Empty")
+    ~type_
+    ?init
+    ?(control_inputs = [])
+    (shape : [ `int32 ] t)
+  =
+  let attributes = [ "dtype", Type (P type_) ] in
+  let attributes =
+    match init with | None -> attributes | Some init -> ("init", Bool init) :: attributes
+  in
+  let name = Name.of_string name in
+  let op_name = Op_names.empty in
+  let inputs = [ (`single (P shape)) ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:type_
     ~inputs
     ~control_inputs
     ~attributes
@@ -6920,6 +7373,66 @@ let initializeTableFromTextFile
     ~name
     ~op_name
     ~output_type:Type.Unit
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:None
+
+let inplaceAdd
+    ?(name = "InplaceAdd")
+    ?(control_inputs = [])
+    (x : 't t)
+    (i : [ `int32 ] t)
+    (v : 't t)
+  =
+  let attributes = [ "T", Type (P (Node.output_type x)) ] in
+  let name = Name.of_string name in
+  let op_name = Op_names.inplaceAdd in
+  let inputs = [ (`single (P x)); (`single (P i)); (`single (P v)) ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type x)
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:None
+
+let inplaceSub
+    ?(name = "InplaceSub")
+    ?(control_inputs = [])
+    (x : 't t)
+    (i : [ `int32 ] t)
+    (v : 't t)
+  =
+  let attributes = [ "T", Type (P (Node.output_type x)) ] in
+  let name = Name.of_string name in
+  let op_name = Op_names.inplaceSub in
+  let inputs = [ (`single (P x)); (`single (P i)); (`single (P v)) ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type x)
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:None
+
+let inplaceUpdate
+    ?(name = "InplaceUpdate")
+    ?(control_inputs = [])
+    (x : 't t)
+    (i : [ `int32 ] t)
+    (v : 't t)
+  =
+  let attributes = [ "T", Type (P (Node.output_type x)) ] in
+  let name = Name.of_string name in
+  let op_name = Op_names.inplaceUpdate in
+  let inputs = [ (`single (P x)); (`single (P i)); (`single (P v)) ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type x)
     ~inputs
     ~control_inputs
     ~attributes
@@ -12019,6 +12532,38 @@ let round
     ~attributes
     ~output_idx:None
 
+let rpc
+    ?(name = "Rpc")
+    ?protocol
+    ?fail_fast
+    ?timeout_in_ms
+    ?(control_inputs = [])
+    (address : [ `string ] t)
+    (method__ : [ `string ] t)
+    (request : [ `string ] t)
+  =
+  let attributes = [] in
+  let attributes =
+    match protocol with | None -> attributes | Some protocol -> ("protocol", String protocol) :: attributes
+  in
+  let attributes =
+    match fail_fast with | None -> attributes | Some fail_fast -> ("fail_fast", Bool fail_fast) :: attributes
+  in
+  let attributes =
+    match timeout_in_ms with | None -> attributes | Some timeout_in_ms -> ("timeout_in_ms", Int timeout_in_ms) :: attributes
+  in
+  let name = Name.of_string name in
+  let op_name = Op_names.rpc in
+  let inputs = [ (`single (P address)); (`single (P method__)); (`single (P request)) ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.String
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:None
+
 let rsqrt
     ?(name = "Rsqrt")
     ?(control_inputs = [])
@@ -12240,6 +12785,54 @@ let scatterDiv
   in
   let name = Name.of_string name in
   let op_name = Op_names.scatterDiv in
+  let inputs = [ (`single (P ref)); (`single (P indices)); (`single (P updates)) ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type ref)
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:None
+
+let scatterMax
+    ?(name = "ScatterMax")
+    ?use_locking
+    ?(control_inputs = [])
+    (ref : ([< `float | `double | `int32 | `int64 ] as 't) t)
+    (indices : ([< `int32 | `int64 ] as 'tindices) t)
+    (updates : ([< `float | `double | `int32 | `int64 ] as 't) t)
+  =
+  let attributes = [ "Tindices", Type (P (Node.output_type indices)) ;  "T", Type (P (Node.output_type ref)) ] in
+  let attributes =
+    match use_locking with | None -> attributes | Some use_locking -> ("use_locking", Bool use_locking) :: attributes
+  in
+  let name = Name.of_string name in
+  let op_name = Op_names.scatterMax in
+  let inputs = [ (`single (P ref)); (`single (P indices)); (`single (P updates)) ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type ref)
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:None
+
+let scatterMin
+    ?(name = "ScatterMin")
+    ?use_locking
+    ?(control_inputs = [])
+    (ref : ([< `float | `double | `int32 | `int64 ] as 't) t)
+    (indices : ([< `int32 | `int64 ] as 'tindices) t)
+    (updates : ([< `float | `double | `int32 | `int64 ] as 't) t)
+  =
+  let attributes = [ "Tindices", Type (P (Node.output_type indices)) ;  "T", Type (P (Node.output_type ref)) ] in
+  let attributes =
+    match use_locking with | None -> attributes | Some use_locking -> ("use_locking", Bool use_locking) :: attributes
+  in
+  let name = Name.of_string name in
+  let op_name = Op_names.scatterMin in
   let inputs = [ (`single (P ref)); (`single (P indices)); (`single (P updates)) ] in
   Node.create
     ~name
@@ -16409,6 +17002,56 @@ let truncatedNormal
     ~attributes
     ~output_idx:None
 
+let tryRpc
+    ?(name = "TryRpc")
+    ?protocol
+    ?fail_fast
+    ?timeout_in_ms
+    ?(control_inputs = [])
+    (address : [ `string ] t)
+    (method__ : [ `string ] t)
+    (request : [ `string ] t)
+  =
+  let attributes = [] in
+  let attributes =
+    match protocol with | None -> attributes | Some protocol -> ("protocol", String protocol) :: attributes
+  in
+  let attributes =
+    match fail_fast with | None -> attributes | Some fail_fast -> ("fail_fast", Bool fail_fast) :: attributes
+  in
+  let attributes =
+    match timeout_in_ms with | None -> attributes | Some timeout_in_ms -> ("timeout_in_ms", Int timeout_in_ms) :: attributes
+  in
+  let name = Name.of_string name in
+  let op_name = Op_names.tryRpc in
+  let inputs = [ (`single (P address)); (`single (P method__)); (`single (P request)) ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.String
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:(Some 0)
+  ,
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Int32
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:(Some 1)
+  ,
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.String
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:(Some 2)
+
 let unbatch
     ?(name = "Unbatch")
     ~timeout_micros
@@ -16625,6 +17268,45 @@ let uniqueWithCounts
     ~attributes
     ~output_idx:(Some 2)
 
+let uniqueWithCountsV2
+    ?(name = "UniqueWithCountsV2")
+    ~type_1
+    ~type_2
+    ?(control_inputs = [])
+    (x : 't t)
+    (axis : ([< `int32 | `int64 ] as 'taxis) t)
+  =
+  let attributes = [ "Taxis", Type (P (Node.output_type axis)) ;  "T", Type (P (Node.output_type x)) ;  "out_idx", Type (P type_1) ;  "out_idx", Type (P type_2) ] in
+  let name = Name.of_string name in
+  let op_name = Op_names.uniqueWithCountsV2 in
+  let inputs = [ (`single (P x)); (`single (P axis)) ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type x)
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:(Some 0)
+  ,
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:type_1
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:(Some 1)
+  ,
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:type_2
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:(Some 2)
+
 let unpack
     ?(name = "Unpack")
     ~num
@@ -16684,6 +17366,46 @@ let unsortedSegmentMax
   let attributes = [ "Tnumsegments", Type (P (Node.output_type num_segments)) ;  "Tindices", Type (P (Node.output_type segment_ids)) ;  "T", Type (P (Node.output_type data)) ] in
   let name = Name.of_string name in
   let op_name = Op_names.unsortedSegmentMax in
+  let inputs = [ (`single (P data)); (`single (P segment_ids)); (`single (P num_segments)) ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type data)
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:None
+
+let unsortedSegmentMin
+    ?(name = "UnsortedSegmentMin")
+    ?(control_inputs = [])
+    (data : ([< `float | `double | `int32 | `int64 ] as 't) t)
+    (segment_ids : ([< `int32 | `int64 ] as 'tindices) t)
+    (num_segments : ([< `int32 | `int64 ] as 'tnumsegments) t)
+  =
+  let attributes = [ "Tnumsegments", Type (P (Node.output_type num_segments)) ;  "Tindices", Type (P (Node.output_type segment_ids)) ;  "T", Type (P (Node.output_type data)) ] in
+  let name = Name.of_string name in
+  let op_name = Op_names.unsortedSegmentMin in
+  let inputs = [ (`single (P data)); (`single (P segment_ids)); (`single (P num_segments)) ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type data)
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:None
+
+let unsortedSegmentProd
+    ?(name = "UnsortedSegmentProd")
+    ?(control_inputs = [])
+    (data : ([< `float | `double | `int32 | `int64 ] as 't) t)
+    (segment_ids : ([< `int32 | `int64 ] as 'tindices) t)
+    (num_segments : ([< `int32 | `int64 ] as 'tnumsegments) t)
+  =
+  let attributes = [ "Tnumsegments", Type (P (Node.output_type num_segments)) ;  "Tindices", Type (P (Node.output_type segment_ids)) ;  "T", Type (P (Node.output_type data)) ] in
+  let name = Name.of_string name in
+  let op_name = Op_names.unsortedSegmentProd in
   let inputs = [ (`single (P data)); (`single (P segment_ids)); (`single (P num_segments)) ] in
   Node.create
     ~name
