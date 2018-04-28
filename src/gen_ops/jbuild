@@ -3,4 +3,4 @@
 (executables
  ((names (gen))
   (flags (:standard -w -27))
-  (libraries (base tensorflow))))
+  (libraries (base stdio tensorflow_core))))

@@ -1,6 +1,6 @@
 open Base
 open Stdio
-open Tensorflow
+open Tensorflow_core
 exception Not_supported of string
 
 let ops_file = "src/gen_ops/ops.pb"
@@ -11,12 +11,12 @@ let do_not_generate_these_ops =
     ]
 
 let types_to_string type_ =
-  "`" ^ String.uncapitalize (Node.Type.to_string type_)
+  "`" ^ String.uncapitalize (Operation.Type.to_string type_)
 
 module Type = struct
   type t =
-    | Polymorphic of string * [ `allow_only of Node.Type.p list | `allow_all ]
-    | Fixed of Node.Type.p
+    | Polymorphic of string * [ `allow_only of Operation.Type.p list | `allow_all ]
+    | Fixed of Operation.Type.p
 
   let to_string = function
     | Polymorphic (alpha, `allow_all) -> alpha
@@ -186,7 +186,7 @@ module Op = struct
       match arg.type_ with
       | None -> raise_not_supported "no input/output type"
       | Some dt_type ->
-        match Node.Type.of_dt_type dt_type with
+        match Operation.Type.of_dt_type dt_type with
         | Some p -> None, Fixed p
         | None -> raise_not_supported "unknown input/output type"
 
@@ -201,7 +201,7 @@ module Op = struct
             match allowed_values.list with
             | None -> []
             | Some allowed_values ->
-              List.filter_map allowed_values.type_ ~f:Node.Type.of_dt_type
+              List.filter_map allowed_values.type_ ~f:Operation.Type.of_dt_type
         in
         if List.is_empty allowed_values
         then None
@@ -289,7 +289,7 @@ let type_variable ~idx =
 
 let output_type_string op output_type ~idx =
   match (output_type : Type.t) with
-  | Fixed p -> "Type." ^ Node.Type.to_string p
+  | Fixed p -> "Type." ^ Operation.Type.to_string p
   | Polymorphic (alpha, _) ->
     match same_input_and_output_type op ~alpha with
     | Some input -> Printf.sprintf "(Node.output_type %s)" (Input.caml_comp_name input)
