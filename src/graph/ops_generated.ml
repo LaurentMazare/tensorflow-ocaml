@@ -26,6 +26,7 @@ module Op_names = struct
   let allCandidateSampler = Op_name.of_string "AllCandidateSampler"
   let angle = Op_name.of_string "Angle"
   let any = Op_name.of_string "Any"
+  let applyAdaMax = Op_name.of_string "ApplyAdaMax"
   let applyAdadelta = Op_name.of_string "ApplyAdadelta"
   let applyAdagrad = Op_name.of_string "ApplyAdagrad"
   let applyAdagradDA = Op_name.of_string "ApplyAdagradDA"
@@ -89,6 +90,8 @@ module Op_names = struct
   let batchSvd = Op_name.of_string "BatchSvd"
   let batchToSpace = Op_name.of_string "BatchToSpace"
   let batchToSpaceND = Op_name.of_string "BatchToSpaceND"
+  let besselI0e = Op_name.of_string "BesselI0e"
+  let besselI1e = Op_name.of_string "BesselI1e"
   let betainc = Op_name.of_string "Betainc"
   let biasAdd = Op_name.of_string "BiasAdd"
   let biasAddGrad = Op_name.of_string "BiasAddGrad"
@@ -101,6 +104,7 @@ module Op_names = struct
   let boostedTreesMakeStatsSummary = Op_name.of_string "BoostedTreesMakeStatsSummary"
   let broadcastArgs = Op_name.of_string "BroadcastArgs"
   let broadcastGradientArgs = Op_name.of_string "BroadcastGradientArgs"
+  let broadcastTo = Op_name.of_string "BroadcastTo"
   let bucketize = Op_name.of_string "Bucketize"
   let cTCGreedyDecoder = Op_name.of_string "CTCGreedyDecoder"
   let cTCLoss = Op_name.of_string "CTCLoss"
@@ -109,6 +113,7 @@ module Op_names = struct
   let checkNumerics = Op_name.of_string "CheckNumerics"
   let cholesky = Op_name.of_string "Cholesky"
   let choleskyGrad = Op_name.of_string "CholeskyGrad"
+  let clipByValue = Op_name.of_string "ClipByValue"
   let collectiveBcastRecv = Op_name.of_string "CollectiveBcastRecv"
   let collectiveBcastSend = Op_name.of_string "CollectiveBcastSend"
   let collectiveReduce = Op_name.of_string "CollectiveReduce"
@@ -203,6 +208,7 @@ module Op_names = struct
   let fFT3D = Op_name.of_string "FFT3D"
   let fIFOQueue = Op_name.of_string "FIFOQueue"
   let fact = Op_name.of_string "Fact"
+  let fakeParam = Op_name.of_string "FakeParam"
   let fakeQuantWithMinMaxArgs = Op_name.of_string "FakeQuantWithMinMaxArgs"
   let fakeQuantWithMinMaxArgsGradient = Op_name.of_string "FakeQuantWithMinMaxArgsGradient"
   let fakeQuantWithMinMaxVars = Op_name.of_string "FakeQuantWithMinMaxVars"
@@ -247,6 +253,7 @@ module Op_names = struct
   let identity = Op_name.of_string "Identity"
   let identityReader = Op_name.of_string "IdentityReader"
   let igamma = Op_name.of_string "Igamma"
+  let igammaGradA = Op_name.of_string "IgammaGradA"
   let igammac = Op_name.of_string "Igammac"
   let imag = Op_name.of_string "Imag"
   let imageSummary = Op_name.of_string "ImageSummary"
@@ -343,6 +350,8 @@ module Op_names = struct
   let noOp = Op_name.of_string "NoOp"
   let nonMaxSuppression = Op_name.of_string "NonMaxSuppression"
   let nonMaxSuppressionV2 = Op_name.of_string "NonMaxSuppressionV2"
+  let nonMaxSuppressionV3 = Op_name.of_string "NonMaxSuppressionV3"
+  let nonMaxSuppressionWithOverlaps = Op_name.of_string "NonMaxSuppressionWithOverlaps"
   let notEqual = Op_name.of_string "NotEqual"
   let nthElement = Op_name.of_string "NthElement"
   let oneHot = Op_name.of_string "OneHot"
@@ -396,6 +405,7 @@ module Op_names = struct
   let rGBToHSV = Op_name.of_string "RGBToHSV"
   let randomCrop = Op_name.of_string "RandomCrop"
   let randomGamma = Op_name.of_string "RandomGamma"
+  let randomGammaGrad = Op_name.of_string "RandomGammaGrad"
   let randomPoisson = Op_name.of_string "RandomPoisson"
   let randomPoissonV2 = Op_name.of_string "RandomPoissonV2"
   let randomShuffle = Op_name.of_string "RandomShuffle"
@@ -426,6 +436,7 @@ module Op_names = struct
   let refNextIteration = Op_name.of_string "RefNextIteration"
   let refSelect = Op_name.of_string "RefSelect"
   let refSwitch = Op_name.of_string "RefSwitch"
+  let regexFullMatch = Op_name.of_string "RegexFullMatch"
   let regexReplace = Op_name.of_string "RegexReplace"
   let relu = Op_name.of_string "Relu"
   let relu6 = Op_name.of_string "Relu6"
@@ -543,6 +554,7 @@ module Op_names = struct
   let sparseSegmentSum = Op_name.of_string "SparseSegmentSum"
   let sparseSegmentSumWithNumSegments = Op_name.of_string "SparseSegmentSumWithNumSegments"
   let sparseSlice = Op_name.of_string "SparseSlice"
+  let sparseSliceGrad = Op_name.of_string "SparseSliceGrad"
   let sparseSoftmax = Op_name.of_string "SparseSoftmax"
   let sparseSoftmaxCrossEntropyWithLogits = Op_name.of_string "SparseSoftmaxCrossEntropyWithLogits"
   let sparseSparseMaximum = Op_name.of_string "SparseSparseMaximum"
@@ -564,6 +576,7 @@ module Op_names = struct
   let stackPush = Op_name.of_string "StackPush"
   let stageClear = Op_name.of_string "StageClear"
   let stageSize = Op_name.of_string "StageSize"
+  let statelessMultinomial = Op_name.of_string "StatelessMultinomial"
   let statelessRandomNormal = Op_name.of_string "StatelessRandomNormal"
   let statelessRandomUniform = Op_name.of_string "StatelessRandomUniform"
   let statelessTruncatedNormal = Op_name.of_string "StatelessTruncatedNormal"
@@ -573,6 +586,8 @@ module Op_names = struct
   let stridedSliceGrad = Op_name.of_string "StridedSliceGrad"
   let stringJoin = Op_name.of_string "StringJoin"
   let stringSplit = Op_name.of_string "StringSplit"
+  let stringSplitV2 = Op_name.of_string "StringSplitV2"
+  let stringStrip = Op_name.of_string "StringStrip"
   let stringToHashBucket = Op_name.of_string "StringToHashBucket"
   let stringToHashBucketFast = Op_name.of_string "StringToHashBucketFast"
   let stringToHashBucketStrong = Op_name.of_string "StringToHashBucketStrong"
@@ -1142,6 +1157,36 @@ let any
     ~attributes
     ~output_idx:None
 
+let applyAdaMax
+    ?(name = "ApplyAdaMax")
+    ?use_locking
+    ?(control_inputs = [])
+    (var : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (m : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (v : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (beta1_power : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (lr : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (beta1 : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (beta2 : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (epsilon : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (grad : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+  =
+  let attributes = [ "T", Type (P (Node.output_type var)) ] in
+  let attributes =
+    match use_locking with | None -> attributes | Some use_locking -> ("use_locking", Bool use_locking) :: attributes
+  in
+  let name = Name.of_string name in
+  let op_name = Op_names.applyAdaMax in
+  let inputs = [ (`single (P var)); (`single (P m)); (`single (P v)); (`single (P beta1_power)); (`single (P lr)); (`single (P beta1)); (`single (P beta2)); (`single (P epsilon)); (`single (P grad)) ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type var)
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:None
+
 let applyAdadelta
     ?(name = "ApplyAdadelta")
     ?use_locking
@@ -1173,6 +1218,7 @@ let applyAdadelta
 let applyAdagrad
     ?(name = "ApplyAdagrad")
     ?use_locking
+    ?update_slots
     ?(control_inputs = [])
     (var : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
     (accum : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
@@ -1182,6 +1228,9 @@ let applyAdagrad
   let attributes = [ "T", Type (P (Node.output_type var)) ] in
   let attributes =
     match use_locking with | None -> attributes | Some use_locking -> ("use_locking", Bool use_locking) :: attributes
+  in
+  let attributes =
+    match update_slots with | None -> attributes | Some update_slots -> ("update_slots", Bool update_slots) :: attributes
   in
   let name = Name.of_string name in
   let op_name = Op_names.applyAdagrad in
@@ -2737,6 +2786,42 @@ let batchToSpaceND
     ~attributes
     ~output_idx:None
 
+let besselI0e
+    ?(name = "BesselI0e")
+    ?(control_inputs = [])
+    (x : ([< `float | `double ] as 't) t)
+  =
+  let attributes = [ "T", Type (P (Node.output_type x)) ] in
+  let name = Name.of_string name in
+  let op_name = Op_names.besselI0e in
+  let inputs = [ (`single (P x)) ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type x)
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:None
+
+let besselI1e
+    ?(name = "BesselI1e")
+    ?(control_inputs = [])
+    (x : ([< `float | `double ] as 't) t)
+  =
+  let attributes = [ "T", Type (P (Node.output_type x)) ] in
+  let name = Name.of_string name in
+  let op_name = Op_names.besselI1e in
+  let inputs = [ (`single (P x)) ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type x)
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:None
+
 let betainc
     ?(name = "Betainc")
     ?(control_inputs = [])
@@ -2996,6 +3081,25 @@ let broadcastGradientArgs
     ~attributes
     ~output_idx:(Some 1)
 
+let broadcastTo
+    ?(name = "BroadcastTo")
+    ?(control_inputs = [])
+    (input : 't t)
+    (shape : ([< `int32 | `int64 ] as 'tidx) t)
+  =
+  let attributes = [ "Tidx", Type (P (Node.output_type shape)) ;  "T", Type (P (Node.output_type input)) ] in
+  let name = Name.of_string name in
+  let op_name = Op_names.broadcastTo in
+  let inputs = [ (`single (P input)); (`single (P shape)) ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type input)
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:None
+
 let bucketize
     ?(name = "Bucketize")
     ~boundaries
@@ -3201,6 +3305,26 @@ let choleskyGrad
     ~name
     ~op_name
     ~output_type:(Node.output_type l)
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:None
+
+let clipByValue
+    ?(name = "ClipByValue")
+    ?(control_inputs = [])
+    (t : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (clip_value_min : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (clip_value_max : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+  =
+  let attributes = [ "T", Type (P (Node.output_type t)) ] in
+  let name = Name.of_string name in
+  let op_name = Op_names.clipByValue in
+  let inputs = [ (`single (P t)); (`single (P clip_value_min)); (`single (P clip_value_max)) ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type t)
     ~inputs
     ~control_inputs
     ~attributes
@@ -3718,6 +3842,7 @@ let conv3DBackpropFilter
     ?(name = "Conv3DBackpropFilter")
     ~strides
     ~padding
+    ?dilations
     ?(control_inputs = [])
     (input : ([< `float | `double ] as 't) t)
     (filter : ([< `float | `double ] as 't) t)
@@ -3729,6 +3854,9 @@ let conv3DBackpropFilter
   in
   let attributes =
     ("padding", String padding) :: attributes
+  in
+  let attributes =
+    match dilations with | None -> attributes | Some dilations -> ("dilations", List (Int dilations)) :: attributes
   in
   let name = Name.of_string name in
   let op_name = Op_names.conv3DBackpropFilter in
@@ -3782,6 +3910,7 @@ let conv3DBackpropInput
     ?(name = "Conv3DBackpropInput")
     ~strides
     ~padding
+    ?dilations
     ?(control_inputs = [])
     (input : ([< `float | `double ] as 't) t)
     (filter : ([< `float | `double ] as 't) t)
@@ -3793,6 +3922,9 @@ let conv3DBackpropInput
   in
   let attributes =
     ("padding", String padding) :: attributes
+  in
+  let attributes =
+    match dilations with | None -> attributes | Some dilations -> ("dilations", List (Int dilations)) :: attributes
   in
   let name = Name.of_string name in
   let op_name = Op_names.conv3DBackpropInput in
@@ -3813,11 +3945,11 @@ let conv3DBackpropInputV2
     ?data_format
     ?dilations
     ?(control_inputs = [])
-    (input_sizes : [ `int32 ] t)
+    (input_sizes : ([< `int32 | `int64 ] as 'tshape) t)
     (filter : ([< `float | `double ] as 't) t)
     (out_backprop : ([< `float | `double ] as 't) t)
   =
-  let attributes = [ "T", Type (P (Node.output_type filter)) ] in
+  let attributes = [ "Tshape", Type (P (Node.output_type input_sizes)) ;  "T", Type (P (Node.output_type filter)) ] in
   let attributes =
     ("strides", List (Int strides)) :: attributes
   in
@@ -5688,16 +5820,16 @@ let extractJpegShape
 let fFT
     ?(name = "FFT")
     ?(control_inputs = [])
-    (input : [ `complex64 ] t)
+    (input : ([< `complex64 ] as 'tcomplex) t)
   =
-  let attributes = [] in
+  let attributes = [ "Tcomplex", Type (P (Node.output_type input)) ] in
   let name = Name.of_string name in
   let op_name = Op_names.fFT in
   let inputs = [ (`single (P input)) ] in
   Node.create
     ~name
     ~op_name
-    ~output_type:Type.Complex64
+    ~output_type:(Node.output_type input)
     ~inputs
     ~control_inputs
     ~attributes
@@ -5706,16 +5838,16 @@ let fFT
 let fFT2D
     ?(name = "FFT2D")
     ?(control_inputs = [])
-    (input : [ `complex64 ] t)
+    (input : ([< `complex64 ] as 'tcomplex) t)
   =
-  let attributes = [] in
+  let attributes = [ "Tcomplex", Type (P (Node.output_type input)) ] in
   let name = Name.of_string name in
   let op_name = Op_names.fFT2D in
   let inputs = [ (`single (P input)) ] in
   Node.create
     ~name
     ~op_name
-    ~output_type:Type.Complex64
+    ~output_type:(Node.output_type input)
     ~inputs
     ~control_inputs
     ~attributes
@@ -5724,16 +5856,16 @@ let fFT2D
 let fFT3D
     ?(name = "FFT3D")
     ?(control_inputs = [])
-    (input : [ `complex64 ] t)
+    (input : ([< `complex64 ] as 'tcomplex) t)
   =
-  let attributes = [] in
+  let attributes = [ "Tcomplex", Type (P (Node.output_type input)) ] in
   let name = Name.of_string name in
   let op_name = Op_names.fFT3D in
   let inputs = [ (`single (P input)) ] in
   Node.create
     ~name
     ~op_name
-    ~output_type:Type.Complex64
+    ~output_type:(Node.output_type input)
     ~inputs
     ~control_inputs
     ~attributes
@@ -5790,6 +5922,29 @@ let fact
     ~name
     ~op_name
     ~output_type:Type.String
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:None
+
+let fakeParam
+    ?(name = "FakeParam")
+    ~type_
+    ~shape
+    ?(control_inputs = [])
+    ()
+  =
+  let attributes = [ "dtype", Type (P type_) ] in
+  let attributes =
+    ("shape", Shape shape) :: attributes
+  in
+  let name = Name.of_string name in
+  let op_name = Op_names.fakeParam in
+  let inputs = [  ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:type_
     ~inputs
     ~control_inputs
     ~attributes
@@ -6672,9 +6827,9 @@ let fusedPadConv2D
     ~strides
     ~padding
     ?(control_inputs = [])
-    (input : ([< `float ] as 't) t)
+    (input : ([< `float | `double ] as 't) t)
     (paddings : [ `int32 ] t)
-    (filter : ([< `float ] as 't) t)
+    (filter : ([< `float | `double ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type input)) ] in
   let attributes =
@@ -6705,10 +6860,10 @@ let fusedResizeAndPadConv2D
     ~strides
     ~padding
     ?(control_inputs = [])
-    (input : ([< `float ] as 't) t)
+    (input : ([< `float | `double ] as 't) t)
     (size : [ `int32 ] t)
     (paddings : [ `int32 ] t)
-    (filter : ([< `float ] as 't) t)
+    (filter : ([< `float | `double ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type input)) ] in
   let attributes =
@@ -7021,16 +7176,16 @@ let histogramSummary
 let iFFT
     ?(name = "IFFT")
     ?(control_inputs = [])
-    (input : [ `complex64 ] t)
+    (input : ([< `complex64 ] as 'tcomplex) t)
   =
-  let attributes = [] in
+  let attributes = [ "Tcomplex", Type (P (Node.output_type input)) ] in
   let name = Name.of_string name in
   let op_name = Op_names.iFFT in
   let inputs = [ (`single (P input)) ] in
   Node.create
     ~name
     ~op_name
-    ~output_type:Type.Complex64
+    ~output_type:(Node.output_type input)
     ~inputs
     ~control_inputs
     ~attributes
@@ -7039,16 +7194,16 @@ let iFFT
 let iFFT2D
     ?(name = "IFFT2D")
     ?(control_inputs = [])
-    (input : [ `complex64 ] t)
+    (input : ([< `complex64 ] as 'tcomplex) t)
   =
-  let attributes = [] in
+  let attributes = [ "Tcomplex", Type (P (Node.output_type input)) ] in
   let name = Name.of_string name in
   let op_name = Op_names.iFFT2D in
   let inputs = [ (`single (P input)) ] in
   Node.create
     ~name
     ~op_name
-    ~output_type:Type.Complex64
+    ~output_type:(Node.output_type input)
     ~inputs
     ~control_inputs
     ~attributes
@@ -7057,16 +7212,16 @@ let iFFT2D
 let iFFT3D
     ?(name = "IFFT3D")
     ?(control_inputs = [])
-    (input : [ `complex64 ] t)
+    (input : ([< `complex64 ] as 'tcomplex) t)
   =
-  let attributes = [] in
+  let attributes = [ "Tcomplex", Type (P (Node.output_type input)) ] in
   let name = Name.of_string name in
   let op_name = Op_names.iFFT3D in
   let inputs = [ (`single (P input)) ] in
   Node.create
     ~name
     ~op_name
-    ~output_type:Type.Complex64
+    ~output_type:(Node.output_type input)
     ~inputs
     ~control_inputs
     ~attributes
@@ -7182,6 +7337,25 @@ let igamma
   let attributes = [ "T", Type (P (Node.output_type a)) ] in
   let name = Name.of_string name in
   let op_name = Op_names.igamma in
+  let inputs = [ (`single (P a)); (`single (P x)) ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type a)
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:None
+
+let igammaGradA
+    ?(name = "IgammaGradA")
+    ?(control_inputs = [])
+    (a : ([< `float | `double ] as 't) t)
+    (x : ([< `float | `double ] as 't) t)
+  =
+  let attributes = [ "T", Type (P (Node.output_type a)) ] in
+  let name = Name.of_string name in
+  let op_name = Op_names.igammaGradA in
   let inputs = [ (`single (P a)); (`single (P x)) ] in
   Node.create
     ~name
@@ -8755,9 +8929,9 @@ let maxPool3DGradGrad
     ~padding
     ?data_format
     ?(control_inputs = [])
-    (orig_input : ([< `float ] as 't) t)
-    (orig_output : ([< `float ] as 't) t)
-    (grad : ([< `float ] as 't) t)
+    (orig_input : ([< `float | `double | `int32 | `int64 ] as 't) t)
+    (orig_output : ([< `float | `double | `int32 | `int64 ] as 't) t)
+    (grad : ([< `float | `double | `int32 | `int64 ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type orig_input)) ] in
   let attributes =
@@ -9579,6 +9753,50 @@ let nonMaxSuppressionV2
   let name = Name.of_string name in
   let op_name = Op_names.nonMaxSuppressionV2 in
   let inputs = [ (`single (P boxes)); (`single (P scores)); (`single (P max_output_size)); (`single (P iou_threshold)) ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Int32
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:None
+
+let nonMaxSuppressionV3
+    ?(name = "NonMaxSuppressionV3")
+    ?(control_inputs = [])
+    (boxes : [ `float ] t)
+    (scores : [ `float ] t)
+    (max_output_size : [ `int32 ] t)
+    (iou_threshold : [ `float ] t)
+    (score_threshold : [ `float ] t)
+  =
+  let attributes = [] in
+  let name = Name.of_string name in
+  let op_name = Op_names.nonMaxSuppressionV3 in
+  let inputs = [ (`single (P boxes)); (`single (P scores)); (`single (P max_output_size)); (`single (P iou_threshold)); (`single (P score_threshold)) ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Int32
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:None
+
+let nonMaxSuppressionWithOverlaps
+    ?(name = "NonMaxSuppressionWithOverlaps")
+    ?(control_inputs = [])
+    (overlaps : [ `float ] t)
+    (scores : [ `float ] t)
+    (max_output_size : [ `int32 ] t)
+    (overlap_threshold : [ `float ] t)
+    (score_threshold : [ `float ] t)
+  =
+  let attributes = [] in
+  let name = Name.of_string name in
+  let op_name = Op_names.nonMaxSuppressionWithOverlaps in
+  let inputs = [ (`single (P overlaps)); (`single (P scores)); (`single (P max_output_size)); (`single (P overlap_threshold)); (`single (P score_threshold)) ] in
   Node.create
     ~name
     ~op_name
@@ -11266,6 +11484,25 @@ let randomGamma
     ~attributes
     ~output_idx:None
 
+let randomGammaGrad
+    ?(name = "RandomGammaGrad")
+    ?(control_inputs = [])
+    (alpha : ([< `float | `double ] as 't) t)
+    (sample : ([< `float | `double ] as 't) t)
+  =
+  let attributes = [ "T", Type (P (Node.output_type alpha)) ] in
+  let name = Name.of_string name in
+  let op_name = Op_names.randomGammaGrad in
+  let inputs = [ (`single (P alpha)); (`single (P sample)) ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type alpha)
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:None
+
 let randomPoisson
     ?(name = "RandomPoisson")
     ?seed
@@ -11994,6 +12231,25 @@ let refSwitch
     ~control_inputs
     ~attributes
     ~output_idx:(Some 1)
+
+let regexFullMatch
+    ?(name = "RegexFullMatch")
+    ?(control_inputs = [])
+    (input : [ `string ] t)
+    (pattern : [ `string ] t)
+  =
+  let attributes = [] in
+  let name = Name.of_string name in
+  let op_name = Op_names.regexFullMatch in
+  let inputs = [ (`single (P input)); (`single (P pattern)) ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Bool
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:None
 
 let regexReplace
     ?(name = "RegexReplace")
@@ -13096,7 +13352,7 @@ let segmentMax
 let segmentMean
     ?(name = "SegmentMean")
     ?(control_inputs = [])
-    (data : ([< `float | `double | `int32 | `int64 ] as 't) t)
+    (data : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
     (segment_ids : ([< `int32 | `int64 ] as 'tindices) t)
   =
   let attributes = [ "Tindices", Type (P (Node.output_type segment_ids)) ;  "T", Type (P (Node.output_type data)) ] in
@@ -14040,6 +14296,7 @@ let sparseApplyAdadelta
 let sparseApplyAdagrad
     ?(name = "SparseApplyAdagrad")
     ?use_locking
+    ?update_slots
     ?(control_inputs = [])
     (var : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
     (accum : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
@@ -14050,6 +14307,9 @@ let sparseApplyAdagrad
   let attributes = [ "Tindices", Type (P (Node.output_type indices)) ;  "T", Type (P (Node.output_type var)) ] in
   let attributes =
     match use_locking with | None -> attributes | Some use_locking -> ("use_locking", Bool use_locking) :: attributes
+  in
+  let attributes =
+    match update_slots with | None -> attributes | Some update_slots -> ("update_slots", Bool update_slots) :: attributes
   in
   let name = Name.of_string name in
   let op_name = Op_names.sparseApplyAdagrad in
@@ -14949,6 +15209,27 @@ let sparseSlice
     ~attributes
     ~output_idx:(Some 2)
 
+let sparseSliceGrad
+    ?(name = "SparseSliceGrad")
+    ?(control_inputs = [])
+    (backprop_val_grad : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
+    (input_indices : [ `int64 ] t)
+    (input_start : [ `int64 ] t)
+    (output_indices : [ `int64 ] t)
+  =
+  let attributes = [ "T", Type (P (Node.output_type backprop_val_grad)) ] in
+  let name = Name.of_string name in
+  let op_name = Op_names.sparseSliceGrad in
+  let inputs = [ (`single (P backprop_val_grad)); (`single (P input_indices)); (`single (P input_start)); (`single (P output_indices)) ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:(Node.output_type backprop_val_grad)
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:None
+
 let sparseSoftmax
     ?(name = "SparseSoftmax")
     ?(control_inputs = [])
@@ -15494,6 +15775,27 @@ let stageSize
     ~attributes
     ~output_idx:None
 
+let statelessMultinomial
+    ?(name = "StatelessMultinomial")
+    ~type_
+    ?(control_inputs = [])
+    (logits : ([< `float | `double | `int32 | `int64 ] as 't) t)
+    (num_samples : [ `int32 ] t)
+    (seed : ([< `int32 | `int64 ] as 'tseed) t)
+  =
+  let attributes = [ "Tseed", Type (P (Node.output_type seed)) ;  "T", Type (P (Node.output_type logits)) ;  "output_dtype", Type (P type_) ] in
+  let name = Name.of_string name in
+  let op_name = Op_names.statelessMultinomial in
+  let inputs = [ (`single (P logits)); (`single (P num_samples)); (`single (P seed)) ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:type_
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:None
+
 let statelessRandomNormal
     ?(name = "StatelessRandomNormal")
     ~type_
@@ -15762,6 +16064,65 @@ let stringSplit
     ~control_inputs
     ~attributes
     ~output_idx:(Some 2)
+
+let stringSplitV2
+    ?(name = "StringSplitV2")
+    ?maxsplit
+    ?(control_inputs = [])
+    (input : [ `string ] t)
+    (sep : [ `string ] t)
+  =
+  let attributes = [] in
+  let attributes =
+    match maxsplit with | None -> attributes | Some maxsplit -> ("maxsplit", Int maxsplit) :: attributes
+  in
+  let name = Name.of_string name in
+  let op_name = Op_names.stringSplitV2 in
+  let inputs = [ (`single (P input)); (`single (P sep)) ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Int64
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:(Some 0)
+  ,
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.String
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:(Some 1)
+  ,
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Int64
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:(Some 2)
+
+let stringStrip
+    ?(name = "StringStrip")
+    ?(control_inputs = [])
+    (input : [ `string ] t)
+  =
+  let attributes = [] in
+  let name = Name.of_string name in
+  let op_name = Op_names.stringStrip in
+  let inputs = [ (`single (P input)) ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.String
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:None
 
 let stringToHashBucket
     ?(name = "StringToHashBucket")
@@ -17399,7 +17760,7 @@ let unsortedSegmentMin
 let unsortedSegmentProd
     ?(name = "UnsortedSegmentProd")
     ?(control_inputs = [])
-    (data : ([< `float | `double | `int32 | `int64 ] as 't) t)
+    (data : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t)
     (segment_ids : ([< `int32 | `int64 ] as 'tindices) t)
     (num_segments : ([< `int32 | `int64 ] as 'tnumsegments) t)
   =

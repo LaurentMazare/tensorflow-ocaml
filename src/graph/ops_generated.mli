@@ -24,6 +24,7 @@ module Op_names : sig
   val allCandidateSampler : Op_name.t
   val angle : Op_name.t
   val any : Op_name.t
+  val applyAdaMax : Op_name.t
   val applyAdadelta : Op_name.t
   val applyAdagrad : Op_name.t
   val applyAdagradDA : Op_name.t
@@ -87,6 +88,8 @@ module Op_names : sig
   val batchSvd : Op_name.t
   val batchToSpace : Op_name.t
   val batchToSpaceND : Op_name.t
+  val besselI0e : Op_name.t
+  val besselI1e : Op_name.t
   val betainc : Op_name.t
   val biasAdd : Op_name.t
   val biasAddGrad : Op_name.t
@@ -99,6 +102,7 @@ module Op_names : sig
   val boostedTreesMakeStatsSummary : Op_name.t
   val broadcastArgs : Op_name.t
   val broadcastGradientArgs : Op_name.t
+  val broadcastTo : Op_name.t
   val bucketize : Op_name.t
   val cTCGreedyDecoder : Op_name.t
   val cTCLoss : Op_name.t
@@ -107,6 +111,7 @@ module Op_names : sig
   val checkNumerics : Op_name.t
   val cholesky : Op_name.t
   val choleskyGrad : Op_name.t
+  val clipByValue : Op_name.t
   val collectiveBcastRecv : Op_name.t
   val collectiveBcastSend : Op_name.t
   val collectiveReduce : Op_name.t
@@ -201,6 +206,7 @@ module Op_names : sig
   val fFT3D : Op_name.t
   val fIFOQueue : Op_name.t
   val fact : Op_name.t
+  val fakeParam : Op_name.t
   val fakeQuantWithMinMaxArgs : Op_name.t
   val fakeQuantWithMinMaxArgsGradient : Op_name.t
   val fakeQuantWithMinMaxVars : Op_name.t
@@ -245,6 +251,7 @@ module Op_names : sig
   val identity : Op_name.t
   val identityReader : Op_name.t
   val igamma : Op_name.t
+  val igammaGradA : Op_name.t
   val igammac : Op_name.t
   val imag : Op_name.t
   val imageSummary : Op_name.t
@@ -341,6 +348,8 @@ module Op_names : sig
   val noOp : Op_name.t
   val nonMaxSuppression : Op_name.t
   val nonMaxSuppressionV2 : Op_name.t
+  val nonMaxSuppressionV3 : Op_name.t
+  val nonMaxSuppressionWithOverlaps : Op_name.t
   val notEqual : Op_name.t
   val nthElement : Op_name.t
   val oneHot : Op_name.t
@@ -394,6 +403,7 @@ module Op_names : sig
   val rGBToHSV : Op_name.t
   val randomCrop : Op_name.t
   val randomGamma : Op_name.t
+  val randomGammaGrad : Op_name.t
   val randomPoisson : Op_name.t
   val randomPoissonV2 : Op_name.t
   val randomShuffle : Op_name.t
@@ -424,6 +434,7 @@ module Op_names : sig
   val refNextIteration : Op_name.t
   val refSelect : Op_name.t
   val refSwitch : Op_name.t
+  val regexFullMatch : Op_name.t
   val regexReplace : Op_name.t
   val relu : Op_name.t
   val relu6 : Op_name.t
@@ -541,6 +552,7 @@ module Op_names : sig
   val sparseSegmentSum : Op_name.t
   val sparseSegmentSumWithNumSegments : Op_name.t
   val sparseSlice : Op_name.t
+  val sparseSliceGrad : Op_name.t
   val sparseSoftmax : Op_name.t
   val sparseSoftmaxCrossEntropyWithLogits : Op_name.t
   val sparseSparseMaximum : Op_name.t
@@ -562,6 +574,7 @@ module Op_names : sig
   val stackPush : Op_name.t
   val stageClear : Op_name.t
   val stageSize : Op_name.t
+  val statelessMultinomial : Op_name.t
   val statelessRandomNormal : Op_name.t
   val statelessRandomUniform : Op_name.t
   val statelessTruncatedNormal : Op_name.t
@@ -571,6 +584,8 @@ module Op_names : sig
   val stridedSliceGrad : Op_name.t
   val stringJoin : Op_name.t
   val stringSplit : Op_name.t
+  val stringSplitV2 : Op_name.t
+  val stringStrip : Op_name.t
   val stringToHashBucket : Op_name.t
   val stringToHashBucketFast : Op_name.t
   val stringToHashBucketStrong : Op_name.t
@@ -810,6 +825,21 @@ val any
   -> ([< `int32 | `int64 ] as 'tidx) t
   -> [ `bool ] t
 
+val applyAdaMax
+  :  ?name:string
+  -> ?use_locking:bool
+  -> ?control_inputs:Node.p list
+  -> ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t
+  -> ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t
+  -> ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t
+  -> ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t
+  -> ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t
+  -> ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t
+  -> ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t
+  -> ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t
+  -> ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t
+  -> ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t
+
 val applyAdadelta
   :  ?name:string
   -> ?use_locking:bool
@@ -826,6 +856,7 @@ val applyAdadelta
 val applyAdagrad
   :  ?name:string
   -> ?use_locking:bool
+  -> ?update_slots:bool
   -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t
   -> ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t
@@ -1376,6 +1407,18 @@ val batchToSpaceND
   -> ([< `int32 | `int64 ] as 'tcrops) t
   -> 't t
 
+val besselI0e
+  :  ?name:string
+  -> ?control_inputs:Node.p list
+  -> ([< `float | `double ] as 't) t
+  -> ([< `float | `double ] as 't) t
+
+val besselI1e
+  :  ?name:string
+  -> ?control_inputs:Node.p list
+  -> ([< `float | `double ] as 't) t
+  -> ([< `float | `double ] as 't) t
+
 val betainc
   :  ?name:string
   -> ?control_inputs:Node.p list
@@ -1467,6 +1510,13 @@ val broadcastGradientArgs
   -> ([< `int32 | `int64 ] as 't) t
   -> ([< `int32 | `int64 ] as 't) t * ([< `int32 | `int64 ] as 't) t
 
+val broadcastTo
+  :  ?name:string
+  -> ?control_inputs:Node.p list
+  -> 't t
+  -> ([< `int32 | `int64 ] as 'tidx) t
+  -> 't t
+
 val bucketize
   :  ?name:string
   -> boundaries:float list
@@ -1526,6 +1576,14 @@ val choleskyGrad
   -> ([< `float | `double ] as 't) t
   -> ([< `float | `double ] as 't) t
   -> ([< `float | `double ] as 't) t
+
+val clipByValue
+  :  ?name:string
+  -> ?control_inputs:Node.p list
+  -> ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t
+  -> ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t
+  -> ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t
+  -> ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t
 
 val collectiveBcastRecv
   :  ?name:string
@@ -1687,6 +1745,7 @@ val conv3DBackpropFilter
   :  ?name:string
   -> strides:int list
   -> padding:string
+  -> ?dilations:int list
   -> ?control_inputs:Node.p list
   -> ([< `float | `double ] as 't) t
   -> ([< `float | `double ] as 't) t
@@ -1709,6 +1768,7 @@ val conv3DBackpropInput
   :  ?name:string
   -> strides:int list
   -> padding:string
+  -> ?dilations:int list
   -> ?control_inputs:Node.p list
   -> ([< `float | `double ] as 't) t
   -> ([< `float | `double ] as 't) t
@@ -1722,7 +1782,7 @@ val conv3DBackpropInputV2
   -> ?data_format:string
   -> ?dilations:int list
   -> ?control_inputs:Node.p list
-  -> [ `int32 ] t
+  -> ([< `int32 | `int64 ] as 'tshape) t
   -> ([< `float | `double ] as 't) t
   -> ([< `float | `double ] as 't) t
   -> ([< `float | `double ] as 't) t
@@ -2331,20 +2391,20 @@ val extractJpegShape
 val fFT
   :  ?name:string
   -> ?control_inputs:Node.p list
-  -> [ `complex64 ] t
-  -> [ `complex64 ] t
+  -> ([< `complex64 ] as 'tcomplex) t
+  -> ([< `complex64 ] as 'tcomplex) t
 
 val fFT2D
   :  ?name:string
   -> ?control_inputs:Node.p list
-  -> [ `complex64 ] t
-  -> [ `complex64 ] t
+  -> ([< `complex64 ] as 'tcomplex) t
+  -> ([< `complex64 ] as 'tcomplex) t
 
 val fFT3D
   :  ?name:string
   -> ?control_inputs:Node.p list
-  -> [ `complex64 ] t
-  -> [ `complex64 ] t
+  -> ([< `complex64 ] as 'tcomplex) t
+  -> ([< `complex64 ] as 'tcomplex) t
 
 val fIFOQueue
   :  ?name:string
@@ -2362,6 +2422,14 @@ val fact
   -> ?control_inputs:Node.p list
   -> unit
   -> [ `string ] t
+
+val fakeParam
+  :  ?name:string
+  -> type_:'dtype Type.t
+  -> shape:Dim.t list
+  -> ?control_inputs:Node.p list
+  -> unit
+  -> 'dtype t
 
 val fakeQuantWithMinMaxArgs
   :  ?name:string
@@ -2586,10 +2654,10 @@ val fusedPadConv2D
   -> strides:int list
   -> padding:string
   -> ?control_inputs:Node.p list
-  -> ([< `float ] as 't) t
+  -> ([< `float | `double ] as 't) t
   -> [ `int32 ] t
-  -> ([< `float ] as 't) t
-  -> ([< `float ] as 't) t
+  -> ([< `float | `double ] as 't) t
+  -> ([< `float | `double ] as 't) t
 
 val fusedResizeAndPadConv2D
   :  ?name:string
@@ -2598,11 +2666,11 @@ val fusedResizeAndPadConv2D
   -> strides:int list
   -> padding:string
   -> ?control_inputs:Node.p list
-  -> ([< `float ] as 't) t
+  -> ([< `float | `double ] as 't) t
   -> [ `int32 ] t
   -> [ `int32 ] t
-  -> ([< `float ] as 't) t
-  -> ([< `float ] as 't) t
+  -> ([< `float | `double ] as 't) t
+  -> ([< `float | `double ] as 't) t
 
 val gather
   :  ?name:string
@@ -2704,20 +2772,20 @@ val histogramSummary
 val iFFT
   :  ?name:string
   -> ?control_inputs:Node.p list
-  -> [ `complex64 ] t
-  -> [ `complex64 ] t
+  -> ([< `complex64 ] as 'tcomplex) t
+  -> ([< `complex64 ] as 'tcomplex) t
 
 val iFFT2D
   :  ?name:string
   -> ?control_inputs:Node.p list
-  -> [ `complex64 ] t
-  -> [ `complex64 ] t
+  -> ([< `complex64 ] as 'tcomplex) t
+  -> ([< `complex64 ] as 'tcomplex) t
 
 val iFFT3D
   :  ?name:string
   -> ?control_inputs:Node.p list
-  -> [ `complex64 ] t
-  -> [ `complex64 ] t
+  -> ([< `complex64 ] as 'tcomplex) t
+  -> ([< `complex64 ] as 'tcomplex) t
 
 val iRFFT
   :  ?name:string
@@ -2755,6 +2823,13 @@ val identityReader
   -> [ `string ] t
 
 val igamma
+  :  ?name:string
+  -> ?control_inputs:Node.p list
+  -> ([< `float | `double ] as 't) t
+  -> ([< `float | `double ] as 't) t
+  -> ([< `float | `double ] as 't) t
+
+val igammaGradA
   :  ?name:string
   -> ?control_inputs:Node.p list
   -> ([< `float | `double ] as 't) t
@@ -3277,10 +3352,10 @@ val maxPool3DGradGrad
   -> padding:string
   -> ?data_format:string
   -> ?control_inputs:Node.p list
-  -> ([< `float ] as 't) t
-  -> ([< `float ] as 't) t
-  -> ([< `float ] as 't) t
-  -> ([< `float ] as 't) t
+  -> ([< `float | `double | `int32 | `int64 ] as 't) t
+  -> ([< `float | `double | `int32 | `int64 ] as 't) t
+  -> ([< `float | `double | `int32 | `int64 ] as 't) t
+  -> ([< `float | `double | `int32 | `int64 ] as 't) t
 
 val maxPoolGrad
   :  ?name:string
@@ -3549,6 +3624,26 @@ val nonMaxSuppressionV2
   -> [ `float ] t
   -> [ `float ] t
   -> [ `int32 ] t
+  -> [ `float ] t
+  -> [ `int32 ] t
+
+val nonMaxSuppressionV3
+  :  ?name:string
+  -> ?control_inputs:Node.p list
+  -> [ `float ] t
+  -> [ `float ] t
+  -> [ `int32 ] t
+  -> [ `float ] t
+  -> [ `float ] t
+  -> [ `int32 ] t
+
+val nonMaxSuppressionWithOverlaps
+  :  ?name:string
+  -> ?control_inputs:Node.p list
+  -> [ `float ] t
+  -> [ `float ] t
+  -> [ `int32 ] t
+  -> [ `float ] t
   -> [ `float ] t
   -> [ `int32 ] t
 
@@ -4048,6 +4143,13 @@ val randomGamma
   -> ([< `float | `double ] as 't) t
   -> ([< `float | `double ] as 't) t
 
+val randomGammaGrad
+  :  ?name:string
+  -> ?control_inputs:Node.p list
+  -> ([< `float | `double ] as 't) t
+  -> ([< `float | `double ] as 't) t
+  -> ([< `float | `double ] as 't) t
+
 val randomPoisson
   :  ?name:string
   -> ?seed:int
@@ -4278,6 +4380,13 @@ val refSwitch
   -> 't t
   -> [ `bool ] t
   -> 't t * 't t
+
+val regexFullMatch
+  :  ?name:string
+  -> ?control_inputs:Node.p list
+  -> [ `string ] t
+  -> [ `string ] t
+  -> [ `bool ] t
 
 val regexReplace
   :  ?name:string
@@ -4654,9 +4763,9 @@ val segmentMax
 val segmentMean
   :  ?name:string
   -> ?control_inputs:Node.p list
-  -> ([< `float | `double | `int32 | `int64 ] as 't) t
+  -> ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t
   -> ([< `int32 | `int64 ] as 'tindices) t
-  -> ([< `float | `double | `int32 | `int64 ] as 't) t
+  -> ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t
 
 val segmentMin
   :  ?name:string
@@ -4958,6 +5067,7 @@ val sparseApplyAdadelta
 val sparseApplyAdagrad
   :  ?name:string
   -> ?use_locking:bool
+  -> ?update_slots:bool
   -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t
   -> ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t
@@ -5288,6 +5398,15 @@ val sparseSlice
   -> [ `int64 ] t
   -> [ `int64 ] t * 't t * [ `int64 ] t
 
+val sparseSliceGrad
+  :  ?name:string
+  -> ?control_inputs:Node.p list
+  -> ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t
+  -> [ `int64 ] t
+  -> [ `int64 ] t
+  -> [ `int64 ] t
+  -> ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t
+
 val sparseSoftmax
   :  ?name:string
   -> ?control_inputs:Node.p list
@@ -5468,6 +5587,15 @@ val stageSize
   -> unit
   -> [ `int32 ] t
 
+val statelessMultinomial
+  :  ?name:string
+  -> type_:([< `int32 | `int64 ] as 'output_dtype) Type.t
+  -> ?control_inputs:Node.p list
+  -> ([< `float | `double | `int32 | `int64 ] as 't) t
+  -> [ `int32 ] t
+  -> ([< `int32 | `int64 ] as 'tseed) t
+  -> ([< `int32 | `int64 ] as 'output_dtype) t
+
 val statelessRandomNormal
   :  ?name:string
   -> type_:([< `float | `double ] as 'dtype) Type.t
@@ -5556,6 +5684,20 @@ val stringSplit
   -> [ `string ] t
   -> [ `string ] t
   -> [ `int64 ] t * [ `string ] t * [ `int64 ] t
+
+val stringSplitV2
+  :  ?name:string
+  -> ?maxsplit:int
+  -> ?control_inputs:Node.p list
+  -> [ `string ] t
+  -> [ `string ] t
+  -> [ `int64 ] t * [ `string ] t * [ `int64 ] t
+
+val stringStrip
+  :  ?name:string
+  -> ?control_inputs:Node.p list
+  -> [ `string ] t
+  -> [ `string ] t
 
 val stringToHashBucket
   :  ?name:string
@@ -6073,10 +6215,10 @@ val unsortedSegmentMin
 val unsortedSegmentProd
   :  ?name:string
   -> ?control_inputs:Node.p list
-  -> ([< `float | `double | `int32 | `int64 ] as 't) t
+  -> ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t
   -> ([< `int32 | `int64 ] as 'tindices) t
   -> ([< `int32 | `int64 ] as 'tnumsegments) t
-  -> ([< `float | `double | `int32 | `int64 ] as 't) t
+  -> ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t
 
 val unsortedSegmentSum
   :  ?name:string
