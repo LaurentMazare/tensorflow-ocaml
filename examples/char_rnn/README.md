@@ -19,12 +19,12 @@ jbuilder build examples/char_rnn/char_rnn.exe
 
 Training can be performed as follows:
 ```bash
-./char_rnn.native train --train-file input.txt --checkpoint out.cpkt
+./char_rnn.native train --train-file input.txt --checkpoint out.ckpt
 ```
 
 In order to generate a sequence, the following command can be used:
 ```bash
-./char_rnn.native sample --train-file input.txt --checkpoint out.cpkt --seed KING
+./char_rnn.native sample --train-file input.txt --checkpoint out.ckpt --seed KING
 ```
 
 Here is an example of generated data. Training was done on the Shakespeare dataset using only 90 epochs

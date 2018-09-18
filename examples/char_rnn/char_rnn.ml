@@ -34,8 +34,8 @@ let tensor_zero size =
 let rnn ~size_c ~dim =
   let train_placeholder_x    = Ops.placeholder ~type_:Float [ -1; seq_len ] in
   let train_placeholder_y    = Ops.placeholder ~type_:Float [ -1 ] in
-  let sample_placeholder_mem = Ops.placeholder ~type_:Float [ -1; seq_len ] in
-  let sample_placeholder_x   = Ops.placeholder ~type_:Float [ -1 ] in
+  let sample_placeholder_mem = Ops.placeholder ~type_:Float [ 1; -1 ] in
+  let sample_placeholder_x   = Ops.placeholder ~type_:Float [ 1; 1 ] in
   (* Two LSTM specific code. *)
   let wy, by =
     Var.normalf [ size_c; dim ] ~stddev:0.1, Var.f [ dim ] 0.
@@ -177,7 +177,7 @@ let () =
     in
     let checkpoint =
       let doc = "Checkpoint file to store the current state." in
-      Arg.(value & opt string "out.cpkt"
+      Arg.(value & opt string "out.ckpt"
         & info [ "checkpoint" ] ~docv:"FILE" ~doc)
     in
     let length =
@@ -212,7 +212,7 @@ let () =
     in
     let checkpoint =
       let doc = "Checkpoint file to store the current state." in
-      Arg.(value & opt string "out.cpkt"
+      Arg.(value & opt string "out.ckpt"
         & info [ "checkpoint" ] ~docv:"FILE" ~doc)
     in
     let learning_rate =
