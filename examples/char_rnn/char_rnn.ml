@@ -34,8 +34,8 @@ let tensor_zero size =
 let rnn ~size_c ~dim =
   let train_placeholder_x    = Ops.placeholder ~type_:Float [ -1; seq_len ] in
   let train_placeholder_y    = Ops.placeholder ~type_:Float [ -1 ] in
-  let sample_placeholder_mem = Ops.placeholder ~type_:Float [ 1; -1 ] in
-  let sample_placeholder_x   = Ops.placeholder ~type_:Float [ 1; 1 ] in
+  let sample_placeholder_mem = Ops.placeholder ~type_:Float [ 1; 4 * size_c ] in
+  let sample_placeholder_x   = Ops.placeholder ~type_:Float [ 1; dim ] in
   (* Two LSTM specific code. *)
   let wy, by =
     Var.normalf [ size_c; dim ] ~stddev:0.1, Var.f [ dim ] 0.
