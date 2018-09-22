@@ -467,8 +467,7 @@ module Model = struct
   type 'a fnn = 'a t
 
   type ('a, 'b, 'c) t =
-    { session : Session.t
-    ; node : 'b Node.t
+    { node : 'b Node.t
     ; placeholder : 'b Ops.Placeholder.t
     ; inputs : (Id.t, 'b Ops.Placeholder.t) Hashtbl.t
     ; save_nodes : (string, [ `unit ] Node.t) Hashtbl.t
@@ -482,10 +481,8 @@ module Model = struct
   let create (type a) (type b) (eq : (b * a) Tensor.eq) fnn =
     let create eq ~type_ =
       let node, inputs, var_names, explicit_vars, all_nodes = build_node (P fnn) ~type_ in
-      let session = Session.create () in
       let placeholder = Ops.placeholder ~type_ (Shape.dim_list fnn.shape) in
-      { session
-      ; node
+      { node
       ; placeholder
       ; inputs
       ; save_nodes = Hashtbl.create (module String)
@@ -512,7 +509,7 @@ module Model = struct
           | None -> failwith "missing input"
           | Some placeholder -> f_or_d_input placeholder tensor)
       in
-      Session.run ~inputs ~session:t.session (f_or_d_output t.node)
+      Session.run ~inputs (f_or_d_output t.node)
     in
     let output_node =
       match output_id with
@@ -603,7 +600,6 @@ module Model = struct
         Session.run
           ~inputs
           ~targets:optimizer
-          ~session:t.session
           (scalar_f_or_d loss)
       in
       Stdio.printf "Epoch: %6d/%-6d   Loss: %.2f\n%!" epoch epochs err
@@ -652,7 +648,6 @@ module Model = struct
         Ops.save ~filename all_vars_with_names)
     in
     Session.run
-      ~session:t.session
       ~inputs:(input_list t inputs)
       ~targets:[ Node.P save_node ]
       Session.Output.empty
@@ -671,7 +666,6 @@ module Model = struct
     in
     Session.run
       ~inputs:(input_list t inputs)
-      ~session:t.session
       ~targets:load_and_assign_nodes
       Session.Output.empty
 end

@@ -1,94 +1,24 @@
 open Base
 open Tensorflow_core
 
-type t =
-  { session : Wrapper.Session.t
-  ; graph : Wrapper.Graph.t
-  ; nodes : (Node.Id.t, Wrapper.Graph.operation) Hashtbl.t
-  (* This list is always topologically sorted. *)
-  ; mutable variable_initializations : Wrapper.Graph.operation list
-  }
-
-let create () =
-  let graph = Wrapper.Graph.create () in
-  match Wrapper.Session.create graph with
-  | Error status ->
-    Printf.failwithf "Unable to generate session: %s" (Wrapper.Status.message status) ()
-  | Ok session ->
-    { session
-    ; graph
-    ; nodes = Hashtbl.create (module Node.Id)
-    ; variable_initializations = []
-    }
-
-let maybe_use_default_session =
-  let default_session = lazy (create ()) in
-  function
-  | None -> Lazy.force default_session
-  | Some session -> session
-
-let rec build t node =
-  let id = Node.packed_id node in
-  match Hashtbl.find t.nodes id with
-  | Some op -> op
-  | None ->
-    let Node.P u_node = node in
-    let control_inputs =
-      List.map (Node.control_inputs u_node) ~f:(fun control_input -> build t control_input)
-    in
-    let inputs, input_lists =
-      List.partition_map (Node.inputs u_node) ~f:(function
-        | `single input ->
-          `Fst (build t input, Node.packed_output_idx input |> Option.value ~default:0)
-        | `multi inputs ->
-          let input_lists =
-            List.map inputs ~f:(fun input ->
-              let index = Node.packed_output_idx input |> Option.value ~default:0 in
-              build t input, index)
-          in
-          `Snd input_lists)
-    in
-    let operation =
-      Operation.create t.graph
-        ~op_name:(Node.op_name u_node |> Node.Op_name.to_string)
-        ~unique_name:(Node.unique_name u_node)
-        ~control_inputs
-        ~inputs
-        ~input_lists
-        ~attributes:(Node.attributes u_node)
-    in
-    Hashtbl.set t.nodes ~key:id ~data:operation;
-    Option.iter (Var.get_init u_node) ~f:(fun init_node ->
-      let assign_node = Ops_generated.assign u_node init_node in
-      let assign_op = build t (P assign_node) in
-      t.variable_initializations <- assign_op :: t.variable_initializations);
-    operation
-
-let run ?(inputs=[]) ?(outputs=[]) ?(targets=[]) t =
+let run ?(inputs=[]) ?(outputs=[]) ?(targets=[]) () =
   let cmp (Node.P n1, _) (Node.P n2, _) = Node.Id.compare (Node.id n1) (Node.id n2) in
   if List.contains_dup ~compare:cmp inputs
   then failwith "Session.run: duplicate entry in [inputs].";
   let inputs =
     List.map inputs ~f:(fun (input, input_tensor) ->
-      let op = build t input in
-      Wrapper.Graph.create_output op ~index:0, input_tensor)
+      Wrapper.Graph.create_output (Node.packed_operation input) ~index:0, input_tensor)
   in
-  let outputs = List.map outputs ~f:(build t) in
-  let targets = List.map targets ~f:(build t) @ outputs in
+  let outputs = List.map outputs ~f:Node.packed_operation in
+  let targets = List.map targets ~f:Node.packed_operation @ outputs in
   let outputs = List.map outputs ~f:(fun op -> Wrapper.Graph.create_output op ~index:0) in
+  let session = Node.Session.session () in
   (* [variable_initializations] is topologically sorted. *)
-  List.iter (List.rev t.variable_initializations) ~f:(fun init_op ->
-    Wrapper.Session.run t.session ~inputs ~outputs:[] ~targets:[ init_op ]
+  List.iter (Node.Session.get_and_reset_variable_initializations ()) ~f:(fun init_op ->
+    Wrapper.Session.run session ~inputs ~outputs:[] ~targets:[ init_op ]
     |> Wrapper.Status.ok_exn
     |> fun l -> assert (List.is_empty l));
-  t.variable_initializations <- [];
-  Wrapper.Session.run t.session ~inputs ~outputs ~targets
-  |> Wrapper.Status.ok_exn
-
-let shape ?session node =
-  let t = maybe_use_default_session session in
-  let output = build t node in
-  Wrapper.Graph.shape t.graph (Wrapper.Graph.create_output output ~index:0)
+  Wrapper.Session.run session ~inputs ~outputs ~targets
   |> Wrapper.Status.ok_exn
 
 module Input = struct
@@ -210,17 +140,16 @@ module Output = struct
    f [], fun l -> fst (k l)
 end
 
-let run ?inputs ?targets ?session output =
-  let t = maybe_use_default_session session in
+let run ?inputs ?targets output =
   let inputs =
     Option.map inputs ~f:(List.map ~f:(fun (Input.I (n, t)) ->
       Node.P (Ops.Placeholder.to_node n), Tensor.P t))
   in
   let outputs, k = Output.build_output output in
-  k (run ?inputs ?targets ~outputs t)
+  k (run ?inputs ?targets ~outputs ())
 
 module Vars = struct
-  let set input_fn ?session var_and_tensors =
+  let set input_fn var_and_tensors =
     let inputs, targets =
       List.map var_and_tensors ~f:(fun (var, tensor) ->
         let dims = Tensor.dims tensor |> Array.to_list in
@@ -229,7 +158,7 @@ module Vars = struct
         input_fn placeholder tensor, Node.P assign)
       |> List.unzip
     in
-    run ?session ~inputs ~targets Output.empty
+    run ~inputs ~targets Output.empty
 
   let set_float = set Input.float
   let set_double = set Input.double

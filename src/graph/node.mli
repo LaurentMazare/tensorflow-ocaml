@@ -1,6 +1,12 @@
 open Base
 open Tensorflow_core
 
+module Session : sig
+  val session : unit -> Wrapper.Session.t
+  val get_and_reset_variable_initializations : unit -> Operation.t list
+  val add_variable_initialization : Operation.t -> unit
+end
+
 module Op_name : Identifiable.S
 
 module Name : Identifiable.S
@@ -36,7 +42,7 @@ val flat_inputs : _ t -> p list
 val control_inputs : _ t -> p list
 val attributes : _ t -> (string * attr) list
 val output_idx : _ t -> int option
-val unique_name : _ t -> string
+val operation : _ t -> Operation.t
 
 val packed_name : p -> Name.t
 val packed_op_name : p -> Op_name.t
@@ -45,12 +51,14 @@ val packed_flat_inputs : p -> p list
 val packed_is_real : p -> bool
 val packed_id : p -> Id.t
 val packed_output_idx : p -> int option
+val packed_operation : p -> Operation.t
 
 val get_attr_bool : _ t -> string -> bool option
 val get_attr_string : _ t -> string -> string option
 val get_attr_int : _ t -> string -> int option
 val get_attr_int_list : _ t -> string -> int list option
-val get_shape : _ t -> Dim.t list option
+
+val shape : ?index:int -> _ t -> int list
 
 val set_output_idx : 'a t -> int option -> 'a t
 (* This is a very unsafe function to use. *)

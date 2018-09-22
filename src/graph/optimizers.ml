@@ -36,10 +36,6 @@ let check_var (type a) (node : a Node.t) =
   then
     Printf.failwithf "Node %s is not a variable." (Node.Name.to_string (Node.name node)) ()
 
-let get_shape var =
-  Option.value_exn (Node.get_shape var)
-  |> List.map ~f:(fun { Node.Dim.size; name = _ } -> size)
-
 type t =
   { apply
     :  'a .gradient:([< `float | `double] as 'a) Node.t
@@ -93,7 +89,7 @@ let gradient_descent_minimizer ~learning_rate ?varsf ?varsd target =
 let momentum_minimizer ~momentum ~learning_rate ?varsf ?varsd target =
   let apply ~gradient ~var ~type_ =
     let accum =
-      Var.create (get_shape var) ~type_ ~init:(Ops.zerosLike var)
+      Var.create (Node.shape var) ~type_ ~init:(Ops.zerosLike var)
     in
     Ops.applyMomentum var accum (maybe_cast learning_rate ~type_) gradient (maybe_cast momentum ~type_)
   in
@@ -110,7 +106,7 @@ let adam_minimizer
   =
   let apply ~gradient ~var ~type_ =
     let create_var () =
-      Var.create (get_shape var) ~type_ ~init:(Ops.zerosLike var)
+      Var.create (Node.shape var) ~type_ ~init:(Ops.zerosLike var)
     in
     let create_scalar_var () =
       Var.create [] ~type_
@@ -134,7 +130,7 @@ let adagrad_minimizer ?(init = Ops.f 0.1) ~learning_rate ?varsf ?varsd target =
   let apply ~gradient ~var ~type_ =
     let var_shape = Ops.shape32 var in
     let init = Ops.fill var_shape (maybe_cast init ~type_) in
-    let accum = Var.create (get_shape var) ~type_ ~init in
+    let accum = Var.create (Node.shape var) ~type_ ~init in
     Ops.applyAdagrad var accum (maybe_cast learning_rate ~type_) gradient
   in
   general_minimizer { apply } ?varsf ?varsd target
@@ -150,9 +146,9 @@ let rmsprop_minimizer
   =
   let apply ~gradient ~var ~type_ =
     let rms_var =
-      Var.create (get_shape var) ~type_ ~init:(Ops.zerosLike var)
+      Var.create (Node.shape var) ~type_ ~init:(Ops.zerosLike var)
     in
-    let momentum_var = Var.create (get_shape var) ~type_ ~init:(Ops.zerosLike var) in
+    let momentum_var = Var.create (Node.shape var) ~type_ ~init:(Ops.zerosLike var) in
     Ops.applyRMSProp
       var
       rms_var

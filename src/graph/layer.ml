@@ -43,7 +43,7 @@ type 'a linear =
   }
 
 let linear_with_vars ?activation xs ~output_dim =
-  let last_xs_dim = Session.shape (Node.P xs) |> List.last_exn in
+  let last_xs_dim = Node.shape xs |> List.last_exn in
   let type_ = Node.output_type xs in
   let w = Var.normal ~type_ [ last_xs_dim; output_dim ] ~stddev:0.1 in
   let b = Var.f_or_d ~type_ [ output_dim ] 0. in

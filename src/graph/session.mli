@@ -1,7 +1,4 @@
 open Tensorflow_core
-type t
-
-val create : unit -> t
 
 module Input : sig
   type t
@@ -36,23 +33,15 @@ end
 val run
   :  ?inputs:Input.t list
   -> ?targets:Node.p list
-  -> ?session:t
   -> 'a Output.t
   -> 'a
 
-val shape
-  :  ?session:t
-  -> Node.p
-  -> int list
-
 module Vars : sig
   val set_float
-    :  ?session:t
-    -> ([ `float ] Node.t * (float, Bigarray.float32_elt) Tensor.t) list
+    :  ([ `float ] Node.t * (float, Bigarray.float32_elt) Tensor.t) list
     -> unit
 
   val set_double
-    :  ?session:t
-    -> ([ `double ] Node.t * (float, Bigarray.float64_elt) Tensor.t) list
+    :  ([ `double ] Node.t * (float, Bigarray.float64_elt) Tensor.t) list
     -> unit
 end

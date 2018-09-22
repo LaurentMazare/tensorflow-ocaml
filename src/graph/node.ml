@@ -1,6 +1,40 @@
 open Base
 open Tensorflow_core
 
+module Session = struct
+  type t =
+    { session : Wrapper.Session.t
+    ; graph : Wrapper.Graph.t
+    (* This list is always topologically sorted. *)
+    ; mutable variable_initializations : Wrapper.Graph.operation list
+    }
+
+  let create () =
+    let graph = Wrapper.Graph.create () in
+    match Wrapper.Session.create graph with
+    | Error status ->
+      Printf.failwithf "Unable to generate session: %s" (Wrapper.Status.message status) ()
+    | Ok session ->
+      { session
+      ; graph
+      ; variable_initializations = []
+      }
+
+  let default_lazy = lazy (create ())
+  let default () = Lazy.force default_lazy
+  let session () = (default ()).session
+
+  let get_and_reset_variable_initializations () =
+    let t = default () in
+    let variable_initializations = t.variable_initializations in
+    t.variable_initializations <- [];
+    List.rev variable_initializations
+
+  let add_variable_initialization op =
+    let t = default () in
+    t.variable_initializations <- op :: t.variable_initializations
+end
+
 module Op_name : Identifiable.S = String
 
 module Name : Identifiable.S = String
@@ -32,28 +66,10 @@ type 'a t =
   ; control_inputs : p list
   ; attributes : (string * attr) list
   ; output_idx : int option (* Only used for multiple outputs. *)
+  ; operation : Operation.t
   }
 and p = P : _ t -> p
 and input = [ `single of p | `multi of p list ]
-
-let create
-      ~name
-      ~op_name
-      ~output_type
-      ~inputs
-      ~control_inputs
-      ~attributes
-      ~output_idx
-  =
-  { id = Id.create ()
-  ; name
-  ; op_name
-  ; output_type
-  ; inputs
-  ; control_inputs
-  ; attributes
-  ; output_idx
-  }
 
 let id t = t.id
 let name t = t.name
@@ -68,8 +84,7 @@ let flat_inputs t =
 let control_inputs t = t.control_inputs
 let attributes t = t.attributes
 let output_idx t = t.output_idx
-let unique_name t =
-  Printf.sprintf "%s-%s" (Name.to_string t.name) (Id.to_string t.id)
+let operation t = t.operation
 
 let packed_name (P t) = t.name
 let packed_inputs (P t) = t.inputs
@@ -88,6 +103,49 @@ let packed_is_real (P t) =
 
 let packed_id (P t) = t.id
 let packed_output_idx (P t) = t.output_idx
+let packed_operation (P t) = t.operation
+
+let create
+      ~name
+      ~op_name
+      ~output_type
+      ~inputs
+      ~control_inputs
+      ~attributes
+      ~output_idx
+  =
+  let id = Id.create () in
+  let op_inputs, op_input_lists =
+    List.partition_map inputs ~f:(function
+      | `single input ->
+        `Fst (packed_operation input, packed_output_idx input |> Option.value ~default:0)
+      | `multi inputs ->
+        let input_lists =
+          List.map inputs ~f:(fun input ->
+            let index = packed_output_idx input |> Option.value ~default:0 in
+            packed_operation input, index)
+        in
+        `Snd input_lists)
+  in
+  let operation =
+    Operation.create (Session.default ()).graph
+      ~op_name:(Op_name.to_string op_name)
+      ~unique_name:(Printf.sprintf "%s-%s" (Name.to_string name) (Id.to_string id))
+      ~control_inputs:(List.map control_inputs ~f:packed_operation)
+      ~inputs:op_inputs
+      ~input_lists:op_input_lists
+      ~attributes
+  in
+  { id
+  ; name
+  ; op_name
+  ; output_type
+  ; inputs
+  ; control_inputs
+  ; attributes
+  ; output_idx
+  ; operation
+  }
 
 let get_attr t str =
   List.Assoc.find ~equal:String.equal t.attributes str
@@ -112,10 +170,11 @@ let get_attr_int_list t str =
     | List (Int l) -> Some l
     | _ -> None)
 
-let get_shape t =
-  Option.bind (get_attr t "shape") ~f:(function
-    | Shape shape -> Some shape
-    | _ -> None)
+let shape ?(index = 0) t =
+  Wrapper.Graph.shape
+    (Session.default ()).graph
+    (Wrapper.Graph.create_output t.operation ~index)
+  |> Wrapper.Status.ok_exn
 
 let set_output_idx t output_idx = { t with output_idx }
 

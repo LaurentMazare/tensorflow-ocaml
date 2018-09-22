@@ -1,15 +1,14 @@
 open Base
 open Float.O_dot
 
-let init_table = Node.Weak_table.create ()
-
 let create shape ~type_ ~init =
   let node =
     Ops_generated.variable ()
       ~type_
       ~shape:(List.map shape ~f:(fun size -> { Node.Dim.size; name = None }))
   in
-  Node.Weak_table.set init_table ~key:node ~data:init;
+  let assign_node = Ops_generated.assign node init in
+  Node.Session.add_variable_initialization (Node.operation assign_node);
   node
 
 let load ~type_ shape ~filename ~tensor =
@@ -54,8 +53,6 @@ let uniform shape ~lo ~hi ~type_ =
 
 let uniformf = uniform ~type_:Float
 let uniformd = uniform ~type_:Double
-
-let get_init p = Node.Weak_table.find init_table p
 
 let get_all_vars node =
   let processed_nodes = Hash_set.create (module Node.Id) in
