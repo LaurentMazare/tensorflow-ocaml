@@ -37,16 +37,13 @@ let () =
   let h_conv2 = O.add (conv2d h_pool1 w_conv2) b_conv2 |> O.relu in
   let h_pool2 = max_pool_2x2 h_conv2 in
 
-  let w_fc1 = Var.normalf [ 7*7*64; 1024 ] ~stddev:0.1 in
-  let b_fc1 = Var.f [ 1024 ] 0. in
-  let h_pool2_flat = O.reshape h_pool2 (O.const_int ~type_:Int32 [ -1; 7*7*64 ]) in
-  let h_fc1 = O.(relu (h_pool2_flat *^ w_fc1 + b_fc1)) in
-  let h_fc1_dropout = O.dropout h_fc1 ~keep_prob:(O.Placeholder.to_node keep_prob) in
+  let ys_ =
+    O.reshape h_pool2 (O.const_int ~type_:Int32 [ -1; 7*7*64 ])
+    |> Layer.linear ~output_dim:1024 ~activation:`relu
+    |> O.dropout ~keep_prob:(O.Placeholder.to_node keep_prob)
+    |> Layer.linear ~output_dim:10 ~activation:`softmax
+  in
 
-  let w_fc2 = Var.normalf [ 1024; 10 ] ~stddev:0.1 in
-  let b_fc2 = Var.f [ 10 ] 0. in
-
-  let ys_ = O.(h_fc1_dropout *^ w_fc2 + b_fc2) |> O.softmax in
   let cross_entropy = O.cross_entropy ~ys:(O.Placeholder.to_node ys) ~y_hats:ys_ `sum in
   let accuracy =
     O.(equal (argMax ~type_:Int32 ys_ one32) (argMax ~type_:Int32 (O.Placeholder.to_node ys) one32))
