@@ -1,0 +1,4 @@
+(executables
+  (names forty_two save_and_load linear_regression)
+  (libraries tensorflow tensorflow.fnn))
+

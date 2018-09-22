@@ -1,6 +1,0 @@
-(jbuild_version 1)
-
-(executables
- ((names (gradient_tests operator_tests))
-  (libraries (tensorflow))))
-

@@ -1,0 +1,3 @@
+(executables
+  (names neural_style vgg19)
+  (libraries camlimages.jpeg camlimages.png cmdliner npy tensorflow tensorflow.fnn))

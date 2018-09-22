@@ -39,7 +39,7 @@ let train filename learning_rate =
     Ops.cross_entropy ~ys:(Ops.Placeholder.to_node placeholder_y) ~y_hats `sum
   in
   let gd = Optimizers.adam_minimizer cross_entropy ~learning_rate:(Ops.f learning_rate) in
-  let save_node = Ops.save ~filename:"out.cpkt" (all_vars_with_names cross_entropy) in
+  let save_node = Ops.save ~filename:"out.ckpt" (all_vars_with_names cross_entropy) in
   let run sequence ~train =
     let targets = if train then gd else [] in
     let sum_err, batch_count =

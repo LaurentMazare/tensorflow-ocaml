@@ -1,5 +1,0 @@
-(jbuild_version 1)
-
-(executables
- ((names (char_rnn))
-  (libraries (cmdliner tensorflow tensorflow.fnn))))

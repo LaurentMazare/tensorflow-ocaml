@@ -14,7 +14,7 @@ ALL = $(MNIST_ALL) \
       examples/load/load.exe
 
 %.exe: .FORCE
-	jbuilder build $@
+	dune build $@
 
 src/graph/ops_generated: _build/default/src/gen_ops/gen.exe
 	_build/default/src/gen_ops/gen.exe
@@ -29,4 +29,4 @@ runtests: tests/operator_tests.exe tests/gradient_tests.exe
 	_build/default/tests/gradient_tests.exe
 
 all: .FORCE
-	jbuilder build --dev $(ALL)
+	dune build $(ALL)

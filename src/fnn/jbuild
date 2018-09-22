@@ -1,6 +1,0 @@
-(jbuild_version 1)
-
-(library
- ((name tensorflow_fnn)
-  (public_name tensorflow.fnn)
-  (libraries (base bigarray tensorflow.core tensorflow))))

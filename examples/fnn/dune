@@ -1,0 +1,3 @@
+(executables
+  (names mnist_conv_fnn mnist_linear_fnn mnist_multi_fnn)
+  (libraries tensorflow tensorflow.fnn))

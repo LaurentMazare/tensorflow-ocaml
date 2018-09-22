@@ -1,5 +1,0 @@
-(jbuild_version 1)
-
-(executables
- ((names (mnist_conv mnist_linear mnist_nn mnist_resnet mnist_svm))
-  (libraries (tensorflow base))))

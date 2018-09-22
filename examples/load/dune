@@ -1,0 +1,3 @@
+(executables
+  (names load)
+  (libraries tensorflow.core))

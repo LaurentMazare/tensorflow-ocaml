@@ -1,0 +1,3 @@
+(executables
+  (names gradient_tests operator_tests)
+  (libraries tensorflow))

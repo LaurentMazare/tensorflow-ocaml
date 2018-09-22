@@ -8,7 +8,7 @@ authors:      [ "Laurent Mazare" "Nicolas Oury" ]
 
 version: "dev"
 
-build: [["jbuilder" "build" "--only-packages" "tensorflow" "--root" "." "-j" jobs "@install"]]
+build: [["dune" "build" "--only-packages" "tensorflow" "--root" "." "-j" jobs "@install"]]
 install: []
 remove:  []
 
@@ -19,7 +19,7 @@ depends: [
   "ctypes" {>= "0.5"}
   "ctypes-foreign"
   "ocamlfind" {build}
-  "jbuilder" {build}
+  "dune" {build}
 ]
 
 depopts: [

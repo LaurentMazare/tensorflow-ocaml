@@ -1,0 +1,3 @@
+(executables
+  (names rnn)
+  (libraries cmdliner tensorflow tensorflow.fnn))

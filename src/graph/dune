@@ -1,0 +1,10 @@
+(library
+  (name tensorflow)
+  (public_name tensorflow)
+  (libraries base bigarray tensorflow.core stdio))
+
+(rule
+  (targets ops_generated.ml ops_generated.mli)
+  (deps    ../gen_ops/gen.exe)
+  (mode fallback)
+  (action  (run ${<})))
