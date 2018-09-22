@@ -15,3 +15,20 @@ val batch_normalization
   -> feature_count:int
   -> 'a Node.t
 
+type 'a linear =
+  { output : 'a Node.t
+  ; w : 'a Node.t
+  ; b : 'a Node.t
+  }
+
+val linear_with_vars
+  :  ?activation:[ `relu | `softmax ]
+  -> ([< `double | `float ] as 'a) Node.t
+  -> output_dim:int
+  -> 'a linear
+
+val linear
+  :  ?activation:[ `relu | `softmax ]
+  -> ([< `double | `float ] as 'a) Node.t
+  -> output_dim:int
+  -> 'a Node.t

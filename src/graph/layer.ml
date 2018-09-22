@@ -35,3 +35,26 @@ let batch_normalization ?(decay = 0.9) t ~update_moments ~dims ~feature_count =
       Ops.cond_with_control_inputs testing ~if_true:gamma ~if_false:gamma_with_update
   in
   Ops.normalize t { mean = beta; variance = gamma }
+
+type 'a linear =
+  { output : 'a Node.t
+  ; w : 'a Node.t
+  ; b : 'a Node.t
+  }
+
+let linear_with_vars ?activation xs ~output_dim =
+  let last_xs_dim = Session.shape (Node.P xs) |> List.last_exn in
+  let type_ = Node.output_type xs in
+  let w = Var.normal ~type_ [ last_xs_dim; output_dim ] ~stddev:0.1 in
+  let b = Var.f_or_d ~type_ [ output_dim ] 0. in
+  let ys = Ops.(xs *^ w + b) in
+  let output =
+    match activation with
+    | Some `relu -> Ops.relu ys
+    | Some `softmax -> Ops.softmax ys
+    | None -> ys
+  in
+  { output; w; b }
+
+let linear ?activation xs ~output_dim =
+  (linear_with_vars ?activation xs ~output_dim).output

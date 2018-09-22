@@ -15,9 +15,7 @@ let () =
   let xs = O.placeholder [-1; image_dim] ~type_:Float in
   let ys = O.placeholder [-1; label_count] ~type_:Float in
   let ys_node = O.Placeholder.to_node ys in
-  let w = Var.f [ image_dim; label_count ] 0. in
-  let b = Var.f [ label_count ] 0. in
-  let ys_ = O.(Placeholder.to_node xs *^ w + b) |> O.softmax in
+  let ys_ = Layer.linear (O.Placeholder.to_node xs) ~activation:`softmax ~output_dim:label_count in
   let cross_entropy = O.cross_entropy ~ys:ys_node ~y_hats:ys_ `mean in
   let accuracy =
     O.(equal (argMax ~type_:Int32 ys_ O.one32) (argMax ~type_:Int32 ys_node O.one32))

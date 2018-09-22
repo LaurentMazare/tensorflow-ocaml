@@ -16,11 +16,10 @@ let () =
   let xs = O.placeholder [-1; image_dim] ~type_:Float in
   let ys = O.placeholder [-1; label_count] ~type_:Float in
   let ys_node = O.Placeholder.to_node ys in
-  let w1 = Var.normalf [ image_dim; hidden_nodes ] ~stddev:0.1 in
-  let b1 = Var.f [ hidden_nodes ] 0. in
-  let w2 = Var.normalf [ hidden_nodes; label_count ] ~stddev:0.1 in
-  let b2 = Var.f [ label_count ] 0. in
-  let ys_ = O.(relu (Placeholder.to_node xs *^ w1 + b1) *^ w2 + b2) |> O.softmax in
+  let ys_ =
+    Layer.linear (O.Placeholder.to_node xs) ~activation:`relu ~output_dim:hidden_nodes
+    |> Layer.linear ~activation:`softmax ~output_dim:label_count
+  in
   let cross_entropy = O.cross_entropy ~ys:ys_node ~y_hats:ys_ `mean in
   let accuracy =
     O.(equal (argMax ~type_:Int32 ys_ one32) (argMax ~type_:Int32 ys_node one32))
