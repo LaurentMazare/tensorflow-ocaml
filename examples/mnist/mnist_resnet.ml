@@ -1,6 +1,7 @@
 open Base
 open Tensorflow
 module O = Ops
+module Tensor = Tensorflow_core.Tensor
 
 (* ResNet model for the mnist dataset.
    This is mostly a work in progess for now. Batch normalization is not included.
@@ -27,6 +28,7 @@ let avg_pool x ~stride:s =
 
 let basic_block input_layer ~out_features ~in_features ~stride ~testing =
   ignore testing;
+  let is_training = Ops.cast Ops.one32 ~type_:Bool in
   let shortcut =
     if stride = 1
     then input_layer
@@ -36,11 +38,11 @@ let basic_block input_layer ~out_features ~in_features ~stride ~testing =
         (O.const_int ~shape:[ 4; 2 ] ~type_:Int32 [ 0; 0; 0; 0; 0; 0; half_diff; half_diff ])
   in
   conv2d input_layer ~out_features ~in_features ~stride ~kernel_size:3
-  |> Layer.batch_normalization ~update_moments:`always ~dims:3 ~feature_count:out_features
+  |> Layer.batch_norm ~is_training |> fst
   |> O.relu
   |> conv2d ~out_features ~in_features:out_features ~stride:1 ~kernel_size:1
   |> O.add shortcut
-  |> Layer.batch_normalization ~update_moments:`always ~dims:3 ~feature_count:out_features
+  |> Layer.batch_norm ~is_training |> fst
   (* No ReLU after the add as per http://torch.ch/blog/2016/02/04/resnets.html *)
 
 let block_stack layer ~out_features ~in_features ~stride ~testing =
@@ -81,7 +83,7 @@ let () =
   in
   let cross_entropy = O.cross_entropy ~ys:ys_node ~y_hats:ys_ `mean in
   let accuracy =
-    O.(equal (argMax ys_ one32) (argMax ys_node one32))
+    O.(equal (argMax ys_ one32 ~type_:Int32) (argMax ys_node one32 ~type_:Int32))
     |> O.cast ~type_:Float
     |> O.reduce_mean
   in
@@ -114,7 +116,7 @@ let () =
         ~inputs:train_inputs
         Session.Output.(both (scalar_float accuracy) (scalar_float cross_entropy))
     in
-    printf "epoch %d, train: %.2f%% (%8f) valid: %.2f%% (%8f)\n%!"
+    Stdio.printf "epoch %d, train: %.2f%% (%8f) valid: %.2f%% (%8f)\n%!"
       n
       (100. *. taccuracy)
       tcross_entropy

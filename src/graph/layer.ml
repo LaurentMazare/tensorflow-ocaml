@@ -1,40 +1,58 @@
 open Base
 open Float.O_dot
 
-let batch_normalization ?(decay = 0.9) t ~update_moments ~dims ~feature_count =
-  let type_ = Node.output_type t in
-  let zero = Ops.const_float ~type_ (List.init feature_count ~f:(fun _ -> 0.)) in
-  let one = Ops.const_float ~type_ (List.init feature_count ~f:(fun _ -> 1.)) in
-  let one_minus_decay = Ops.scalar ~type_ (1. -. decay) in
-  let beta = Var.create [ feature_count ] ~type_ ~init:zero in
-  let gamma = Var.create [ feature_count ] ~type_ ~init:one in
-  let batch_moments = Ops.moments t ~dims:(List.init dims ~f:Fn.id) in
-  let beta_with_update ~control_inputs =
-    (* EWMA update. *)
-    Ops.assignSub
-      beta
-      Ops.(one_minus_decay * (beta - batch_moments.mean))
-      ~control_inputs
-  in
-  let gamma_with_update ~control_inputs =
-    (* EWMA update. *)
-    Ops.assignSub
-      gamma
-      Ops.(one_minus_decay * (gamma - batch_moments.variance))
-      ~control_inputs
-  in
-  let beta, gamma =
-    match update_moments with
-    | `always ->
-      Ops.identity beta ~control_inputs:[ Node.P (beta_with_update ~control_inputs:[]) ],
-      Ops.identity gamma ~control_inputs:[ Node.P (gamma_with_update ~control_inputs:[]) ]
-    | `not_in_testing testing ->
-      let beta ~control_inputs:_ = beta in
-      let gamma ~control_inputs:_ = gamma in
-      Ops.cond_with_control_inputs testing ~if_true:beta ~if_false:beta_with_update,
-      Ops.cond_with_control_inputs testing ~if_true:gamma ~if_false:gamma_with_update
-  in
-  Ops.normalize t { mean = beta; variance = gamma }
+(* TODO: add some trainable gamma/beta variables and return beta + gamma * current_output. *)
+module Batch_norm = struct
+  type 'a t =
+    { running_mean : 'a Node.t
+    ; running_var : 'a Node.t
+    ; epsilon : float
+    ; decay : float
+    }
+
+  let create ?(epsilon = 1e-8) ?(decay = 0.99) xs =
+    let type_ = Node.output_type xs in
+    let feature_count = Node.shape xs |> List.last_exn in
+    let zeros = Ops.f_or_d ~shape:[ feature_count ] ~type_ 0. in
+    let ones = Ops.f_or_d ~shape:[ feature_count ] ~type_ 1. in
+    { running_mean = Var.create [ feature_count ] ~type_ ~init:zeros
+    ; running_var = Var.create [ feature_count ] ~type_ ~init:ones
+    ; epsilon
+    ; decay
+    }
+
+  let apply_infer t xs =
+    let type_ = Node.output_type xs in
+    Ops.((xs - t.running_mean) * rsqrt (t.running_var + f_or_d ~type_ t.epsilon))
+
+  let apply_train t xs =
+    let type_ = Node.output_type xs in
+    let nb_dims = Node.shape xs |> List.length in
+    let batch_moments = Ops.moments xs ~dims:(List.init (nb_dims - 1) ~f:Fn.id) in
+    let ys = Ops.normalize xs batch_moments ~epsilon:t.epsilon in
+    let one_minus_decay = Ops.f_or_d ~type_ (1. -. t.decay) in
+    let mean_update =
+      Ops.assignSub
+        t.running_mean
+        Ops.(one_minus_decay * (t.running_mean - batch_moments.mean))
+    in
+    let var_update =
+      Ops.assignSub
+        t.running_var
+        Ops.(one_minus_decay * (t.running_var - batch_moments.variance))
+    in
+    ys, `update_ops [ mean_update; var_update ]
+end
+
+let batch_norm ?(decay = 0.99) xs ~is_training =
+  let type_ = Node.output_type xs in
+  let bn = Batch_norm.create ~decay xs in
+  let infer = Batch_norm.apply_infer bn xs in
+  let train, update_ops = Batch_norm.apply_train bn xs in
+  let not_is_training = Ops.(cast (logicalNot is_training) ~type_) in
+  let is_training = Ops.cast is_training ~type_ in
+  let ys = Ops.(is_training * train + not_is_training * infer) in
+  ys, update_ops
 
 type activation =
   | Relu

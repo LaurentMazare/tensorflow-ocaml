@@ -92,24 +92,21 @@ let test_vector () =
       , [ 2.; 0.8 ]
     ]
 
-let test_batch_normalization () =
+let test_batch_norm () =
   let batch = Ops.placeholder ~type_:Double [ 3; 4 ] in
-  let testing = Ops.placeholder ~type_:Bool [ 1 ] in
-  let ops =
-    Layer.batch_normalization
-      (Ops.Placeholder.to_node batch)
+  let is_training = Ops.placeholder ~type_:Bool [ 1 ] in
+  let ops, `update_ops update_ops =
+    Layer.batch_norm (Ops.Placeholder.to_node batch)
+      ~is_training:(Ops.Placeholder.to_node is_training)
       ~decay:0.5
-      ~update_moments:(`not_in_testing (Ops.Placeholder.to_node testing))
-      ~dims:1
-      ~feature_count:4
-    |> Ops.reduce_sum ~dims:[ 0 ]
   in
+  let ops = Ops.reduce_sum ops ~dims:[ 0 ] in
   let batch_tensor = Tensor.create2 Float64 3 4 in
-  let testing_tensor = Tensor.create0 Int8_unsigned in
-  Tensor.copy_elt_list testing_tensor [ 0 ];
+  let is_training_tensor = Tensor.create0 Int8_unsigned in
+  Tensor.copy_elt_list is_training_tensor [ 1 ];
   for i = 0 to 4 do
-    if i >= 3
-    then Tensor.copy_elt_list testing_tensor [ 1 ];
+    let training = i < 3 in
+    Tensor.copy_elt_list is_training_tensor [ if training then 1 else 0 ];
     let tensor =
       Tensor.copy_elt_list batch_tensor
         [ 0.; 4.; 0.; 8.
@@ -119,18 +116,23 @@ let test_batch_normalization () =
       Session.run Session.Output.(double ops)
         ~inputs:
           [ Session.Input.double batch batch_tensor
-          ; Session.Input.bool testing testing_tensor
+          ; Session.Input.bool is_training is_training_tensor
           ]
     in
     let blessed_values =
-      if i = 0 then       [ 0.; 12.; 12.; 19. ]
-      else if i = 1 then [ 0.; 8.485281; 2.190890; 5.247275 ]
-      else if i = 2 then [ 0.; 6.000000; 0.914991; 2.260197 ]
+      if training then [ 0.; 0.; 0.; 0. ]
       else if i = 3 then [ 0.; 4.242641; 0.426401; 1.063611 ]
       else if i = 4 then [ 0.; 4.242641; 0.426401; 1.063611 ]
       else assert false
     in
-    assert_vector tensor ~expected_value:blessed_values ~tol:1e-6
+    assert_vector tensor ~expected_value:blessed_values ~tol:1e-6;
+    if training
+    then Session.run ~targets:(List.map update_ops ~f:(fun op -> Node.P op))
+      ~inputs:
+        [ Session.Input.double batch batch_tensor
+        ; Session.Input.bool is_training is_training_tensor
+        ]
+      Session.Output.empty
   done
 
 let test_cond true_false =
@@ -165,6 +167,6 @@ let test_cond true_false =
 let () =
   test_scalar ();
   test_vector ();
-  ignore (test_batch_normalization, ());
+  test_batch_norm ();
   test_cond true;
   test_cond false

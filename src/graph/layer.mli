@@ -1,19 +1,35 @@
-(** [batch_normalization ?decay node ~update_moments ~dims ~feature_count] takes as
-    input a node which last dimension is assumed to be the feature dimension.
-    [dims] has to be the number of dimensions for [node] excluding the feature
-    dimension but including the batch dimension.
-    [feature_count] is the number of features in the last dimension of [node].
-    If [update_moments] is [ `always ] or [ `not_in_testing false ] the batch
-    mean and variance are computed and used to update the normalization
-    variables.
+(* The batch normalization is applied to the last dimension. *)
+module Batch_norm : sig
+  type 'a t
+
+  val create
+    :  ?epsilon:float
+    -> ?decay:float
+    -> ([< `double | `float ] as 'a) Node.t
+    -> 'a t
+
+  val apply_infer
+    :  ([< `double | `float ] as 'a) t
+    -> 'a Node.t
+    -> 'a Node.t
+
+  val apply_train
+    :  ([< `double | `float ] as 'a) t
+    -> 'a Node.t
+    -> 'a Node.t * [ `update_ops of 'a Node.t list ]
+end
+
+(** [batch_norm ?decay node ~is_training] takes as input a node which last
+    dimension is assumed to be the feature dimension on which batch norm is
+    computed.
+    When [is_training] is true the batch statistics from [node] are used.
+    When false variables storing the running mean and variance are used instead.
 *)
-val batch_normalization
+val batch_norm
   :  ?decay:float
   -> ([< `double | `float ] as 'a) Node.t
-  -> update_moments:[ `always | `not_in_testing of [ `bool ] Node.t ]
-  -> dims:int
-  -> feature_count:int
-  -> 'a Node.t
+  -> is_training:[ `bool ] Node.t
+  -> 'a Node.t * [ `update_ops of 'a Node.t list ]
 
 type 'a linear
 
