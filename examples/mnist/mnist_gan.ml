@@ -10,8 +10,8 @@ let generator_hidden_nodes = 128
 let discriminator_hidden_nodes = 128
 
 let batch_size = 64
-let learning_rate = 1e-3
-let epochs = 1000
+let learning_rate = 1e-5
+let batches = 10000
 
 let create_generator () =
   let hidden_layer =
@@ -37,6 +37,12 @@ let create_discriminator xs1 xs2 =
   Layer.linear_apply final_layer (Layer.linear_apply hidden_layer xs2),
   (Layer.linear_vars hidden_layer @ Layer.linear_vars final_layer)
 
+let binary_cross_entropy ~label ~model_values =
+  let epsilon = 1e-6 in
+  O.(neg (f label * log (model_values + f epsilon)
+    + f (1. -. label) * log (f (1. +. epsilon) - model_values)))
+  |> O.reduce_mean
+
 let () =
   let mnist = Mnist_helper.read_files () in
   let real_data_ph = O.placeholder [batch_size; image_dim] ~type_:Float in
@@ -45,12 +51,8 @@ let () =
   let real_doutput, fake_doutput, discriminator_variables =
     create_discriminator real_data generated
   in
-  let real_loss =
-    O.cross_entropy `mean ~ys:(O.f 1.) ~y_hats:real_doutput
-  in
-  let fake_loss =
-    O.cross_entropy `mean ~ys:(O.f 0.) ~y_hats:fake_doutput
-  in
+  let real_loss = binary_cross_entropy ~label:1. ~model_values:real_doutput in
+  let fake_loss = binary_cross_entropy ~label:0. ~model_values:fake_doutput in
   let discriminator_loss = O.(real_loss + fake_loss) in
   let learning_rate = O.f learning_rate in
   let discriminator_opt =
@@ -63,15 +65,20 @@ let () =
       ~varsf:generator_variables
       ~varsd:[] (* TODO: remove this. *)
   in
-  for batch_idx = 1 to epochs do
+  for batch_idx = 1 to batches do
     let batch_images, _ = Mnist_helper.train_batch mnist ~batch_size ~batch_idx in
-    Session.run
-      ~inputs:Session.Input.[ float real_data_ph batch_images ]
-      ~targets:discriminator_opt
-      Session.Output.empty;
-    Session.run
-      ~inputs:[]
-      ~targets:generator_opt
-      Session.Output.empty;
-    Stdio.printf "epoch %d\n%!" batch_idx
+    let discriminator_loss =
+      Session.run
+        ~inputs:Session.Input.[ float real_data_ph batch_images ]
+        ~targets:discriminator_opt
+        (Session.Output.scalar_float discriminator_loss)
+    in
+    let generator_loss =
+      Session.run
+        ~inputs:[]
+        ~targets:generator_opt
+        (Session.Output.scalar_float fake_loss)
+    in
+    Stdio.printf "bath %4d    d-loss: %12.6f    g-loss: %12.6f\n%!"
+      batch_idx discriminator_loss generator_loss
   done
