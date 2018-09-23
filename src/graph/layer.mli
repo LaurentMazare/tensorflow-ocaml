@@ -15,22 +15,32 @@ val batch_normalization
   -> feature_count:int
   -> 'a Node.t
 
-type 'a linear =
-  { output : 'a Node.t
-  ; w : 'a Node.t
-  ; b : 'a Node.t
-  }
+type 'a linear
+
+type activation =
+  | Relu
+  | Softmax
+  | Tanh
+  | Leaky_relu of float (* max xs (alpha * xs) *)
+  | Sigmoid
 
 val linear_with_vars
-  :  ?activation:[ `relu | `softmax ]
+  :  ?activation:activation
   -> ([< `double | `float ] as 'a) Node.t
   -> output_dim:int
   -> 'a linear
 
 val linear
-  :  ?activation:[ `relu | `softmax ]
+  :  ?activation:activation
   -> ([< `double | `float ] as 'a) Node.t
   -> output_dim:int
+  -> 'a Node.t
+
+val linear_vars : 'a linear -> 'a Node.t list
+val linear_output : 'a linear -> 'a Node.t
+val linear_apply
+  :  ([< `double | `float ] as 'a) linear
+  -> 'a Node.t
   -> 'a Node.t
 
 type padding =

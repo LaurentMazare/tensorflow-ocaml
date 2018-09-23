@@ -232,6 +232,19 @@ let minmax_gradient ~self ~gradient =
   in
   [ Some (N.P gradient); None ]
 
+let minimum_maximum_gradient ~self ~gradient =
+  match N.flat_inputs self with
+  | [ input1; input2 ] ->
+    let gradient_if_equal input =
+      Option.value_exn (N.extract input (N.output_type self))
+      |> Ops.equal self
+      |> Ops.cast ~type_:(N.output_type self)
+      |> Ops.mul gradient
+      |> fun n -> Some (N.P n)
+    in
+    [ gradient_if_equal input1; gradient_if_equal input2 ]
+  | _ -> failwith "Not a binary function"
+
 let softmax_gradient ~self ~gradient =
   let gradient =
     Ops.(
@@ -542,8 +555,10 @@ let register_all () =
     ; O.matMul,      { f = matmul_gradient }
     ; O.max,         { f = minmax_gradient }
     ; O.maxPool,     { f = maxpool_gradient }
+    ; O.maximum,     { f = minimum_maximum_gradient }
     ; O.mean,        { f = mean_gradient }
     ; O.min,         { f = minmax_gradient }
+    ; O.minimum,     { f = minimum_maximum_gradient }
     ; O.mul,         { f = mul_gradient }
     ; O.neg,         { f = neg_gradient }
     ; O.pad,         { f = pad_gradient }

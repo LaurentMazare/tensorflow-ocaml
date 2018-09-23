@@ -36,28 +36,47 @@ let batch_normalization ?(decay = 0.9) t ~update_moments ~dims ~feature_count =
   in
   Ops.normalize t { mean = beta; variance = gamma }
 
+type activation =
+  | Relu
+  | Softmax
+  | Tanh
+  | Leaky_relu of float (* max xs (alpha * xs) *)
+  | Sigmoid
+
 type 'a linear =
   { output : 'a Node.t
   ; w : 'a Node.t
   ; b : 'a Node.t
+  ; activation : activation option
   }
+
+let linear_vars linear = [ linear.w; linear.b ]
+let linear_output linear = linear.output
+
+let linear_apply xs ~w ~b ~activation =
+  let ys = Ops.(xs *^ w + b) in
+  match activation with
+  | Some Relu -> Ops.relu ys
+  | Some Softmax -> Ops.softmax ys
+  | Some Tanh -> Ops.tanh ys
+  | Some Sigmoid -> Ops.sigmoid ys
+  | Some (Leaky_relu alpha) ->
+    let type_ = Node.output_type xs in
+    Ops.(maximum ys (f_or_d ~type_ alpha * ys))
+  | None -> ys
 
 let linear_with_vars ?activation xs ~output_dim =
   let last_xs_dim = Node.shape xs |> List.last_exn in
   let type_ = Node.output_type xs in
   let w = Var.normal ~type_ [ last_xs_dim; output_dim ] ~stddev:0.1 in
   let b = Var.f_or_d ~type_ [ output_dim ] 0. in
-  let ys = Ops.(xs *^ w + b) in
-  let output =
-    match activation with
-    | Some `relu -> Ops.relu ys
-    | Some `softmax -> Ops.softmax ys
-    | None -> ys
-  in
-  { output; w; b }
+  { output = linear_apply xs ~w ~b ~activation; w; b; activation }
 
 let linear ?activation xs ~output_dim =
   (linear_with_vars ?activation xs ~output_dim).output
+
+let linear_apply linear xs =
+  linear_apply xs ~w:linear.w ~b:linear.b ~activation:linear.activation
 
 type padding =
   | Same

@@ -17,8 +17,8 @@ let () =
   let ys = O.placeholder [-1; label_count] ~type_:Float in
   let ys_node = O.Placeholder.to_node ys in
   let ys_ =
-    Layer.linear (O.Placeholder.to_node xs) ~activation:`relu ~output_dim:hidden_nodes
-    |> Layer.linear ~activation:`softmax ~output_dim:label_count
+    Layer.linear (O.Placeholder.to_node xs) ~activation:Relu ~output_dim:hidden_nodes
+    |> Layer.linear ~activation:Softmax ~output_dim:label_count
   in
   let cross_entropy = O.cross_entropy ~ys:ys_node ~y_hats:ys_ `mean in
   let accuracy =

@@ -28,9 +28,9 @@ let () =
     |> Layer.conv2d ~ksize:(5, 5) ~strides:(1, 1) ~output_dim:64
     |> Layer.max_pool ~ksize:(2, 2) ~strides:(2, 2)
     |> Layer.flatten
-    |> Layer.linear ~output_dim:1024 ~activation:`relu
+    |> Layer.linear ~output_dim:1024 ~activation:Relu
     |> O.dropout ~keep_prob:(O.Placeholder.to_node keep_prob)
-    |> Layer.linear ~output_dim:10 ~activation:`softmax
+    |> Layer.linear ~output_dim:10 ~activation:Softmax
   in
 
   let cross_entropy = O.cross_entropy ~ys:(O.Placeholder.to_node ys) ~y_hats:ys_ `sum in
