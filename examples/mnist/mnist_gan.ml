@@ -9,9 +9,9 @@ let latent_dim = 100
 let generator_hidden_nodes = 128
 let discriminator_hidden_nodes = 128
 
-let batch_size = 64
+let batch_size = 128
 let learning_rate = 1e-5
-let batches = 10000
+let batches = 10**8
 
 let create_generator () =
   let hidden_layer =
@@ -31,7 +31,7 @@ let create_discriminator xs1 xs2 =
   in
   let final_layer =
     Layer.linear_with_vars (Layer.linear_output hidden_layer)
-      ~activation:Sigmoid ~output_dim:image_dim
+      ~activation:Sigmoid ~output_dim:1
   in
   Layer.linear_output final_layer,
   Layer.linear_apply final_layer (Layer.linear_apply hidden_layer xs2),
@@ -51,9 +51,10 @@ let () =
   let real_doutput, fake_doutput, discriminator_variables =
     create_discriminator real_data generated
   in
-  let real_loss = binary_cross_entropy ~label:1. ~model_values:real_doutput in
+  let real_loss = binary_cross_entropy ~label:0.9 ~model_values:real_doutput in
   let fake_loss = binary_cross_entropy ~label:0. ~model_values:fake_doutput in
   let discriminator_loss = O.(real_loss + fake_loss) in
+  let generator_loss = binary_cross_entropy ~label:1. ~model_values:fake_doutput in
   let learning_rate = O.f learning_rate in
   let discriminator_opt =
     Optimizers.adam_minimizer ~learning_rate discriminator_loss
@@ -61,7 +62,7 @@ let () =
       ~varsd:[] (* TODO: remove this. *)
   in
   let generator_opt =
-    Optimizers.adam_minimizer ~learning_rate fake_loss
+    Optimizers.adam_minimizer ~learning_rate generator_loss
       ~varsf:generator_variables
       ~varsd:[] (* TODO: remove this. *)
   in
@@ -77,8 +78,23 @@ let () =
       Session.run
         ~inputs:[]
         ~targets:generator_opt
-        (Session.Output.scalar_float fake_loss)
+        (Session.Output.scalar_float generator_loss)
     in
-    Stdio.printf "bath %4d    d-loss: %12.6f    g-loss: %12.6f\n%!"
-      batch_idx discriminator_loss generator_loss
+    if batch_idx % 100 = 0
+    then
+      Stdio.printf "batch %4d    d-loss: %12.6f    g-loss: %12.6f\n%!"
+        batch_idx discriminator_loss generator_loss;
+    if batch_idx % 5000 = 0
+    then begin
+      let samples = Session.run (Session.Output.float generated) in
+      Stdio.Out_channel.with_file (Printf.sprintf "out%d.txt" batch_idx) ~f:(fun channel ->
+        for sample_index = 0 to 15 do
+          List.init image_dim ~f:(fun pixel_index ->
+            Tensorflow_core.Tensor.get samples [|sample_index; pixel_index|]
+            |> Printf.sprintf "%.2f")
+          |> String.concat ~sep:", "
+          |> Printf.sprintf "data%d = [%s]\n" sample_index
+          |> Stdio.Out_channel.output_string channel
+        done)
+    end
   done
