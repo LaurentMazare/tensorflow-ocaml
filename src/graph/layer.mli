@@ -32,3 +32,32 @@ val linear
   -> ([< `double | `float ] as 'a) Node.t
   -> output_dim:int
   -> 'a Node.t
+
+type padding =
+  | Same
+  | Valid
+
+val max_pool
+  :  ?padding:padding (* default: Same *)
+  -> ([< `double | `float ] as 'a) Node.t
+  -> ksize:(int * int)
+  -> strides:(int * int)
+  -> 'a Node.t
+
+val conv2d
+  :  ?padding:padding (* default: Same *)
+  -> ([< `double | `float ] as 'a) Node.t
+  -> ksize:(int * int)
+  -> strides:(int * int)
+  -> output_dim:int
+  -> 'a Node.t
+
+(** [flatten] preserves the first (batch) dimension. *)
+val flatten
+  :  'a Node.t
+  -> 'a Node.t
+
+val reshape
+  : 'a Node.t
+  -> shape:int list
+  -> 'a Node.t

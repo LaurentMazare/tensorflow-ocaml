@@ -14,31 +14,20 @@ let scalar_tensor f =
 let batch_size = 512
 let epochs = 5000
 
-let conv2d x w =
-  O.conv2D x w ~strides:[ 1; 1; 1; 1 ] ~padding:"SAME"
-
-let max_pool_2x2 x =
-  O.maxPool x ~ksize:[ 1; 2; 2; 1 ] ~strides:[ 1; 2; 2; 1 ] ~padding:"SAME"
-
 let () =
   let mnist = Mnist_helper.read_files () in
   let keep_prob = O.placeholder [] ~type_:Float in
   let xs = O.placeholder [-1; image_dim] ~type_:Float in
   let ys = O.placeholder [-1; label_count] ~type_:Float in
 
-  let x_image = O.reshape (O.Placeholder.to_node xs) (O.const_int ~type_:Int32 [ -1; 28; 28; 1 ]) in
-  let w_conv1 = Var.normalf [ 5; 5; 1; 32 ] ~stddev:0.1 in
-  let b_conv1 = Var.f [ 32 ] 0. in
-  let h_conv1 = O.add (conv2d x_image w_conv1) b_conv1 in
-  let h_pool1 = max_pool_2x2 h_conv1 in
-
-  let w_conv2 = Var.normalf [ 5; 5; 32; 64 ] ~stddev:0.1 in
-  let b_conv2 = Var.f [ 64 ] 0. in
-  let h_conv2 = O.add (conv2d h_pool1 w_conv2) b_conv2 |> O.relu in
-  let h_pool2 = max_pool_2x2 h_conv2 in
-
   let ys_ =
-    O.reshape h_pool2 (O.const_int ~type_:Int32 [ -1; 7*7*64 ])
+    O.Placeholder.to_node xs
+    |> Layer.reshape ~shape:[ -1; 28; 28; 1 ]
+    |> Layer.conv2d ~ksize:(5, 5) ~strides:(1, 1) ~output_dim:32
+    |> Layer.max_pool ~ksize:(2, 2) ~strides:(2, 2)
+    |> Layer.conv2d ~ksize:(5, 5) ~strides:(1, 1) ~output_dim:64
+    |> Layer.max_pool ~ksize:(2, 2) ~strides:(2, 2)
+    |> Layer.flatten
     |> Layer.linear ~output_dim:1024 ~activation:`relu
     |> O.dropout ~keep_prob:(O.Placeholder.to_node keep_prob)
     |> Layer.linear ~output_dim:10 ~activation:`softmax

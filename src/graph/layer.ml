@@ -58,3 +58,51 @@ let linear_with_vars ?activation xs ~output_dim =
 
 let linear ?activation xs ~output_dim =
   (linear_with_vars ?activation xs ~output_dim).output
+
+type padding =
+  | Same
+  | Valid
+
+let padding_string = function
+  | Same -> "SAME"
+  | Valid -> "VALID"
+
+let max_pool ?(padding = Same) xs ~ksize ~strides =
+  let k1, k2 = ksize in
+  let s1, s2 = strides in
+  Ops.maxPool xs
+    ~ksize:[ 1; k1; k2; 1 ] ~strides:[ 1; s1; s2; 1 ] ~padding:(padding_string padding)
+
+let conv2d ?(padding = Same) xs ~ksize ~strides ~output_dim =
+  let last_xs_dim = Node.shape xs |> List.last_exn in
+  let k1, k2 = ksize in
+  let s1, s2 = strides in
+  let type_ = Node.output_type xs in
+  let w = Var.normal ~type_ [ k1; k2; last_xs_dim; output_dim ] ~stddev:0.1 in
+  let b = Var.f_or_d ~type_ [ output_dim ] 0. in
+  let conv2d = Ops.conv2D xs w ~strides:[ 1; s1; s2; 1 ] ~padding:(padding_string padding) in
+  Ops.add conv2d b
+
+let shape_to_string shape =
+  List.map shape ~f:Int.to_string
+  |> String.concat ~sep:", "
+  |> Printf.sprintf "(%s)"
+
+let reshape xs ~shape =
+  Ops.reshape xs (Ops.const_int ~type_:Int32 shape)
+
+let flatten xs =
+  let shape = Node.shape xs in
+  let total_dim =
+    List.fold (List.tl_exn shape) ~init:1 ~f:(fun acc d ->
+      if d <= 0
+      then
+        let msg =
+          Printf.sprintf "cannot flatten %s shape %s"
+            (Node.name xs |> Node.Name.to_string)
+            (shape_to_string shape)
+        in
+        invalid_arg msg
+      else d * acc)
+  in
+  reshape xs ~shape:[ -1; total_dim ]
