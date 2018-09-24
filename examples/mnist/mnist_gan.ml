@@ -30,7 +30,9 @@ let create_discriminator xs1 xs2 =
     Layer.Linear.apply linear1 xs ~activation:(Leaky_relu 0.01)
     |> Layer.Linear.apply linear2 ~activation:Sigmoid
   in
-  model xs1, model xs2, (Layer.Linear.vars linear1 @ Layer.Linear.vars linear2)
+  let ys1 = model xs1 in
+  let ys2 = model xs2 in
+  ys1, ys2, (Layer.Linear.vars linear1 @ Layer.Linear.vars linear2)
 
 let binary_cross_entropy ~label ~model_values =
   let epsilon = 1e-6 in

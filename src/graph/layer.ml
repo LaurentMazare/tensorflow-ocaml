@@ -69,7 +69,7 @@ module Linear = struct
     }
 
   let vars { w; b; output_dim = _ } =
-    Option.to_list w @ Option.to_list b
+    [ Option.value_exn w; Option.value_exn b ]
 
   let create output_dim =
     { output_dim
