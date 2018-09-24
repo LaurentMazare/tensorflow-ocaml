@@ -31,8 +31,6 @@ val batch_norm
   -> is_training:[ `bool ] Node.t
   -> 'a Node.t * [ `update_ops of 'a Node.t list ]
 
-type 'a linear
-
 type activation =
   | Relu
   | Softmax
@@ -40,23 +38,26 @@ type activation =
   | Leaky_relu of float (* max xs (alpha * xs) *)
   | Sigmoid
 
-val linear_with_vars
-  :  ?activation:activation
-  -> ([< `double | `float ] as 'a) Node.t
-  -> output_dim:int
-  -> 'a linear
+module Linear : sig
+  type 'a t
+
+  (** [create output_dim] creates a linear layer with output size
+      [output_dim]. *)
+  val create : int -> 'a t
+
+  val apply
+    :  ?activation:activation
+    -> ([< `double | `float ] as 'a) t
+    -> 'a Node.t
+    -> 'a Node.t
+
+  val vars : 'a t -> 'a Node.t list
+end
 
 val linear
   :  ?activation:activation
   -> ([< `double | `float ] as 'a) Node.t
   -> output_dim:int
-  -> 'a Node.t
-
-val linear_vars : 'a linear -> 'a Node.t list
-val linear_output : 'a linear -> 'a Node.t
-val linear_apply
-  :  ([< `double | `float ] as 'a) linear
-  -> 'a Node.t
   -> 'a Node.t
 
 type padding =

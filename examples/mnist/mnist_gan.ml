@@ -14,28 +14,23 @@ let learning_rate = 1e-5
 let batches = 10**8
 
 let create_generator () =
-  let hidden_layer =
+  let linear1 = Layer.Linear.create generator_hidden_nodes in
+  let linear2 = Layer.Linear.create image_dim in
+  let output =
     O.(randomUniform ~type_:Float (ci32 [batch_size; latent_dim]) * f 2. - f 1.)
-    |> Layer.linear_with_vars ~activation:(Leaky_relu 0.01) ~output_dim:generator_hidden_nodes
+    |> Layer.Linear.apply linear1 ~activation:(Leaky_relu 0.01)
+    |> Layer.Linear.apply linear2 ~activation:Tanh
   in
-  let final_layer =
-    Layer.linear_with_vars (Layer.linear_output hidden_layer)
-      ~activation:Tanh ~output_dim:image_dim
-  in
-  Layer.linear_output final_layer, (Layer.linear_vars hidden_layer @ Layer.linear_vars final_layer)
+  output, (Layer.Linear.vars linear1 @ Layer.Linear.vars linear2)
 
 let create_discriminator xs1 xs2 =
-  let hidden_layer =
-    Layer.linear_with_vars xs1
-      ~activation:(Leaky_relu 0.01) ~output_dim:discriminator_hidden_nodes
+  let linear1 = Layer.Linear.create discriminator_hidden_nodes in
+  let linear2 = Layer.Linear.create 1 in
+  let model xs =
+    Layer.Linear.apply linear1 xs ~activation:(Leaky_relu 0.01)
+    |> Layer.Linear.apply linear2 ~activation:Sigmoid
   in
-  let final_layer =
-    Layer.linear_with_vars (Layer.linear_output hidden_layer)
-      ~activation:Sigmoid ~output_dim:1
-  in
-  Layer.linear_output final_layer,
-  Layer.linear_apply final_layer (Layer.linear_apply hidden_layer xs2),
-  (Layer.linear_vars hidden_layer @ Layer.linear_vars final_layer)
+  model xs1, model xs2, (Layer.Linear.vars linear1 @ Layer.Linear.vars linear2)
 
 let binary_cross_entropy ~label ~model_values =
   let epsilon = 1e-6 in

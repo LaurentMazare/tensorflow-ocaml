@@ -61,40 +61,56 @@ type activation =
   | Leaky_relu of float (* max xs (alpha * xs) *)
   | Sigmoid
 
-type 'a linear =
-  { output : 'a Node.t
-  ; w : 'a Node.t
-  ; b : 'a Node.t
-  ; activation : activation option
-  }
+module Linear = struct
+  type 'a t =
+    { output_dim : int
+    ; mutable w : 'a Node.t option
+    ; mutable b : 'a Node.t option
+    }
 
-let linear_vars linear = [ linear.w; linear.b ]
-let linear_output linear = linear.output
+  let vars { w; b; output_dim = _ } =
+    Option.to_list w @ Option.to_list b
 
-let linear_apply xs ~w ~b ~activation =
-  let ys = Ops.(xs *^ w + b) in
-  match activation with
-  | Some Relu -> Ops.relu ys
-  | Some Softmax -> Ops.softmax ys
-  | Some Tanh -> Ops.tanh ys
-  | Some Sigmoid -> Ops.sigmoid ys
-  | Some (Leaky_relu alpha) ->
+  let create output_dim =
+    { output_dim
+    ; w = None
+    ; b = None
+    }
+
+  let apply ?activation t xs =
+    let last_xs_dim = Node.shape xs |> List.last_exn in
     let type_ = Node.output_type xs in
-    Ops.(maximum ys (f_or_d ~type_ alpha * ys))
-  | None -> ys
-
-let linear_with_vars ?activation xs ~output_dim =
-  let last_xs_dim = Node.shape xs |> List.last_exn in
-  let type_ = Node.output_type xs in
-  let w = Var.normal ~type_ [ last_xs_dim; output_dim ] ~stddev:0.1 in
-  let b = Var.f_or_d ~type_ [ output_dim ] 0. in
-  { output = linear_apply xs ~w ~b ~activation; w; b; activation }
+    let w =
+      match t.w with
+      | Some w -> w
+      | None ->
+        let w = Var.normal ~type_ [ last_xs_dim; t.output_dim ] ~stddev:0.1 in
+        t.w <- Some w;
+        w
+    in
+    let b =
+      match t.b with
+      | Some b -> b
+      | None ->
+        let b = Var.f_or_d ~type_ [ t.output_dim ] 0. in
+        t.b <- Some b;
+        b
+    in
+    let ys = Ops.(xs *^ w + b) in
+    match activation with
+    | Some Relu -> Ops.relu ys
+    | Some Softmax -> Ops.softmax ys
+    | Some Tanh -> Ops.tanh ys
+    | Some Sigmoid -> Ops.sigmoid ys
+    | Some (Leaky_relu alpha) ->
+      let type_ = Node.output_type xs in
+      Ops.(maximum ys (f_or_d ~type_ alpha * ys))
+    | None -> ys
+end
 
 let linear ?activation xs ~output_dim =
-  (linear_with_vars ?activation xs ~output_dim).output
-
-let linear_apply linear xs =
-  linear_apply xs ~w:linear.w ~b:linear.b ~activation:linear.activation
+  let linear = Linear.create output_dim in
+  Linear.apply ?activation linear xs
 
 type padding =
   | Same
