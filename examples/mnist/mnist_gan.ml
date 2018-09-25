@@ -56,12 +56,10 @@ let () =
   let discriminator_opt =
     Optimizers.adam_minimizer ~learning_rate discriminator_loss
       ~varsf:discriminator_variables
-      ~varsd:[] (* TODO: remove this. *)
   in
   let generator_opt =
     Optimizers.adam_minimizer ~learning_rate generator_loss
       ~varsf:generator_variables
-      ~varsd:[] (* TODO: remove this. *)
   in
   for batch_idx = 1 to batches do
     let batch_images, _ = Mnist_helper.train_batch mnist ~batch_size ~batch_idx in
