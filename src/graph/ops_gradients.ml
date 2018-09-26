@@ -345,6 +345,42 @@ let conv2d_gradient : type a. self:a N.t -> gradient:a N.t -> N.p option list
     all [ N.P gradient_input; N.P gradient_filter ]
   | _, _ -> failwith "Inconsistent types"
 
+let conv2dbackpropinput_gradient : type a. self:a N.t -> gradient:a N.t -> N.p option list
+  = fun ~self ~gradient ->
+  match N.output_type self, N.output_type gradient with
+  | N.Type.Float, N.Type.Float -> begin
+    let N.P filter, N.P input =
+      match N.inputs self with
+      | [ _; `single filter; `single input ] -> filter, input
+      | _ -> failwith "Not a ternary function"
+    in
+    match N.output_type filter, N.output_type input with
+    | T.Float, T.Float ->
+      let strides = Option.value_exn (N.get_attr_int_list self "strides") in
+      let use_cudnn_on_gpu = N.get_attr_bool self "use_cudnn_on_gpu" in
+      let padding = Option.value_exn (N.get_attr_string self "padding") in
+      let gradient_filter =
+        Ops.conv2DBackpropFilter
+          gradient
+          (Ops.shape32 filter)
+          input
+          ~strides
+          ?use_cudnn_on_gpu
+          ~padding
+      in
+      let gradient_input =
+        Ops.conv2D
+          gradient
+          filter
+          ~strides
+          ?use_cudnn_on_gpu
+          ~padding
+      in
+      [ None; Some (N.P gradient_filter); Some (N.P gradient_input) ]
+    | _, _ -> failwith "Expected float inputs"
+  end
+  | _, _ -> failwith "Inconsistent types"
+
 let avgpool_gradient : type a. self:a N.t -> gradient:a N.t -> N.p option list
   = fun ~self ~gradient ->
   match N.output_type self, N.output_type gradient with
@@ -543,6 +579,7 @@ let register_all () =
     ; O.concat,      { f = concat_gradient }
     ; O.cos,         { f = cos_gradient }
     ; O.conv2D,      { f = conv2d_gradient }
+    ; O.conv2DBackpropInput, { f = conv2dbackpropinput_gradient }
     ; O.div,         { f = div_gradient }
     ; O.erf,         { f = erf_gradient }
     ; O.erfc,        { f = erfc_gradient }
