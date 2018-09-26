@@ -71,6 +71,24 @@ val max_pool
   -> strides:(int * int)
   -> 'a Node.t
 
+module Conv2D : sig
+  type 'a t
+
+  val create
+    :  ksize:int * int
+    -> strides:int * int
+    -> padding:padding
+    -> int (* output dimension *)
+    -> 'a t
+
+  val apply
+    :  ([< `double | `float ] as 'a) t
+    -> 'a Node.t
+    -> 'a Node.t
+
+  val vars : 'a t -> 'a Node.t list
+end
+
 val conv2d
   :  ?padding:padding (* default: Same *)
   -> ([< `double | `float ] as 'a) Node.t

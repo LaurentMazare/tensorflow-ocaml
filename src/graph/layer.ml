@@ -126,15 +126,56 @@ let max_pool ?(padding = Same) xs ~ksize ~strides =
   Ops.maxPool xs
     ~ksize:[ 1; k1; k2; 1 ] ~strides:[ 1; s1; s2; 1 ] ~padding:(padding_string padding)
 
+module Conv2D = struct
+  type 'a t =
+    { output_dim : int
+    ; mutable w : 'a Node.t option
+    ; mutable b : 'a Node.t option
+    ; ksize : int * int
+    ; strides : int * int
+    ; padding : padding
+    }
+
+  let vars { w; b; _ } =
+    [ Option.value_exn w; Option.value_exn b ]
+
+  let create ~ksize ~strides ~padding output_dim =
+    { output_dim
+    ; w = None
+    ; b = None
+    ; ksize
+    ; strides
+    ; padding
+    }
+
+  let apply t xs =
+    let last_xs_dim = Node.shape xs |> List.last_exn in
+    let k1, k2 = t.ksize in
+    let s1, s2 = t.strides in
+    let type_ = Node.output_type xs in
+    let w =
+      match t.w with
+      | Some w -> w
+      | None ->
+        let w = Var.normal ~type_ [ k1; k2; last_xs_dim; t.output_dim ] ~stddev:0.1 in
+        t.w <- Some w;
+        w
+    in
+    let b =
+      match t.b with
+      | Some b -> b
+      | None ->
+        let b = Var.f_or_d ~type_ [ t.output_dim ] 0. in
+        t.b <- Some b;
+        b
+    in
+    let conv2d = Ops.conv2D xs w ~strides:[ 1; s1; s2; 1 ] ~padding:(padding_string t.padding) in
+    Ops.add conv2d b
+end
+
 let conv2d ?(padding = Same) xs ~ksize ~strides ~output_dim =
-  let last_xs_dim = Node.shape xs |> List.last_exn in
-  let k1, k2 = ksize in
-  let s1, s2 = strides in
-  let type_ = Node.output_type xs in
-  let w = Var.normal ~type_ [ k1; k2; last_xs_dim; output_dim ] ~stddev:0.1 in
-  let b = Var.f_or_d ~type_ [ output_dim ] 0. in
-  let conv2d = Ops.conv2D xs w ~strides:[ 1; s1; s2; 1 ] ~padding:(padding_string padding) in
-  Ops.add conv2d b
+  let conv2d = Conv2D.create ~padding ~ksize ~strides output_dim in
+  Conv2D.apply conv2d xs
 
 let shape_to_string shape =
   List.map shape ~f:Int.to_string
