@@ -177,6 +177,30 @@ let conv2d ?(padding = Same) xs ~ksize ~strides ~output_dim =
   let conv2d = Conv2D.create ~padding ~ksize ~strides output_dim in
   Conv2D.apply conv2d xs
 
+let conv2d_transpose ?(padding = Same) xs ~ksize ~strides ~output_filters =
+  let batch_dim, input_w, input_h, last_xs_dim =
+    match Node.shape xs with
+    | [ a; b; c; d ] -> a, b, c, d
+    | _ -> failwith "unexpected shape for conv2d_transpose input"
+  in
+  let output_length input_l ~ksize ~stride =
+    match padding with
+    | Valid -> input_l * stride + max 0 (ksize - stride)
+    | Same -> input_l * stride - stride - ksize + 2
+  in
+  let output_w = output_length input_w ~ksize:(fst ksize) ~stride:(fst strides) in
+  let output_h = output_length input_h ~ksize:(snd ksize) ~stride:(snd strides) in
+  let type_ = Node.output_type xs in
+  let w = Var.normal ~type_ [ fst ksize; snd ksize; output_filters; last_xs_dim ] ~stddev:0.1 in
+  let b = Var.f_or_d ~type_ [ output_filters ] 0. in
+  Ops.conv2DBackpropInput
+    ~strides:[1; fst strides; snd strides; 1 ]
+    ~padding:(padding_string padding)
+    (Ops.ci32 ~shape:[ 4 ] [ batch_dim; output_w; output_h; output_filters ])
+    w
+    xs
+  |> Ops.add b
+
 let shape_to_string shape =
   List.map shape ~f:Int.to_string
   |> String.concat ~sep:", "

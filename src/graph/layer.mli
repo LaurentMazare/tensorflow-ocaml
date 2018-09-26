@@ -97,6 +97,14 @@ val conv2d
   -> output_dim:int
   -> 'a Node.t
 
+val conv2d_transpose
+  :  ?padding:padding (* default: Same *)
+  -> ([< `double | `float ] as 'a) Node.t
+  -> ksize:(int * int)
+  -> strides:(int * int)
+  -> output_filters:int
+  -> 'a Node.t
+
 (** [flatten] preserves the first (batch) dimension. *)
 val flatten
   :  'a Node.t
