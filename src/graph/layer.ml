@@ -44,15 +44,21 @@ module Batch_norm = struct
     ys, `update_ops [ mean_update; var_update ]
 end
 
-let batch_norm ?(decay = 0.99) xs ~is_training =
+module Update_ops_store = struct
+  type t = Node.p list ref
+  let create () = ref []
+  let ops t = !t
+end
+
+let batch_norm ?(decay = 0.99) xs ~is_training ~update_ops_store =
   let type_ = Node.output_type xs in
   let bn = Batch_norm.create ~decay xs in
   let infer = Batch_norm.apply_infer bn xs in
-  let train, update_ops = Batch_norm.apply_train bn xs in
+  let train, `update_ops update_ops = Batch_norm.apply_train bn xs in
+  update_ops_store := List.map update_ops ~f:(fun n -> Node.P n) @ !update_ops_store;
   let not_is_training = Ops.(cast (logicalNot is_training) ~type_) in
   let is_training = Ops.cast is_training ~type_ in
-  let ys = Ops.(is_training * train + not_is_training * infer) in
-  ys, update_ops
+  Ops.(is_training * train + not_is_training * infer)
 
 type activation =
   | Relu

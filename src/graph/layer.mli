@@ -19,6 +19,12 @@ module Batch_norm : sig
     -> 'a Node.t * [ `update_ops of 'a Node.t list ]
 end
 
+module Update_ops_store : sig
+  type t
+  val create : unit -> t
+  val ops : t -> Node.p list
+end
+
 (** [batch_norm ?decay node ~is_training] takes as input a node which last
     dimension is assumed to be the feature dimension on which batch norm is
     computed.
@@ -29,7 +35,8 @@ val batch_norm
   :  ?decay:float
   -> ([< `double | `float ] as 'a) Node.t
   -> is_training:[ `bool ] Node.t
-  -> 'a Node.t * [ `update_ops of 'a Node.t list ]
+  -> update_ops_store:Update_ops_store.t
+  -> 'a Node.t
 
 type activation =
   | Relu
