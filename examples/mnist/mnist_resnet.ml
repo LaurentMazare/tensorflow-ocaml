@@ -15,51 +15,45 @@ let batch_size = 128
 
 let depth = 20
 
-let conv2d x ~out_features ~in_features ~stride:s ~kernel_size:k =
-  let w = Var.normalf [ k; k; in_features; out_features ] ~stddev:0.1 in
-  let b = Var.f [ out_features ] 0. in
-  let conv = O.conv2D x w ~strides:[ 1; s; s; 1 ] ~padding:"SAME" in
-  O.add conv b
-
-let avg_pool x ~stride:s =
-  O.avgPool x ~ksize:[ 1; s; s; 1 ] ~strides:[ 1; s; s; 1 ] ~padding:"VALID"
-
-let basic_block input_layer ~out_features ~in_features ~stride ~is_training ~update_ops_store =
+let basic_block input_layer ~output_dim ~stride ~is_training ~update_ops_store =
   let shortcut =
     if stride = 1
     then input_layer
     else
-      let half_diff = (out_features - in_features) / 2 in
-      O.pad (avg_pool input_layer ~stride)
+      let in_features = Node.shape input_layer |> List.last_exn in
+      let half_diff = (output_dim - in_features) / 2 in
+      O.pad
+        (O.avgPool input_layer ~padding:"VALID"
+          ~ksize:[ 1; stride; stride; 1 ] ~strides:[ 1; stride; stride; 1 ])
         (O.ci32 ~shape:[ 4; 2 ] [ 0; 0; 0; 0; 0; 0; half_diff; half_diff ])
   in
-  conv2d input_layer ~out_features ~in_features ~stride ~kernel_size:3
+  Layer.conv2d input_layer ~ksize:(3, 3) ~strides:(stride, stride) ~output_dim
   |> Layer.batch_norm ~is_training ~update_ops_store
   |> O.relu
-  |> conv2d ~out_features ~in_features:out_features ~stride:1 ~kernel_size:1
+  |> Layer.conv2d ~output_dim ~ksize:(1, 1) ~strides:(1, 1)
   |> O.add shortcut
   |> Layer.batch_norm ~is_training ~update_ops_store
   (* No ReLU after the add as per http://torch.ch/blog/2016/02/04/resnets.html *)
 
-let block_stack layer ~out_features ~in_features ~stride ~is_training ~update_ops_store =
+let block_stack layer ~output_dim ~stride ~is_training ~update_ops_store =
   let depth = (depth - 2) / 6 in
   let layer =
-    basic_block layer ~out_features ~in_features ~stride ~is_training ~update_ops_store
+    basic_block layer ~output_dim ~stride ~is_training ~update_ops_store
   in
   List.init (depth - 1) ~f:Fn.id
   |> List.fold ~init:layer ~f:(fun layer _idx ->
     basic_block layer
-      ~update_ops_store ~out_features ~in_features:out_features ~stride:1 ~is_training)
+      ~update_ops_store ~output_dim ~stride:1 ~is_training)
 
 let build_model ~xs ~is_training ~update_ops_store =
   O.reshape xs (O.ci32 [ -1; 28; 28; 1 ])
   (* 3x3 convolution + max-pool. *)
-  |> conv2d ~out_features:16 ~in_features:1 ~kernel_size:3 ~stride:1
+  |> Layer.conv2d ~output_dim:16 ~ksize:(3, 3) ~strides:(1, 1)
   |> O.relu
 
-  |> block_stack ~out_features:16 ~in_features:16 ~stride:1 ~is_training ~update_ops_store
-  |> block_stack ~out_features:32 ~in_features:16 ~stride:2 ~is_training ~update_ops_store
-  |> block_stack ~out_features:64 ~in_features:32 ~stride:2 ~is_training ~update_ops_store
+  |> block_stack ~output_dim:16 ~stride:1 ~is_training ~update_ops_store
+  |> block_stack ~output_dim:32 ~stride:2 ~is_training ~update_ops_store
+  |> block_stack ~output_dim:64 ~stride:2 ~is_training ~update_ops_store
 
   |> O.reduce_mean ~dims:[ 1; 2 ]
   (* Final dense layer. *)
@@ -107,16 +101,13 @@ let () =
     let batch_images, batch_labels =
       Mnist_helper.train_batch mnist ~batch_size ~batch_idx
     in
-    let batch_inputs =
-      Session.Input.
+    if batch_idx % 100 = 0 then print_err batch_idx;
+    Session.run
+      ~inputs:Session.Input.
         [ float xs batch_images
         ; float ys batch_labels
         ; bool is_training true_tensor
         ]
-    in
-    if batch_idx % 100 = 0 then print_err batch_idx;
-    Session.run
-      ~inputs:batch_inputs
       ~targets:gd
       Session.Output.empty;
   done

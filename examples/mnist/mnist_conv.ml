@@ -50,17 +50,15 @@ let () =
     Stdio.printf "epoch %d, train: %.2f%% valid: %.2f%%\n%!"
       n (100. *. train_accuracy) (100. *. test_accuracy)
   in
+  let half = scalar_tensor 0.5 in
   for batch_idx = 1 to epochs do
     let batch_images, batch_labels =
       Mnist_helper.train_batch mnist ~batch_size ~batch_idx
     in
-    let batch_inputs =
-      let half = scalar_tensor 0.5 in
-      Session.Input.[ float xs batch_images; float ys batch_labels; float keep_prob half ]
-    in
     if batch_idx % 100 = 0 then print_err batch_idx;
     Session.run
-      ~inputs:batch_inputs
+      ~inputs:Session.Input.[
+        float xs batch_images; float ys batch_labels; float keep_prob half ]
       ~targets:gd
       Session.Output.empty;
   done
