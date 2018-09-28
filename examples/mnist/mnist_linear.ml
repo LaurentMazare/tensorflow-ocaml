@@ -12,14 +12,10 @@ let () =
   let mnist = Mnist_helper.read_files () in
   let xs = O.placeholder [-1; image_dim] ~type_:Float in
   let ys = O.placeholder [-1; label_count] ~type_:Float in
-  let ys_node = O.Placeholder.to_node ys in
   let ys_ = Layer.linear (O.Placeholder.to_node xs) ~activation:Softmax ~output_dim:label_count in
-  let cross_entropy = O.cross_entropy ~ys:ys_node ~y_hats:ys_ `mean in
+  let cross_entropy = O.cross_entropy ~ys:(O.Placeholder.to_node ys) ~y_hats:ys_ `mean in
   let gd =
     Optimizers.gradient_descent_minimizer ~learning_rate:(O.f 8.) cross_entropy
-  in
-  let train_inputs =
-    Session.Input.[ float xs mnist.train_images; float ys mnist.train_labels ]
   in
   let print_err n =
     let accuracy =
@@ -32,7 +28,7 @@ let () =
   for i = 1 to epochs do
     if i % 50 = 0 then print_err i;
     Session.run
-      ~inputs:train_inputs
+      ~inputs:Session.Input.[ float xs mnist.train_images; float ys mnist.train_labels ]
       ~targets:gd
       Session.Output.empty;
   done

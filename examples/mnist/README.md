@@ -9,45 +9,32 @@ We first load the MNIST data. This is done using the the MNIST helper module, la
 are returned using one-hot encoding.
 
 ```ocaml
-  let { Mnist_helper.train_images; train_labels; test_images; test_labels } =
-    Mnist_helper.read_files ()
-  in
+  let mnist = Mnist_helper.read_files () in
 ```
 
 After that the computation graph is defined. Two placeholders are introduced
 to store the input images and labels, these placeholders will be replaced with actual
-tensors when calling `Session.run`. Train images and labels are used when training the model.
-Test images and labels are used to estimate the validation error.
+tensors when calling `Session.run`. Train images and labels are used when
+training the model.  Test images and labels are used to estimate the validation
+error.
 
 ```ocaml
   let xs = O.placeholder [-1; image_dim] ~type_:Float in
   let ys = O.placeholder [-1; label_count] ~type_:Float in
-  let train_inputs = Session.Input.[ float xs train_images; float ys train_labels ] in
-  let validation_inputs =
-    Session.Input.[ float xs test_images; float ys test_labels ]
-  in
 ```
 In the linear model there are two variables, a
 matrix and a bias and the output is computed by multiplying the matrix by the input
 vector and adding the bias. To transform the output into a probability distribution
 the softmax function is used.
+This is all handled by the linear layer.
 ```ocaml
-  let w = Var.f [ image_dim; label_count ] 0. in
-  let b = Var.f [ label_count ] 0. in
-  let ys_ = O.(Placeholder.to_node xs *^ w + b) |> O.softmax in
+  let ys_ = Layer.linear (O.Placeholder.to_node xs) ~activation:Softmax ~output_dim:label_count in
 ```
 
-The error measure that we will try to minimize is cross-entropy. We also compute
-the accuracy, i.e. the percentage of images that were correctly labeled, in order
-to make the output easier to understand.
+The error measure that we will try to minimize is cross-entropy.
 
 ```ocaml
-  let cross_entropy = O.(neg (reduce_mean (Placeholder.to_node ys * log ys_))) in
-  let accuracy =
-    O.(equal (argMax ys_ O.one32) (argMax (Placeholder.to_node ys) O.one32))
-    |> O.cast ~type_:Float
-    |> O.reduce_mean
-  in
+  let cross_entropy = O.cross_entropy ~ys:(O.Placeholder.to_node ys) ~y_hats:ys_ `mean in
 ```
 
 Finally we use gradient descent to minimize cross-entropy with respect to variables
@@ -57,16 +44,16 @@ w and b and iterate this a couple hundred times.
   let gd = Optimizers.gradient_descent_minimizer ~learning_rate:(O.f 8.) cross_entropy in
   let print_err n =
     let accuracy =
-      Session.run
-        ~inputs:validation_inputs
-        (Session.Output.scalar_float accuracy)
+      Mnist_helper.batch_accuracy mnist `test ~batch_size:1024 ~predict:(fun images ->
+        Session.run (Session.Output.float ys_)
+          ~inputs:Session.Input.[ float xs images ])
     in
-    printf "epoch %d, accuracy %.2f%%\n%!" n (100. *. accuracy)
+    Stdio.printf "epoch %d, accuracy %.2f%%\n%!" n (100. *. accuracy)
   in
   for i = 1 to epochs do
     if i % 50 = 0 then print_err i;
     Session.run
-      ~inputs:train_inputs
+      ~inputs:Session.Input.[ float xs mnist.train_images; float ys mnist.train_labels ]
       ~targets:gd
       Session.Output.empty;
   done
@@ -76,8 +63,13 @@ Running this code should build a model that has ~92% accuracy.
 
 ## A Simple Neural-Network
 
-The code can be found in `mnist_nn.ml`.
+The code can be found in `mnist_nn.ml`, accuracy should reach ~96%.
 
 ## Convolutional Neural-Network
 
-The code can be found in `mnist_conv.ml`.
+The code can be found in `mnist_conv.ml`, accuracy should reach ~99%.
+
+## ResNet
+
+A [Residual Neural Network](https://arxiv.org/abs/1512.03385) is trained
+on the MNIST dataset in `mnist_resnet.ml`. Final accuracy should be above ~99%.
