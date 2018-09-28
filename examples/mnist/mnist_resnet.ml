@@ -4,7 +4,6 @@ module O = Ops
 module Tensor = Tensorflow_core.Tensor
 
 (* ResNet model for the mnist dataset.
-   This is mostly a work in progess for now. Batch normalization is not included.
 
    Reference:
      - Deep Residual Learning for Image Recognition](https://arxiv.org/abs/1512.03385)
@@ -81,53 +80,30 @@ let () =
       ~update_ops_store
   in
   let cross_entropy = O.cross_entropy ~ys:ys_node ~y_hats:ys_ `mean in
-  let accuracy =
-    O.(equal (argMax ys_ one32 ~type_:Int32) (argMax ys_node one32 ~type_:Int32))
-    |> O.cast ~type_:Float
-    |> O.reduce_mean
-  in
-  let learning_rate = O.placeholder [] ~type_:Float in
   let gd =
     Optimizers.adam_minimizer cross_entropy
-      ~learning_rate:(O.Placeholder.to_node learning_rate)
+      ~learning_rate:(O.f 1e-4)
     @ Layer.Update_ops_store.ops update_ops_store
   in
   let true_tensor = Tensor.create Bigarray.int8_unsigned [||] in
   Tensor.set true_tensor [||] 1;
   let false_tensor = Tensor.create Bigarray.int8_unsigned [||] in
   Tensor.set false_tensor [||] 0;
-  let validation_inputs =
-    let validation_images = Tensor.sub_left mnist.test_images 0 1024 in
-    let validation_labels = Tensor.sub_left mnist.test_labels 0 1024 in
-    Session.Input.
-      [ float xs validation_images
-      ; float ys validation_labels
-      ; bool is_training false_tensor
-      ]
+  let predict images =
+    Session.run (Session.Output.float ys_)
+      ~inputs:Session.Input.[ float xs images; bool is_training false_tensor ]
   in
-  let print_err n ~train_inputs =
-    let vaccuracy, vcross_entropy =
-      Session.run
-        ~inputs:validation_inputs
-        Session.Output.(both (scalar_float accuracy) (scalar_float cross_entropy))
+  let print_err n =
+    let test_accuracy =
+      Mnist_helper.batch_accuracy mnist `test ~batch_size:1024 ~predict
     in
-    let taccuracy, tcross_entropy =
-      Session.run
-        ~inputs:train_inputs
-        Session.Output.(both (scalar_float accuracy) (scalar_float cross_entropy))
+    let train_accuracy =
+      Mnist_helper.batch_accuracy mnist `train ~batch_size:1024 ~predict ~samples:5000
     in
-    Stdio.printf "epoch %d, train: %.2f%% (%8f) valid: %.2f%% (%8f)\n%!"
-      n
-      (100. *. taccuracy)
-      tcross_entropy
-      (100. *. vaccuracy)
-      vcross_entropy
+    Stdio.printf "epoch %d, train: %.2f%% valid: %.2f%%\n%!"
+      n (100. *. train_accuracy) (100. *. test_accuracy)
   in
-  let learning_rate_tensor = Tensor.create Bigarray.float32 [||] in
-  Tensor.set learning_rate_tensor [||] 1e-3;
   for batch_idx = 1 to epochs do
-    if batch_idx = 2_000
-    then Tensor.set learning_rate_tensor [||] 5e-4;
     let batch_images, batch_labels =
       Mnist_helper.train_batch mnist ~batch_size ~batch_idx
     in
@@ -136,10 +112,9 @@ let () =
         [ float xs batch_images
         ; float ys batch_labels
         ; bool is_training true_tensor
-        ; float learning_rate learning_rate_tensor
         ]
     in
-    if batch_idx % 25 = 0 then print_err batch_idx ~train_inputs:batch_inputs;
+    if batch_idx % 100 = 0 then print_err batch_idx;
     Session.run
       ~inputs:batch_inputs
       ~targets:gd

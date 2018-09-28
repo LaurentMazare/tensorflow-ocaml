@@ -25,7 +25,22 @@ val train_batch
 val image_dim : int
 val label_count : int
 
+(** [accuracy label1 label2] returns the proportion of labels that are equal between
+    [label1] and [label2].
+*)
 val accuracy
   :  float32_tensor
   -> float32_tensor
+  -> float
+
+(** [batch_accuracy ?samples t ~batch_size ~predict] computes the accuracy of
+    the [predict] function on test images using batches of size at most
+    [batch_size].  The average is computed on [samples] images.
+*)
+val batch_accuracy
+  :  ?samples:int
+  -> t
+  -> [ `train | `test ]
+  -> batch_size:int
+  -> predict:(float32_tensor -> float32_tensor)
   -> float

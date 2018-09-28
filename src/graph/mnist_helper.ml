@@ -120,3 +120,28 @@ let accuracy ys ys' =
     res := Float.(+) !res (if idx = idx' then 1. else 0.)
   done;
   Float.(!res / of_int nsamples)
+
+let batch_accuracy ?samples t train_or_test ~batch_size ~predict =
+  let images, labels =
+    match train_or_test with
+    | `train -> t.train_images, t.train_labels
+    | `test -> t.test_images, t.test_labels
+  in
+  let dataset_samples = (Tensor.dims labels).(0) in
+  let samples =
+    Option.value_map samples ~default:dataset_samples ~f:(Int.min dataset_samples)
+  in
+  let rec loop start_index sum_accuracy =
+    if samples <= start_index
+    then sum_accuracy /. Float.of_int samples
+    else
+      let batch_size = Int.min batch_size (samples - start_index) in
+      let images = Tensor.sub_left images start_index batch_size in
+      let predicted_labels = predict images in
+      let labels = Tensor.sub_left labels start_index batch_size in
+      let batch_accuracy = accuracy predicted_labels labels in
+      loop
+        (start_index + batch_size)
+        (sum_accuracy +. batch_accuracy *. Float.of_int batch_size)
+  in
+  loop 0 0.
