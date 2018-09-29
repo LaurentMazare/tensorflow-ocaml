@@ -1,4 +1,5 @@
 (* TODO: support checkpointing based on time rather than on number of iterations. *)
+(* TODO: add the possibility to only keep a fixed number of checkpoints. *)
 open Base
 
 let latest_index_and_filename ~checkpoint_base =
@@ -7,7 +8,7 @@ let latest_index_and_filename ~checkpoint_base =
   Caml.Sys.readdir dirname
   |> Array.to_list
   |> List.filter_map ~f:(fun filename ->
-      match String.chop_prefix filename ~prefix:basename with
+      match String.chop_prefix filename ~prefix:(basename ^ ".") with
       | None -> None
       | Some suffix ->
         try
@@ -36,7 +37,7 @@ let loop
   let latest_index_and_filename = latest_index_and_filename ~checkpoint_base in
   let load_ops =
     Option.map latest_index_and_filename ~f:(fun (latest_index, filename) ->
-      Stdio.eprintf "Restoring checkpoint for index %d from %s\n%!" latest_index filename;
+      Stdio.eprintf "Restoring checkpoint for index %d from '%s'.\n%!" latest_index filename;
       let filename = Ops.const_string0 filename in
       List.map named_vars ~f:(fun (var_name, Node.P var) ->
         Ops.assign
@@ -53,7 +54,8 @@ let loop
     Session.run ~targets:load_ops Session.Output.empty);
 
   let start_index =
-    Option.value_map latest_index_and_filename ~default:start_index ~f:fst
+    Option.value_map latest_index_and_filename ~default:start_index
+      ~f:(fun (index, _) -> index + 1)
   in
   let save ~suffix =
     Session.run ~targets:[Node.P save_op] Session.Output.empty;
