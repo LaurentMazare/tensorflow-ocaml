@@ -76,6 +76,21 @@ let fill t v = Bigarray.Genarray.fill t.data v
 
 let blit t t' = Bigarray.Genarray.blit t.data t'.data
 
+let fill_uniform ?(lower_bound = 0.) ?(upper_bound = 1.) t =
+  if upper_bound < lower_bound
+  then
+    raise (Invalid_argument
+      (Printf.sprintf "upper_bound (%f) < lower_bound (%f)" upper_bound lower_bound))
+  else
+    let diff = upper_bound -. lower_bound in
+    let elements =
+      Bigarray.Genarray.dims t.data |> Array.fold_left ( * ) 1
+    in
+    let flattened_data = Bigarray.reshape_1 t.data elements in
+    for index = 0 to elements - 1 do
+      flattened_data.{index} <- lower_bound +. Random.float diff
+    done
+
 let print (P tensor) =
   let print (type a) (type b) (tensor : (a, b) t) (elt_to_string : a -> string) =
     match dims tensor with

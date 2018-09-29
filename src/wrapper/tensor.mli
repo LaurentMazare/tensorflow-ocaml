@@ -34,6 +34,12 @@ val sub_left : ('a, 'b) t -> int -> int -> ('a, 'b) t
 val fill : ('a, 'b) t -> 'a -> unit
 val blit : ('a, 'b) t -> ('a, 'b) t -> unit
 
+val fill_uniform
+  :  ?lower_bound:float (* defaults to 0. *)
+  -> ?upper_bound:float (* defaults to 1. *)
+  -> (float, 'a) t
+  -> unit
+
 type 'a eq =
   | Float : (float32_elt * [ `float ]) eq
   | Double : (float64_elt * [ `double ]) eq
