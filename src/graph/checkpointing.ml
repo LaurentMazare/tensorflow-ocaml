@@ -55,13 +55,15 @@ let loop
   let start_index =
     Option.value_map latest_index_and_filename ~default:start_index ~f:fst
   in
+  let save ~suffix =
+    Session.run ~targets:[Node.P save_op] Session.Output.empty;
+    Caml.Sys.rename
+      temp_checkpoint
+      (Printf.sprintf "%s.%s" checkpoint_base suffix)
+  in
   for index = start_index to end_index do
     f ~index;
     if index % checkpoint_every = 0
-    then begin
-      Session.run ~targets:[Node.P save_op] Session.Output.empty;
-      Caml.Sys.rename
-        temp_checkpoint
-        (Printf.sprintf "%s.%d" checkpoint_base index)
-    end
-  done
+    then save ~suffix:(Int.to_string index)
+  done;
+  save ~suffix:"final"
