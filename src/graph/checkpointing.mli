@@ -17,6 +17,6 @@ val loop
   -> end_index:int
   -> save_vars_from:Node.p list
   -> checkpoint_base:string
-  -> ?checkpoint_every:int (* default : 100 *)
+  -> ?checkpoint_every:[ `iters of int | `seconds of float ] (* default : `second 600 *)
   -> (index:int -> unit)
   -> unit

@@ -1,4 +1,3 @@
-(* TODO: support checkpointing based on time rather than on number of iterations. *)
 (* TODO: add the possibility to only keep a fixed number of checkpoints. *)
 open Base
 
@@ -22,7 +21,7 @@ let loop
       ~end_index
       ~save_vars_from
       ~checkpoint_base
-      ?(checkpoint_every = 100)
+      ?(checkpoint_every = `seconds 600.)
       f
   =
   if start_index < 0
@@ -59,13 +58,22 @@ let loop
   in
   let save ~suffix =
     Session.run ~targets:[Node.P save_op] Session.Output.empty;
-    Caml.Sys.rename
+    Unix.rename
       temp_checkpoint
       (Printf.sprintf "%s.%s" checkpoint_base suffix)
   in
+  let last_checkpoint_time = ref (Unix.time ()) in
   for index = start_index to end_index do
     f ~index;
-    if index % checkpoint_every = 0
-    then save ~suffix:(Int.to_string index)
+    let should_checkpoint =
+      match checkpoint_every with
+      | `seconds seconds -> Float.(>) (Unix.time () -. !last_checkpoint_time) seconds
+      | `iters iters -> index % iters = 0
+    in
+    if should_checkpoint
+    then begin
+      save ~suffix:(Int.to_string index);
+      last_checkpoint_time := Unix.time ()
+    end
   done;
   save ~suffix:"final"
