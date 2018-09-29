@@ -10,7 +10,7 @@ let seq_len = 180
 let batch_size = 128
 
 let all_vars_with_names node =
-  Var.get_all_vars node
+  Var.get_all_vars [Node.P node]
   |> List.mapi ~f:(fun i var -> Printf.sprintf "V%d" i, var)
 
 let train filename learning_rate =

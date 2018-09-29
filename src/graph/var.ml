@@ -54,7 +54,7 @@ let uniform shape ~lo ~hi ~type_ =
 let uniformf = uniform ~type_:Float
 let uniformd = uniform ~type_:Double
 
-let get_all_vars ?(more_nodes = []) node =
+let get_all_vars nodes =
   let processed_nodes = Hash_set.create (module Node.Id) in
   (* Using references here make the following code quite consise. *)
   let all_vars = ref [] in
@@ -67,5 +67,5 @@ let get_all_vars ?(more_nodes = []) node =
       else List.iter (Node.flat_inputs node) ~f:vars
     end
   in
-  List.iter (Node.P node :: more_nodes) ~f:vars;
+  List.iter nodes ~f:vars;
   !all_vars

@@ -47,11 +47,10 @@ val uniformd : int list -> lo:float -> hi:float -> [ `double ] Node.t
 val load_f : int list -> filename:string -> tensor:string -> [ `float ] Node.t
 val load_d : int list -> filename:string -> tensor:string -> [ `double ] Node.t
 
-(** [get_all_vars ?more_nodes node] returns all the variables that can be used when
-    evaluating [node] or [more_nodes].
+(** [get_all_vars nodes] returns all the variables that can be used when
+    evaluating a node in [nodes].
     Each variable is only returned once.
 *)
 val get_all_vars
-  :  ?more_nodes:Node.p list
-  -> 'a Node.t
+  :  Node.p list
   -> Node.p list

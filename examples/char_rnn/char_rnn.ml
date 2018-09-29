@@ -75,7 +75,7 @@ let rnn ~size_c ~dim =
   }
 
 let all_vars_with_names t =
-  Var.get_all_vars t.sample_output
+  Var.get_all_vars [Node.P t.sample_output]
   |> List.mapi ~f:(fun i var -> Printf.sprintf "V%d" i, var)
 
 let fit_and_evaluate ~dataset ~learning_rate ~checkpoint =

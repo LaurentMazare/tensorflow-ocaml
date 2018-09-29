@@ -613,7 +613,7 @@ module Model = struct
   | _ -> .
 
   let all_vars_with_names t =
-    Var.get_all_vars t.node
+    Var.get_all_vars [Node.P t.node]
     |> List.filter_map ~f:(fun var ->
       let name =
         let node_id =

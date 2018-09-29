@@ -15,7 +15,7 @@
 val loop
   :  start_index:int
   -> end_index:int
-  -> save_vars_from:'a Node.t
+  -> save_vars_from:Node.p list
   -> checkpoint_base:string
   -> ?checkpoint_every:int (* default : 100 *)
   -> (index:int -> unit)

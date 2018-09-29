@@ -97,17 +97,21 @@ let () =
     Stdio.printf "epoch %d, train: %.2f%% valid: %.2f%%\n%!"
       n (100. *. train_accuracy) (100. *. test_accuracy)
   in
-  for batch_idx = 1 to epochs do
-    let batch_images, batch_labels =
-      Mnist_helper.train_batch mnist ~batch_size ~batch_idx
-    in
-    if batch_idx % 100 = 0 then print_err batch_idx;
-    Session.run
-      ~inputs:Session.Input.
-        [ float xs batch_images
-        ; float ys batch_labels
-        ; bool is_training true_tensor
-        ]
-      ~targets:gd
-      Session.Output.empty;
-  done
+  Checkpointing.loop
+      ~start_index:1
+      ~end_index:epochs
+      ~save_vars_from:gd
+      ~checkpoint_base:"tf-resnet"
+      (fun ~index:batch_idx ->
+        let batch_images, batch_labels =
+          Mnist_helper.train_batch mnist ~batch_size ~batch_idx
+        in
+        if batch_idx % 100 = 0 then print_err batch_idx;
+        Session.run
+          ~inputs:Session.Input.
+            [ float xs batch_images
+            ; float ys batch_labels
+            ; bool is_training true_tensor
+            ]
+          ~targets:gd
+          Session.Output.empty)
