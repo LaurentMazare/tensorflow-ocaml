@@ -100,6 +100,9 @@ let train_batch { train_images; train_labels; _ } ~batch_size ~batch_idx =
   let batch_labels = Tensor.sub_left train_labels start_batch batch_size in
   batch_images, batch_labels
 
+(** [accuracy label1 label2] returns the proportion of labels that are equal between
+    [label1] and [label2].
+*)
 let accuracy ys ys' =
   let ys = Bigarray.array2_of_genarray (Tensor.to_bigarray ys) in
   let ys' = Bigarray.array2_of_genarray (Tensor.to_bigarray ys') in

@@ -13,9 +13,7 @@ let conv2d =
 let max_pool = Fnn.max_pool ~filter:(2, 2) ~strides:(2, 2) ~padding:`same
 
 let () =
-  let { Mnist_helper.train_images; train_labels; test_images; test_labels } =
-    Mnist_helper.read_files ()
-  in
+  let mnist = Mnist_helper.read_files () in
   let input, input_id = Fnn.input ~shape:(D1 image_dim) in
   let model =
     Fnn.reshape input ~shape:(D3 (28, 28, 1))
@@ -36,7 +34,10 @@ let () =
     ~epochs
     ~batch_size
     ~input_id
-    ~xs:train_images
-    ~ys:train_labels;
-  let test_results = Fnn.Model.predict model [ input_id, test_images ] in
-  Stdio.printf "Accuracy: %.2f%%\n%!" (100. *. Mnist_helper.accuracy test_results test_labels)
+    ~xs:mnist.train_images
+    ~ys:mnist.train_labels;
+  let test_accuracy =
+    Mnist_helper.batch_accuracy mnist `test ~batch_size:1024 ~predict:(fun images ->
+      Fnn.Model.predict model [ input_id, images ])
+  in
+  Stdio.printf "Accuracy: %.2f%%\n%!" (100. *. test_accuracy)

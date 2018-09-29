@@ -1,6 +1,8 @@
 open Tensorflow_core
 type float32_tensor = (float, Bigarray.float32_elt) Tensor.t
 
+(* Images have shape [ samples; 728 ]. Labels are one-hot encoded with
+   shape [ samples; 10 ]. *)
 type t =
   { train_images : float32_tensor
   ; train_labels : float32_tensor
@@ -24,14 +26,6 @@ val train_batch
 
 val image_dim : int
 val label_count : int
-
-(** [accuracy label1 label2] returns the proportion of labels that are equal between
-    [label1] and [label2].
-*)
-val accuracy
-  :  float32_tensor
-  -> float32_tensor
-  -> float
 
 (** [batch_accuracy ?samples t ~batch_size ~predict] computes the accuracy of
     the [predict] function on test images using batches of size at most
