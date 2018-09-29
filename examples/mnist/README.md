@@ -72,4 +72,4 @@ The code can be found in `mnist_conv.ml`, accuracy should reach ~99%.
 ## ResNet
 
 A [Residual Neural Network](https://arxiv.org/abs/1512.03385) is trained
-on the MNIST dataset in `mnist_resnet.ml`. Final accuracy should be above ~99%.
+on the MNIST dataset in `mnist_resnet.ml`. Final accuracy should be ~99.3%.
