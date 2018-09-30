@@ -5,7 +5,8 @@ can be found in the [ocaml-tensorflow-eager repo](https://github.com/LaurentMaza
 
 ## Installation
 
-Use [opam](https://opam.ocaml.org/) to install the __tensorflow-ocaml__ package.
+Use [opam](https://opam.ocaml.org/) to install the __tensorflow-ocaml__ package. This version currently
+lags significantly behind the GitHub tip.
 
 ```bash
 opam install tensorflow
@@ -60,32 +61,6 @@ ocamlbuild forty_two.native -use-ocamlfind -pkg tensorflow -tag thread
 ```
 
 Then run it via `./forty_two.native`. You should now be all set up, enjoy!
-
-### Frequent Problems
-
-- When compiling the example with ocamlbuild, I get the following error:
-
-    ```bash
-    /usr/bin/ld: cannot find -ltensorflow
-    ```
-
-    You should adjust your `LIBRARY_PATH` environment variable to include the directory in which you have added `libtensorflow.so`. E.g. run:
-
-    ```bash
-    LIBRARY_PATH=/path/to/lib:$LIBRARY_PATH ocamlbuild forty_two.native -use-ocamlfind -pkg tensorflow -tag thread
-    ```
-- When running `forty_two.native`, I get the following error:
-    ```bash
-    ./forty_two.native: error while loading shared libraries: libtensorflow.so: cannot open shared object file: No such file or directory
-    ```
-
-    You should adjust your `LD_LIBRARY_PATH` environment variable in the same way `LIBRARY_PATH` was adjusted in the previous case. E.g. run:
-
-    ```bash
-    LD_LIBRARY_PATH=/path/to/lib:$LD_LIBRARY_PATH ./forty_two.native
-    ```
-
-    Note that on OS X, you should adjust your `DYLD_LIBRARY_PATH` environment variable.
 
 ## Examples
 
@@ -181,6 +156,32 @@ The examples directory contains various models among which:
   applies the style of an image to the content of another image. This uses some deep Convolutional Neural Network.
 * Some variants of [Generative Adverserial Networks](https://github.com/LaurentMazare/tensorflow-ocaml/blob/master/examples/gan).
   These are used to generate MNIST like images.
+
+## Frequent Problems
+
+- When compiling the example with ocamlbuild, I get the following error:
+
+    ```bash
+    /usr/bin/ld: cannot find -ltensorflow
+    ```
+
+    You should adjust your `LIBRARY_PATH` environment variable to include the directory in which you have added `libtensorflow.so`. E.g. run:
+
+    ```bash
+    LIBRARY_PATH=/path/to/lib:$LIBRARY_PATH ocamlbuild forty_two.native -use-ocamlfind -pkg tensorflow -tag thread
+    ```
+- When running `forty_two.native`, I get the following error:
+    ```bash
+    ./forty_two.native: error while loading shared libraries: libtensorflow.so: cannot open shared object file: No such file or directory
+    ```
+
+    You should adjust your `LD_LIBRARY_PATH` environment variable in the same way `LIBRARY_PATH` was adjusted in the previous case. E.g. run:
+
+    ```bash
+    LD_LIBRARY_PATH=/path/to/lib:$LD_LIBRARY_PATH ./forty_two.native
+    ```
+
+    Note that on OS X, you should adjust your `DYLD_LIBRARY_PATH` environment variable.
 
 ## Dependencies
 
