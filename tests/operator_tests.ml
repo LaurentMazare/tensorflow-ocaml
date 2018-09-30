@@ -95,9 +95,11 @@ let test_vector () =
 let test_batch_norm () =
   let batch = Ops.placeholder ~type_:Double [ 3; 4 ] in
   let is_training = Ops.placeholder ~type_:Bool [ 1 ] in
-  let ops, `update_ops update_ops =
+  let update_ops_store = Layer.Update_ops_store.create () in
+  let ops =
     Layer.batch_norm (Ops.Placeholder.to_node batch)
       ~is_training:(Ops.Placeholder.to_node is_training)
+      ~update_ops_store
       ~decay:0.5
   in
   let ops = Ops.reduce_sum ops ~dims:[ 0 ] in
@@ -127,7 +129,7 @@ let test_batch_norm () =
     in
     assert_vector tensor ~expected_value:blessed_values ~tol:1e-6;
     if training
-    then Session.run ~targets:(List.map update_ops ~f:(fun op -> Node.P op))
+    then Session.run ~targets:(Layer.Update_ops_store.ops update_ops_store)
       ~inputs:
         [ Session.Input.double batch batch_tensor
         ; Session.Input.bool is_training is_training_tensor
