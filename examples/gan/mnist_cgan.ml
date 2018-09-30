@@ -11,7 +11,7 @@ let latent_dim = 100
 let generator_hidden_nodes = 128
 let discriminator_hidden_nodes = 128
 
-let batch_size = 128
+let batch_size = 500
 let learning_rate = 1e-5
 let batches = 10**8
 
@@ -72,10 +72,19 @@ let () =
   let generator_opt =
     Optimizers.adam_minimizer ~learning_rate generator_loss ~varsf:gen_variables
   in
+
   let batch_rand = Tensor.create2 Float32 batch_size latent_dim in
+  let batch_rand_labels = Tensor.create2 Float32 batch_size label_count in
+  Tensor.fill batch_rand_labels 0.;
+  for i = 0 to batch_size - 1 do
+    Tensor.set batch_rand_labels [| i; i % 10 |] 1.;
+  done;
+
   let samples_rand = Tensor.create2 Float32 batch_size latent_dim in
   (* Always reuse the same random latent space for validation samples. *)
   Tensor.fill_uniform samples_rand ~lower_bound:(-1.) ~upper_bound:1.;
+  let samples_labels = batch_rand_labels in
+
   Checkpointing.loop
     ~start_index:1 ~end_index:batches
     ~save_vars_from:discriminator_opt
@@ -89,6 +98,7 @@ let () =
             [ float real_data_ph batch_images
             ; float real_labels_ph batch_labels
             ; float rand_data_ph batch_rand
+            ; float rand_labels_ph batch_rand_labels
             ]
           ~targets:discriminator_opt
           (Session.Output.scalar_float discriminator_loss)
@@ -96,7 +106,10 @@ let () =
       let generator_loss =
         Tensor.fill_uniform batch_rand ~lower_bound:(-1.) ~upper_bound:1.;
         Session.run
-          ~inputs:Session.Input.[ float rand_data_ph batch_rand ]
+          ~inputs:Session.Input.
+            [ float rand_data_ph batch_rand
+            ; float rand_labels_ph batch_rand_labels
+            ]
           ~targets:generator_opt
           (Session.Output.scalar_float generator_loss)
       in
@@ -108,7 +121,10 @@ let () =
       then begin
         let samples =
           Session.run (Session.Output.float generated)
-            ~inputs:Session.Input.[ float rand_data_ph samples_rand ]
+            ~inputs:Session.Input.
+            [ float rand_data_ph samples_rand
+            ; float rand_labels_ph samples_labels
+            ]
         in
         Stdio.Out_channel.with_file (Printf.sprintf "out%d.txt" batch_idx) ~f:(fun channel ->
           for sample_index = 0 to 15 do
