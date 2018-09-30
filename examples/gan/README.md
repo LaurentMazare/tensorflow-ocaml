@@ -1,19 +1,18 @@
 [Generative Adverserial Networks](https://en.wikipedia.org/wiki/Generative_adversarial_network)
-were introduced in 2014 by Goodfellow et al<sup>[1](#bib1)</sup>. 
-
-GANs are generative models: after training a GAN on a dataset it should be
-able to produce content very similar to what the original dataset holds.
+(GAN) were introduced in 2014 by Goodfellow et al<sup>[1](#bib1)</sup>. 
+These networks are generative models: after training a GAN on a dataset the goal
+is to produce content very similar to what the original dataset holds.
 A GAN is composed of two nets, a *Generator* and a *Discriminator*, that compete
 against each other in a zero-sum game.
 
-Consider a dataset of images.
+When considering an image dataset:
 
 * The goal of the Generator is to produce an image that is difficult to
   distinguish from real dataset images. The Generator has access to vector of
   random noise called *latent space*. The Generator's output is called
   a *fake* image.
 * The Discriminator takes as input an image, either fake or real, and has to
-  output the probability that the image is real.
+  output the probability with which it thinks the image is real.
 
 During training the Discriminator gets better at recognizing fake images from
 real which makes the task of the Generator more difficult so the Generator gets
@@ -22,7 +21,7 @@ Discriminator more difficult and so on.
 
 # GANs applied to the MNIST dataset
 
-In this [example](https://github.com/LaurentMazare/tensorflow-ocaml/tree/master/examples/gan/mnist_gan.ml)
+In [mnist_gan.ml](https://github.com/LaurentMazare/tensorflow-ocaml/tree/master/examples/gan/mnist_gan.ml)
 we use some simple GAN architecture to generate images similar to the MNIST dataset of hand written
 digits.
 
@@ -84,7 +83,7 @@ let generator_opt =
 in
 ```
 
-The training loop then runs these two optimizers in consecutively.
+The training loop then runs these two optimizers consecutively.
 When optimizing the Discriminator both real and fake images are used. When
 optimizing the Generator only fake images are used.
 Each time some new random values are generated for the latent space.
@@ -122,13 +121,13 @@ The Conditional GAN (cGAN) architecture is a simple variant of the original
 GAN, cGANs were presented by Mirza and Osindero in 2014<sup>[2](#bib2)</sup>.
 In this setting both the Generator and Discriminator take as additional input
 some annotations for which ground truth is available in the original dataset.
-In the MNIST case the digit class encoded as a one-hot vector is used. For real
-images the actual label is used, for fake images both the Discriminator and the
-Generator receive the same label. The Generator now has to learn to produce
-realistic outputs conditional on the labels.
+In the MNIST case this annotation is the digit class encoded as a one-hot
+vector. For real images the actual label is used, for fake images both the
+Discriminator and the Generator receive the same label. The Generator now has
+to learn to produce realistic outputs conditional on a given label.
 
-The same architecture is used as in the previous example.  This
-[example](https://github.com/LaurentMazare/tensorflow-ocaml/tree/master/examples/gan/mnist_cgan.ml)
+The same architecture is used as in the previous example.
+[mnist_cgan.ml](https://github.com/LaurentMazare/tensorflow-ocaml/tree/master/examples/gan/mnist_cgan.ml)
 uses cGANs to generate MNIST digits.
 
 The gif below illustrates the progress made by the Generator in the training
