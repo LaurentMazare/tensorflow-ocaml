@@ -84,7 +84,7 @@ let generator_opt =
 in
 ```
 
-The training loops then runs these two optimizers in consecutively.
+The training loop then runs these two optimizers in consecutively.
 When optimizing the Discriminator both real and fake images are used. When
 optimizing the Generator only fake images are used.
 Each time some new random values are generated for the latent space.
@@ -111,17 +111,17 @@ for batch_idx = 1 to batches do
 ```
 
 We generate some output samples using the Generator at various points during training.
-Note that we use the same random values for these sampled values at these different
-points as it makes it easier to see progresses.
+Note that we use the same random values for these sampled values during training
+as it makes it easier to see progresses.
 
 ![GAN samples](output_mnist_gan.gif)
 
 # Conditional GANs
 
-Conditional GANs (cGANs) are a simple variant of the original GANs that were presented by
-Mirza and Osindero in 2014<sup>[2](#bib2)</sup>.
-In cGANs both the Generator and Discriminator take as additional input some annotations
-for which ground truth is available in the original dataset.
+The Conditional GAN (cGAN) architecture is a simple variant of the original
+GAN, cGANs were presented by Mirza and Osindero in 2014<sup>[2](#bib2)</sup>.
+In this setting both the Generator and Discriminator take as additional input
+some annotations for which ground truth is available in the original dataset.
 In the MNIST case the digit class encoded as a one-hot vector is used. For real
 images the actual label is used, for fake images both the Discriminator and the
 Generator receive the same label. The Generator now has to learn to produce
