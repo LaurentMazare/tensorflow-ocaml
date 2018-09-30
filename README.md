@@ -168,16 +168,19 @@ let vgg19 () =
 ```
 This model is used in the [following example](https://github.com/LaurentMazare/tensorflow-ocaml/blob/master/examples/neural-style/vgg19.ml) to classify an input image. In order to use it you will have to download the [pre-trained weights](https://github.com/LaurentMazare/tensorflow-ocaml/releases/download/0.0.7/vgg19.cpkt).
 
-
 There are also some MNIST based [examples](https://github.com/LaurentMazare/tensorflow-ocaml/tree/master/examples/fnn).
 
-### Character level RNN
+### Other Examples
 
-A simplified version of [char-rnn](https://github.com/karpathy/char-rnn) can also be found in the [examples directory](https://github.com/LaurentMazare/tensorflow-ocaml/blob/master/examples/char_rnn) which contains additional details.
+The examples directory contains various models among which:
 
-### Neural Style Transfer
-
-A stand-alone example of Neural Style transfer can be found in the [examples directory](https://github.com/LaurentMazare/tensorflow-ocaml/blob/master/examples/neural-style).
+* A simplified version of
+  [char-rnn](https://github.com/LaurentMazare/tensorflow-ocaml/blob/master/examples/char_rnn)
+  illustrating character level language modeling using Recurrent Neural Networks.
+* [Neural Style Transfer](https://github.com/LaurentMazare/tensorflow-ocaml/blob/master/examples/neural-style)
+  applies the style of an image to the content of another image. This uses some deep Convolutional Neural Network.
+* Some variants of [Generative Adverserial Networks](https://github.com/LaurentMazare/tensorflow-ocaml/blob/master/examples/gan).
+  These are used to generate MNIST like images.
 
 ## Dependencies
 

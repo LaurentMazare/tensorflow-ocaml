@@ -44,7 +44,7 @@ let create_discriminator xs1 xs2 =
 
 let write_samples samples ~filename =
   Stdio.Out_channel.with_file filename ~f:(fun channel ->
-    for sample_index = 0 to 15 do
+    for sample_index = 0 to 99 do
       List.init image_dim ~f:(fun pixel_index ->
         Tensorflow_core.Tensor.get samples [|sample_index; pixel_index|]
         |> Printf.sprintf "%.2f")
@@ -111,7 +111,7 @@ let () =
     then
       Stdio.printf "batch %4d    d-loss: %12.6f    g-loss: %12.6f\n%!"
         batch_idx discriminator_loss generator_loss;
-    if batch_idx % 5000 = 0
+    if batch_idx % 100000 = 0 || (batch_idx < 100000 && batch_idx % 25000 = 0)
     then begin
       Session.run (Session.Output.float generated)
         ~inputs:Session.Input.[ float rand_data_ph samples_rand ]
