@@ -201,3 +201,8 @@ val binary_cross_entropy
   -> model_values:'a Node.t (** Predicted y values. *)
   -> [ `sum | `mean ]
   -> 'a Node.t
+
+val leaky_relu
+  :  ([< `double | `float ] as 'a) Node.t
+  -> alpha:float
+  -> 'a Node.t

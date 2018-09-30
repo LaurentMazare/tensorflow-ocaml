@@ -108,9 +108,7 @@ module Linear = struct
     | Some Softmax -> Ops.softmax ys
     | Some Tanh -> Ops.tanh ys
     | Some Sigmoid -> Ops.sigmoid ys
-    | Some (Leaky_relu alpha) ->
-      let type_ = Node.output_type xs in
-      Ops.(maximum ys (f_or_d ~type_ alpha * ys))
+    | Some (Leaky_relu alpha) -> Ops.leaky_relu ys ~alpha
     | None -> ys
 end
 

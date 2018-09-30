@@ -285,3 +285,7 @@ let binary_cross_entropy ?(epsilon = 1e-7) ~labels ~model_values sum_or_mean =
   Ops_generated.(neg (labels * log (model_values + f_or_d ~type_ epsilon)
     + (f_or_d ~type_ 1. - labels) * log (f_or_d ~type_ (1. +. epsilon) - model_values)))
   |> reduce
+
+let leaky_relu xs ~alpha =
+  let type_ = Node.output_type xs in
+  Ops_generated.maximum xs (f_or_d ~type_ alpha * xs)
