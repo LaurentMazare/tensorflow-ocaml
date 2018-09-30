@@ -62,6 +62,7 @@ let () =
   in
   let batch_rand = Tensor.create2 Float32 batch_size latent_dim in
   let samples_rand = Tensor.create2 Float32 batch_size latent_dim in
+  (* Always reuse the same random latent space for validation samples. *)
   Tensor.fill_uniform samples_rand ~lower_bound:(-1.) ~upper_bound:1.;
   for batch_idx = 1 to batches do
     let batch_images, _ = Mnist_helper.train_batch mnist ~batch_size ~batch_idx in

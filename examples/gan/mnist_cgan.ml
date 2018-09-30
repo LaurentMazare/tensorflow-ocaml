@@ -5,6 +5,7 @@ open Tensorflow_core
 module O = Ops
 
 let image_dim = Mnist_helper.image_dim
+let label_count = Mnist_helper.label_count
 let latent_dim = 100
 
 let generator_hidden_nodes = 128
@@ -43,10 +44,21 @@ let binary_cross_entropy ~label ~model_values =
 let () =
   let mnist = Mnist_helper.read_files () in
   let rand_data_ph = O.placeholder [batch_size; latent_dim] ~type_:Float in
+  let rand_labels_ph = O.placeholder [batch_size; label_count] ~type_:Float in
   let real_data_ph = O.placeholder [batch_size; image_dim] ~type_:Float in
-  let generated, gen_variables = create_generator (O.Placeholder.to_node rand_data_ph) in
+  let real_labels_ph = O.placeholder [batch_size; label_count] ~type_:Float in
+  let generated, gen_variables =
+    create_generator
+      O.(concat one32 Placeholder.[to_node rand_data_ph; to_node rand_labels_ph])
+  in
   let real_doutput, fake_doutput, discriminator_variables =
-    create_discriminator O.(Placeholder.to_node real_data_ph * f 2. - f 1.) generated
+    create_discriminator
+      O.(concat
+        one32
+        [ (Placeholder.to_node real_data_ph * f 2. - f 1.)
+        ; (Placeholder.to_node real_labels_ph)
+        ])
+      O.(concat one32 [ generated; Placeholder.to_node rand_labels_ph ])
   in
   let real_loss = binary_cross_entropy ~label:0.9 ~model_values:real_doutput in
   let fake_loss = binary_cross_entropy ~label:0. ~model_values:fake_doutput in
@@ -62,18 +74,22 @@ let () =
   in
   let batch_rand = Tensor.create2 Float32 batch_size latent_dim in
   let samples_rand = Tensor.create2 Float32 batch_size latent_dim in
+  (* Always reuse the same random latent space for validation samples. *)
   Tensor.fill_uniform samples_rand ~lower_bound:(-1.) ~upper_bound:1.;
   Checkpointing.loop
     ~start_index:1 ~end_index:batches
     ~save_vars_from:discriminator_opt
     ~checkpoint_base:"./tf-mnist-cgan.ckpt"
     (fun ~index:batch_idx ->
-      let batch_images, _ = Mnist_helper.train_batch mnist ~batch_size ~batch_idx in
+      let batch_images, batch_labels = Mnist_helper.train_batch mnist ~batch_size ~batch_idx in
       let discriminator_loss =
         Tensor.fill_uniform batch_rand ~lower_bound:(-1.) ~upper_bound:1.;
         Session.run
-          ~inputs:Session.Input.[
-            float real_data_ph batch_images; float rand_data_ph batch_rand ]
+          ~inputs:Session.Input.
+            [ float real_data_ph batch_images
+            ; float real_labels_ph batch_labels
+            ; float rand_data_ph batch_rand
+            ]
           ~targets:discriminator_opt
           (Session.Output.scalar_float discriminator_loss)
       in
