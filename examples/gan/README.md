@@ -3,7 +3,7 @@ were introduced in 2014 by Goodfellow et al<sup>[1](#bib1)</sup>.
 
 GANs are generative models: after training a GAN on a dataset it should be
 able to produce content very similar to what the original dataset holds.
-They are made of two nets, a *Generator* and a *Discriminator*, that compete
+A GAN is composed of two nets, a *Generator* and a *Discriminator*, that compete
 against each other in a zero-sum game.
 
 Consider a dataset of images.
@@ -17,7 +17,8 @@ Consider a dataset of images.
 
 During training the Discriminator gets better at recognizing fake images from
 real which makes the task of the Generator more difficult so the Generator gets
-better at producing realistic images.
+better at producing realistic images. This in turns makes the task of the
+Discriminator more difficult and so on.
 
 # GANs applied to the MNIST dataset
 
