@@ -83,7 +83,7 @@ module Linear = struct
     ; b = None
     }
 
-  let apply ?activation t xs =
+  let apply ?activation ?(use_bias=true) t xs =
     let last_xs_dim = Node.shape xs |> List.last_exn in
     let type_ = Node.output_type xs in
     let w =
@@ -102,7 +102,7 @@ module Linear = struct
         t.b <- Some b;
         b
     in
-    let ys = Ops.(xs *^ w + b) in
+    let ys = if use_bias then Ops.(xs *^ w + b) else Ops.(xs *^ w) in
     match activation with
     | Some Relu -> Ops.relu ys
     | Some Softmax -> Ops.softmax ys
@@ -114,9 +114,9 @@ module Linear = struct
     | None -> ys
 end
 
-let linear ?activation xs ~output_dim =
+let linear ?activation ?use_bias xs ~output_dim =
   let linear = Linear.create output_dim in
-  Linear.apply ?activation linear xs
+  Linear.apply ?activation ?use_bias linear xs
 
 type padding =
   | Same
@@ -154,7 +154,7 @@ module Conv2D = struct
     ; padding
     }
 
-  let apply t xs =
+  let apply ?(use_bias=true) t xs =
     let last_xs_dim = Node.shape xs |> List.last_exn in
     let k1, k2 = t.ksize in
     let s1, s2 = t.strides in
@@ -176,36 +176,81 @@ module Conv2D = struct
         b
     in
     let conv2d = Ops.conv2D xs w ~strides:[ 1; s1; s2; 1 ] ~padding:(padding_string t.padding) in
-    Ops.add conv2d b
+    if use_bias then Ops.add conv2d b else conv2d
 end
 
-let conv2d ?(padding = Same) xs ~ksize ~strides ~output_dim =
+let conv2d ?(padding = Same) ?use_bias xs ~ksize ~strides ~output_dim =
   let conv2d = Conv2D.create ~padding ~ksize ~strides output_dim in
-  Conv2D.apply conv2d xs
+  Conv2D.apply ?use_bias conv2d xs
 
-let conv2d_transpose ?(padding = Same) xs ~ksize ~strides ~output_filters =
-  let batch_dim, input_w, input_h, last_xs_dim =
-    match Node.shape xs with
-    | [ a; b; c; d ] -> a, b, c, d
-    | _ -> failwith "unexpected shape for conv2d_transpose input"
-  in
-  let output_length input_l ~ksize ~stride =
-    match padding with
-    | Valid -> input_l * stride + max 0 (ksize - stride)
-    | Same -> input_l * stride - stride - ksize + 2
-  in
-  let output_w = output_length input_w ~ksize:(fst ksize) ~stride:(fst strides) in
-  let output_h = output_length input_h ~ksize:(snd ksize) ~stride:(snd strides) in
-  let type_ = Node.output_type xs in
-  let w = Var.normal ~type_ [ fst ksize; snd ksize; output_filters; last_xs_dim ] ~stddev:0.1 in
-  let b = Var.f_or_d ~type_ [ output_filters ] 0. in
-  Ops.conv2DBackpropInput
-    ~strides:[1; fst strides; snd strides; 1 ]
-    ~padding:(padding_string padding)
-    (Ops.ci32 ~shape:[ 4 ] [ batch_dim; output_w; output_h; output_filters ])
-    w
-    xs
-  |> Ops.add b
+module Conv2DTranspose = struct
+  type 'a t =
+    { output_dim : int
+    ; mutable w : 'a Node.t option
+    ; mutable b : 'a Node.t option
+    ; ksize : int * int
+    ; strides : int * int
+    ; padding : padding
+    }
+
+  let vars { w; b; _ } =
+    [ Option.value_exn w; Option.value_exn b ]
+
+  let create ~ksize ~strides ~padding output_dim =
+    { output_dim
+    ; w = None
+    ; b = None
+    ; ksize
+    ; strides
+    ; padding
+    }
+
+  let apply ?(use_bias=true) t xs =
+    let batch_dim, input_w, input_h, last_xs_dim =
+      match Node.shape xs with
+      | [ a; b; c; d ] -> a, b, c, d
+      | _ -> failwith "unexpected shape for conv2d_transpose input"
+    in
+    let output_length input_l ~ksize ~stride =
+      match t.padding with
+      | Valid -> input_l * stride + max 0 (ksize - stride)
+      | Same -> input_l * stride - stride - ksize + 2
+    in
+    let k1, k2 = t.ksize in
+    let s1, s2 = t.strides in
+    let output_w = output_length input_w ~ksize:k1 ~stride:s1 in
+    let output_h = output_length input_h ~ksize:k2 ~stride:s2 in
+    let type_ = Node.output_type xs in
+    let w =
+      match t.w with
+      | Some w -> w
+      | None ->
+        let w = Var.normal [ k1; k2; t.output_dim; last_xs_dim ] ~type_ ~stddev:0.1 in
+        t.w <- Some w;
+        w
+    in
+    let b =
+      match t.b with
+      | Some b -> b
+      | None ->
+        let b = Var.f_or_d ~type_ [ t.output_dim ] 0. in
+        t.b <- Some b;
+        b
+    in
+    let conv2d_t =
+      Ops.conv2DBackpropInput
+        ~strides:[1; s1; s2; 1 ]
+        ~padding:(padding_string t.padding)
+        (Ops.ci32 ~shape:[ 4 ] [ batch_dim; output_w; output_h; t.output_dim ])
+        w
+        xs
+    in
+    if use_bias then Ops.add conv2d_t b else conv2d_t
+end
+
+let conv2d_transpose ?(padding = Same) ?use_bias xs ~ksize ~strides ~output_filters =
+  let conv2d_t = Conv2DTranspose.create ~padding ~ksize ~strides output_filters in
+  Conv2DTranspose.apply ?use_bias conv2d_t xs
 
 let shape_to_string shape =
   List.map shape ~f:Int.to_string

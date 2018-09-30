@@ -53,7 +53,8 @@ module Linear : sig
   val create : int -> 'a t
 
   val apply
-    :  ?activation:activation
+    :  ?activation:activation (* default: no activation *)
+    -> ?use_bias:bool (* default: true *)
     -> ([< `double | `float ] as 'a) t
     -> 'a Node.t
     -> 'a Node.t
@@ -62,7 +63,8 @@ module Linear : sig
 end
 
 val linear
-  :  ?activation:activation
+  :  ?activation:activation (* default: no activation *)
+  -> ?use_bias:bool (* default: true *)
   -> ([< `double | `float ] as 'a) Node.t
   -> output_dim:int
   -> 'a Node.t
@@ -89,7 +91,8 @@ module Conv2D : sig
     -> 'a t
 
   val apply
-    :  ([< `double | `float ] as 'a) t
+    :  ?use_bias:bool (* default: true *)
+    -> ([< `double | `float ] as 'a) t
     -> 'a Node.t
     -> 'a Node.t
 
@@ -98,14 +101,35 @@ end
 
 val conv2d
   :  ?padding:padding (* default: Same *)
+  -> ?use_bias:bool (* default: true *)
   -> ([< `double | `float ] as 'a) Node.t
   -> ksize:(int * int)
   -> strides:(int * int)
   -> output_dim:int
   -> 'a Node.t
 
+module Conv2DTranspose : sig
+  type 'a t
+
+  val create
+    :  ksize:int * int
+    -> strides:int * int
+    -> padding:padding
+    -> int (* output dimension *)
+    -> 'a t
+
+  val apply
+    :  ?use_bias:bool (* default: true *)
+    -> ([< `double | `float ] as 'a) t
+    -> 'a Node.t
+    -> 'a Node.t
+
+  val vars : 'a t -> 'a Node.t list
+end
+
 val conv2d_transpose
   :  ?padding:padding (* default: Same *)
+  -> ?use_bias:bool (* default: true *)
   -> ([< `double | `float ] as 'a) Node.t
   -> ksize:(int * int)
   -> strides:(int * int)
