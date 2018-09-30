@@ -31,7 +31,7 @@ let loop
     |> List.map ~f:(fun var ->
       "V" ^ (Node.packed_id var |> Node.Id.to_string), var)
   in
-  let temp_checkpoint = Caml.Filename.temp_file "tf-ocaml" "ckpt" in
+  let temp_checkpoint = checkpoint_base ^ ".tmp" in
   let save_op = Ops.save ~filename:temp_checkpoint named_vars in
   let latest_index_and_filename = latest_index_and_filename ~checkpoint_base in
   let load_ops =

@@ -34,12 +34,6 @@ let create_discriminator xs1 xs2 =
   let ys2 = model xs2 in
   ys1, ys2, (Layer.Linear.vars linear1 @ Layer.Linear.vars linear2)
 
-let binary_cross_entropy ~label ~model_values =
-  let epsilon = 1e-6 in
-  O.(neg (f label * log (model_values + f epsilon)
-    + f (1. -. label) * log (f (1. +. epsilon) - model_values)))
-  |> O.reduce_mean
-
 let () =
   let mnist = Mnist_helper.read_files () in
   let rand_data_ph = O.placeholder [batch_size; latent_dim] ~type_:Float in
@@ -48,10 +42,10 @@ let () =
   let real_doutput, fake_doutput, discriminator_variables =
     create_discriminator O.(Placeholder.to_node real_data_ph * f 2. - f 1.) generated
   in
-  let real_loss = binary_cross_entropy ~label:0.9 ~model_values:real_doutput in
-  let fake_loss = binary_cross_entropy ~label:0. ~model_values:fake_doutput in
+  let real_loss = O.binary_cross_entropy ~labels:(O.f 0.9) ~model_values:real_doutput `mean in
+  let fake_loss = O.binary_cross_entropy ~labels:(O.f 0.) ~model_values:fake_doutput `mean in
   let discriminator_loss = O.(real_loss + fake_loss) in
-  let generator_loss = binary_cross_entropy ~label:1. ~model_values:fake_doutput in
+  let generator_loss = O.binary_cross_entropy ~labels:(O.f 1.) ~model_values:fake_doutput `mean in
   let learning_rate = O.f learning_rate in
   let discriminator_opt =
     Optimizers.adam_minimizer ~learning_rate discriminator_loss

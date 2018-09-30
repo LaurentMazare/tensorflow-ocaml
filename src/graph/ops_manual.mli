@@ -188,10 +188,16 @@ val shape32
 
 (* TODO: add a logit version similar to tf.nn.sigmoid_cross_entropy_with_logits. *)
 (* TODO: use 'labels' rather than ys. *)
-(* TODO: add a separate binary/sigmoid cross-entropy version, this version is multi/softmax. *)
 val cross_entropy
   :  ?epsilon:float
   -> ys:([< `double | `float ] as 'a) Node.t (** Actual y values. *)
   -> y_hats:'a Node.t (** Predicted y values. *)
+  -> [ `sum | `mean ]
+  -> 'a Node.t
+
+val binary_cross_entropy
+  :  ?epsilon:float
+  -> labels:([< `double | `float ] as 'a) Node.t (** Actual y values. *)
+  -> model_values:'a Node.t (** Predicted y values. *)
   -> [ `sum | `mean ]
   -> 'a Node.t

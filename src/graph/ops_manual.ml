@@ -6,6 +6,11 @@ module Placeholder = struct
   let to_node = Fn.id
 end
 
+let string_of_shape shape =
+  List.map shape ~f:Int.to_string
+  |> String.concat ~sep:", "
+  |> Printf.sprintf "[%s]"
+
 let get_shape ?shape values =
   match shape with
   | Some shape ->
@@ -250,6 +255,12 @@ let cond t ~if_true ~if_false =
 let shape32 = Ops_generated.shape ~type_:Int32
 
 let cross_entropy ?(epsilon = 1e-7) ~ys ~y_hats sum_or_mean =
+  let model_shape = Node.shape y_hats in
+  if List.last_exn model_shape <= 1
+  then
+    raise (Invalid_argument (
+      Printf.sprintf "the last dimension should greater than 1 %s"
+        (string_of_shape model_shape)));
   let type_ = Node.output_type ys in
   let reduce =
     match sum_or_mean with
@@ -257,3 +268,20 @@ let cross_entropy ?(epsilon = 1e-7) ~ys ~y_hats sum_or_mean =
     | `mean -> reduce_mean
   in
   Ops_generated.(neg (ys * log (y_hats + f_or_d ~type_ epsilon)) |> reduce)
+
+let binary_cross_entropy ?(epsilon = 1e-7) ~labels ~model_values sum_or_mean =
+  let type_ = Node.output_type model_values in
+  let model_shape = Node.shape model_values in
+  if List.last_exn model_shape <> 1
+  then
+    raise (Invalid_argument (
+      Printf.sprintf "the last dimension should be 1 %s"
+        (string_of_shape model_shape)));
+  let reduce =
+    match sum_or_mean with
+    | `sum -> reduce_sum
+    | `mean -> reduce_mean
+  in
+  Ops_generated.(neg (labels * log (model_values + f_or_d ~type_ epsilon)
+    + (f_or_d ~type_ 1. - labels) * log (f_or_d ~type_ (1. +. epsilon) - model_values)))
+  |> reduce

@@ -35,12 +35,6 @@ let create_discriminator xs1 xs2 =
   let ys2 = model xs2 in
   ys1, ys2, (Layer.Linear.vars linear1 @ Layer.Linear.vars linear2)
 
-let binary_cross_entropy ~label ~model_values =
-  let epsilon = 1e-6 in
-  O.(neg (f label * log (model_values + f epsilon)
-    + f (1. -. label) * log (f (1. +. epsilon) - model_values)))
-  |> O.reduce_mean
-
 let () =
   let mnist = Mnist_helper.read_files () in
   let rand_data_ph = O.placeholder [batch_size; latent_dim] ~type_:Float in
@@ -60,10 +54,10 @@ let () =
         ])
       O.(concat one32 [ generated; Placeholder.to_node rand_labels_ph ])
   in
-  let real_loss = binary_cross_entropy ~label:0.9 ~model_values:real_doutput in
-  let fake_loss = binary_cross_entropy ~label:0. ~model_values:fake_doutput in
+  let real_loss = O.binary_cross_entropy ~labels:(O.f 0.9) ~model_values:real_doutput `mean in
+  let fake_loss = O.binary_cross_entropy ~labels:(O.f 0.) ~model_values:fake_doutput `mean in
   let discriminator_loss = O.(real_loss + fake_loss) in
-  let generator_loss = binary_cross_entropy ~label:1. ~model_values:fake_doutput in
+  let generator_loss = O.binary_cross_entropy ~labels:(O.f 1.) ~model_values:fake_doutput `mean in
   let learning_rate = O.f learning_rate in
   let discriminator_opt =
     Optimizers.adam_minimizer ~learning_rate discriminator_loss
@@ -117,7 +111,7 @@ let () =
       then
         Stdio.printf "batch %4d    d-loss: %12.6f    g-loss: %12.6f\n%!"
           batch_idx discriminator_loss generator_loss;
-      if batch_idx % 5000 = 0
+      if batch_idx % 100000 = 0 || (batch_idx < 100000 && batch_idx % 25000 = 0)
       then begin
         let samples =
           Session.run (Session.Output.float generated)
@@ -127,7 +121,7 @@ let () =
             ]
         in
         Stdio.Out_channel.with_file (Printf.sprintf "out%d.txt" batch_idx) ~f:(fun channel ->
-          for sample_index = 0 to 15 do
+          for sample_index = 0 to 99 do
             List.init image_dim ~f:(fun pixel_index ->
               Tensorflow_core.Tensor.get samples [|sample_index; pixel_index|]
               |> Printf.sprintf "%.2f")
