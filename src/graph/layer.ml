@@ -212,7 +212,7 @@ module Conv2DTranspose = struct
     let output_length input_l ~ksize ~stride =
       match t.padding with
       | Valid -> input_l * stride + max 0 (ksize - stride)
-      | Same -> input_l * stride - stride - ksize + 2
+      | Same -> input_l * stride
     in
     let k1, k2 = t.ksize in
     let s1, s2 = t.strides in

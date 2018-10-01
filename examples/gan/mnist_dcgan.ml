@@ -1,4 +1,4 @@
-(* Generative Adverserial Networks trained on the MNIST dataset. *)
+(* Deep Convolutional Generative Adverserial Networks trained on the MNIST dataset. *)
 open Base
 open Tensorflow
 open Tensorflow_core
@@ -7,10 +7,7 @@ module O = Ops
 let image_dim = Mnist_helper.image_dim
 let latent_dim = 100
 
-let generator_hidden_nodes = 128
-let discriminator_hidden_nodes = 128
-
-let batch_size = 128
+let batch_size = 256
 let learning_rate = 1e-5
 let batches = 10**8
 
@@ -19,28 +16,56 @@ let batches = 10**8
     that it contains.
 *)
 let create_generator rand_input =
-  let linear1 = Layer.Linear.create generator_hidden_nodes in
-  let linear2 = Layer.Linear.create image_dim in
-  let output =
-    Layer.Linear.apply linear1 rand_input ~activation:(Leaky_relu 0.01)
-    |> Layer.Linear.apply linear2 ~activation:Tanh
+  let linear1 = Layer.Linear.create 1024 in
+  let linear2 = Layer.Linear.create (7 * 7 * 128) in
+  let conv2dt1 =
+    Layer.Conv2DTranspose.create ~ksize:(5, 5) ~strides:(2, 2) ~padding:Same 64
   in
-  output, (Layer.Linear.vars linear1 @ Layer.Linear.vars linear2)
+  let conv2dt2 =
+    Layer.Conv2DTranspose.create ~ksize:(5, 5) ~strides:(2, 2) ~padding:Same 1
+  in
+  let output =
+    Layer.Linear.apply linear1 rand_input ~activation:Relu
+    |> Layer.Linear.apply linear2 ~activation:Relu
+    |> Layer.reshape ~shape:[-1; 7; 7; 128]
+    |> Layer.Conv2DTranspose.apply conv2dt1
+    |> O.relu
+    |> Layer.Conv2DTranspose.apply conv2dt2
+    |> Layer.flatten
+    |> O.tanh
+  in
+  let vars =
+    List.concat_map [linear1; linear2] ~f:Layer.Linear.vars
+    @ List.concat_map [conv2dt1; conv2dt2] ~f:Layer.Conv2DTranspose.vars
+  in
+  output, vars
 
 (** [create_discriminator xs1 xs2] creates two Discriminator networks taking as
     input [xs1] and [xs2], the two networks share the same weights.
     This returns the two networks as well as their (shared) variables.
 *)
 let create_discriminator xs1 xs2 =
-  let linear1 = Layer.Linear.create discriminator_hidden_nodes in
+  let conv2d1 = Layer.Conv2D.create ~ksize:(5, 5) ~strides:(2, 2) ~padding:Same 16 in
+  let conv2d2 = Layer.Conv2D.create ~ksize:(5, 5) ~strides:(2, 2) ~padding:Same 32 in
+  let linear1 = Layer.Linear.create 1 in
   let linear2 = Layer.Linear.create 1 in
   let model xs =
-    Layer.Linear.apply linear1 xs ~activation:(Leaky_relu 0.01)
+    Layer.reshape xs ~shape:[-1; 28; 28; 1]
+    |> Layer.Conv2D.apply conv2d1
+    |> O.leaky_relu ~alpha:0.1
+    |> Layer.Conv2D.apply conv2d2
+    |> O.leaky_relu ~alpha:0.1
+    |> Layer.reshape ~shape:[-1; 7 * 7 * 32]
+    |> Layer.Linear.apply linear1 ~activation:(Leaky_relu 0.1)
     |> Layer.Linear.apply linear2 ~activation:Sigmoid
   in
   let ys1 = model xs1 in
   let ys2 = model xs2 in
-  ys1, ys2, (Layer.Linear.vars linear1 @ Layer.Linear.vars linear2)
+  let vars =
+    List.concat_map [linear1; linear2] ~f:Layer.Linear.vars
+    @ List.concat_map [conv2d1; conv2d2] ~f:Layer.Conv2D.vars
+  in
+  ys1, ys2, vars
 
 let write_samples samples ~filename =
   Stdio.Out_channel.with_file filename ~f:(fun channel ->
@@ -92,31 +117,31 @@ let () =
 
   Checkpointing.loop
     ~start_index:1 ~end_index:batches
-    ~save_vars_from:discriminator_opt
-    ~checkpoint_base:"./tf-mnist-dcgan.ckpt" (fun ~index:batch_idx ->
-    let batch_images, _ = Mnist_helper.train_batch mnist ~batch_size ~batch_idx in
-    let discriminator_loss =
-      Tensor.fill_uniform batch_rand ~lower_bound:(-1.) ~upper_bound:1.;
-      Session.run
-        ~inputs:Session.Input.[
-          float real_data_ph batch_images; float rand_data_ph batch_rand ]
-        ~targets:discriminator_opt
-        (Session.Output.scalar_float discriminator_loss)
-    in
-    let generator_loss =
-      Tensor.fill_uniform batch_rand ~lower_bound:(-1.) ~upper_bound:1.;
-      Session.run
-        ~inputs:Session.Input.[ float rand_data_ph batch_rand ]
-        ~targets:generator_opt
-        (Session.Output.scalar_float generator_loss)
-    in
-    if batch_idx % 100 = 0
-    then
-      Stdio.printf "batch %4d    d-loss: %12.6f    g-loss: %12.6f\n%!"
-        batch_idx discriminator_loss generator_loss;
-    if batch_idx % 100000 = 0 || (batch_idx < 100000 && batch_idx % 25000 = 0)
-    then begin
-      Session.run (Session.Output.float generated)
-        ~inputs:Session.Input.[ float rand_data_ph samples_rand ]
-      |> write_samples ~filename:(Printf.sprintf "out%d.txt" batch_idx)
-    end)
+    ~save_vars_from:discriminator_opt ~checkpoint_base:"./tf-mnist-dcgan.ckpt"
+    (fun ~index:batch_idx ->
+      let batch_images, _ = Mnist_helper.train_batch mnist ~batch_size ~batch_idx in
+      let discriminator_loss =
+        Tensor.fill_uniform batch_rand ~lower_bound:(-1.) ~upper_bound:1.;
+        Session.run
+          ~inputs:Session.Input.[
+            float real_data_ph batch_images; float rand_data_ph batch_rand ]
+          ~targets:discriminator_opt
+          (Session.Output.scalar_float discriminator_loss)
+      in
+      let generator_loss =
+        Tensor.fill_uniform batch_rand ~lower_bound:(-1.) ~upper_bound:1.;
+        Session.run
+          ~inputs:Session.Input.[ float rand_data_ph batch_rand ]
+          ~targets:generator_opt
+          (Session.Output.scalar_float generator_loss)
+      in
+      if batch_idx % 100 = 0
+      then
+        Stdio.printf "batch %4d    d-loss: %12.6f    g-loss: %12.6f\n%!"
+          batch_idx discriminator_loss generator_loss;
+      if batch_idx % 100000 = 0 || (batch_idx < 100000 && batch_idx % 25000 = 0)
+      then begin
+        Session.run (Session.Output.float generated)
+          ~inputs:Session.Input.[ float rand_data_ph samples_rand ]
+        |> write_samples ~filename:(Printf.sprintf "out%d.txt" batch_idx)
+      end)
