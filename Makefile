@@ -1,6 +1,6 @@
 MNIST = examples/mnist
 MNIST_ALL = $(MNIST)/mnist_conv.exe $(MNIST)/mnist_nn.exe $(MNIST)/mnist_linear.exe $(MNIST)/mnist_svm.exe $(MNIST)/mnist_resnet.exe
-GAN_ALL = examples/gan/mnist_gan.exe examples/gan/mnist_cgan.exe
+GAN_ALL = examples/gan/mnist_gan.exe examples/gan/mnist_cgan.exe examples/gan/mnist_dcgan.exe
 FNN_ALL =  examples/fnn/mnist_conv_fnn.exe examples/fnn/mnist_linear_fnn.exe examples/fnn/mnist_multi_fnn.exe
 BASICS_ALL = examples/basics/forty_two.exe examples/basics/save_and_load.exe examples/basics/linear_regression.exe
 

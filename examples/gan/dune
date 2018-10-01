@@ -1,4 +1,4 @@
 (executables
-  (names mnist_gan mnist_cgan)
+  (names mnist_gan mnist_cgan mnist_dcgan)
   (libraries tensorflow base))
 
