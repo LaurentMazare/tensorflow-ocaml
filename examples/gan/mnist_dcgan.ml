@@ -11,6 +11,12 @@ let batch_size = 256
 let learning_rate = 1e-5
 let batches = 10**8
 
+(* No need to keep running averages as this is only used in training mode. *)
+let batch_norm xs =
+  let nb_dims = Node.shape xs |> List.length in
+  let batch_moments = Ops.moments xs ~dims:(List.init (nb_dims - 1) ~f:Fn.id) in
+  Ops.normalize xs batch_moments ~epsilon:1e-8
+
 (** [create_generator rand_input] creates a Generator network taking as
     input [rand_input]. This returns both the network and the variables
     that it contains.
@@ -26,9 +32,12 @@ let create_generator rand_input =
   in
   let output =
     Layer.Linear.apply linear1 rand_input ~activation:Relu
-    |> Layer.Linear.apply linear2 ~activation:Relu
+    |> Layer.Linear.apply linear2
+    |> batch_norm
+    |> O.relu
     |> Layer.reshape ~shape:[-1; 7; 7; 128]
     |> Layer.Conv2DTranspose.apply conv2dt1
+    |> batch_norm
     |> O.relu
     |> Layer.Conv2DTranspose.apply conv2dt2
     |> Layer.flatten
@@ -54,9 +63,12 @@ let create_discriminator xs1 xs2 =
     |> Layer.Conv2D.apply conv2d1
     |> O.leaky_relu ~alpha:0.1
     |> Layer.Conv2D.apply conv2d2
+    |> batch_norm
     |> O.leaky_relu ~alpha:0.1
     |> Layer.reshape ~shape:[-1; 7 * 7 * 32]
-    |> Layer.Linear.apply linear1 ~activation:(Leaky_relu 0.1)
+    |> Layer.Linear.apply linear1
+    |> batch_norm
+    |> O.leaky_relu ~alpha:0.1
     |> Layer.Linear.apply linear2 ~activation:Sigmoid
   in
   let ys1 = model xs1 in
