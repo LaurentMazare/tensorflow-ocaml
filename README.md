@@ -1,7 +1,7 @@
 The __tensorflow-ocaml__ project provides some [OCaml](http://ocaml.org) bindings for [TensorFlow](http://tensorflow.org).
 
-An experimental ocaml binding for [TensorFlow Eager mode](https://research.googleblog.com/2017/10/eager-execution-imperative-define-by.html)
-can be found in the [ocaml-tensorflow-eager repo](https://github.com/LaurentMazare/ocaml-tensorflow-eager).
+Experimental ocaml bindings for [PyTorch](https://pytorch.org)
+can be found in the [ocaml-torch repo](https://github.com/LaurentMazare/ocaml-torch).
 
 ## Installation
 
