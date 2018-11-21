@@ -2,10 +2,15 @@
   (name tensorflow_core)
   (public_name tensorflow.core)
   (c_names tf_stubs)
-  (c_library_flags (-ltensorflow))
+  (c_library_flags (:include c_library_flags.sexp) -ltensorflow)
   (no_dynlink)
   (modes native)
   (libraries bigarray ctypes.foreign ctypes.stubs ctypes))
+
+(rule
+  (targets c_library_flags.sexp)
+  (deps    (:discover ../config/discover.exe))
+  (action  (run %{discover})))
 
 (rule
   (targets tf_bindings.ml)
