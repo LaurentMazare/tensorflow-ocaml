@@ -52,7 +52,7 @@ Once you have obtained the library, you should install it system-wide, or set th
 
     export LIBTENSORFLOW={path_to_folder_with_libtensorflow.so}
     
-### Build a Simple Example
+### Build a simple example or run utop
 
 Download a [very simple example](https://github.com/LaurentMazare/tensorflow-ocaml/tree/master/examples/basics/forty_two.ml) and compile it with the following command:
 ```bash
@@ -60,6 +60,10 @@ ocamlbuild forty_two.native -use-ocamlfind -pkg tensorflow -tag thread
 ```
 
 Then run it via `./forty_two.native`. You should now be all set up, enjoy!
+
+You can also run a Tensorflow enabled utop via: `make utop`.
+
+![utop](./bin/utop.png)
 
 ## Examples
 
