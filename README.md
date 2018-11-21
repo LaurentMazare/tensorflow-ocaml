@@ -63,7 +63,7 @@ Then run it via `./forty_two.native`. You should now be all set up, enjoy!
 
 You can also run a Tensorflow enabled utop via: `make utop`.
 
-![utop](./bin/utop.png | width=200)
+![utop](./bin/utop.png)
 
 ## Examples
 
