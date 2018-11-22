@@ -8,7 +8,10 @@ authors:      [ "Laurent Mazare" "Nicolas Oury" ]
 
 version: "dev"
 
-build: [["dune" "build" "-j" jobs "@install"]]
+build: [
+  ["dune" "exec" "./src/config/tf_install.exe" "%{lib}%" ]
+  ["dune" "build" "-j" jobs "@install"]
+]
 install: []
 remove:  []
 
@@ -20,6 +23,7 @@ depends: [
   "ctypes-foreign"
   "ocamlfind" {build}
   "dune" {build}
+  "conf-wget" {build}
   "ocaml" {>= "4.06"}
 ]
 
@@ -31,6 +35,8 @@ depopts: [
 
 conflicts: [
 ]
+
+available: [ os != "macos" ]
 
 synopsis: "TensorFlow bindings for OCaml"
 description: """
