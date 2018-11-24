@@ -9,7 +9,6 @@ authors:      [ "Laurent Mazare" "Nicolas Oury" ]
 version: "dev"
 
 build: [
-  ["dune" "exec" "./src/config/tf_install.exe" "%{lib}%" ]
   ["dune" "build" "-j" jobs "@install"]
 ]
 install: []
