@@ -1,0 +1,9 @@
+(executable
+  (name discover)
+  (modules discover)
+  (libraries dune.configurator))
+
+(executable
+  (name tf_install)
+  (modules tf_install)
+  (libraries base stdio unix))

@@ -91,32 +91,40 @@ let fill_uniform ?(lower_bound = 0.) ?(upper_bound = 1.) t =
       flattened_data.{index} <- lower_bound +. Random.float diff
     done
 
-let print (P tensor) =
+let pp_ formatter (P tensor) =
+  let print_ = Format.pp_print_string formatter in
   let print (type a) (type b) (tensor : (a, b) t) (elt_to_string : a -> string) =
     match dims tensor with
-    | [||] -> Printf.printf "%s\n%!" (get tensor [||] |> elt_to_string)
+    | [||] ->
+      Printf.sprintf "%s\n%!" (get tensor [||] |> elt_to_string)
+      |> print_
     | [| dim |] ->
       for d = 0 to dim - 1 do
-        Printf.printf "%d %s\n%!"
-          d (get tensor [| d |] |> elt_to_string)
+        Printf.sprintf "%d %s\n%!" d (get tensor [| d |] |> elt_to_string)
+        |> print_
       done
     | [| d0; d1 |] ->
       for x = 0 to d0 - 1 do
-        Printf.printf "%d " x;
+        Printf.sprintf "%d " x |> print_;
         for y = 0 to d1 - 1 do
-          Printf.printf "%s "
-            (get tensor [| x; y |] |> elt_to_string)
+          Printf.sprintf "%s " (get tensor [| x; y |] |> elt_to_string)
+          |> print_
         done;
-        Printf.printf "\n%!";
+        Printf.sprintf "\n%!" |> print_;
       done
-    | otherwise -> Printf.printf "%d dims\n%!" (Array.length otherwise)
+    | otherwise -> Printf.sprintf "%d dims\n%!" (Array.length otherwise) |> print_
   in
   match kind tensor with
   | Bigarray.Float32 -> print tensor (Printf.sprintf "%f")
   | Bigarray.Float64 -> print tensor (Printf.sprintf "%f")
   | Bigarray.Int32 -> print tensor (fun i -> Printf.sprintf "%d" (Int32.to_int i))
   | Bigarray.Int64 -> print tensor (fun i -> Printf.sprintf "%d" (Int64.to_int i))
-  | _ -> Printf.printf "Unsupported kind"
+  | _ -> print_ "Unsupported kind"
+
+let pp formatter tensor = pp_ formatter (P tensor)
+
+let print p = pp_ Format.std_formatter p
+let print_ tensor = print (P tensor)
 
 let to_elt_list : type a b. (a, b) t -> a list = fun tensor ->
   let size = Array.fold_left ( * ) 1 (Bigarray.Genarray.dims tensor.data) in

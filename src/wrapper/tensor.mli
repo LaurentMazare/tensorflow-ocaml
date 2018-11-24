@@ -12,6 +12,7 @@ val of_bigarray
 
 val to_bigarray : ('a, 'b) t -> ('a, 'b, Bigarray.c_layout) Bigarray.Genarray.t
 val print : p -> unit
+val print_ : _ t -> unit
 
 val to_elt_list : ('a, 'b) t -> 'a list
 val to_float_list : p -> float list
@@ -83,3 +84,5 @@ val to_float_array2
 val to_float_array3
   :  (float, _) t
   -> float array array array
+
+val pp : Format.formatter -> _ t -> unit

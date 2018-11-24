@@ -1,7 +1,7 @@
 The __tensorflow-ocaml__ project provides some [OCaml](http://ocaml.org) bindings for [TensorFlow](http://tensorflow.org).
 
-An experimental ocaml binding for [TensorFlow Eager mode](https://research.googleblog.com/2017/10/eager-execution-imperative-define-by.html)
-can be found in the [ocaml-tensorflow-eager repo](https://github.com/LaurentMazare/ocaml-tensorflow-eager).
+Experimental ocaml bindings for [PyTorch](https://pytorch.org)
+can be found in the [ocaml-torch repo](https://github.com/LaurentMazare/ocaml-torch).
 
 ## Installation
 
@@ -21,7 +21,7 @@ Two possible ways to obtain it are:
     1. Install the [Bazel build system](http://bazel.io/docs/install.html).
     1. Clone the TensorFlow repo:
 
-        `git clone --recurse-submodules -b r1.0 https://github.com/tensorflow/tensorflow`
+        `git clone --recurse-submodules -b r1.10 https://github.com/tensorflow/tensorflow`
     1. Configure the build (you will be asked if you want to enable CUDA support):
     
         ```
@@ -48,12 +48,11 @@ Two possible ways to obtain it are:
     [[1.0.0]](https://storage.googleapis.com/tensorflow/libtensorflow/libtensorflow-gpu-darwin-x86_64-1.0.0.tar.gz)
     [[1.10.0]](https://storage.googleapis.com/tensorflow/libtensorflow/libtensorflow-gpu-darwin-x86_64-1.10.0.tar.gz)
 
-Once you have obtained the library, you should install it system-wise, or add it to the environment variables `LIBRARY_PATH` and `LD_LIBRARY_PATH`:
+Once you have obtained the library, you should install it system-wide, or set the `LIBTENSORFLOW` environment variable.
 
-    export LIBRARY_PATH={path_to_folder_with_libtensorflow.so}:$LIBRARY_PATH
-    export LD_LIBRARY_PATH={path_to_folder_with_libtensorflow.so}:$LD_LIBRARY_PATH
+    export LIBTENSORFLOW={path_to_folder_with_libtensorflow.so}
     
-### Build a Simple Example
+### Build a simple example or run utop
 
 Download a [very simple example](https://github.com/LaurentMazare/tensorflow-ocaml/tree/master/examples/basics/forty_two.ml) and compile it with the following command:
 ```bash
@@ -61,6 +60,10 @@ ocamlbuild forty_two.native -use-ocamlfind -pkg tensorflow -tag thread
 ```
 
 Then run it via `./forty_two.native`. You should now be all set up, enjoy!
+
+You can also run a Tensorflow enabled utop via: `make utop`.
+
+![utop](./bin/utop.png)
 
 ## Examples
 
@@ -156,32 +159,6 @@ The examples directory contains various models among which:
   applies the style of an image to the content of another image. This uses some deep Convolutional Neural Network.
 * Some variants of [Generative Adverserial Networks](https://github.com/LaurentMazare/tensorflow-ocaml/blob/master/examples/gan).
   These are used to generate MNIST like images.
-
-## Frequent Problems
-
-- When compiling the example with ocamlbuild, I get the following error:
-
-    ```bash
-    /usr/bin/ld: cannot find -ltensorflow
-    ```
-
-    You should adjust your `LIBRARY_PATH` environment variable to include the directory in which you have added `libtensorflow.so`. E.g. run:
-
-    ```bash
-    LIBRARY_PATH=/path/to/lib:$LIBRARY_PATH ocamlbuild forty_two.native -use-ocamlfind -pkg tensorflow -tag thread
-    ```
-- When running `forty_two.native`, I get the following error:
-    ```bash
-    ./forty_two.native: error while loading shared libraries: libtensorflow.so: cannot open shared object file: No such file or directory
-    ```
-
-    You should adjust your `LD_LIBRARY_PATH` environment variable in the same way `LIBRARY_PATH` was adjusted in the previous case. E.g. run:
-
-    ```bash
-    LD_LIBRARY_PATH=/path/to/lib:$LD_LIBRARY_PATH ./forty_two.native
-    ```
-
-    Note that on OS X, you should adjust your `DYLD_LIBRARY_PATH` environment variable.
 
 ## Dependencies
 

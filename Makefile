@@ -19,6 +19,15 @@ ALL = $(MNIST_ALL) \
 src/graph/ops_generated: _build/default/src/gen_ops/gen.exe
 	_build/default/src/gen_ops/gen.exe
 
+utop: .FORCE
+	dune build @install
+	dune build bin/utop_tensorflow.bc
+	dune exec bin/utop_tensorflow.bc
+
+jupyter: .FORCE
+	dune build @install
+	dune exec jupyter lab
+
 clean:
 	rm -Rf _build/ *.exe
 
