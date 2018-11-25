@@ -93,6 +93,7 @@ let packed_op_name (P t) = t.op_name
 let packed_is_real (P t) =
   match t.output_type with
   | Type.Unit -> false
+  | Type.Variant -> false
   | Type.Int32 -> false
   | Type.Int64 -> false
   | Type.Bool -> false

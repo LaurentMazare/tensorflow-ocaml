@@ -2,6 +2,7 @@ module Type = struct
   (* We rely on all variants to be of the form | Variant : [ `variant ] t. *)
   type _ t =
     | Unit : [ `unit ] t
+    | Variant : [ `variant ] t
     | Float : [ `float ] t
     | Double : [ `double ] t
     | Int32 : [ `int32 ] t
@@ -14,6 +15,7 @@ module Type = struct
 
   let to_dt_type = function
     | P Unit -> assert false
+    | P Variant -> `dt_variant
     | P Float -> `dt_float
     | P Double -> `dt_double
     | P Int32 -> `dt_int32
@@ -23,6 +25,7 @@ module Type = struct
     | P String -> `dt_string
 
   let of_dt_type = function
+    | `dt_variant -> Some (P Variant)
     | `dt_float -> Some (P Float)
     | `dt_double -> Some (P Double)
     | `dt_int32 -> Some (P Int32)
@@ -34,6 +37,7 @@ module Type = struct
 
   let to_data_type = function
     | P Unit -> assert false
+    | P Variant -> assert false
     | P Float -> Wrapper.TF_FLOAT
     | P Double -> TF_DOUBLE
     | P Int32 -> TF_INT32
@@ -44,6 +48,7 @@ module Type = struct
 
   let to_string = function
     | P Unit -> "Unit"
+    | P Variant -> "Variant"
     | P Float -> "Float"
     | P Double -> "Double"
     | P Int32 -> "Int32"

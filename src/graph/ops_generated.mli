@@ -65,6 +65,8 @@ module Op_names : sig
   val barrierReadySize : Op_name.t
   val batchCholesky : Op_name.t
   val batchCholeskyGrad : Op_name.t
+  val batchDataset : Op_name.t
+  val batchDatasetV2 : Op_name.t
   val batchFFT : Op_name.t
   val batchFFT2D : Op_name.t
   val batchFFT3D : Op_name.t
@@ -104,8 +106,10 @@ module Op_names : sig
   val broadcastGradientArgs : Op_name.t
   val broadcastTo : Op_name.t
   val bucketize : Op_name.t
+  val bytesProducedStatsDataset : Op_name.t
   val cTCGreedyDecoder : Op_name.t
   val cTCLoss : Op_name.t
+  val cacheDataset : Op_name.t
   val cast : Op_name.t
   val ceil : Op_name.t
   val checkNumerics : Op_name.t
@@ -121,9 +125,11 @@ module Op_names : sig
   val concat : Op_name.t
   val concatOffset : Op_name.t
   val concatV2 : Op_name.t
+  val concatenateDataset : Op_name.t
   val conditionalAccumulator : Op_name.t
   val conj : Op_name.t
   val conjugateTranspose : Op_name.t
+  val consumeMutexLock : Op_name.t
   val controlTrigger : Op_name.t
   val conv2D : Op_name.t
   val conv2DBackpropFilter : Op_name.t
@@ -150,6 +156,8 @@ module Op_names : sig
   val cumsum : Op_name.t
   val dataFormatDimMap : Op_name.t
   val dataFormatVecPermute : Op_name.t
+  val datasetToGraph : Op_name.t
+  val datasetToTFRecord : Op_name.t
   val debugGradientIdentity : Op_name.t
   val debugGradientRefIdentity : Op_name.t
   val debugIdentity : Op_name.t
@@ -164,6 +172,7 @@ module Op_names : sig
   val deepCopy : Op_name.t
   val deleteSessionTensor : Op_name.t
   val denseToDenseSetOperation : Op_name.t
+  val denseToSparseBatchDataset : Op_name.t
   val denseToSparseSetOperation : Op_name.t
   val depthToSpace : Op_name.t
   val depthwiseConv2dNative : Op_name.t
@@ -187,6 +196,7 @@ module Op_names : sig
   val elu : Op_name.t
   val eluGrad : Op_name.t
   val empty : Op_name.t
+  val emptyTensorList : Op_name.t
   val encodeBase64 : Op_name.t
   val encodePng : Op_name.t
   val encodeWav : Op_name.t
@@ -213,7 +223,9 @@ module Op_names : sig
   val fakeQuantWithMinMaxVarsGradient : Op_name.t
   val fakeQuantWithMinMaxVarsPerChannel : Op_name.t
   val fakeQuantWithMinMaxVarsPerChannelGradient : Op_name.t
+  val featureStatsDataset : Op_name.t
   val fill : Op_name.t
+  val fixedLengthRecordDataset : Op_name.t
   val fixedLengthRecordReader : Op_name.t
   val fixedUnigramCandidateSampler : Op_name.t
   val floor : Op_name.t
@@ -275,6 +287,7 @@ module Op_names : sig
   val lMDBReader : Op_name.t
   val lRN : Op_name.t
   val lRNGrad : Op_name.t
+  val latencyStatsDataset : Op_name.t
   val learnedUnigramCandidateSampler : Op_name.t
   val leftShift : Op_name.t
   val less : Op_name.t
@@ -354,6 +367,7 @@ module Op_names : sig
   val nthElement : Op_name.t
   val oneHot : Op_name.t
   val onesLike : Op_name.t
+  val optimizeDataset : Op_name.t
   val orderedMapClear : Op_name.t
   val orderedMapIncompleteSize : Op_name.t
   val orderedMapSize : Op_name.t
@@ -370,6 +384,7 @@ module Op_names : sig
   val placeholderWithDefault : Op_name.t
   val polygamma : Op_name.t
   val pow : Op_name.t
+  val prefetchDataset : Op_name.t
   val preventGradient : Op_name.t
   val priorityQueue : Op_name.t
   val prod : Op_name.t
@@ -402,6 +417,7 @@ module Op_names : sig
   val rFFT3D : Op_name.t
   val rGBToHSV : Op_name.t
   val randomCrop : Op_name.t
+  val randomDataset : Op_name.t
   val randomGamma : Op_name.t
   val randomGammaGrad : Op_name.t
   val randomPoisson : Op_name.t
@@ -412,6 +428,7 @@ module Op_names : sig
   val randomUniform : Op_name.t
   val randomUniformInt : Op_name.t
   val range : Op_name.t
+  val rangeDataset : Op_name.t
   val rank : Op_name.t
   val readFile : Op_name.t
   val readerNumRecordsProduced : Op_name.t
@@ -440,6 +457,7 @@ module Op_names : sig
   val relu6 : Op_name.t
   val relu6Grad : Op_name.t
   val reluGrad : Op_name.t
+  val repeatDataset : Op_name.t
   val requantizationRange : Op_name.t
   val requantize : Op_name.t
   val reshape : Op_name.t
@@ -497,14 +515,19 @@ module Op_names : sig
   val shapeN : Op_name.t
   val shardedFilename : Op_name.t
   val shardedFilespec : Op_name.t
+  val shuffleAndRepeatDataset : Op_name.t
+  val shuffleDataset : Op_name.t
   val sigmoid : Op_name.t
   val sigmoidGrad : Op_name.t
   val sign : Op_name.t
   val sin : Op_name.t
   val sinh : Op_name.t
+  val sinkDataset : Op_name.t
   val size : Op_name.t
+  val skipDataset : Op_name.t
   val skipgram : Op_name.t
   val slice : Op_name.t
+  val slideDataset : Op_name.t
   val snapshot : Op_name.t
   val softmax : Op_name.t
   val softmaxCrossEntropyWithLogits : Op_name.t
@@ -559,10 +582,12 @@ module Op_names : sig
   val sparseSparseMinimum : Op_name.t
   val sparseTensorDenseAdd : Op_name.t
   val sparseTensorDenseMatMul : Op_name.t
+  val sparseTensorSliceDataset : Op_name.t
   val sparseToDense : Op_name.t
   val sparseToSparseSetOperation : Op_name.t
   val split : Op_name.t
   val splitV : Op_name.t
+  val sqlDataset : Op_name.t
   val sqrt : Op_name.t
   val sqrtGrad : Op_name.t
   val square : Op_name.t
@@ -595,7 +620,9 @@ module Op_names : sig
   val sum : Op_name.t
   val svd : Op_name.t
   val switch : Op_name.t
+  val tFRecordDataset : Op_name.t
   val tFRecordReader : Op_name.t
+  val takeDataset : Op_name.t
   val takeManySparseFromTensorsMap : Op_name.t
   val tan : Op_name.t
   val tanh : Op_name.t
@@ -623,8 +650,20 @@ module Op_names : sig
   val tensorArrayV2 : Op_name.t
   val tensorArrayWrite : Op_name.t
   val tensorArrayWriteV2 : Op_name.t
+  val tensorListConcatLists : Op_name.t
+  val tensorListElementShape : Op_name.t
+  val tensorListFromTensor : Op_name.t
+  val tensorListGetItem : Op_name.t
+  val tensorListLength : Op_name.t
+  val tensorListPopBack : Op_name.t
+  val tensorListPushBack : Op_name.t
+  val tensorListPushBackBatch : Op_name.t
+  val tensorListReserve : Op_name.t
+  val tensorListSetItem : Op_name.t
+  val tensorListStack : Op_name.t
   val tensorSummary : Op_name.t
   val tensorSummaryV2 : Op_name.t
+  val textLineDataset : Op_name.t
   val textLineReader : Op_name.t
   val threadUnsafeUnigramCandidateSampler : Op_name.t
   val tile : Op_name.t
@@ -638,6 +677,7 @@ module Op_names : sig
   val truncatedNormal : Op_name.t
   val tryRpc : Op_name.t
   val unbatch : Op_name.t
+  val unbatchDataset : Op_name.t
   val unbatchGrad : Op_name.t
   val uniformCandidateSampler : Op_name.t
   val unique : Op_name.t
@@ -654,9 +694,11 @@ module Op_names : sig
   val variableV2 : Op_name.t
   val where : Op_name.t
   val wholeFileReader : Op_name.t
+  val windowDataset : Op_name.t
   val writeFile : Op_name.t
   val zerosLike : Op_name.t
   val zeta : Op_name.t
+  val zipDataset : Op_name.t
 end
 
 val abort
@@ -741,8 +783,8 @@ val addManySparseToTensorsMap
 val addN
   :  ?name:string
   -> ?control_inputs:Node.p list
-  -> ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t list
-  -> ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t
+  -> ([< `float | `double | `int32 | `complex64 | `int64 | `variant ] as 't) t list
+  -> ([< `float | `double | `int32 | `complex64 | `int64 | `variant ] as 't) t
 
 val addSparseToTensorsMap
   :  ?name:string
@@ -1235,6 +1277,25 @@ val batchCholeskyGrad
   -> ([< `float | `double ] as 't) t
   -> ([< `float | `double ] as 't) t
 
+val batchDataset
+  :  ?name:string
+  -> output_types:Type.p list
+  -> output_shapes:Dim.t list list
+  -> ?control_inputs:Node.p list
+  -> [ `variant ] t
+  -> [ `int64 ] t
+  -> [ `variant ] t
+
+val batchDatasetV2
+  :  ?name:string
+  -> output_types:Type.p list
+  -> output_shapes:Dim.t list list
+  -> ?control_inputs:Node.p list
+  -> [ `variant ] t
+  -> [ `int64 ] t
+  -> [ `bool ] t
+  -> [ `variant ] t
+
 val batchFFT
   :  ?name:string
   -> ?control_inputs:Node.p list
@@ -1524,6 +1585,15 @@ val bucketize
   -> ([< `int32 | `int64 | `float | `double ] as 't) t
   -> [ `int32 ] t
 
+val bytesProducedStatsDataset
+  :  ?name:string
+  -> output_types:Type.p list
+  -> output_shapes:Dim.t list list
+  -> ?control_inputs:Node.p list
+  -> [ `variant ] t
+  -> [ `string ] t
+  -> [ `variant ] t
+
 val cTCGreedyDecoder
   :  ?name:string
   -> ?merge_repeated:bool
@@ -1543,6 +1613,15 @@ val cTCLoss
   -> [ `int32 ] t
   -> [ `int32 ] t
   -> [ `float ] t * [ `float ] t
+
+val cacheDataset
+  :  ?name:string
+  -> output_types:Type.p list
+  -> output_shapes:Dim.t list list
+  -> ?control_inputs:Node.p list
+  -> [ `variant ] t
+  -> [ `string ] t
+  -> [ `variant ] t
 
 val cast
   :  ?name:string
@@ -1664,6 +1743,15 @@ val concatV2
   -> ([< `int32 | `int64 ] as 'tidx) t
   -> 't t
 
+val concatenateDataset
+  :  ?name:string
+  -> output_types:Type.p list
+  -> output_shapes:Dim.t list list
+  -> ?control_inputs:Node.p list
+  -> [ `variant ] t
+  -> [ `variant ] t
+  -> [ `variant ] t
+
 val conditionalAccumulator
   :  ?name:string
   -> shape:Dim.t list
@@ -1676,8 +1764,8 @@ val conditionalAccumulator
 val conj
   :  ?name:string
   -> ?control_inputs:Node.p list
-  -> ([< `complex64 ] as 't) t
-  -> ([< `complex64 ] as 't) t
+  -> ([< `complex64 | `variant ] as 't) t
+  -> ([< `complex64 | `variant ] as 't) t
 
 val conjugateTranspose
   :  ?name:string
@@ -1685,6 +1773,12 @@ val conjugateTranspose
   -> 't t
   -> ([< `int32 | `int64 ] as 'tperm) t
   -> 't t
+
+val consumeMutexLock
+  :  ?name:string
+  -> ?control_inputs:Node.p list
+  -> [ `variant ] t
+  -> [ `unit ] t
 
 val controlTrigger
   :  ?name:string
@@ -1978,6 +2072,20 @@ val dataFormatVecPermute
   -> ([< `int32 | `int64 ] as 't) t
   -> ([< `int32 | `int64 ] as 't) t
 
+val datasetToGraph
+  :  ?name:string
+  -> ?control_inputs:Node.p list
+  -> [ `variant ] t
+  -> [ `string ] t
+
+val datasetToTFRecord
+  :  ?name:string
+  -> ?control_inputs:Node.p list
+  -> [ `variant ] t
+  -> [ `string ] t
+  -> [ `string ] t
+  -> [ `unit ] t
+
 val debugGradientIdentity
   :  ?name:string
   -> ?control_inputs:Node.p list
@@ -2090,6 +2198,16 @@ val denseToDenseSetOperation
   -> ([< `int32 | `int64 | `string ] as 't) t
   -> [ `int64 ] t * ([< `int32 | `int64 | `string ] as 't) t * [ `int64 ] t
 
+val denseToSparseBatchDataset
+  :  ?name:string
+  -> output_types:Type.p list
+  -> output_shapes:Dim.t list list
+  -> ?control_inputs:Node.p list
+  -> [ `variant ] t
+  -> [ `int64 ] t
+  -> [ `int64 ] t
+  -> [ `variant ] t
+
 val denseToSparseSetOperation
   :  ?name:string
   -> set_operation:string
@@ -2164,7 +2282,7 @@ val deserializeSparse
   :  ?name:string
   -> type_1:'dtype Type.t
   -> ?control_inputs:Node.p list
-  -> ([< `string ] as 'tserialized) t
+  -> ([< `string | `variant ] as 'tserialized) t
   -> [ `int64 ] t * 'dtype t * [ `int64 ] t
 
 val destroyTemporaryVariable
@@ -2285,6 +2403,12 @@ val empty
   -> ?control_inputs:Node.p list
   -> [ `int32 ] t
   -> 'dtype t
+
+val emptyTensorList
+  :  ?name:string
+  -> ?control_inputs:Node.p list
+  -> ([< `int32 | `int64 ] as 'shape_type) t
+  -> [ `variant ] t
 
 val encodeBase64
   :  ?name:string
@@ -2494,12 +2618,31 @@ val fakeQuantWithMinMaxVarsPerChannelGradient
   -> [ `float ] t
   -> [ `float ] t * [ `float ] t * [ `float ] t
 
+val featureStatsDataset
+  :  ?name:string
+  -> output_types:Type.p list
+  -> output_shapes:Dim.t list list
+  -> ?control_inputs:Node.p list
+  -> [ `variant ] t
+  -> [ `string ] t
+  -> [ `variant ] t
+
 val fill
   :  ?name:string
   -> ?control_inputs:Node.p list
   -> ([< `int32 | `int64 ] as 'index_type) t
   -> 't t
   -> 't t
+
+val fixedLengthRecordDataset
+  :  ?name:string
+  -> ?control_inputs:Node.p list
+  -> [ `string ] t
+  -> [ `int64 ] t
+  -> [ `int64 ] t
+  -> [ `int64 ] t
+  -> [ `int64 ] t
+  -> [ `variant ] t
 
 val fixedLengthRecordReader
   :  ?name:string
@@ -3010,6 +3153,15 @@ val lRNGrad
   -> ([< `float ] as 't) t
   -> ([< `float ] as 't) t
   -> ([< `float ] as 't) t
+
+val latencyStatsDataset
+  :  ?name:string
+  -> output_types:Type.p list
+  -> output_shapes:Dim.t list list
+  -> ?control_inputs:Node.p list
+  -> [ `variant ] t
+  -> [ `string ] t
+  -> [ `variant ] t
 
 val learnedUnigramCandidateSampler
   :  ?name:string
@@ -3678,6 +3830,15 @@ val onesLike
   -> ([< `float | `double | `int32 | `int64 | `complex64 | `bool ] as 't) t
   -> ([< `float | `double | `int32 | `int64 | `complex64 | `bool ] as 't) t
 
+val optimizeDataset
+  :  ?name:string
+  -> output_types:Type.p list
+  -> output_shapes:Dim.t list list
+  -> ?control_inputs:Node.p list
+  -> [ `variant ] t
+  -> [ `string ] t
+  -> [ `variant ] t
+
 val orderedMapClear
   :  ?name:string
   -> ?capacity:int
@@ -3813,6 +3974,15 @@ val pow
   -> ([< `float | `double | `int32 | `int64 | `complex64 ] as 't) t
   -> ([< `float | `double | `int32 | `int64 | `complex64 ] as 't) t
   -> ([< `float | `double | `int32 | `int64 | `complex64 ] as 't) t
+
+val prefetchDataset
+  :  ?name:string
+  -> output_types:Type.p list
+  -> output_shapes:Dim.t list list
+  -> ?control_inputs:Node.p list
+  -> [ `variant ] t
+  -> [ `int64 ] t
+  -> [ `variant ] t
 
 val preventGradient
   :  ?name:string
@@ -4134,6 +4304,15 @@ val randomCrop
   -> [ `int64 ] t
   -> ([< `int32 | `int64 | `float | `double ] as 't) t
 
+val randomDataset
+  :  ?name:string
+  -> output_types:Type.p list
+  -> output_shapes:Dim.t list list
+  -> ?control_inputs:Node.p list
+  -> [ `int64 ] t
+  -> [ `int64 ] t
+  -> [ `variant ] t
+
 val randomGamma
   :  ?name:string
   -> ?seed:int
@@ -4226,6 +4405,16 @@ val range
   -> ([< `float | `double | `int32 | `int64 ] as 'tidx) t
   -> ([< `float | `double | `int32 | `int64 ] as 'tidx) t
   -> ([< `float | `double | `int32 | `int64 ] as 'tidx) t
+
+val rangeDataset
+  :  ?name:string
+  -> output_types:Type.p list
+  -> output_shapes:Dim.t list list
+  -> ?control_inputs:Node.p list
+  -> [ `int64 ] t
+  -> [ `int64 ] t
+  -> [ `int64 ] t
+  -> [ `variant ] t
 
 val rank
   :  ?name:string
@@ -4422,6 +4611,15 @@ val reluGrad
   -> ([< `float | `double | `int32 | `int64 ] as 't) t
   -> ([< `float | `double | `int32 | `int64 ] as 't) t
   -> ([< `float | `double | `int32 | `int64 ] as 't) t
+
+val repeatDataset
+  :  ?name:string
+  -> output_types:Type.p list
+  -> output_shapes:Dim.t list list
+  -> ?control_inputs:Node.p list
+  -> [ `variant ] t
+  -> [ `int64 ] t
+  -> [ `variant ] t
 
 val requantizationRange
   :  ?name:string
@@ -4824,21 +5022,21 @@ val seluGrad
 
 val serializeManySparse
   :  ?name:string
-  -> type_:([< `string ] as 'out_type) Type.t
+  -> type_:([< `string | `variant ] as 'out_type) Type.t
   -> ?control_inputs:Node.p list
   -> [ `int64 ] t
   -> 't t
   -> [ `int64 ] t
-  -> ([< `string ] as 'out_type) t
+  -> ([< `string | `variant ] as 'out_type) t
 
 val serializeSparse
   :  ?name:string
-  -> type_:([< `string ] as 'out_type) Type.t
+  -> type_:([< `string | `variant ] as 'out_type) Type.t
   -> ?control_inputs:Node.p list
   -> [ `int64 ] t
   -> 't t
   -> [ `int64 ] t
-  -> ([< `string ] as 'out_type) t
+  -> ([< `string | `variant ] as 'out_type) t
 
 val serializeTensor
   :  ?name:string
@@ -4884,6 +5082,30 @@ val shardedFilespec
   -> [ `int32 ] t
   -> [ `string ] t
 
+val shuffleAndRepeatDataset
+  :  ?name:string
+  -> output_types:Type.p list
+  -> output_shapes:Dim.t list list
+  -> ?control_inputs:Node.p list
+  -> [ `variant ] t
+  -> [ `int64 ] t
+  -> [ `int64 ] t
+  -> [ `int64 ] t
+  -> [ `int64 ] t
+  -> [ `variant ] t
+
+val shuffleDataset
+  :  ?name:string
+  -> ?reshuffle_each_iteration:bool
+  -> output_types:Type.p list
+  -> output_shapes:Dim.t list list
+  -> ?control_inputs:Node.p list
+  -> [ `variant ] t
+  -> [ `int64 ] t
+  -> [ `int64 ] t
+  -> [ `int64 ] t
+  -> [ `variant ] t
+
 val sigmoid
   :  ?name:string
   -> ?control_inputs:Node.p list
@@ -4915,12 +5137,27 @@ val sinh
   -> ([< `float | `double | `complex64 ] as 't) t
   -> ([< `float | `double | `complex64 ] as 't) t
 
+val sinkDataset
+  :  ?name:string
+  -> ?control_inputs:Node.p list
+  -> [ `variant ] t
+  -> [ `variant ] t
+
 val size
   :  ?name:string
   -> type_:([< `int32 | `int64 ] as 'out_type) Type.t
   -> ?control_inputs:Node.p list
   -> 't t
   -> ([< `int32 | `int64 ] as 'out_type) t
+
+val skipDataset
+  :  ?name:string
+  -> output_types:Type.p list
+  -> output_shapes:Dim.t list list
+  -> ?control_inputs:Node.p list
+  -> [ `variant ] t
+  -> [ `int64 ] t
+  -> [ `variant ] t
 
 val skipgram
   :  ?name:string
@@ -4940,6 +5177,16 @@ val slice
   -> ([< `int32 | `int64 ] as 'index) t
   -> ([< `int32 | `int64 ] as 'index) t
   -> 't t
+
+val slideDataset
+  :  ?name:string
+  -> output_types:Type.p list
+  -> output_shapes:Dim.t list list
+  -> ?control_inputs:Node.p list
+  -> [ `variant ] t
+  -> [ `int64 ] t
+  -> [ `int64 ] t
+  -> [ `variant ] t
 
 val snapshot
   :  ?name:string
@@ -5464,6 +5711,14 @@ val sparseTensorDenseMatMul
   -> 't t
   -> 't t
 
+val sparseTensorSliceDataset
+  :  ?name:string
+  -> ?control_inputs:Node.p list
+  -> [ `int64 ] t
+  -> 'tvalues t
+  -> [ `int64 ] t
+  -> [ `variant ] t
+
 val sparseToDense
   :  ?name:string
   -> ?validate_indices:bool
@@ -5503,6 +5758,16 @@ val splitV
   -> ([< `int32 | `int64 ] as 'tlen) t
   -> [ `int32 ] t
   -> 't t list
+
+val sqlDataset
+  :  ?name:string
+  -> output_types:Type.p list
+  -> output_shapes:Dim.t list list
+  -> ?control_inputs:Node.p list
+  -> [ `string ] t
+  -> [ `string ] t
+  -> [ `string ] t
+  -> [ `variant ] t
 
 val sqrt
   :  ?name:string
@@ -5766,6 +6031,14 @@ val switch
   -> [ `bool ] t
   -> 't t * 't t
 
+val tFRecordDataset
+  :  ?name:string
+  -> ?control_inputs:Node.p list
+  -> [ `string ] t
+  -> [ `string ] t
+  -> [ `int64 ] t
+  -> [ `variant ] t
+
 val tFRecordReader
   :  ?name:string
   -> ?container:string
@@ -5774,6 +6047,15 @@ val tFRecordReader
   -> ?control_inputs:Node.p list
   -> unit
   -> [ `string ] t
+
+val takeDataset
+  :  ?name:string
+  -> output_types:Type.p list
+  -> output_shapes:Dim.t list list
+  -> ?control_inputs:Node.p list
+  -> [ `variant ] t
+  -> [ `int64 ] t
+  -> [ `variant ] t
 
 val takeManySparseFromTensorsMap
   :  ?name:string
@@ -6001,6 +6283,85 @@ val tensorArrayWriteV2
   -> [ `float ] t
   -> [ `float ] t
 
+val tensorListConcatLists
+  :  ?name:string
+  -> ?control_inputs:Node.p list
+  -> [ `variant ] t
+  -> [ `variant ] t
+  -> [ `variant ] t
+
+val tensorListElementShape
+  :  ?name:string
+  -> type_:([< `int32 | `int64 ] as 'shape_type) Type.t
+  -> ?control_inputs:Node.p list
+  -> [ `variant ] t
+  -> ([< `int32 | `int64 ] as 'shape_type) t
+
+val tensorListFromTensor
+  :  ?name:string
+  -> ?control_inputs:Node.p list
+  -> 'element_dtype t
+  -> ([< `int32 | `int64 ] as 'shape_type) t
+  -> [ `variant ] t
+
+val tensorListGetItem
+  :  ?name:string
+  -> type_:'element_dtype Type.t
+  -> ?control_inputs:Node.p list
+  -> [ `variant ] t
+  -> [ `int32 ] t
+  -> 'element_dtype t
+
+val tensorListLength
+  :  ?name:string
+  -> ?control_inputs:Node.p list
+  -> [ `variant ] t
+  -> [ `int32 ] t
+
+val tensorListPopBack
+  :  ?name:string
+  -> type_1:'element_dtype Type.t
+  -> ?control_inputs:Node.p list
+  -> [ `variant ] t
+  -> [ `variant ] t * 'element_dtype t
+
+val tensorListPushBack
+  :  ?name:string
+  -> ?control_inputs:Node.p list
+  -> [ `variant ] t
+  -> 'element_dtype t
+  -> [ `variant ] t
+
+val tensorListPushBackBatch
+  :  ?name:string
+  -> ?control_inputs:Node.p list
+  -> [ `variant ] t
+  -> 'element_dtype t
+  -> [ `variant ] t
+
+val tensorListReserve
+  :  ?name:string
+  -> ?control_inputs:Node.p list
+  -> ([< `int32 | `int64 ] as 'shape_type) t
+  -> [ `int32 ] t
+  -> [ `variant ] t
+
+val tensorListSetItem
+  :  ?name:string
+  -> ?control_inputs:Node.p list
+  -> [ `variant ] t
+  -> [ `int32 ] t
+  -> 'element_dtype t
+  -> [ `variant ] t
+
+val tensorListStack
+  :  ?name:string
+  -> type_:'element_dtype Type.t
+  -> ?num_elements:int
+  -> ?control_inputs:Node.p list
+  -> [ `variant ] t
+  -> 'element_dtype t
+
 val tensorSummary
   :  ?name:string
   -> ?description:string
@@ -6016,6 +6377,14 @@ val tensorSummaryV2
   -> 't t
   -> [ `string ] t
   -> [ `string ] t
+
+val textLineDataset
+  :  ?name:string
+  -> ?control_inputs:Node.p list
+  -> [ `string ] t
+  -> [ `string ] t
+  -> [ `int64 ] t
+  -> [ `variant ] t
 
 val textLineReader
   :  ?name:string
@@ -6125,6 +6494,14 @@ val unbatch
   -> [ `int64 ] t
   -> [ `int64 ] t
   -> 't t
+
+val unbatchDataset
+  :  ?name:string
+  -> output_types:Type.p list
+  -> output_shapes:Dim.t list list
+  -> ?control_inputs:Node.p list
+  -> [ `variant ] t
+  -> [ `variant ] t
 
 val unbatchGrad
   :  ?name:string
@@ -6262,6 +6639,15 @@ val wholeFileReader
   -> unit
   -> [ `string ] t
 
+val windowDataset
+  :  ?name:string
+  -> output_types:Type.p list
+  -> output_shapes:Dim.t list list
+  -> ?control_inputs:Node.p list
+  -> [ `variant ] t
+  -> [ `int64 ] t
+  -> [ `variant ] t
+
 val writeFile
   :  ?name:string
   -> ?control_inputs:Node.p list
@@ -6281,4 +6667,12 @@ val zeta
   -> ([< `float | `double ] as 't) t
   -> ([< `float | `double ] as 't) t
   -> ([< `float | `double ] as 't) t
+
+val zipDataset
+  :  ?name:string
+  -> output_types:Type.p list
+  -> output_shapes:Dim.t list list
+  -> ?control_inputs:Node.p list
+  -> [ `variant ] t list
+  -> [ `variant ] t
 

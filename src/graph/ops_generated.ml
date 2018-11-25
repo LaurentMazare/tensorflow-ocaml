@@ -67,6 +67,8 @@ module Op_names = struct
   let barrierReadySize = Op_name.of_string "BarrierReadySize"
   let batchCholesky = Op_name.of_string "BatchCholesky"
   let batchCholeskyGrad = Op_name.of_string "BatchCholeskyGrad"
+  let batchDataset = Op_name.of_string "BatchDataset"
+  let batchDatasetV2 = Op_name.of_string "BatchDatasetV2"
   let batchFFT = Op_name.of_string "BatchFFT"
   let batchFFT2D = Op_name.of_string "BatchFFT2D"
   let batchFFT3D = Op_name.of_string "BatchFFT3D"
@@ -106,8 +108,10 @@ module Op_names = struct
   let broadcastGradientArgs = Op_name.of_string "BroadcastGradientArgs"
   let broadcastTo = Op_name.of_string "BroadcastTo"
   let bucketize = Op_name.of_string "Bucketize"
+  let bytesProducedStatsDataset = Op_name.of_string "BytesProducedStatsDataset"
   let cTCGreedyDecoder = Op_name.of_string "CTCGreedyDecoder"
   let cTCLoss = Op_name.of_string "CTCLoss"
+  let cacheDataset = Op_name.of_string "CacheDataset"
   let cast = Op_name.of_string "Cast"
   let ceil = Op_name.of_string "Ceil"
   let checkNumerics = Op_name.of_string "CheckNumerics"
@@ -123,9 +127,11 @@ module Op_names = struct
   let concat = Op_name.of_string "Concat"
   let concatOffset = Op_name.of_string "ConcatOffset"
   let concatV2 = Op_name.of_string "ConcatV2"
+  let concatenateDataset = Op_name.of_string "ConcatenateDataset"
   let conditionalAccumulator = Op_name.of_string "ConditionalAccumulator"
   let conj = Op_name.of_string "Conj"
   let conjugateTranspose = Op_name.of_string "ConjugateTranspose"
+  let consumeMutexLock = Op_name.of_string "ConsumeMutexLock"
   let controlTrigger = Op_name.of_string "ControlTrigger"
   let conv2D = Op_name.of_string "Conv2D"
   let conv2DBackpropFilter = Op_name.of_string "Conv2DBackpropFilter"
@@ -152,6 +158,8 @@ module Op_names = struct
   let cumsum = Op_name.of_string "Cumsum"
   let dataFormatDimMap = Op_name.of_string "DataFormatDimMap"
   let dataFormatVecPermute = Op_name.of_string "DataFormatVecPermute"
+  let datasetToGraph = Op_name.of_string "DatasetToGraph"
+  let datasetToTFRecord = Op_name.of_string "DatasetToTFRecord"
   let debugGradientIdentity = Op_name.of_string "DebugGradientIdentity"
   let debugGradientRefIdentity = Op_name.of_string "DebugGradientRefIdentity"
   let debugIdentity = Op_name.of_string "DebugIdentity"
@@ -166,6 +174,7 @@ module Op_names = struct
   let deepCopy = Op_name.of_string "DeepCopy"
   let deleteSessionTensor = Op_name.of_string "DeleteSessionTensor"
   let denseToDenseSetOperation = Op_name.of_string "DenseToDenseSetOperation"
+  let denseToSparseBatchDataset = Op_name.of_string "DenseToSparseBatchDataset"
   let denseToSparseSetOperation = Op_name.of_string "DenseToSparseSetOperation"
   let depthToSpace = Op_name.of_string "DepthToSpace"
   let depthwiseConv2dNative = Op_name.of_string "DepthwiseConv2dNative"
@@ -189,6 +198,7 @@ module Op_names = struct
   let elu = Op_name.of_string "Elu"
   let eluGrad = Op_name.of_string "EluGrad"
   let empty = Op_name.of_string "Empty"
+  let emptyTensorList = Op_name.of_string "EmptyTensorList"
   let encodeBase64 = Op_name.of_string "EncodeBase64"
   let encodePng = Op_name.of_string "EncodePng"
   let encodeWav = Op_name.of_string "EncodeWav"
@@ -215,7 +225,9 @@ module Op_names = struct
   let fakeQuantWithMinMaxVarsGradient = Op_name.of_string "FakeQuantWithMinMaxVarsGradient"
   let fakeQuantWithMinMaxVarsPerChannel = Op_name.of_string "FakeQuantWithMinMaxVarsPerChannel"
   let fakeQuantWithMinMaxVarsPerChannelGradient = Op_name.of_string "FakeQuantWithMinMaxVarsPerChannelGradient"
+  let featureStatsDataset = Op_name.of_string "FeatureStatsDataset"
   let fill = Op_name.of_string "Fill"
+  let fixedLengthRecordDataset = Op_name.of_string "FixedLengthRecordDataset"
   let fixedLengthRecordReader = Op_name.of_string "FixedLengthRecordReader"
   let fixedUnigramCandidateSampler = Op_name.of_string "FixedUnigramCandidateSampler"
   let floor = Op_name.of_string "Floor"
@@ -277,6 +289,7 @@ module Op_names = struct
   let lMDBReader = Op_name.of_string "LMDBReader"
   let lRN = Op_name.of_string "LRN"
   let lRNGrad = Op_name.of_string "LRNGrad"
+  let latencyStatsDataset = Op_name.of_string "LatencyStatsDataset"
   let learnedUnigramCandidateSampler = Op_name.of_string "LearnedUnigramCandidateSampler"
   let leftShift = Op_name.of_string "LeftShift"
   let less = Op_name.of_string "Less"
@@ -356,6 +369,7 @@ module Op_names = struct
   let nthElement = Op_name.of_string "NthElement"
   let oneHot = Op_name.of_string "OneHot"
   let onesLike = Op_name.of_string "OnesLike"
+  let optimizeDataset = Op_name.of_string "OptimizeDataset"
   let orderedMapClear = Op_name.of_string "OrderedMapClear"
   let orderedMapIncompleteSize = Op_name.of_string "OrderedMapIncompleteSize"
   let orderedMapSize = Op_name.of_string "OrderedMapSize"
@@ -372,6 +386,7 @@ module Op_names = struct
   let placeholderWithDefault = Op_name.of_string "PlaceholderWithDefault"
   let polygamma = Op_name.of_string "Polygamma"
   let pow = Op_name.of_string "Pow"
+  let prefetchDataset = Op_name.of_string "PrefetchDataset"
   let preventGradient = Op_name.of_string "PreventGradient"
   let priorityQueue = Op_name.of_string "PriorityQueue"
   let prod = Op_name.of_string "Prod"
@@ -404,6 +419,7 @@ module Op_names = struct
   let rFFT3D = Op_name.of_string "RFFT3D"
   let rGBToHSV = Op_name.of_string "RGBToHSV"
   let randomCrop = Op_name.of_string "RandomCrop"
+  let randomDataset = Op_name.of_string "RandomDataset"
   let randomGamma = Op_name.of_string "RandomGamma"
   let randomGammaGrad = Op_name.of_string "RandomGammaGrad"
   let randomPoisson = Op_name.of_string "RandomPoisson"
@@ -414,6 +430,7 @@ module Op_names = struct
   let randomUniform = Op_name.of_string "RandomUniform"
   let randomUniformInt = Op_name.of_string "RandomUniformInt"
   let range = Op_name.of_string "Range"
+  let rangeDataset = Op_name.of_string "RangeDataset"
   let rank = Op_name.of_string "Rank"
   let readFile = Op_name.of_string "ReadFile"
   let readerNumRecordsProduced = Op_name.of_string "ReaderNumRecordsProduced"
@@ -442,6 +459,7 @@ module Op_names = struct
   let relu6 = Op_name.of_string "Relu6"
   let relu6Grad = Op_name.of_string "Relu6Grad"
   let reluGrad = Op_name.of_string "ReluGrad"
+  let repeatDataset = Op_name.of_string "RepeatDataset"
   let requantizationRange = Op_name.of_string "RequantizationRange"
   let requantize = Op_name.of_string "Requantize"
   let reshape = Op_name.of_string "Reshape"
@@ -499,14 +517,19 @@ module Op_names = struct
   let shapeN = Op_name.of_string "ShapeN"
   let shardedFilename = Op_name.of_string "ShardedFilename"
   let shardedFilespec = Op_name.of_string "ShardedFilespec"
+  let shuffleAndRepeatDataset = Op_name.of_string "ShuffleAndRepeatDataset"
+  let shuffleDataset = Op_name.of_string "ShuffleDataset"
   let sigmoid = Op_name.of_string "Sigmoid"
   let sigmoidGrad = Op_name.of_string "SigmoidGrad"
   let sign = Op_name.of_string "Sign"
   let sin = Op_name.of_string "Sin"
   let sinh = Op_name.of_string "Sinh"
+  let sinkDataset = Op_name.of_string "SinkDataset"
   let size = Op_name.of_string "Size"
+  let skipDataset = Op_name.of_string "SkipDataset"
   let skipgram = Op_name.of_string "Skipgram"
   let slice = Op_name.of_string "Slice"
+  let slideDataset = Op_name.of_string "SlideDataset"
   let snapshot = Op_name.of_string "Snapshot"
   let softmax = Op_name.of_string "Softmax"
   let softmaxCrossEntropyWithLogits = Op_name.of_string "SoftmaxCrossEntropyWithLogits"
@@ -561,10 +584,12 @@ module Op_names = struct
   let sparseSparseMinimum = Op_name.of_string "SparseSparseMinimum"
   let sparseTensorDenseAdd = Op_name.of_string "SparseTensorDenseAdd"
   let sparseTensorDenseMatMul = Op_name.of_string "SparseTensorDenseMatMul"
+  let sparseTensorSliceDataset = Op_name.of_string "SparseTensorSliceDataset"
   let sparseToDense = Op_name.of_string "SparseToDense"
   let sparseToSparseSetOperation = Op_name.of_string "SparseToSparseSetOperation"
   let split = Op_name.of_string "Split"
   let splitV = Op_name.of_string "SplitV"
+  let sqlDataset = Op_name.of_string "SqlDataset"
   let sqrt = Op_name.of_string "Sqrt"
   let sqrtGrad = Op_name.of_string "SqrtGrad"
   let square = Op_name.of_string "Square"
@@ -597,7 +622,9 @@ module Op_names = struct
   let sum = Op_name.of_string "Sum"
   let svd = Op_name.of_string "Svd"
   let switch = Op_name.of_string "Switch"
+  let tFRecordDataset = Op_name.of_string "TFRecordDataset"
   let tFRecordReader = Op_name.of_string "TFRecordReader"
+  let takeDataset = Op_name.of_string "TakeDataset"
   let takeManySparseFromTensorsMap = Op_name.of_string "TakeManySparseFromTensorsMap"
   let tan = Op_name.of_string "Tan"
   let tanh = Op_name.of_string "Tanh"
@@ -625,8 +652,20 @@ module Op_names = struct
   let tensorArrayV2 = Op_name.of_string "TensorArrayV2"
   let tensorArrayWrite = Op_name.of_string "TensorArrayWrite"
   let tensorArrayWriteV2 = Op_name.of_string "TensorArrayWriteV2"
+  let tensorListConcatLists = Op_name.of_string "TensorListConcatLists"
+  let tensorListElementShape = Op_name.of_string "TensorListElementShape"
+  let tensorListFromTensor = Op_name.of_string "TensorListFromTensor"
+  let tensorListGetItem = Op_name.of_string "TensorListGetItem"
+  let tensorListLength = Op_name.of_string "TensorListLength"
+  let tensorListPopBack = Op_name.of_string "TensorListPopBack"
+  let tensorListPushBack = Op_name.of_string "TensorListPushBack"
+  let tensorListPushBackBatch = Op_name.of_string "TensorListPushBackBatch"
+  let tensorListReserve = Op_name.of_string "TensorListReserve"
+  let tensorListSetItem = Op_name.of_string "TensorListSetItem"
+  let tensorListStack = Op_name.of_string "TensorListStack"
   let tensorSummary = Op_name.of_string "TensorSummary"
   let tensorSummaryV2 = Op_name.of_string "TensorSummaryV2"
+  let textLineDataset = Op_name.of_string "TextLineDataset"
   let textLineReader = Op_name.of_string "TextLineReader"
   let threadUnsafeUnigramCandidateSampler = Op_name.of_string "ThreadUnsafeUnigramCandidateSampler"
   let tile = Op_name.of_string "Tile"
@@ -640,6 +679,7 @@ module Op_names = struct
   let truncatedNormal = Op_name.of_string "TruncatedNormal"
   let tryRpc = Op_name.of_string "TryRpc"
   let unbatch = Op_name.of_string "Unbatch"
+  let unbatchDataset = Op_name.of_string "UnbatchDataset"
   let unbatchGrad = Op_name.of_string "UnbatchGrad"
   let uniformCandidateSampler = Op_name.of_string "UniformCandidateSampler"
   let unique = Op_name.of_string "Unique"
@@ -656,9 +696,11 @@ module Op_names = struct
   let variableV2 = Op_name.of_string "VariableV2"
   let where = Op_name.of_string "Where"
   let wholeFileReader = Op_name.of_string "WholeFileReader"
+  let windowDataset = Op_name.of_string "WindowDataset"
   let writeFile = Op_name.of_string "WriteFile"
   let zerosLike = Op_name.of_string "ZerosLike"
   let zeta = Op_name.of_string "Zeta"
+  let zipDataset = Op_name.of_string "ZipDataset"
 end
 
 let abort
@@ -893,7 +935,7 @@ let addManySparseToTensorsMap
 let addN
     ?(name = "AddN")
     ?(control_inputs = [])
-    (inputs__ : ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t list)
+    (inputs__ : ([< `float | `double | `int32 | `complex64 | `int64 | `variant ] as 't) t list)
   =
   let attributes = [ "T", Type (P (Node.output_type (List.hd_exn inputs__))) ] in
   let attributes =
@@ -2230,6 +2272,61 @@ let batchCholeskyGrad
     ~attributes
     ~output_idx:None
 
+let batchDataset
+    ?(name = "BatchDataset")
+    ~output_types
+    ~output_shapes
+    ?(control_inputs = [])
+    (input_dataset : [ `variant ] t)
+    (batch_size : [ `int64 ] t)
+  =
+  let attributes = [] in
+  let attributes =
+    ("output_types", List (Type output_types)) :: attributes
+  in
+  let attributes =
+    ("output_shapes", List (Shape output_shapes)) :: attributes
+  in
+  let name = Name.of_string name in
+  let op_name = Op_names.batchDataset in
+  let inputs = [ (`single (P input_dataset)); (`single (P batch_size)) ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Variant
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:None
+
+let batchDatasetV2
+    ?(name = "BatchDatasetV2")
+    ~output_types
+    ~output_shapes
+    ?(control_inputs = [])
+    (input_dataset : [ `variant ] t)
+    (batch_size : [ `int64 ] t)
+    (drop_remainder : [ `bool ] t)
+  =
+  let attributes = [] in
+  let attributes =
+    ("output_types", List (Type output_types)) :: attributes
+  in
+  let attributes =
+    ("output_shapes", List (Shape output_shapes)) :: attributes
+  in
+  let name = Name.of_string name in
+  let op_name = Op_names.batchDatasetV2 in
+  let inputs = [ (`single (P input_dataset)); (`single (P batch_size)); (`single (P drop_remainder)) ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Variant
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:None
+
 let batchFFT
     ?(name = "BatchFFT")
     ?(control_inputs = [])
@@ -3122,6 +3219,33 @@ let bucketize
     ~attributes
     ~output_idx:None
 
+let bytesProducedStatsDataset
+    ?(name = "BytesProducedStatsDataset")
+    ~output_types
+    ~output_shapes
+    ?(control_inputs = [])
+    (input_dataset : [ `variant ] t)
+    (tag : [ `string ] t)
+  =
+  let attributes = [] in
+  let attributes =
+    ("output_types", List (Type output_types)) :: attributes
+  in
+  let attributes =
+    ("output_shapes", List (Shape output_shapes)) :: attributes
+  in
+  let name = Name.of_string name in
+  let op_name = Op_names.bytesProducedStatsDataset in
+  let inputs = [ (`single (P input_dataset)); (`single (P tag)) ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Variant
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:None
+
 let cTCGreedyDecoder
     ?(name = "CTCGreedyDecoder")
     ?merge_repeated
@@ -3213,6 +3337,33 @@ let cTCLoss
     ~control_inputs
     ~attributes
     ~output_idx:(Some 1)
+
+let cacheDataset
+    ?(name = "CacheDataset")
+    ~output_types
+    ~output_shapes
+    ?(control_inputs = [])
+    (input_dataset : [ `variant ] t)
+    (filename : [ `string ] t)
+  =
+  let attributes = [] in
+  let attributes =
+    ("output_types", List (Type output_types)) :: attributes
+  in
+  let attributes =
+    ("output_shapes", List (Shape output_shapes)) :: attributes
+  in
+  let name = Name.of_string name in
+  let op_name = Op_names.cacheDataset in
+  let inputs = [ (`single (P input_dataset)); (`single (P filename)) ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Variant
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:None
 
 let cast
     ?(name = "Cast")
@@ -3599,6 +3750,33 @@ let concatV2
     ~attributes
     ~output_idx:None
 
+let concatenateDataset
+    ?(name = "ConcatenateDataset")
+    ~output_types
+    ~output_shapes
+    ?(control_inputs = [])
+    (input_dataset : [ `variant ] t)
+    (another_dataset : [ `variant ] t)
+  =
+  let attributes = [] in
+  let attributes =
+    ("output_types", List (Type output_types)) :: attributes
+  in
+  let attributes =
+    ("output_shapes", List (Shape output_shapes)) :: attributes
+  in
+  let name = Name.of_string name in
+  let op_name = Op_names.concatenateDataset in
+  let inputs = [ (`single (P input_dataset)); (`single (P another_dataset)) ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Variant
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:None
+
 let conditionalAccumulator
     ?(name = "ConditionalAccumulator")
     ~shape
@@ -3632,7 +3810,7 @@ let conditionalAccumulator
 let conj
     ?(name = "Conj")
     ?(control_inputs = [])
-    (input : ([< `complex64 ] as 't) t)
+    (input : ([< `complex64 | `variant ] as 't) t)
   =
   let attributes = [ "T", Type (P (Node.output_type input)) ] in
   let name = Name.of_string name in
@@ -3661,6 +3839,24 @@ let conjugateTranspose
     ~name
     ~op_name
     ~output_type:(Node.output_type x)
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:None
+
+let consumeMutexLock
+    ?(name = "ConsumeMutexLock")
+    ?(control_inputs = [])
+    (mutex_lock : [ `variant ] t)
+  =
+  let attributes = [] in
+  let name = Name.of_string name in
+  let op_name = Op_names.consumeMutexLock in
+  let inputs = [ (`single (P mutex_lock)) ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Unit
     ~inputs
     ~control_inputs
     ~attributes
@@ -4530,6 +4726,44 @@ let dataFormatVecPermute
     ~attributes
     ~output_idx:None
 
+let datasetToGraph
+    ?(name = "DatasetToGraph")
+    ?(control_inputs = [])
+    (input_dataset : [ `variant ] t)
+  =
+  let attributes = [] in
+  let name = Name.of_string name in
+  let op_name = Op_names.datasetToGraph in
+  let inputs = [ (`single (P input_dataset)) ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.String
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:None
+
+let datasetToTFRecord
+    ?(name = "DatasetToTFRecord")
+    ?(control_inputs = [])
+    (input_dataset : [ `variant ] t)
+    (filename : [ `string ] t)
+    (compression_type : [ `string ] t)
+  =
+  let attributes = [] in
+  let name = Name.of_string name in
+  let op_name = Op_names.datasetToTFRecord in
+  let inputs = [ (`single (P input_dataset)); (`single (P filename)); (`single (P compression_type)) ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Unit
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:None
+
 let debugGradientIdentity
     ?(name = "DebugGradientIdentity")
     ?(control_inputs = [])
@@ -4888,6 +5122,34 @@ let denseToDenseSetOperation
     ~attributes
     ~output_idx:(Some 2)
 
+let denseToSparseBatchDataset
+    ?(name = "DenseToSparseBatchDataset")
+    ~output_types
+    ~output_shapes
+    ?(control_inputs = [])
+    (input_dataset : [ `variant ] t)
+    (batch_size : [ `int64 ] t)
+    (row_shape : [ `int64 ] t)
+  =
+  let attributes = [] in
+  let attributes =
+    ("output_types", List (Type output_types)) :: attributes
+  in
+  let attributes =
+    ("output_shapes", List (Shape output_shapes)) :: attributes
+  in
+  let name = Name.of_string name in
+  let op_name = Op_names.denseToSparseBatchDataset in
+  let inputs = [ (`single (P input_dataset)); (`single (P batch_size)); (`single (P row_shape)) ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Variant
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:None
+
 let denseToSparseSetOperation
     ?(name = "DenseToSparseSetOperation")
     ~set_operation
@@ -5133,7 +5395,7 @@ let deserializeSparse
     ?(name = "DeserializeSparse")
     ~type_1
     ?(control_inputs = [])
-    (serialized_sparse : ([< `string ] as 'tserialized) t)
+    (serialized_sparse : ([< `string | `variant ] as 'tserialized) t)
   =
   let attributes = [ "Tserialized", Type (P (Node.output_type serialized_sparse)) ;  "dtype", Type (P type_1) ] in
   let name = Name.of_string name in
@@ -5506,6 +5768,24 @@ let empty
     ~name
     ~op_name
     ~output_type:type_
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:None
+
+let emptyTensorList
+    ?(name = "EmptyTensorList")
+    ?(control_inputs = [])
+    (element_shape : ([< `int32 | `int64 ] as 'shape_type) t)
+  =
+  let attributes = [ "shape_type", Type (P (Node.output_type element_shape)) ] in
+  let name = Name.of_string name in
+  let op_name = Op_names.emptyTensorList in
+  let inputs = [ (`single (P element_shape)) ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Variant
     ~inputs
     ~control_inputs
     ~attributes
@@ -6169,6 +6449,33 @@ let fakeQuantWithMinMaxVarsPerChannelGradient
     ~attributes
     ~output_idx:(Some 2)
 
+let featureStatsDataset
+    ?(name = "FeatureStatsDataset")
+    ~output_types
+    ~output_shapes
+    ?(control_inputs = [])
+    (input_dataset : [ `variant ] t)
+    (tag : [ `string ] t)
+  =
+  let attributes = [] in
+  let attributes =
+    ("output_types", List (Type output_types)) :: attributes
+  in
+  let attributes =
+    ("output_shapes", List (Shape output_shapes)) :: attributes
+  in
+  let name = Name.of_string name in
+  let op_name = Op_names.featureStatsDataset in
+  let inputs = [ (`single (P input_dataset)); (`single (P tag)) ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Variant
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:None
+
 let fill
     ?(name = "Fill")
     ?(control_inputs = [])
@@ -6183,6 +6490,28 @@ let fill
     ~name
     ~op_name
     ~output_type:(Node.output_type value)
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:None
+
+let fixedLengthRecordDataset
+    ?(name = "FixedLengthRecordDataset")
+    ?(control_inputs = [])
+    (filenames : [ `string ] t)
+    (header_bytes : [ `int64 ] t)
+    (record_bytes : [ `int64 ] t)
+    (footer_bytes : [ `int64 ] t)
+    (buffer_size : [ `int64 ] t)
+  =
+  let attributes = [] in
+  let name = Name.of_string name in
+  let op_name = Op_names.fixedLengthRecordDataset in
+  let inputs = [ (`single (P filenames)); (`single (P header_bytes)); (`single (P record_bytes)); (`single (P footer_bytes)); (`single (P buffer_size)) ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Variant
     ~inputs
     ~control_inputs
     ~attributes
@@ -7866,6 +8195,33 @@ let lRNGrad
     ~name
     ~op_name
     ~output_type:(Node.output_type input_grads)
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:None
+
+let latencyStatsDataset
+    ?(name = "LatencyStatsDataset")
+    ~output_types
+    ~output_shapes
+    ?(control_inputs = [])
+    (input_dataset : [ `variant ] t)
+    (tag : [ `string ] t)
+  =
+  let attributes = [] in
+  let attributes =
+    ("output_types", List (Type output_types)) :: attributes
+  in
+  let attributes =
+    ("output_shapes", List (Shape output_shapes)) :: attributes
+  in
+  let name = Name.of_string name in
+  let op_name = Op_names.latencyStatsDataset in
+  let inputs = [ (`single (P input_dataset)); (`single (P tag)) ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Variant
     ~inputs
     ~control_inputs
     ~attributes
@@ -9891,6 +10247,33 @@ let onesLike
     ~attributes
     ~output_idx:None
 
+let optimizeDataset
+    ?(name = "OptimizeDataset")
+    ~output_types
+    ~output_shapes
+    ?(control_inputs = [])
+    (input_dataset : [ `variant ] t)
+    (optimizations : [ `string ] t)
+  =
+  let attributes = [] in
+  let attributes =
+    ("output_types", List (Type output_types)) :: attributes
+  in
+  let attributes =
+    ("output_shapes", List (Shape output_shapes)) :: attributes
+  in
+  let name = Name.of_string name in
+  let op_name = Op_names.optimizeDataset in
+  let inputs = [ (`single (P input_dataset)); (`single (P optimizations)) ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Variant
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:None
+
 let orderedMapClear
     ?(name = "OrderedMapClear")
     ?capacity
@@ -10304,6 +10687,33 @@ let pow
     ~name
     ~op_name
     ~output_type:(Node.output_type x)
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:None
+
+let prefetchDataset
+    ?(name = "PrefetchDataset")
+    ~output_types
+    ~output_shapes
+    ?(control_inputs = [])
+    (input_dataset : [ `variant ] t)
+    (buffer_size : [ `int64 ] t)
+  =
+  let attributes = [] in
+  let attributes =
+    ("output_types", List (Type output_types)) :: attributes
+  in
+  let attributes =
+    ("output_shapes", List (Shape output_shapes)) :: attributes
+  in
+  let name = Name.of_string name in
+  let op_name = Op_names.prefetchDataset in
+  let inputs = [ (`single (P input_dataset)); (`single (P buffer_size)) ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Variant
     ~inputs
     ~control_inputs
     ~attributes
@@ -11457,6 +11867,33 @@ let randomCrop
     ~attributes
     ~output_idx:None
 
+let randomDataset
+    ?(name = "RandomDataset")
+    ~output_types
+    ~output_shapes
+    ?(control_inputs = [])
+    (seed : [ `int64 ] t)
+    (seed2 : [ `int64 ] t)
+  =
+  let attributes = [] in
+  let attributes =
+    ("output_types", List (Type output_types)) :: attributes
+  in
+  let attributes =
+    ("output_shapes", List (Shape output_shapes)) :: attributes
+  in
+  let name = Name.of_string name in
+  let op_name = Op_names.randomDataset in
+  let inputs = [ (`single (P seed)); (`single (P seed2)) ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Variant
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:None
+
 let randomGamma
     ?(name = "RandomGamma")
     ?seed
@@ -11731,6 +12168,34 @@ let range
     ~name
     ~op_name
     ~output_type:(Node.output_type start)
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:None
+
+let rangeDataset
+    ?(name = "RangeDataset")
+    ~output_types
+    ~output_shapes
+    ?(control_inputs = [])
+    (start : [ `int64 ] t)
+    (stop : [ `int64 ] t)
+    (step : [ `int64 ] t)
+  =
+  let attributes = [] in
+  let attributes =
+    ("output_types", List (Type output_types)) :: attributes
+  in
+  let attributes =
+    ("output_shapes", List (Shape output_shapes)) :: attributes
+  in
+  let name = Name.of_string name in
+  let op_name = Op_names.rangeDataset in
+  let inputs = [ (`single (P start)); (`single (P stop)); (`single (P step)) ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Variant
     ~inputs
     ~control_inputs
     ~attributes
@@ -12344,6 +12809,33 @@ let reluGrad
     ~name
     ~op_name
     ~output_type:(Node.output_type gradients)
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:None
+
+let repeatDataset
+    ?(name = "RepeatDataset")
+    ~output_types
+    ~output_shapes
+    ?(control_inputs = [])
+    (input_dataset : [ `variant ] t)
+    (count : [ `int64 ] t)
+  =
+  let attributes = [] in
+  let attributes =
+    ("output_types", List (Type output_types)) :: attributes
+  in
+  let attributes =
+    ("output_shapes", List (Shape output_shapes)) :: attributes
+  in
+  let name = Name.of_string name in
+  let op_name = Op_names.repeatDataset in
+  let inputs = [ (`single (P input_dataset)); (`single (P count)) ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Variant
     ~inputs
     ~control_inputs
     ~attributes
@@ -13699,6 +14191,69 @@ let shardedFilespec
     ~attributes
     ~output_idx:None
 
+let shuffleAndRepeatDataset
+    ?(name = "ShuffleAndRepeatDataset")
+    ~output_types
+    ~output_shapes
+    ?(control_inputs = [])
+    (input_dataset : [ `variant ] t)
+    (buffer_size : [ `int64 ] t)
+    (seed : [ `int64 ] t)
+    (seed2 : [ `int64 ] t)
+    (count : [ `int64 ] t)
+  =
+  let attributes = [] in
+  let attributes =
+    ("output_types", List (Type output_types)) :: attributes
+  in
+  let attributes =
+    ("output_shapes", List (Shape output_shapes)) :: attributes
+  in
+  let name = Name.of_string name in
+  let op_name = Op_names.shuffleAndRepeatDataset in
+  let inputs = [ (`single (P input_dataset)); (`single (P buffer_size)); (`single (P seed)); (`single (P seed2)); (`single (P count)) ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Variant
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:None
+
+let shuffleDataset
+    ?(name = "ShuffleDataset")
+    ?reshuffle_each_iteration
+    ~output_types
+    ~output_shapes
+    ?(control_inputs = [])
+    (input_dataset : [ `variant ] t)
+    (buffer_size : [ `int64 ] t)
+    (seed : [ `int64 ] t)
+    (seed2 : [ `int64 ] t)
+  =
+  let attributes = [] in
+  let attributes =
+    match reshuffle_each_iteration with | None -> attributes | Some reshuffle_each_iteration -> ("reshuffle_each_iteration", Bool reshuffle_each_iteration) :: attributes
+  in
+  let attributes =
+    ("output_types", List (Type output_types)) :: attributes
+  in
+  let attributes =
+    ("output_shapes", List (Shape output_shapes)) :: attributes
+  in
+  let name = Name.of_string name in
+  let op_name = Op_names.shuffleDataset in
+  let inputs = [ (`single (P input_dataset)); (`single (P buffer_size)); (`single (P seed)); (`single (P seed2)) ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Variant
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:None
+
 let sigmoid
     ?(name = "Sigmoid")
     ?(control_inputs = [])
@@ -13790,6 +14345,24 @@ let sinh
     ~attributes
     ~output_idx:None
 
+let sinkDataset
+    ?(name = "SinkDataset")
+    ?(control_inputs = [])
+    (input_dataset : [ `variant ] t)
+  =
+  let attributes = [] in
+  let name = Name.of_string name in
+  let op_name = Op_names.sinkDataset in
+  let inputs = [ (`single (P input_dataset)) ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Variant
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:None
+
 let size
     ?(name = "Size")
     ~type_
@@ -13804,6 +14377,33 @@ let size
     ~name
     ~op_name
     ~output_type:type_
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:None
+
+let skipDataset
+    ?(name = "SkipDataset")
+    ~output_types
+    ~output_shapes
+    ?(control_inputs = [])
+    (input_dataset : [ `variant ] t)
+    (count : [ `int64 ] t)
+  =
+  let attributes = [] in
+  let attributes =
+    ("output_types", List (Type output_types)) :: attributes
+  in
+  let attributes =
+    ("output_shapes", List (Shape output_shapes)) :: attributes
+  in
+  let name = Name.of_string name in
+  let op_name = Op_names.skipDataset in
+  let inputs = [ (`single (P input_dataset)); (`single (P count)) ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Variant
     ~inputs
     ~control_inputs
     ~attributes
@@ -13916,6 +14516,34 @@ let slice
     ~name
     ~op_name
     ~output_type:(Node.output_type input)
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:None
+
+let slideDataset
+    ?(name = "SlideDataset")
+    ~output_types
+    ~output_shapes
+    ?(control_inputs = [])
+    (input_dataset : [ `variant ] t)
+    (window_size : [ `int64 ] t)
+    (stride : [ `int64 ] t)
+  =
+  let attributes = [] in
+  let attributes =
+    ("output_types", List (Type output_types)) :: attributes
+  in
+  let attributes =
+    ("output_shapes", List (Shape output_shapes)) :: attributes
+  in
+  let name = Name.of_string name in
+  let op_name = Op_names.slideDataset in
+  let inputs = [ (`single (P input_dataset)); (`single (P window_size)); (`single (P stride)) ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Variant
     ~inputs
     ~control_inputs
     ~attributes
@@ -15392,6 +16020,26 @@ let sparseTensorDenseMatMul
     ~attributes
     ~output_idx:None
 
+let sparseTensorSliceDataset
+    ?(name = "SparseTensorSliceDataset")
+    ?(control_inputs = [])
+    (indices : [ `int64 ] t)
+    (values : 'tvalues t)
+    (dense_shape : [ `int64 ] t)
+  =
+  let attributes = [ "Tvalues", Type (P (Node.output_type values)) ] in
+  let name = Name.of_string name in
+  let op_name = Op_names.sparseTensorSliceDataset in
+  let inputs = [ (`single (P indices)); (`single (P values)); (`single (P dense_shape)) ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Variant
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:None
+
 let sparseToDense
     ?(name = "SparseToDense")
     ?validate_indices
@@ -15520,6 +16168,34 @@ let splitV
   in
   List.init num_split ~f:(fun output_idx ->
     set_output_idx node (Some output_idx))
+
+let sqlDataset
+    ?(name = "SqlDataset")
+    ~output_types
+    ~output_shapes
+    ?(control_inputs = [])
+    (driver_name : [ `string ] t)
+    (data_source_name : [ `string ] t)
+    (query : [ `string ] t)
+  =
+  let attributes = [] in
+  let attributes =
+    ("output_types", List (Type output_types)) :: attributes
+  in
+  let attributes =
+    ("output_shapes", List (Shape output_shapes)) :: attributes
+  in
+  let name = Name.of_string name in
+  let op_name = Op_names.sqlDataset in
+  let inputs = [ (`single (P driver_name)); (`single (P data_source_name)); (`single (P query)) ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Variant
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:None
 
 let sqrt
     ?(name = "Sqrt")
@@ -16347,6 +17023,26 @@ let switch
     ~attributes
     ~output_idx:(Some 1)
 
+let tFRecordDataset
+    ?(name = "TFRecordDataset")
+    ?(control_inputs = [])
+    (filenames : [ `string ] t)
+    (compression_type : [ `string ] t)
+    (buffer_size : [ `int64 ] t)
+  =
+  let attributes = [] in
+  let name = Name.of_string name in
+  let op_name = Op_names.tFRecordDataset in
+  let inputs = [ (`single (P filenames)); (`single (P compression_type)); (`single (P buffer_size)) ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Variant
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:None
+
 let tFRecordReader
     ?(name = "TFRecordReader")
     ?container
@@ -16372,6 +17068,33 @@ let tFRecordReader
     ~name
     ~op_name
     ~output_type:Type.String
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:None
+
+let takeDataset
+    ?(name = "TakeDataset")
+    ~output_types
+    ~output_shapes
+    ?(control_inputs = [])
+    (input_dataset : [ `variant ] t)
+    (count : [ `int64 ] t)
+  =
+  let attributes = [] in
+  let attributes =
+    ("output_types", List (Type output_types)) :: attributes
+  in
+  let attributes =
+    ("output_shapes", List (Shape output_shapes)) :: attributes
+  in
+  let name = Name.of_string name in
+  let op_name = Op_names.takeDataset in
+  let inputs = [ (`single (P input_dataset)); (`single (P count)) ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Variant
     ~inputs
     ~control_inputs
     ~attributes
@@ -17020,6 +17743,229 @@ let tensorArrayWriteV2
     ~attributes
     ~output_idx:None
 
+let tensorListConcatLists
+    ?(name = "TensorListConcatLists")
+    ?(control_inputs = [])
+    (input_a : [ `variant ] t)
+    (input_b : [ `variant ] t)
+  =
+  let attributes = [] in
+  let name = Name.of_string name in
+  let op_name = Op_names.tensorListConcatLists in
+  let inputs = [ (`single (P input_a)); (`single (P input_b)) ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Variant
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:None
+
+let tensorListElementShape
+    ?(name = "TensorListElementShape")
+    ~type_
+    ?(control_inputs = [])
+    (input_handle : [ `variant ] t)
+  =
+  let attributes = [ "shape_type", Type (P type_) ] in
+  let name = Name.of_string name in
+  let op_name = Op_names.tensorListElementShape in
+  let inputs = [ (`single (P input_handle)) ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:type_
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:None
+
+let tensorListFromTensor
+    ?(name = "TensorListFromTensor")
+    ?(control_inputs = [])
+    (tensor : 'element_dtype t)
+    (element_shape : ([< `int32 | `int64 ] as 'shape_type) t)
+  =
+  let attributes = [ "shape_type", Type (P (Node.output_type element_shape)) ;  "element_dtype", Type (P (Node.output_type tensor)) ] in
+  let name = Name.of_string name in
+  let op_name = Op_names.tensorListFromTensor in
+  let inputs = [ (`single (P tensor)); (`single (P element_shape)) ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Variant
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:None
+
+let tensorListGetItem
+    ?(name = "TensorListGetItem")
+    ~type_
+    ?(control_inputs = [])
+    (input_handle : [ `variant ] t)
+    (index : [ `int32 ] t)
+  =
+  let attributes = [ "element_dtype", Type (P type_) ] in
+  let name = Name.of_string name in
+  let op_name = Op_names.tensorListGetItem in
+  let inputs = [ (`single (P input_handle)); (`single (P index)) ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:type_
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:None
+
+let tensorListLength
+    ?(name = "TensorListLength")
+    ?(control_inputs = [])
+    (input_handle : [ `variant ] t)
+  =
+  let attributes = [] in
+  let name = Name.of_string name in
+  let op_name = Op_names.tensorListLength in
+  let inputs = [ (`single (P input_handle)) ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Int32
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:None
+
+let tensorListPopBack
+    ?(name = "TensorListPopBack")
+    ~type_1
+    ?(control_inputs = [])
+    (input_handle : [ `variant ] t)
+  =
+  let attributes = [ "element_dtype", Type (P type_1) ] in
+  let name = Name.of_string name in
+  let op_name = Op_names.tensorListPopBack in
+  let inputs = [ (`single (P input_handle)) ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Variant
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:(Some 0)
+  ,
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:type_1
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:(Some 1)
+
+let tensorListPushBack
+    ?(name = "TensorListPushBack")
+    ?(control_inputs = [])
+    (input_handle : [ `variant ] t)
+    (tensor : 'element_dtype t)
+  =
+  let attributes = [ "element_dtype", Type (P (Node.output_type tensor)) ] in
+  let name = Name.of_string name in
+  let op_name = Op_names.tensorListPushBack in
+  let inputs = [ (`single (P input_handle)); (`single (P tensor)) ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Variant
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:None
+
+let tensorListPushBackBatch
+    ?(name = "TensorListPushBackBatch")
+    ?(control_inputs = [])
+    (input_handles : [ `variant ] t)
+    (tensor : 'element_dtype t)
+  =
+  let attributes = [ "element_dtype", Type (P (Node.output_type tensor)) ] in
+  let name = Name.of_string name in
+  let op_name = Op_names.tensorListPushBackBatch in
+  let inputs = [ (`single (P input_handles)); (`single (P tensor)) ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Variant
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:None
+
+let tensorListReserve
+    ?(name = "TensorListReserve")
+    ?(control_inputs = [])
+    (element_shape : ([< `int32 | `int64 ] as 'shape_type) t)
+    (num_elements : [ `int32 ] t)
+  =
+  let attributes = [ "shape_type", Type (P (Node.output_type element_shape)) ] in
+  let name = Name.of_string name in
+  let op_name = Op_names.tensorListReserve in
+  let inputs = [ (`single (P element_shape)); (`single (P num_elements)) ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Variant
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:None
+
+let tensorListSetItem
+    ?(name = "TensorListSetItem")
+    ?(control_inputs = [])
+    (input_handle : [ `variant ] t)
+    (index : [ `int32 ] t)
+    (item : 'element_dtype t)
+  =
+  let attributes = [ "element_dtype", Type (P (Node.output_type item)) ] in
+  let name = Name.of_string name in
+  let op_name = Op_names.tensorListSetItem in
+  let inputs = [ (`single (P input_handle)); (`single (P index)); (`single (P item)) ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Variant
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:None
+
+let tensorListStack
+    ?(name = "TensorListStack")
+    ~type_
+    ?num_elements
+    ?(control_inputs = [])
+    (input_handle : [ `variant ] t)
+  =
+  let attributes = [ "element_dtype", Type (P type_) ] in
+  let attributes =
+    match num_elements with | None -> attributes | Some num_elements -> ("num_elements", Int num_elements) :: attributes
+  in
+  let name = Name.of_string name in
+  let op_name = Op_names.tensorListStack in
+  let inputs = [ (`single (P input_handle)) ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:type_
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:None
+
 let tensorSummary
     ?(name = "TensorSummary")
     ?description
@@ -17061,6 +18007,26 @@ let tensorSummaryV2
     ~name
     ~op_name
     ~output_type:Type.String
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:None
+
+let textLineDataset
+    ?(name = "TextLineDataset")
+    ?(control_inputs = [])
+    (filenames : [ `string ] t)
+    (compression_type : [ `string ] t)
+    (buffer_size : [ `int64 ] t)
+  =
+  let attributes = [] in
+  let name = Name.of_string name in
+  let op_name = Op_names.textLineDataset in
+  let inputs = [ (`single (P filenames)); (`single (P compression_type)); (`single (P buffer_size)) ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Variant
     ~inputs
     ~control_inputs
     ~attributes
@@ -17440,6 +18406,32 @@ let unbatch
     ~name
     ~op_name
     ~output_type:(Node.output_type batched_tensor)
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:None
+
+let unbatchDataset
+    ?(name = "UnbatchDataset")
+    ~output_types
+    ~output_shapes
+    ?(control_inputs = [])
+    (input_dataset : [ `variant ] t)
+  =
+  let attributes = [] in
+  let attributes =
+    ("output_types", List (Type output_types)) :: attributes
+  in
+  let attributes =
+    ("output_shapes", List (Shape output_shapes)) :: attributes
+  in
+  let name = Name.of_string name in
+  let op_name = Op_names.unbatchDataset in
+  let inputs = [ (`single (P input_dataset)) ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Variant
     ~inputs
     ~control_inputs
     ~attributes
@@ -17903,6 +18895,33 @@ let wholeFileReader
     ~attributes
     ~output_idx:None
 
+let windowDataset
+    ?(name = "WindowDataset")
+    ~output_types
+    ~output_shapes
+    ?(control_inputs = [])
+    (input_dataset : [ `variant ] t)
+    (window_size : [ `int64 ] t)
+  =
+  let attributes = [] in
+  let attributes =
+    ("output_types", List (Type output_types)) :: attributes
+  in
+  let attributes =
+    ("output_shapes", List (Shape output_shapes)) :: attributes
+  in
+  let name = Name.of_string name in
+  let op_name = Op_names.windowDataset in
+  let inputs = [ (`single (P input_dataset)); (`single (P window_size)) ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Variant
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:None
+
 let writeFile
     ?(name = "WriteFile")
     ?(control_inputs = [])
@@ -17954,6 +18973,35 @@ let zeta
     ~name
     ~op_name
     ~output_type:(Node.output_type x)
+    ~inputs
+    ~control_inputs
+    ~attributes
+    ~output_idx:None
+
+let zipDataset
+    ?(name = "ZipDataset")
+    ~output_types
+    ~output_shapes
+    ?(control_inputs = [])
+    (input_datasets : [ `variant ] t list)
+  =
+  let attributes = [] in
+  let attributes =
+    ("output_types", List (Type output_types)) :: attributes
+  in
+  let attributes =
+    ("output_shapes", List (Shape output_shapes)) :: attributes
+  in
+  let attributes =
+    ("N", Int (List.length input_datasets)) :: attributes
+  in
+  let name = Name.of_string name in
+  let op_name = Op_names.zipDataset in
+  let inputs = [ (`multi (List.map ~f:(fun n -> P n) input_datasets)) ] in
+  Node.create
+    ~name
+    ~op_name
+    ~output_type:Type.Variant
     ~inputs
     ~control_inputs
     ~attributes

@@ -1,6 +1,7 @@
 module Type : sig
   type _ t =
     | Unit : [ `unit ] t
+    | Variant : [ `variant ] t
     | Float : [ `float ] t
     | Double : [ `double ] t
     | Int32 : [ `int32 ] t
@@ -15,6 +16,7 @@ module Type : sig
 
   val of_dt_type
     :  [> `dt_bool
+       | `dt_variant
        | `dt_complex64
        | `dt_double
        | `dt_float
@@ -27,6 +29,7 @@ module Type : sig
   val to_dt_type
     :  p
     -> [> `dt_bool
+       | `dt_variant
        | `dt_complex64
        | `dt_double
        | `dt_float
@@ -34,8 +37,6 @@ module Type : sig
        | `dt_int64
        | `dt_string
        ]
-
-  val to_data_type : p -> Wrapper.data_type
 end
 
 module Tensor_attr : sig
