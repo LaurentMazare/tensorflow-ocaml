@@ -17,6 +17,14 @@ module C(F: Cstubs.FOREIGN) = struct
         @-> ptr void    (* deallocator arg *)
         @-> returning t)
 
+    let tf_allocate_tensor =
+      foreign "TF_AllocateTensor"
+        (int            (* data type *)
+        @-> ptr int64_t (* dims *)
+        @-> int         (* num dims *)
+        @-> size_t      (* len *)
+        @-> returning t)
+
     let tf_deletetensor =
       foreign "TF_DeleteTensor" (t @-> returning void)
 
