@@ -197,21 +197,3 @@ let extract : type a . p -> a Type.t -> a t option = fun p type_ ->
 
 let extract_exn p type_ =
   Option.value_exn (extract p type_)
-
-(* TODO noury: actually make weak *)
-module Weak_table = struct
-  type 'a node = 'a t
-  type t = p Id_table.t
-
-  let create () =
-    Hashtbl.create (module Id)
-
-  let set t ~key ~data =
-    Hashtbl.set t ~key:(id key) ~data:(P data)
-
-  let find t key =
-    match Hashtbl.find t (id key) with
-    | None -> None
-    | Some packed_node ->
-      extract packed_node (output_type key)
-end
