@@ -22,7 +22,8 @@ module Session = struct
 
   let default_lazy = lazy (create ())
   let default () = Lazy.force default_lazy
-  let session () = (default ()).session
+  let default_session () = (default ()).session
+  let default_graph () = (default ()).graph
 
   let get_and_reset_variable_initializations () =
     let t = default () in
@@ -56,6 +57,7 @@ module Tensor = Operation.Tensor_attr
 module Dim = Operation.Dim
 module Attr_list = Operation.Attr_list
 type attr = Operation.attr
+type output = Wrapper.Graph.output
 
 type 'a t =
   { id : Id.t
@@ -67,6 +69,7 @@ type 'a t =
   ; attributes : (string * attr) list
   ; output_idx : int option (* Only used for multiple outputs. *)
   ; operation : Operation.t
+  ; output : output
   }
 and p = P : _ t -> p
 and input = [ `single of p | `multi of p list ]
@@ -85,6 +88,7 @@ let control_inputs t = t.control_inputs
 let attributes t = t.attributes
 let output_idx t = t.output_idx
 let operation t = t.operation
+let output t = t.output
 
 let packed_name (P t) = t.name
 let packed_inputs (P t) = t.inputs
@@ -105,6 +109,7 @@ let packed_is_real (P t) =
 let packed_id (P t) = t.id
 let packed_output_idx (P t) = t.output_idx
 let packed_operation (P t) = t.operation
+let packed_output (P t) = t.output
 
 let create
       ~name
@@ -129,13 +134,16 @@ let create
         `Snd input_lists)
   in
   let operation =
-    Operation.create (Session.default ()).graph
+    Operation.create (Session.default_graph ())
       ~op_name:(Op_name.to_string op_name)
       ~unique_name:(Printf.sprintf "%s-%s" (Name.to_string name) (Id.to_string id))
       ~control_inputs:(List.map control_inputs ~f:packed_operation)
       ~inputs:op_inputs
       ~input_lists:op_input_lists
       ~attributes
+  in
+  let output =
+    Wrapper.Graph.create_output operation ~index:(Option.value output_idx ~default:0)
   in
   { id
   ; name
@@ -146,6 +154,24 @@ let create
   ; attributes
   ; output_idx
   ; operation
+  ; output
+  }
+
+let create_gradient output ~output_type =
+  let id = Id.create () in
+  let operation, output_idx =
+    Wrapper.Graph.output_op_and_index (Session.default_graph ()) output
+  in
+  { id
+  ; name = Name.of_string "gradient"
+  ; op_name = Op_name.of_string "gradient"
+  ; output_type
+  ; inputs = []
+  ; control_inputs = []
+  ; attributes = []
+  ; output_idx = Some output_idx
+  ; operation
+  ; output
   }
 
 let get_attr t str =
@@ -171,10 +197,8 @@ let get_attr_int_list t str =
     | List (Int l) -> Some l
     | _ -> None)
 
-let shape ?(index = 0) t =
-  Wrapper.Graph.shape
-    (Session.default ()).graph
-    (Wrapper.Graph.create_output t.operation ~index)
+let shape t =
+  Wrapper.Graph.shape (Session.default_graph ()) t.output
   |> Wrapper.Status.ok_exn
 
 let set_output_idx t output_idx = { t with output_idx }

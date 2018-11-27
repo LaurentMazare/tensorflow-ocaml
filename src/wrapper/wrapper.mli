@@ -93,6 +93,8 @@ module Graph : sig
 
   val create_output : operation -> index:int -> output
 
+  val output_op_and_index : t -> output -> operation * int
+
   val set_attr_int
     :  operation_description
     -> attr_name:string
@@ -192,6 +194,8 @@ module Graph : sig
     -> output list
     -> xs:output list
     -> output list Status.result
+
+  val graph : operation -> t
 end
 
 module Session : sig

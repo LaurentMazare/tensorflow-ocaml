@@ -7,12 +7,11 @@ let run ?(inputs=[]) ?(outputs=[]) ?(targets=[]) () =
   then failwith "Session.run: duplicate entry in [inputs].";
   let inputs =
     List.map inputs ~f:(fun (input, input_tensor) ->
-      Wrapper.Graph.create_output (Node.packed_operation input) ~index:0, input_tensor)
+      Node.packed_output input, input_tensor)
   in
-  let outputs = List.map outputs ~f:Node.packed_operation in
-  let targets = List.map targets ~f:Node.packed_operation @ outputs in
-  let outputs = List.map outputs ~f:(fun op -> Wrapper.Graph.create_output op ~index:0) in
-  let session = Node.Session.session () in
+  let targets = List.map (targets @ outputs) ~f:Node.packed_operation in
+  let outputs = List.map outputs ~f:Node.packed_output in
+  let session = Node.Session.default_session () in
   (* [variable_initializations] is topologically sorted. *)
   List.iter (Node.Session.get_and_reset_variable_initializations ()) ~f:(fun init_op ->
     Wrapper.Session.run session ~inputs ~outputs:[] ~targets:[ init_op ]

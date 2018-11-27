@@ -373,6 +373,11 @@ module Graph = struct
     setf output Tf_output.index index;
     output
 
+  let output_op_and_index graph output =
+    (graph, getf output Tf_output.oper), getf output Tf_output.index
+
+  let graph (graph, _) = graph
+
   let new_operation t ~op_name ~name =
     let od =
       Tf_operationdescription.tf_newoperation

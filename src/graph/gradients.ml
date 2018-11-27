@@ -146,3 +146,15 @@ let gradient node ~with_respect_to_float ~with_respect_to_double =
   lookup with_respect_to_double ~type_:Node.Type.Double
 
 let () = Ops_gradients.register_all ()
+
+let gradient_tf node ~with_respect_to_float ~with_respect_to_double =
+  let open Tensorflow_core in
+  let graph = Node.operation node |> Wrapper.Graph.graph in
+  let add_gradient xs ~output_type =
+    Wrapper.Graph.add_gradients graph [ Node.output node ]
+      ~xs:(List.map xs ~f:Node.output)
+    |> Wrapper.Status.ok_exn
+    |> List.map ~f:(Node.create_gradient ~output_type)
+  in
+  add_gradient with_respect_to_float ~output_type:Node.Type.Float,
+  add_gradient with_respect_to_double ~output_type:Node.Type.Double
