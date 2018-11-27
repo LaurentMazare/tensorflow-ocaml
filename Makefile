@@ -10,7 +10,6 @@ ALL = $(MNIST_ALL) \
       $(BASICS_ALL) \
       examples/char_rnn/char_rnn.exe \
       examples/rnn/rnn.exe \
-      tests/operator_tests.exe tests/gradient_tests.exe \
       examples/load/load.exe
 
 %.exe: .FORCE
@@ -33,9 +32,8 @@ clean:
 
 .FORCE:
 
-runtests: tests/operator_tests.exe tests/gradient_tests.exe
-	_build/default/tests/operator_tests.exe
-	_build/default/tests/gradient_tests.exe
+test: .FORCE
+	dune runtest
 
 all: .FORCE
 	dune build $(ALL)

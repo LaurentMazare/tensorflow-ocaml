@@ -1,98 +1,115 @@
 open Base
-open Float.O_dot
 open Tensorflow_core
 open Tensorflow
 module O = Ops
 
-let assert_equal_int value ~expected_value =
-  if value <> expected_value
-  then Printf.failwithf "Got %d, expected %d" value expected_value ()
-
-let assert_equal value ~expected_value ~tol =
-  if Float.(abs (value -. expected_value) > tol)
-  then Printf.failwithf "Got %f, expected %f" value expected_value ()
-
-let assert_scalar tensor ~expected_value ~tol =
-  let index =
-    match Tensor.dims tensor with
-    | [||] -> [||]
-    | [| 1 |] -> [| 0 |]
-    | [| n |] -> Printf.failwithf "Single dimension tensor with %d elements" n ()
-    | _ -> failwith "Multi-dimensional tensor."
+let%expect_test _ =
+  let eval_and_print ops =
+    Session.run (Session.Output.float ops) |> Tensor.print_;
+    Caml.Format.print_flush ();
   in
-  assert_equal (Tensor.get tensor index) ~expected_value ~tol
+  eval_and_print O.(f 40. + f 2.);
+  [%expect{| 42.000000 |}];
+  eval_and_print O.(f 12. * f 3.);
+  [%expect{| 36.000000 |}];
+  eval_and_print O.(f 7. / (neg (f 2.)));
+  [%expect{| -3.500000 |}];
+  eval_and_print O.(pow (f 2.) (f 10.) - square (f 10.));
+  [%expect{| 924.000000 |}];
+  eval_and_print O.(sin (f 1.) + cos (f 2.) - tanh (f 3.));
+  [%expect{| -0.569731 |}];
+  eval_and_print O.(reduce_mean (pow (cf (List.init 100 ~f:Float.of_int)) (f 3.)));
+  [%expect{| 245025.000000 |}];
+  eval_and_print O.(reduce_sum (range (const_int ~shape:[] ~type_:Int32 [ 10 ])
+                                |> cast ~type_:Float));
+  [%expect{| 45.000000 |}];
+  eval_and_print O.(maximum (f 2.) (f 3.) - minimum (f 5.) (f (-5.)));
+  [%expect{|
+    8.000000
+    |}];
+  eval_and_print O.(matrixDeterminant (cf ~shape:[ 2; 2 ] [ 1.; 2.; 3.; 4. ]));
+  [%expect{| -2.000000 |}];
+  eval_and_print O.(moments (cf ~shape:[ 5 ] [ 1.; 2.; 3.; 4.; 5. ]) ~dims:[ 0 ]).mean;
+  [%expect{| 3.000000 |}];
+  eval_and_print O.(moments (cf ~shape:[ 5 ] [ 1.; 2.; 3.; 4.; 5. ]) ~dims:[ 0 ]).variance;
+  [%expect{| 2.000000 |}]
 
-let assert_vector tensor ~expected_value ~tol =
-  match Tensor.dims tensor with
-  | [||] -> failwith "Scalar rather than vector"
-  | [| n |] ->
-    List.init n ~f:(fun i -> Tensor.get tensor [| i |])
-    |> List.iter2_exn expected_value ~f:(fun expected_value value ->
-      assert_equal value ~expected_value ~tol)
-  | _ -> failwith "Multi-dimensional tensor."
+let%expect_test _ =
+  let eval_and_print ops = Session.run (Session.Output.double ops) |> Tensor.print_ in
+  eval_and_print O.(range (const_int ~shape:[] ~type_:Int32 [ 3 ]) |> cast ~type_:Double);
+  [%expect{| |}];
+  eval_and_print O.(concat zero32
+                      [ floor (cd [ 1.0; 1.1; 1.9; 2.0 ])
+                      ; ceil (cd [ 1.0; 1.1; 1.9; 2.0 ])
+                      ]);
+  [%expect{|
+    0 0.000000
+    1 1.000000
+    2 2.000000
+    0 1.000000
+    1 1.000000
+    2 1.000000
+    3 2.000000
+    4 1.000000
+    5 2.000000
+    6 2.000000
+    7 2.000000
+    |}];
+  eval_and_print O.((cd ~shape:[ 2; 2 ] [ 1.; 2.; 3.; 4. ]) *^ (cd ~shape:[ 2; 1 ] [ 5.; 6. ])
+                    |> reduce_sum ~dims:[ 1 ]);
+  [%expect{|
+    0 17.000000
+    1 39.000000
+    |}];
+  eval_and_print O.(matrixSolve (cd ~shape:[ 2; 2 ] [ 1.; 2.; 3.; 4. ])
+                      (cd ~shape:[ 2; 1 ] [ 4.; 10. ])
+                    |> reduce_sum ~dims:[ 1 ]);
+  [%expect{|
+    0 2.000000
+    1 1.000000
+    |}];
+  eval_and_print O.(split ~num_split:2 one32 (cd ~shape:[ 2; 2 ] [ 1.; 2.; 3.; 4. ])
+                    |> function
+                    | [ o1; o2 ] ->
+                      concat zero32
+                        [ reshape o2 (const_int ~type_:Int32 [ 2 ])
+                        ; reshape o1 (const_int ~type_:Int32 [ 2 ])
+                        ]
+                    | _ -> assert false);
+  [%expect{|
+    0 2.000000
+    1 4.000000
+    2 1.000000
+    3 3.000000
+    |}];
+  eval_and_print O.(split ~num_split:2 zero32 (cd ~shape:[ 2; 2 ] [ 1.; 2.; 3.; 4. ])
+                    |> function
+                    | [ o1; o2 ] ->
+                      concat zero32
+                        [ reshape o2 (const_int ~type_:Int32 [ 2 ])
+                        ; reshape o1 (const_int ~type_:Int32 [ 2 ])
+                        ]
+                    | _ -> assert false);
+  [%expect{|
+    0 3.000000
+    1 4.000000
+    2 1.000000
+    3 2.000000
+    |}];
+  eval_and_print O.(moments (cd ~shape:[ 2; 5 ] [ 1.; 2.; 3.; 4.; 5.; 8.; 10.; 8.; 10.; 9. ])
+                      ~dims:[ 1 ]).mean;
+  [%expect{|
+    0 3.000000
+    1 9.000000
+    |}];
+  eval_and_print O.(moments (cd ~shape:[ 2; 5 ] [ 1.; 2.; 3.; 4.; 5.; 8.; 10.; 8.; 10.; 9. ])
+                      ~dims:[ 1 ]).variance;
+  [%expect{|
+    0 2.000000
+    1 0.800000
+    |}]
 
-let test_scalar () =
-  List.iter ~f:(fun (tol, ops, expected_value) ->
-    let tensor = Session.run (Session.Output.float ops) in
-    assert_scalar tensor ~expected_value ~tol)
-    [ 0.,   O.(f 40. + f 2.), 42.
-    ; 0.,   O.(f 12. * f 3.), 36.
-    ; 0.,   O.(f 7. / (neg (f 2.))), -3.5
-    ; 0.,   O.(pow (f 2.) (f 10.) - square (f 10.)), 924.
-    ; 1e-7, O.(sin (f 1.) + cos (f 2.) - tanh (f 3.)), Float.sin 1. +. Float.cos 2. -. Float.tanh 3.
-    ; 0.,   O.(reduce_mean (pow (cf (List.init 100 ~f:Float.of_int)) (f 3.))), 245025.
-    ; 0.,   O.(reduce_sum (range (const_int ~shape:[] ~type_:Int32 [ 10 ])
-              |> cast ~type_:Float)), 45.
-    ; 0.,   O.(maximum (f 2.) (f 3.) - minimum (f 5.) (f (-5.))), 8.
-    ; 1e-6, O.(matrixDeterminant (cf ~shape:[ 2; 2 ] [ 1.; 2.; 3.; 4. ])), -2.
-    ; 0.,   O.(moments (cf ~shape:[ 5 ] [ 1.; 2.; 3.; 4.; 5. ]) ~dims:[ 0 ]).mean, 3.
-    ; 0.,   O.(moments (cf ~shape:[ 5 ] [ 1.; 2.; 3.; 4.; 5. ]) ~dims:[ 0 ]).variance, 2.
-    ]
-
-let test_vector () =
-  List.iter ~f:(fun (tol, ops, expected_value) ->
-    let tensor = Session.run (Session.Output.double ops) in
-    assert_vector tensor ~expected_value ~tol)
-    [ 0., O.(range (const_int ~shape:[] ~type_:Int32 [ 3 ]) |> cast ~type_:Double), [ 0.; 1.; 2. ]
-    ; 0., O.(concat zero32
-        [ floor (cd [ 1.0; 1.1; 1.9; 2.0 ])
-        ; ceil (cd [ 1.0; 1.1; 1.9; 2.0 ])
-        ])
-      , [ 1.; 1.; 1.; 2.; 1.; 2.; 2.; 2. ]
-    ; 0., O.((cd ~shape:[ 2; 2 ] [ 1.; 2.; 3.; 4. ]) *^ (cd ~shape:[ 2; 1 ] [ 5.; 6. ])
-            |> reduce_sum ~dims:[ 1 ])
-      , [ 17.; 39. ]
-    ; 1e-8, O.(matrixSolve (cd ~shape:[ 2; 2 ] [ 1.; 2.; 3.; 4. ])
-                           (cd ~shape:[ 2; 1 ] [ 4.; 10. ])
-            |> reduce_sum ~dims:[ 1 ])
-      , [ 2.; 1. ]
-    ; 0., O.(split ~num_split:2 one32 (cd ~shape:[ 2; 2 ] [ 1.; 2.; 3.; 4. ])
-          |> function
-          | [ o1; o2 ] ->
-            concat zero32
-              [ reshape o2 (const_int ~type_:Int32 [ 2 ])
-              ; reshape o1 (const_int ~type_:Int32 [ 2 ])
-              ]
-          | _ -> assert false)
-      , [ 2.; 4.; 1.; 3. ]
-    ; 0., O.(split ~num_split:2 zero32 (cd ~shape:[ 2; 2 ] [ 1.; 2.; 3.; 4. ])
-          |> function
-          | [ o1; o2 ] ->
-            concat zero32
-              [ reshape o2 (const_int ~type_:Int32 [ 2 ])
-              ; reshape o1 (const_int ~type_:Int32 [ 2 ])
-              ]
-          | _ -> assert false)
-      , [ 3.; 4.; 1.; 2. ]
-    ; 0., O.(moments (cd ~shape:[ 2; 5 ] [ 1.; 2.; 3.; 4.; 5.; 8.; 10.; 8.; 10.; 9. ])
-            ~dims:[ 1 ]).mean
-      , [ 3.; 9. ]
-    ; 1e-8, O.(moments (cd ~shape:[ 2; 5 ] [ 1.; 2.; 3.; 4.; 5.; 8.; 10.; 8.; 10.; 9. ])
-              ~dims:[ 1 ]).variance
-      , [ 2.; 0.8 ]
-    ]
-
-let test_batch_norm () =
+let%expect_test _ =
   let batch = Ops.placeholder ~type_:Double [ 3; 4 ] in
   let is_training = Ops.placeholder ~type_:Bool [ 1 ] in
   let update_ops_store = Layer.Update_ops_store.create () in
@@ -121,13 +138,7 @@ let test_batch_norm () =
           ; Session.Input.bool is_training is_training_tensor
           ]
     in
-    let blessed_values =
-      if training then [ 0.; 0.; 0.; 0. ]
-      else if i = 3 then [ 0.; 4.242641; 0.426401; 1.063611 ]
-      else if i = 4 then [ 0.; 4.242641; 0.426401; 1.063611 ]
-      else assert false
-    in
-    assert_vector tensor ~expected_value:blessed_values ~tol:1e-6;
+    Tensor.print_ tensor;
     if training
     then Session.run ~targets:(Layer.Update_ops_store.ops update_ops_store)
       ~inputs:
@@ -135,40 +146,62 @@ let test_batch_norm () =
         ; Session.Input.bool is_training is_training_tensor
         ]
       Session.Output.empty
-  done
+  done;
+  [%expect{|
+    0 0.000000
+    1 0.000000
+    2 0.000000
+    3 0.000000
+    0 0.000000
+    1 0.000000
+    2 0.000000
+    3 0.000000
+    0 0.000000
+    1 0.000000
+    2 0.000000
+    3 0.000000
+    0 0.000000
+    1 4.242641
+    2 0.426401
+    3 1.063611
+    0 0.000000
+    1 4.242641
+    2 0.426401
+    3 1.063611
+    |}]
 
-let test_cond true_false =
-  let testing = Ops.placeholder ~type_:Bool [] in
-  let true_false = if true_false then 1 else 0 in
-  let int32_with_control_inputs ~control_inputs v =
-    Ops.const_int ~shape:[] ~type_:Int32 ~control_inputs [ v ]
+let%expect_test _ =
+  let run true_false =
+    let testing = Ops.placeholder ~type_:Bool [] in
+    let true_false = if true_false then 1 else 0 in
+    let int32_with_control_inputs ~control_inputs v =
+      Ops.const_int ~shape:[] ~type_:Int32 ~control_inputs [ v ]
+    in
+    let cond =
+      Ops.cond_with_control_inputs (Ops.Placeholder.to_node testing)
+        ~if_true:(int32_with_control_inputs 1)
+        ~if_false:(int32_with_control_inputs 0)
+    in
+    let testing_tensor = Tensor.create0 Int8_unsigned in
+    Tensor.copy_elt_list testing_tensor [ true_false ];
+    let tensor =
+      Session.run Session.Output.(int32 cond)
+        ~inputs:
+          [ Session.Input.bool testing testing_tensor
+          ]
+    in
+    let index =
+      match Tensor.dims tensor with
+      | [||] -> [||]
+      | [| 1 |] -> [| 0 |]
+      | [| n |] -> Printf.failwithf "Single dimension tensor with %d elements" n ()
+      | _ -> failwith "Multi-dimensional tensor."
+    in
+    let value = Tensor.get tensor index |> Int32.to_int_exn in
+    Stdio.printf "%d\n" value
   in
-  let cond =
-    Ops.cond_with_control_inputs (Ops.Placeholder.to_node testing)
-      ~if_true:(int32_with_control_inputs 1)
-      ~if_false:(int32_with_control_inputs 0)
-  in
-  let testing_tensor = Tensor.create0 Int8_unsigned in
-  Tensor.copy_elt_list testing_tensor [ true_false ];
-  let tensor =
-    Session.run Session.Output.(int32 cond)
-      ~inputs:
-        [ Session.Input.bool testing testing_tensor
-        ]
-  in
-  let index =
-    match Tensor.dims tensor with
-    | [||] -> [||]
-    | [| 1 |] -> [| 0 |]
-    | [| n |] -> Printf.failwithf "Single dimension tensor with %d elements" n ()
-    | _ -> failwith "Multi-dimensional tensor."
-  in
-  let value = Tensor.get tensor index |> Int32.to_int_exn in
-  assert_equal_int value ~expected_value:true_false
+  run true;
+  [%expect{| 1 |}];
+  run false;
+  [%expect{| 0 |}]
 
-let () =
-  test_scalar ();
-  test_vector ();
-  test_batch_norm ();
-  test_cond true;
-  test_cond false
