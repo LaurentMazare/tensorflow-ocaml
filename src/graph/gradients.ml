@@ -125,7 +125,7 @@ let gradient node ~with_respect_to =
   add_contribution (P node) ~gradient:(Some (Node.P one));
   output_gradients
 
-let gradient node ~with_respect_to_float ~with_respect_to_double =
+let gradient_caml node ~with_respect_to_float ~with_respect_to_double =
   let pack = List.map ~f:(fun node -> Node.P node) in
   let table =
     gradient node

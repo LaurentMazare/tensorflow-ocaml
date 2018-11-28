@@ -53,9 +53,15 @@ let general_minimizer t ?varsf ?varsd target =
     | None, None -> get_all_vars target
   in
   let gradsf, gradsd =
-    Gradients.gradient target
-      ~with_respect_to_float:varsf
-      ~with_respect_to_double:varsd
+    match Caml.Sys.getenv_opt "WITH_TF_BACKPROP" with
+    | None | Some "" | Some "false" ->
+      Gradients.gradient_caml target
+        ~with_respect_to_float:varsf
+        ~with_respect_to_double:varsd
+    | Some "true" | Some _ ->
+      Gradients.gradient_tf target
+        ~with_respect_to_float:varsf
+        ~with_respect_to_double:varsd
   in
   let apply gradients vars =
     List.map2_exn gradients vars ~f:(fun gradient var ->

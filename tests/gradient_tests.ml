@@ -34,7 +34,7 @@ let test_scalar kind =
     let gradient_f, gradient_d =
       match kind with
       | `caml ->
-        Gradients.gradient ops
+        Gradients.gradient_caml ops
           ~with_respect_to_float:[ var ] ~with_respect_to_double:[]
       | `tf ->
         Gradients.gradient_tf ops
