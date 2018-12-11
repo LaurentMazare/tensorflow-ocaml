@@ -4,7 +4,7 @@ bug-reports:  "https://github.com/LaurentMazare/tensorflow-ocaml/issues"
 homepage:     "https://github.com/LaurentMazare/tensorflow-ocaml"
 dev-repo:     "git+https://github.com/LaurentMazare/tensorflow-ocaml.git"
 maintainer:   "Laurent Mazare <lmazare@gmail.com>"
-authors:      [ "Laurent Mazare" "Nicolas Oury" ]
+authors:      [ "Laurent Mazare" ]
 
 version: "dev"
 
@@ -15,15 +15,16 @@ install: []
 remove:  []
 
 depends: [
-  "cmdliner"
   "base" {>= "0.11.0"}
-  "stdio"
+  "cmdliner"
+  "conf-wget" {build}
   "ctypes" {>= "0.5"}
   "ctypes-foreign"
-  "ocamlfind" {build}
-  "dune" {build}
-  "conf-wget" {build}
+  "dune" {>= "1.3.0" build}
+  "libtensorflow"
   "ocaml" {>= "4.06"}
+  "ocamlfind" {build}
+  "stdio"
 ]
 
 depopts: [
