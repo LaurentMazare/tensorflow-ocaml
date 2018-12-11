@@ -118,12 +118,6 @@ module Tensor = struct
     then Printf.printf "Deallocating tensor %d\n%!" (Id.to_int id);
     Hashtbl.remove live_tensors id
 
-  let deallocate =
-    coerce
-      (Foreign.funptr (ptr void @-> size_t @-> ptr void @-> returning void))
-      (static_funptr (ptr void @-> size_t @-> ptr void @-> returning void))
-      deallocate
-
   let c_tensor_of_tensor packed_tensor =
     let Tensor.P tensor = packed_tensor in
     let id = Id.create () in
