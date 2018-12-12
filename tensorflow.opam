@@ -9,7 +9,7 @@ authors:      [ "Laurent Mazare" ]
 version: "dev"
 
 build: [
-  ["dune" "build" "-j" jobs "@install"]
+  ["dune" "build" "-j" jobs "-p" name]
 ]
 install: []
 remove:  []
@@ -36,7 +36,7 @@ depopts: [
 conflicts: [
 ]
 
-available: [ os != "macos" ]
+available: [ os = "linux" ]
 
 synopsis: "TensorFlow bindings for OCaml"
 description: """
