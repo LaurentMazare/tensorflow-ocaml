@@ -12,7 +12,37 @@ Starting from version 0.0.11 this will automatically install the TensorFlow libr
 opam install tensorflow
 ```
 
-### Get the TensorFlow Library
+### Build a simple example or run utop
+
+To build your first TensorFlow program, create a new directory and cd into it.
+Then create a `forty_two.ml` file with the following content:
+
+```ocaml
+open Tensorflow
+
+let () =
+  let forty_two = Ops.(f 40. + f 2.) in
+  let v = Session.run (Session.Output.scalar_float forty_two) in
+  Printf.printf "%f\n%!" v
+```
+
+Then create a `dune` file with the following content:
+
+```ocaml
+(executables
+  (names forty_two)
+  (libraries tensorflow))
+```
+
+Run `dune build forty_two.exe` to compile the program and
+`_build/default/forty_two.exe` to run it!
+
+You can also use Tensorflow via utop.
+
+![utop](./bin/utop.png)
+
+
+### Optional step for GPU support
 
 The TensorFlow library installed via opam does not support GPU acceleration.
 In order to use your GPU you will have to install TensorFlow 1.10, either
@@ -56,19 +86,6 @@ Possible ways to get the TensorFlow library:
        `bazel build -c opt tensorflow:libtensorflow.so`
        
        The binary should appear under `bazel-bin/tensorflow/libtensorflow.so`.
-
-### Build a simple example or run utop
-
-Download a [very simple example](https://github.com/LaurentMazare/tensorflow-ocaml/tree/master/examples/basics/forty_two.ml) and compile it with the following command:
-```bash
-ocamlbuild forty_two.native -use-ocamlfind -pkg tensorflow -tag thread
-```
-
-Then run it via `./forty_two.native`. You should now be all set up, enjoy!
-
-You can also run a Tensorflow enabled utop via: `make utop`.
-
-![utop](./bin/utop.png)
 
 ## Examples
 
