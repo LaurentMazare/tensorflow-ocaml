@@ -5,8 +5,8 @@ can be found in the [ocaml-torch repo](https://github.com/LaurentMazare/ocaml-to
 
 ## Installation
 
-Use [opam](https://opam.ocaml.org/) to install the __tensorflow-ocaml__ package. This version currently
-lags significantly behind the GitHub tip.
+Use [opam](https://opam.ocaml.org/) to install the __tensorflow-ocaml__ package.
+Starting from version 0.0.11 this will automatically install the TensorFlow library.
 
 ```bash
 opam install tensorflow
@@ -14,8 +14,31 @@ opam install tensorflow
 
 ### Get the TensorFlow Library
 
-The opam package starting from version 0.0.8 requires the version 1.0 of the TensorFlow library to be installed on your system under the name `libtensorflow.so`. The current github tip requires 1.10.0.
-Two possible ways to obtain it are:
+The TensorFlow library installed via opam does not support GPU acceleration.
+In order to use your GPU you will have to install TensorFlow 1.10, either
+by building it from source or by using prebuilt binaries. Then 
+the library should be installed system-wide or you could set the
+`LIBTENSORFLOW` environment variable.
+
+```bash
+    export LIBTENSORFLOW={path_to_folder_with_libtensorflow.so}
+``` 
+
+Possible ways to get the TensorFlow library:
+
+* __Use prebuilt binaries from Google__. The releases are available for download in URLs of the form: `https://storage.googleapis.com/tensorflow/libtensorflow/libtensorflow-TYPE-OS-ARCH-VERSION.tar.gz`. For example:
+    * CPU-only, Linux, x86_64.
+    [[1.0.0]](https://storage.googleapis.com/tensorflow/libtensorflow/libtensorflow-cpu-linux-x86_64-1.0.0.tar.gz)
+    [[1.10.0]](https://storage.googleapis.com/tensorflow/libtensorflow/libtensorflow-cpu-linux-x86_64-1.10.0.tar.gz)
+    * GPU-enabled, Linux, x86_64.
+    [[1.0.0]](https://storage.googleapis.com/tensorflow/libtensorflow/libtensorflow-gpu-linux-x86_64-1.0.0.tar.gz)
+    [[1.10.0]](https://storage.googleapis.com/tensorflow/libtensorflow/libtensorflow-gpu-linux-x86_64-1.10.0.tar.gz)
+    * CPU-only, OS X, x86_64.
+    [[1.0.0]](https://storage.googleapis.com/tensorflow/libtensorflow/libtensorflow-cpu-darwin-x86_64-1.0.0.tar.gz)
+    [[1.10.0]](https://storage.googleapis.com/tensorflow/libtensorflow/libtensorflow-cpu-darwin-x86_64-1.10.0.tar.gz)
+    * GPU-enabled, OS X, x86_64.
+    [[1.0.0]](https://storage.googleapis.com/tensorflow/libtensorflow/libtensorflow-gpu-darwin-x86_64-1.0.0.tar.gz)
+    [[1.10.0]](https://storage.googleapis.com/tensorflow/libtensorflow/libtensorflow-gpu-darwin-x86_64-1.10.0.tar.gz)
 
 * __Build the library from source__. Perform the following steps:
     1. Install the [Bazel build system](http://bazel.io/docs/install.html).
@@ -34,24 +57,6 @@ Two possible ways to obtain it are:
        
        The binary should appear under `bazel-bin/tensorflow/libtensorflow.so`.
 
-* __Use prebuilt binaries from Google__. The releases are available for download in URLs of the form: `https://storage.googleapis.com/tensorflow/libtensorflow/libtensorflow-TYPE-OS-ARCH-VERSION.tar.gz`. For example:
-    * CPU-only, Linux, x86_64.
-    [[1.0.0]](https://storage.googleapis.com/tensorflow/libtensorflow/libtensorflow-cpu-linux-x86_64-1.0.0.tar.gz)
-    [[1.10.0]](https://storage.googleapis.com/tensorflow/libtensorflow/libtensorflow-cpu-linux-x86_64-1.10.0.tar.gz)
-    * GPU-enabled, Linux, x86_64.
-    [[1.0.0]](https://storage.googleapis.com/tensorflow/libtensorflow/libtensorflow-gpu-linux-x86_64-1.0.0.tar.gz)
-    [[1.10.0]](https://storage.googleapis.com/tensorflow/libtensorflow/libtensorflow-gpu-linux-x86_64-1.10.0.tar.gz)
-    * CPU-only, OS X, x86_64.
-    [[1.0.0]](https://storage.googleapis.com/tensorflow/libtensorflow/libtensorflow-cpu-darwin-x86_64-1.0.0.tar.gz)
-    [[1.10.0]](https://storage.googleapis.com/tensorflow/libtensorflow/libtensorflow-cpu-darwin-x86_64-1.10.0.tar.gz)
-    * GPU-enabled, OS X, x86_64.
-    [[1.0.0]](https://storage.googleapis.com/tensorflow/libtensorflow/libtensorflow-gpu-darwin-x86_64-1.0.0.tar.gz)
-    [[1.10.0]](https://storage.googleapis.com/tensorflow/libtensorflow/libtensorflow-gpu-darwin-x86_64-1.10.0.tar.gz)
-
-Once you have obtained the library, you should install it system-wide, or set the `LIBTENSORFLOW` environment variable.
-
-    export LIBTENSORFLOW={path_to_folder_with_libtensorflow.so}
-    
 ### Build a simple example or run utop
 
 Download a [very simple example](https://github.com/LaurentMazare/tensorflow-ocaml/tree/master/examples/basics/forty_two.ml) and compile it with the following command:
