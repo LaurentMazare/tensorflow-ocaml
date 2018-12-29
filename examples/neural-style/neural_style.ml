@@ -1,59 +1,6 @@
 open Base
-open Float.O_dot
 open Tensorflow_core
 open Tensorflow
-
-let float = Float.of_int
-
-module Image : sig
-  val load : string -> (float, Bigarray.float32_elt) Tensorflow_core.Tensor.t * int * int
-  val save : (float, Bigarray.float32_elt) Tensorflow_core.Tensor.t -> string -> unit
-end = struct
-  let imagenet_mean = function
-    | `blue -> 103.939
-    | `green -> 116.779
-    | `red -> 123.68
-
-  let normalize x ~channel =
-    float x -. imagenet_mean channel
-
-  let unnormalize x ~channel =
-    min 255 (Int.of_float (x +. imagenet_mean channel))
-    |> max 0
-
-  let load filename =
-    let image = OImages.load filename [] in
-    let image = OImages.rgb24 image in
-    let img_w = image # width in
-    let img_h = image # height in
-    let tensor = Tensor.create3 Float32 img_h img_w 3 in
-    for i = 0 to img_h - 1 do
-      for j = 0 to img_w - 1 do
-        let { Color.r; g; b } = image # get j i in
-        Tensor.set tensor [| i; j; 0 |] (normalize r ~channel:`red);
-        Tensor.set tensor [| i; j; 1 |] (normalize g ~channel:`green);
-        Tensor.set tensor [| i; j; 2 |] (normalize b ~channel:`blue);
-      done;
-    done;
-    tensor, img_w, img_h
-
-  let save tensor filename =
-    let img_w, img_h =
-      match Tensor.dims tensor with
-      | [| img_h; img_w; 3 |] -> img_w, img_h
-      | _ -> failwith "Improper tensor dimensions"
-    in
-    let image = new OImages.rgb24 img_w img_h in
-    for i = 0 to img_h - 1 do
-      for j = 0 to img_w - 1 do
-        let r = Tensor.get tensor [| i; j; 0 |] |> unnormalize ~channel:`red in
-        let g = Tensor.get tensor [| i; j; 1 |] |> unnormalize ~channel:`green in
-        let b = Tensor.get tensor [| i; j; 2 |] |> unnormalize ~channel:`blue in
-        image # set j i { Color.r; g; b }
-      done;
-    done;
-    image # save filename None []
-end
 
 (* This is also available in [Session.Vars.set_float], however we keep this here for now
    as the opam package does not include this change yet. *)
@@ -89,7 +36,7 @@ let max_pool node =
   Ops.maxPool node ~ksize:[ 1; 2; 2; 1 ] ~strides:[ 1; 2; 2; 1 ] ~padding:"SAME"
 
 let style_grams_and_content_nodes input ~img_h ~img_w ~npz_filename =
-  let var_by_name = Hashtbl.create (module String) () in
+  let var_by_name = Hashtbl.create (module String) in
   let block iter ~block_idx ~in_channels ~out_channels (node, acc) =
     List.init iter ~f:Fn.id
     |> List.fold ~init:(node, []) ~f:(fun (node, acc_relus) idx ->
@@ -117,7 +64,7 @@ let style_grams_and_content_nodes input ~img_h ~img_w ~npz_filename =
       let node, (`block_idx block_idx, `out_channels out_channels) = List.hd_exn relus in
       let node = Ops.reshape node (Ops.const_int ~type_:Int32 [ -1; out_channels ]) in
       let two = Int.pow 2 (block_idx - 1) in
-      let size_ = float (out_channels * (img_h/two) * (img_w/two)) in
+      let size_ = Float.of_int (out_channels * (img_h/two) * (img_w/two)) in
       Ops.(matMul ~transpose_a:true node node / f size_))
   in
   let content_nodes =
@@ -129,7 +76,7 @@ let style_grams_and_content_nodes input ~img_h ~img_w ~npz_filename =
   style_grams, content_nodes
 
 let compute_grams ~filename ~npz_filename =
-  let input_tensor, img_w, img_h = Image.load filename in
+  let { Image.tensor; width = img_w; height = img_h } = Image.load filename in
   let input_placeholder = Ops.placeholder ~type_:Float [ img_h; img_w; 3 ] in
   let style_grams, _ =
     style_grams_and_content_nodes (Ops.Placeholder.to_node input_placeholder)
@@ -137,7 +84,7 @@ let compute_grams ~filename ~npz_filename =
   in
   List.map style_grams ~f:(fun node ->
     Session.run
-      ~inputs:[ Session.Input.float input_placeholder input_tensor ]
+      ~inputs:[ Session.Input.float input_placeholder tensor ]
       ~targets:[ Node.P node ]
       (Session.Output.float node))
 
@@ -168,11 +115,11 @@ let run epochs learning_rate content_weight style_weight tv_weight npz_filename 
     String.rsplit2 input_filename ~on:'.'
     |> Option.value_map ~f:snd ~default:"jpg"
   in
-  let input_tensor, img_w, img_h = Image.load input_filename in
+  let { Image.tensor; width = img_w; height = img_h } = Image.load input_filename in
   Stdio.printf "Computing target features...\n%!";
   let target_grams = compute_grams ~filename:style_filename ~npz_filename in
   Stdio.printf "Done computing target features.\n%!";
-  let input_var = create_and_set_var input_tensor in
+  let input_var = create_and_set_var tensor in
   let style_grams, content_nodes =
     style_grams_and_content_nodes input_var ~img_h ~img_w ~npz_filename
   in
@@ -182,7 +129,7 @@ let run epochs learning_rate content_weight style_weight tv_weight npz_filename 
       let size_ = List.reduce_exn dims ~f:( * ) in
       let placeholder = Ops.placeholder ~type_:Float dims in
       let diff = Ops.(-) gram_node (Ops.Placeholder.to_node placeholder) in
-      Ops.(reduce_sum (diff * diff) / f (float size_)),
+      Ops.(reduce_sum (diff * diff) / f (Float.of_int size_)),
       Session.Input.float placeholder target_gram)
     |> List.unzip
   in
@@ -192,7 +139,7 @@ let run epochs learning_rate content_weight style_weight tv_weight npz_filename 
       let dims = Tensor.dims content_target |> Array.to_list in
       let placeholder = Ops.placeholder ~type_:Float dims in
       let diff = Ops.(-) content_node (Ops.Placeholder.to_node placeholder) in
-      let total_dims = List.reduce_exn dims ~f:( * ) |> float in
+      let total_dims = List.reduce_exn dims ~f:( * ) |> Float.of_int in
       Ops.(reduce_sum (diff * diff) / f total_dims),
       Session.Input.float placeholder content_target)
     |> List.unzip

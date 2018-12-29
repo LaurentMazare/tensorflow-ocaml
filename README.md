@@ -191,4 +191,3 @@ The examples directory contains various models among which:
 * [Cmdliner](https://github.com/dbuenzli/cmdliner) is used for command line interfaces.
 * [Gnuplot-ocaml](https://bitbucket.org/ogu/gnuplot-ocaml) is an optional dependency used by a couple examples.
 * [npy-ocaml](https://github.com/LaurentMazare/npy-ocaml) is used to read/write from npy/npz files.
-* [camlimages](http://gallium.inria.fr/camlimages/) handles loading and writing image files in jpeg/png format.

@@ -4,7 +4,6 @@ open Tensorflow_core
 open! Tensorflow
 open Tensorflow_fnn
 
-let float = Float.of_int
 let img_size = 224
 
 let vgg19 () =
@@ -36,45 +35,11 @@ let vgg19 () =
   in
   input_id, model
 
-let load_image ~filename =
-  let image = OImages.load filename [] in
-  let image = OImages.rgb24 image in
-  let width = image # width in
-  let height = image # height in
-  let min_edge = min width height in
-  let image =
-    image # sub
-      ((width-min_edge) / 2)
-      ((height-min_edge) / 2)
-      min_edge
-      min_edge
-  in
-  let image = image # resize None img_size img_size in
-  let tensor = Tensor.create3 Float32 img_size img_size 3 in
-  let normalize x ~channel =
-    let mean =
-      match channel with
-      | `blue -> 103.939
-      | `green -> 116.779
-      | `red -> 123.68
-    in
-    float x -. mean
-  in
-  for i = 0 to img_size - 1 do
-    for j = 0 to img_size - 1 do
-      let { Color.r; g; b } = image # get j i in
-      Tensor.set tensor [| i; j; 0 |] (normalize b ~channel:`blue);
-      Tensor.set tensor [| i; j; 1 |] (normalize g ~channel:`green);
-      Tensor.set tensor [| i; j; 2 |] (normalize r ~channel:`red);
-    done;
-  done;
-  tensor
-
 let () =
-  let input_tensor = load_image ~filename:"input.jpg" in
+  let { Image.tensor; _ } = Image.load "input.jpg" in
   let input_id, model = vgg19 () in
   Fnn.Model.load model ~filename:(Caml.Sys.getcwd () ^ "/vgg19.cpkt");
-  let results = Fnn.Model.predict model [ input_id, input_tensor ] in
+  let results = Fnn.Model.predict model [ input_id, tensor ] in
   let pr, category =
     List.init 1000 ~f:(fun i ->
       Tensor.get results [| 0; i |], i+1)
