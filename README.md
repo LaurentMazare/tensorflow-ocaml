@@ -179,7 +179,7 @@ The examples directory contains various models among which:
   illustrating character level language modeling using Recurrent Neural Networks.
 * [Neural Style Transfer](https://github.com/LaurentMazare/tensorflow-ocaml/blob/master/examples/neural-style)
   applies the style of an image to the content of another image. This uses some deep Convolutional Neural Network.
-* Some variants of [Generative Adverserial Networks](https://github.com/LaurentMazare/tensorflow-ocaml/blob/master/examples/gan).
+* Some variants of [Generative Adversarial Networks](https://github.com/LaurentMazare/tensorflow-ocaml/blob/master/examples/gan).
   These are used to generate MNIST like images.
 
 ## Dependencies
