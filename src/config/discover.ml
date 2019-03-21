@@ -1,7 +1,7 @@
 module C = Configurator.V1
 
 let flags_for_dir lib_dir =
-  [ Printf.sprintf "-Wl,-R%s" lib_dir
+  [ Printf.sprintf "-Wl"
   ; Printf.sprintf "-L%s" lib_dir
   ]
 
