@@ -37,8 +37,6 @@ depopts: [
 conflicts: [
 ]
 
-available: [ os = "linux" ]
-
 synopsis: "TensorFlow bindings for OCaml"
 description: """
 The tensorflow-ocaml project provides some OCaml bindings for TensorFlow, a

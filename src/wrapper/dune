@@ -2,6 +2,7 @@
   (name tensorflow_core)
   (public_name tensorflow.core)
   (c_names tf_stubs)
+  (c_flags :standard -Wno-incompatible-pointer-types)
   (c_library_flags :standard (:include c_library_flags.sexp) -ltensorflow)
   (libraries bigarray ctypes.foreign ctypes.stubs ctypes))
 
