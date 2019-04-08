@@ -5,8 +5,8 @@ open Tensorflow_fnn
 
 let label_count = Mnist_helper.label_count
 let image_dim = Mnist_helper.image_dim
-let epochs = 2000
 let batch_size = 256
+let steps = 2000
 
 let conv2d =
   Fnn.conv2d ~w_init:(`normal 0.1) ~filter:(5, 5) ~strides:(1, 1) ~padding:`same
@@ -14,6 +14,12 @@ let max_pool = Fnn.max_pool ~filter:(2, 2) ~strides:(2, 2) ~padding:`same
 
 let () =
   let mnist = Mnist_helper.read_files () in
+  let epochs =
+    let sample_size = Array.get (Tensorflow_core.Tensor.dims  mnist.Mnist_helper.train_labels) 0 in
+    let batch_size = min sample_size batch_size in
+    steps / (sample_size / batch_size) + 1
+  in
+
   let input, input_id = Fnn.input ~shape:(D1 image_dim) in
   let model =
     Fnn.reshape input ~shape:(D3 (28, 28, 1))
