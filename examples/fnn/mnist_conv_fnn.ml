@@ -5,8 +5,8 @@ open Tensorflow_fnn
 
 let label_count = Mnist_helper.label_count
 let image_dim = Mnist_helper.image_dim
-let epochs = 2000
 let batch_size = 256
+let epochs = 235
 
 let conv2d =
   Fnn.conv2d ~w_init:(`normal 0.1) ~filter:(5, 5) ~strides:(1, 1) ~padding:`same

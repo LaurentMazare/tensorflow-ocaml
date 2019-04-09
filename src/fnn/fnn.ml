@@ -566,12 +566,6 @@ module Model = struct
       Optimizer.get optimizer ~loss ?varsf ?varsd
     in
     let samples = (Tensor.dims xs).(0) in
-    let batch_size =
-      match batch_size with
-      | None -> None
-      | Some batch_size when batch_size > samples -> None
-      | Some _ as s -> s
-    in
     let find_input id =
       match Hashtbl.find t.inputs id with
       | None -> failwith "missing input"
@@ -586,23 +580,33 @@ module Model = struct
     let inputs ~xs ~ys =
       f_or_d xs_placeholder xs :: f_or_d t.placeholder ys :: addn_inputs
     in
-    for epoch = 1 to epochs do
-      let inputs =
-        match batch_size with
-        | None -> inputs ~xs ~ys
-        | Some batch_size ->
-          let offset = ((epoch-1) * batch_size) % (samples - batch_size) in
+    let batches_per_epoch, batch_inputs =
+      match batch_size with
+      | None -> (1, fun _n -> inputs)
+      | Some batch_size when batch_size >= samples -> (1, fun _step -> inputs)
+      | Some batch_size ->
+        (samples / batch_size,
+        fun step ~xs ~ys ->
+          let offset = (step * batch_size) in
           let xs = Tensor.sub_left xs offset batch_size in
           let ys = Tensor.sub_left ys offset batch_size in
           inputs ~xs ~ys
-      in
-      let err =
-        Session.run
-          ~inputs
-          ~targets:optimizer
-          (scalar_f_or_d loss)
-      in
-      Stdio.printf "Epoch: %6d/%-6d   Loss: %.2f\n%!" epoch epochs err
+        )
+    in
+    for epoch = 1 to epochs do
+      let err_total = ref 0.0 in
+      for step = 0 to batches_per_epoch-1 do
+        let inputs = batch_inputs step ~xs ~ys in
+        let err =
+          Session.run
+            ~inputs
+            ~targets:optimizer
+            (scalar_f_or_d loss)
+        in
+        (* Calculate the mean error over all batches *)
+        err_total := !err_total +. err;
+      done;
+      Stdio.printf "Epoch: %6d/%-6d   Loss: %.2f\n%!" epoch epochs (!err_total /. Float.of_int batches_per_epoch)
     done
   in
   match Node.output_type t.node, t.eq with
