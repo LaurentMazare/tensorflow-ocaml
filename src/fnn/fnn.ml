@@ -587,7 +587,7 @@ module Model = struct
       | Some batch_size ->
         (samples / batch_size,
         fun step ~xs ~ys ->
-          let offset = (step * batch_size) % (samples - batch_size) in
+          let offset = (step * batch_size) in
           let xs = Tensor.sub_left xs offset batch_size in
           let ys = Tensor.sub_left ys offset batch_size in
           inputs ~xs ~ys
@@ -595,9 +595,8 @@ module Model = struct
     in
     for epoch = 1 to epochs do
       let err_total = ref 0.0 in
-      for epoch_offset = 0 to batches_per_epoch-1 do
-        let step = (epoch-1) * batches_per_epoch + epoch_offset in
-        let inputs = batch_inputs step  ~xs ~ys in
+      for step = 0 to batches_per_epoch-1 do
+        let inputs = batch_inputs step ~xs ~ys in
         let err =
           Session.run
             ~inputs

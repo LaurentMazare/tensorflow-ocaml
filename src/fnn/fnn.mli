@@ -143,11 +143,11 @@ module Model : sig
     -> (Input_id.t * (float, 'c) Tensor.t) list
     -> (float, 'c) Tensor.t
 
-  (** [fit ~xs ~ys ?batch_size ~epoch ...] trains a model on the [xs] and [ys] as training data.
+  (** [fit ~xs ~ys ?batch_size ~epoch ...] trains a model using [xs] and [ys] as training data.
       Training will be done in batches of size [batch_size]. The total amount of training steps
-      is {!epochs * |xs| / batch_size}. The average err is printed for each epoch ({!|xs| / bach_size}) steps.
-      if [batch_size] is not given or is larger than {!|xs|}, it defaults to {!|xs|}.
-      After each epoch (|xs| / batch_size) the average loss for the epoch is printed to {!stdout}.
+      is [epochs * |xs| / batch_size]. If [batch_size] is not given or is larger than [|xs|], it defaults to [|xs|].
+      The last [|xs| mod batch_size] training samples are not used for training.
+      After each epoch the average loss for the epoch is printed to {!stdout}.
   *)
   val fit
     :  ?addn_inputs:(Input_id.t * (float, 'c) Tensor.t) list
