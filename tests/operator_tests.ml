@@ -37,15 +37,15 @@ let%expect_test _ =
 let%expect_test _ =
   let eval_and_print ops = Session.run (Session.Output.double ops) |> Tensor.print_ in
   eval_and_print O.(range (const_int ~shape:[] ~type_:Int32 [ 3 ]) |> cast ~type_:Double);
-  [%expect{| |}];
+  [%expect{|
+    0 0.000000
+    1 1.000000
+    2 2.000000 |}];
   eval_and_print O.(concat zero32
                       [ floor (cd [ 1.0; 1.1; 1.9; 2.0 ])
                       ; ceil (cd [ 1.0; 1.1; 1.9; 2.0 ])
                       ]);
   [%expect{|
-    0 0.000000
-    1 1.000000
-    2 2.000000
     0 1.000000
     1 1.000000
     2 1.000000
