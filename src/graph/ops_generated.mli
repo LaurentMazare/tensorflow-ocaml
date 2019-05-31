@@ -22,6 +22,7 @@ module Op_names : sig
   val adjustSaturation : Op_name.t
   val all : Op_name.t
   val allCandidateSampler : Op_name.t
+  val allToAll : Op_name.t
   val angle : Op_name.t
   val any : Op_name.t
   val applyAdaMax : Op_name.t
@@ -74,6 +75,7 @@ module Op_names : sig
   val batchIFFT2D : Op_name.t
   val batchIFFT3D : Op_name.t
   val batchMatMul : Op_name.t
+  val batchMatMulV2 : Op_name.t
   val batchMatrixBandPart : Op_name.t
   val batchMatrixDeterminant : Op_name.t
   val batchMatrixDiag : Op_name.t
@@ -101,12 +103,15 @@ module Op_names : sig
   val bitwiseAnd : Op_name.t
   val bitwiseOr : Op_name.t
   val bitwiseXor : Op_name.t
+  val boostedTreesAggregateStats : Op_name.t
+  val boostedTreesBucketize : Op_name.t
+  val boostedTreesCalculateBestFeatureSplit : Op_name.t
+  val boostedTreesMakeQuantileSummaries : Op_name.t
   val boostedTreesMakeStatsSummary : Op_name.t
   val broadcastArgs : Op_name.t
   val broadcastGradientArgs : Op_name.t
   val broadcastTo : Op_name.t
   val bucketize : Op_name.t
-  val bytesProducedStatsDataset : Op_name.t
   val cTCGreedyDecoder : Op_name.t
   val cTCLoss : Op_name.t
   val cacheDataset : Op_name.t
@@ -118,7 +123,10 @@ module Op_names : sig
   val clipByValue : Op_name.t
   val collectiveBcastRecv : Op_name.t
   val collectiveBcastSend : Op_name.t
+  val collectiveGather : Op_name.t
+  val collectivePermute : Op_name.t
   val collectiveReduce : Op_name.t
+  val combinedNonMaxSuppression : Op_name.t
   val complex : Op_name.t
   val complexAbs : Op_name.t
   val computeAccidentalHits : Op_name.t
@@ -127,6 +135,7 @@ module Op_names : sig
   val concatV2 : Op_name.t
   val concatenateDataset : Op_name.t
   val conditionalAccumulator : Op_name.t
+  val configureDistributedTPU : Op_name.t
   val conj : Op_name.t
   val conjugateTranspose : Op_name.t
   val consumeMutexLock : Op_name.t
@@ -148,6 +157,7 @@ module Op_names : sig
   val cropAndResizeGradBoxes : Op_name.t
   val cropAndResizeGradImage : Op_name.t
   val cross : Op_name.t
+  val crossReplicaSum : Op_name.t
   val cudnnRNN : Op_name.t
   val cudnnRNNBackprop : Op_name.t
   val cudnnRNNCanonicalToParams : Op_name.t
@@ -157,7 +167,6 @@ module Op_names : sig
   val dataFormatDimMap : Op_name.t
   val dataFormatVecPermute : Op_name.t
   val datasetToGraph : Op_name.t
-  val datasetToTFRecord : Op_name.t
   val debugGradientIdentity : Op_name.t
   val debugGradientRefIdentity : Op_name.t
   val debugIdentity : Op_name.t
@@ -166,13 +175,13 @@ module Op_names : sig
   val decodeBase64 : Op_name.t
   val decodeCompressed : Op_name.t
   val decodeJSONExample : Op_name.t
+  val decodePaddedRaw : Op_name.t
   val decodePng : Op_name.t
   val decodeRaw : Op_name.t
   val decodeWav : Op_name.t
   val deepCopy : Op_name.t
   val deleteSessionTensor : Op_name.t
   val denseToDenseSetOperation : Op_name.t
-  val denseToSparseBatchDataset : Op_name.t
   val denseToSparseSetOperation : Op_name.t
   val depthToSpace : Op_name.t
   val depthwiseConv2dNative : Op_name.t
@@ -189,7 +198,9 @@ module Op_names : sig
   val dilation2DBackpropFilter : Op_name.t
   val dilation2DBackpropInput : Op_name.t
   val div : Op_name.t
+  val divNoNan : Op_name.t
   val drawBoundingBoxes : Op_name.t
+  val drawBoundingBoxesV2 : Op_name.t
   val dynamicPartition : Op_name.t
   val dynamicStitch : Op_name.t
   val editDistance : Op_name.t
@@ -200,17 +211,45 @@ module Op_names : sig
   val encodeBase64 : Op_name.t
   val encodePng : Op_name.t
   val encodeWav : Op_name.t
+  val enqueueTPUEmbeddingIntegerBatch : Op_name.t
+  val enqueueTPUEmbeddingSparseBatch : Op_name.t
+  val enqueueTPUEmbeddingSparseTensorBatch : Op_name.t
+  val ensureShape : Op_name.t
   val enter : Op_name.t
   val equal : Op_name.t
   val erf : Op_name.t
   val erfc : Op_name.t
+  val euclideanNorm : Op_name.t
   val exit : Op_name.t
   val exp : Op_name.t
   val expandDims : Op_name.t
+  val experimentalAssertNextDataset : Op_name.t
+  val experimentalAutoShardDataset : Op_name.t
+  val experimentalBytesProducedStatsDataset : Op_name.t
+  val experimentalChooseFastestDataset : Op_name.t
+  val experimentalDatasetCardinality : Op_name.t
+  val experimentalDatasetToTFRecord : Op_name.t
+  val experimentalDenseToSparseBatchDataset : Op_name.t
+  val experimentalDirectedInterleaveDataset : Op_name.t
+  val experimentalIgnoreErrorsDataset : Op_name.t
+  val experimentalLMDBDataset : Op_name.t
+  val experimentalLatencyStatsDataset : Op_name.t
+  val experimentalMatchingFilesDataset : Op_name.t
+  val experimentalMaxIntraOpParallelismDataset : Op_name.t
+  val experimentalNonSerializableDataset : Op_name.t
+  val experimentalPrivateThreadPoolDataset : Op_name.t
+  val experimentalRandomDataset : Op_name.t
+  val experimentalRebatchDataset : Op_name.t
+  val experimentalSleepDataset : Op_name.t
+  val experimentalSlidingWindowDataset : Op_name.t
+  val experimentalSqlDataset : Op_name.t
+  val experimentalUnbatchDataset : Op_name.t
+  val experimentalUniqueDataset : Op_name.t
   val expm1 : Op_name.t
   val extractGlimpse : Op_name.t
   val extractImagePatches : Op_name.t
   val extractJpegShape : Op_name.t
+  val extractVolumePatches : Op_name.t
   val fFT : Op_name.t
   val fFT2D : Op_name.t
   val fFT3D : Op_name.t
@@ -223,9 +262,10 @@ module Op_names : sig
   val fakeQuantWithMinMaxVarsGradient : Op_name.t
   val fakeQuantWithMinMaxVarsPerChannel : Op_name.t
   val fakeQuantWithMinMaxVarsPerChannelGradient : Op_name.t
-  val featureStatsDataset : Op_name.t
   val fill : Op_name.t
+  val filterByLastComponentDataset : Op_name.t
   val fixedLengthRecordDataset : Op_name.t
+  val fixedLengthRecordDatasetV2 : Op_name.t
   val fixedLengthRecordReader : Op_name.t
   val fixedUnigramCandidateSampler : Op_name.t
   val floor : Op_name.t
@@ -254,6 +294,7 @@ module Op_names : sig
   val hashTable : Op_name.t
   val histogramFixedWidth : Op_name.t
   val histogramSummary : Op_name.t
+  val hostConst : Op_name.t
   val iFFT : Op_name.t
   val iFFT2D : Op_name.t
   val iFFT3D : Op_name.t
@@ -270,6 +311,9 @@ module Op_names : sig
   val immutableConst : Op_name.t
   val inTopK : Op_name.t
   val inTopKV2 : Op_name.t
+  val infeedDequeue : Op_name.t
+  val infeedEnqueue : Op_name.t
+  val infeedEnqueuePrelinearizedBuffer : Op_name.t
   val initializeTable : Op_name.t
   val initializeTableFromTextFile : Op_name.t
   val inplaceAdd : Op_name.t
@@ -283,11 +327,14 @@ module Op_names : sig
   val isInf : Op_name.t
   val isNan : Op_name.t
   val isVariableInitialized : Op_name.t
+  val kMC2ChainInitialization : Op_name.t
+  val kmeansPlusPlusInitialization : Op_name.t
   val l2Loss : Op_name.t
   val lMDBReader : Op_name.t
   val lRN : Op_name.t
   val lRNGrad : Op_name.t
-  val latencyStatsDataset : Op_name.t
+  val leakyRelu : Op_name.t
+  val leakyReluGrad : Op_name.t
   val learnedUnigramCandidateSampler : Op_name.t
   val leftShift : Op_name.t
   val less : Op_name.t
@@ -296,6 +343,23 @@ module Op_names : sig
   val linSpace : Op_name.t
   val listDiff : Op_name.t
   val loadAndRemapMatrix : Op_name.t
+  val loadTPUEmbeddingADAMParameters : Op_name.t
+  val loadTPUEmbeddingADAMParametersGradAccumDebug : Op_name.t
+  val loadTPUEmbeddingAdadeltaParameters : Op_name.t
+  val loadTPUEmbeddingAdadeltaParametersGradAccumDebug : Op_name.t
+  val loadTPUEmbeddingAdagradParameters : Op_name.t
+  val loadTPUEmbeddingAdagradParametersGradAccumDebug : Op_name.t
+  val loadTPUEmbeddingCenteredRMSPropParameters : Op_name.t
+  val loadTPUEmbeddingFTRLParameters : Op_name.t
+  val loadTPUEmbeddingFTRLParametersGradAccumDebug : Op_name.t
+  val loadTPUEmbeddingMDLAdagradLightParameters : Op_name.t
+  val loadTPUEmbeddingMomentumParameters : Op_name.t
+  val loadTPUEmbeddingMomentumParametersGradAccumDebug : Op_name.t
+  val loadTPUEmbeddingProximalAdagradParameters : Op_name.t
+  val loadTPUEmbeddingProximalAdagradParametersGradAccumDebug : Op_name.t
+  val loadTPUEmbeddingRMSPropParameters : Op_name.t
+  val loadTPUEmbeddingRMSPropParametersGradAccumDebug : Op_name.t
+  val loadTPUEmbeddingStochasticGradientDescentParameters : Op_name.t
   val log : Op_name.t
   val log1p : Op_name.t
   val logMatrixDeterminant : Op_name.t
@@ -310,6 +374,8 @@ module Op_names : sig
   val lookupTableInsert : Op_name.t
   val lookupTableSize : Op_name.t
   val loopCond : Op_name.t
+  val lowerBound : Op_name.t
+  val lu : Op_name.t
   val mapClear : Op_name.t
   val mapIncompleteSize : Op_name.t
   val mapSize : Op_name.t
@@ -325,6 +391,7 @@ module Op_names : sig
   val matrixSetDiag : Op_name.t
   val matrixSolve : Op_name.t
   val matrixSolveLs : Op_name.t
+  val matrixSquareRoot : Op_name.t
   val matrixTriangularSolve : Op_name.t
   val max : Op_name.t
   val maxPool : Op_name.t
@@ -350,27 +417,40 @@ module Op_names : sig
   val mirrorPad : Op_name.t
   val mirrorPadGrad : Op_name.t
   val mod_ : Op_name.t
+  val modelDataset : Op_name.t
   val mul : Op_name.t
+  val mulNoNan : Op_name.t
   val multinomial : Op_name.t
   val mutableDenseHashTable : Op_name.t
   val mutableHashTable : Op_name.t
   val mutableHashTableOfTensors : Op_name.t
+  val ncclAllReduce : Op_name.t
+  val ncclBroadcast : Op_name.t
+  val ncclReduce : Op_name.t
+  val nearestNeighbors : Op_name.t
   val neg : Op_name.t
   val negTrain : Op_name.t
+  val nextAfter : Op_name.t
   val nextIteration : Op_name.t
   val noOp : Op_name.t
+  val nonDeterministicInts : Op_name.t
   val nonMaxSuppression : Op_name.t
   val nonMaxSuppressionV2 : Op_name.t
   val nonMaxSuppressionV3 : Op_name.t
+  val nonMaxSuppressionV4 : Op_name.t
   val nonMaxSuppressionWithOverlaps : Op_name.t
   val notEqual : Op_name.t
   val nthElement : Op_name.t
   val oneHot : Op_name.t
   val onesLike : Op_name.t
   val optimizeDataset : Op_name.t
+  val optionalHasValue : Op_name.t
+  val optionalNone : Op_name.t
   val orderedMapClear : Op_name.t
   val orderedMapIncompleteSize : Op_name.t
   val orderedMapSize : Op_name.t
+  val outfeedDequeue : Op_name.t
+  val outfeedEnqueue : Op_name.t
   val pack : Op_name.t
   val pad : Op_name.t
   val padV2 : Op_name.t
@@ -385,7 +465,9 @@ module Op_names : sig
   val polygamma : Op_name.t
   val pow : Op_name.t
   val prefetchDataset : Op_name.t
+  val prelinearize : Op_name.t
   val preventGradient : Op_name.t
+  val printV2 : Op_name.t
   val priorityQueue : Op_name.t
   val prod : Op_name.t
   val qr : Op_name.t
@@ -400,6 +482,21 @@ module Op_names : sig
   val quantizedBiasAdd : Op_name.t
   val quantizedConcat : Op_name.t
   val quantizedConv2D : Op_name.t
+  val quantizedConv2DAndRelu : Op_name.t
+  val quantizedConv2DAndReluAndRequantize : Op_name.t
+  val quantizedConv2DAndRequantize : Op_name.t
+  val quantizedConv2DPerChannel : Op_name.t
+  val quantizedConv2DWithBias : Op_name.t
+  val quantizedConv2DWithBiasAndRelu : Op_name.t
+  val quantizedConv2DWithBiasAndReluAndRequantize : Op_name.t
+  val quantizedConv2DWithBiasAndRequantize : Op_name.t
+  val quantizedConv2DWithBiasSignedSumAndReluAndRequantize : Op_name.t
+  val quantizedConv2DWithBiasSumAndRelu : Op_name.t
+  val quantizedConv2DWithBiasSumAndReluAndRequantize : Op_name.t
+  val quantizedDepthwiseConv2D : Op_name.t
+  val quantizedDepthwiseConv2DWithBias : Op_name.t
+  val quantizedDepthwiseConv2DWithBiasAndRelu : Op_name.t
+  val quantizedDepthwiseConv2DWithBiasAndReluAndRequantize : Op_name.t
   val quantizedInstanceNorm : Op_name.t
   val quantizedMatMul : Op_name.t
   val quantizedMaxPool : Op_name.t
@@ -416,8 +513,9 @@ module Op_names : sig
   val rFFT2D : Op_name.t
   val rFFT3D : Op_name.t
   val rGBToHSV : Op_name.t
+  val raggedRange : Op_name.t
+  val raggedTensorToSparse : Op_name.t
   val randomCrop : Op_name.t
-  val randomDataset : Op_name.t
   val randomGamma : Op_name.t
   val randomGammaGrad : Op_name.t
   val randomPoisson : Op_name.t
@@ -443,6 +541,7 @@ module Op_names : sig
   val reciprocal : Op_name.t
   val reciprocalGrad : Op_name.t
   val recordInput : Op_name.t
+  val recvTPUEmbeddingActivations : Op_name.t
   val reduceJoin : Op_name.t
   val refEnter : Op_name.t
   val refExit : Op_name.t
@@ -459,7 +558,9 @@ module Op_names : sig
   val reluGrad : Op_name.t
   val repeatDataset : Op_name.t
   val requantizationRange : Op_name.t
+  val requantizationRangePerChannel : Op_name.t
   val requantize : Op_name.t
+  val requantizePerChannel : Op_name.t
   val reshape : Op_name.t
   val resizeArea : Op_name.t
   val resizeBicubic : Op_name.t
@@ -470,6 +571,23 @@ module Op_names : sig
   val resizeNearestNeighborGrad : Op_name.t
   val restore : Op_name.t
   val restoreSlice : Op_name.t
+  val retrieveTPUEmbeddingADAMParameters : Op_name.t
+  val retrieveTPUEmbeddingADAMParametersGradAccumDebug : Op_name.t
+  val retrieveTPUEmbeddingAdadeltaParameters : Op_name.t
+  val retrieveTPUEmbeddingAdadeltaParametersGradAccumDebug : Op_name.t
+  val retrieveTPUEmbeddingAdagradParameters : Op_name.t
+  val retrieveTPUEmbeddingAdagradParametersGradAccumDebug : Op_name.t
+  val retrieveTPUEmbeddingCenteredRMSPropParameters : Op_name.t
+  val retrieveTPUEmbeddingFTRLParameters : Op_name.t
+  val retrieveTPUEmbeddingFTRLParametersGradAccumDebug : Op_name.t
+  val retrieveTPUEmbeddingMDLAdagradLightParameters : Op_name.t
+  val retrieveTPUEmbeddingMomentumParameters : Op_name.t
+  val retrieveTPUEmbeddingMomentumParametersGradAccumDebug : Op_name.t
+  val retrieveTPUEmbeddingProximalAdagradParameters : Op_name.t
+  val retrieveTPUEmbeddingProximalAdagradParametersGradAccumDebug : Op_name.t
+  val retrieveTPUEmbeddingRMSPropParameters : Op_name.t
+  val retrieveTPUEmbeddingRMSPropParametersGradAccumDebug : Op_name.t
+  val retrieveTPUEmbeddingStochasticGradientDescentParameters : Op_name.t
   val reverse : Op_name.t
   val reverseSequence : Op_name.t
   val reverseV2 : Op_name.t
@@ -482,7 +600,10 @@ module Op_names : sig
   val rsqrtGrad : Op_name.t
   val sampleDistortedBoundingBox : Op_name.t
   val sampleDistortedBoundingBoxV2 : Op_name.t
+  val samplingDataset : Op_name.t
   val scalarSummary : Op_name.t
+  val scaleAndTranslate : Op_name.t
+  val scaleAndTranslateGrad : Op_name.t
   val scatterAdd : Op_name.t
   val scatterDiv : Op_name.t
   val scatterMax : Op_name.t
@@ -507,27 +628,28 @@ module Op_names : sig
   val selfAdjointEigV2 : Op_name.t
   val selu : Op_name.t
   val seluGrad : Op_name.t
+  val sendTPUEmbeddingGradients : Op_name.t
   val serializeManySparse : Op_name.t
   val serializeSparse : Op_name.t
   val serializeTensor : Op_name.t
   val setSize : Op_name.t
   val shape : Op_name.t
   val shapeN : Op_name.t
+  val shardDataset : Op_name.t
   val shardedFilename : Op_name.t
   val shardedFilespec : Op_name.t
   val shuffleAndRepeatDataset : Op_name.t
   val shuffleDataset : Op_name.t
+  val shutdownDistributedTPU : Op_name.t
   val sigmoid : Op_name.t
   val sigmoidGrad : Op_name.t
   val sign : Op_name.t
   val sin : Op_name.t
   val sinh : Op_name.t
-  val sinkDataset : Op_name.t
   val size : Op_name.t
   val skipDataset : Op_name.t
   val skipgram : Op_name.t
   val slice : Op_name.t
-  val slideDataset : Op_name.t
   val snapshot : Op_name.t
   val softmax : Op_name.t
   val softmaxCrossEntropyWithLogits : Op_name.t
@@ -587,7 +709,6 @@ module Op_names : sig
   val sparseToSparseSetOperation : Op_name.t
   val split : Op_name.t
   val splitV : Op_name.t
-  val sqlDataset : Op_name.t
   val sqrt : Op_name.t
   val sqrtGrad : Op_name.t
   val square : Op_name.t
@@ -602,12 +723,16 @@ module Op_names : sig
   val statelessMultinomial : Op_name.t
   val statelessRandomNormal : Op_name.t
   val statelessRandomUniform : Op_name.t
+  val statelessRandomUniformInt : Op_name.t
   val statelessTruncatedNormal : Op_name.t
+  val staticRegexFullMatch : Op_name.t
+  val staticRegexReplace : Op_name.t
   val stopGradient : Op_name.t
   val stridedSlice : Op_name.t
   val stridedSliceAssign : Op_name.t
   val stridedSliceGrad : Op_name.t
   val stringJoin : Op_name.t
+  val stringLength : Op_name.t
   val stringSplit : Op_name.t
   val stringSplitV2 : Op_name.t
   val stringStrip : Op_name.t
@@ -622,6 +747,12 @@ module Op_names : sig
   val switch : Op_name.t
   val tFRecordDataset : Op_name.t
   val tFRecordReader : Op_name.t
+  val tPUCompilationResult : Op_name.t
+  val tPUEmbeddingActivations : Op_name.t
+  val tPUOrdinalSelector : Op_name.t
+  val tPUReplicateMetadata : Op_name.t
+  val tPUReplicatedInput : Op_name.t
+  val tPUReplicatedOutput : Op_name.t
   val takeDataset : Op_name.t
   val takeManySparseFromTensorsMap : Op_name.t
   val tan : Op_name.t
@@ -650,17 +781,29 @@ module Op_names : sig
   val tensorArrayV2 : Op_name.t
   val tensorArrayWrite : Op_name.t
   val tensorArrayWriteV2 : Op_name.t
+  val tensorListConcat : Op_name.t
   val tensorListConcatLists : Op_name.t
+  val tensorListConcatV2 : Op_name.t
   val tensorListElementShape : Op_name.t
   val tensorListFromTensor : Op_name.t
+  val tensorListGather : Op_name.t
   val tensorListGetItem : Op_name.t
   val tensorListLength : Op_name.t
   val tensorListPopBack : Op_name.t
   val tensorListPushBack : Op_name.t
   val tensorListPushBackBatch : Op_name.t
   val tensorListReserve : Op_name.t
+  val tensorListResize : Op_name.t
+  val tensorListScatter : Op_name.t
+  val tensorListScatterIntoExistingList : Op_name.t
+  val tensorListScatterV2 : Op_name.t
   val tensorListSetItem : Op_name.t
+  val tensorListSplit : Op_name.t
   val tensorListStack : Op_name.t
+  val tensorScatterAdd : Op_name.t
+  val tensorScatterSub : Op_name.t
+  val tensorScatterUpdate : Op_name.t
+  val tensorStridedSliceUpdate : Op_name.t
   val tensorSummary : Op_name.t
   val tensorSummaryV2 : Op_name.t
   val textLineDataset : Op_name.t
@@ -672,13 +815,18 @@ module Op_names : sig
   val topK : Op_name.t
   val topKV2 : Op_name.t
   val transpose : Op_name.t
+  val tridiagonalSolve : Op_name.t
   val truncateDiv : Op_name.t
   val truncateMod : Op_name.t
   val truncatedNormal : Op_name.t
   val tryRpc : Op_name.t
   val unbatch : Op_name.t
-  val unbatchDataset : Op_name.t
   val unbatchGrad : Op_name.t
+  val unicodeDecode : Op_name.t
+  val unicodeDecodeWithOffsets : Op_name.t
+  val unicodeEncode : Op_name.t
+  val unicodeScript : Op_name.t
+  val unicodeTranscode : Op_name.t
   val uniformCandidateSampler : Op_name.t
   val unique : Op_name.t
   val uniqueV2 : Op_name.t
@@ -690,12 +838,18 @@ module Op_names : sig
   val unsortedSegmentMin : Op_name.t
   val unsortedSegmentProd : Op_name.t
   val unsortedSegmentSum : Op_name.t
+  val unwrapDatasetVariant : Op_name.t
+  val upperBound : Op_name.t
   val variable : Op_name.t
   val variableV2 : Op_name.t
   val where : Op_name.t
   val wholeFileReader : Op_name.t
   val windowDataset : Op_name.t
+  val workerHeartbeat : Op_name.t
+  val wrapDatasetVariant : Op_name.t
   val writeFile : Op_name.t
+  val xdivy : Op_name.t
+  val xlogy : Op_name.t
   val zerosLike : Op_name.t
   val zeta : Op_name.t
   val zipDataset : Op_name.t
@@ -815,23 +969,23 @@ val adjustContrast
 val adjustContrastv2
   :  ?name:string
   -> ?control_inputs:Node.p list
+  -> ([< `float ] as 't) t
   -> [ `float ] t
-  -> [ `float ] t
-  -> [ `float ] t
+  -> ([< `float ] as 't) t
 
 val adjustHue
   :  ?name:string
   -> ?control_inputs:Node.p list
+  -> ([< `float ] as 't) t
   -> [ `float ] t
-  -> [ `float ] t
-  -> [ `float ] t
+  -> ([< `float ] as 't) t
 
 val adjustSaturation
   :  ?name:string
   -> ?control_inputs:Node.p list
+  -> ([< `float ] as 't) t
   -> [ `float ] t
-  -> [ `float ] t
-  -> [ `float ] t
+  -> ([< `float ] as 't) t
 
 val all
   :  ?name:string
@@ -851,6 +1005,16 @@ val allCandidateSampler
   -> ?control_inputs:Node.p list
   -> [ `int64 ] t
   -> [ `int64 ] t * [ `float ] t * [ `float ] t
+
+val allToAll
+  :  ?name:string
+  -> concat_dimension:int
+  -> split_dimension:int
+  -> split_count:int
+  -> ?control_inputs:Node.p list
+  -> ([< `float | `double | `int32 | `complex64 | `int64 | `bool ] as 't) t
+  -> [ `int32 ] t
+  -> ([< `float | `double | `int32 | `complex64 | `int64 | `bool ] as 't) t
 
 val angle
   :  ?name:string
@@ -1288,6 +1452,7 @@ val batchDataset
 
 val batchDatasetV2
   :  ?name:string
+  -> ?parallel_copy:bool
   -> output_types:Type.p list
   -> output_shapes:Dim.t list list
   -> ?control_inputs:Node.p list
@@ -1337,9 +1502,18 @@ val batchMatMul
   -> ?adj_x:bool
   -> ?adj_y:bool
   -> ?control_inputs:Node.p list
-  -> ([< `float | `double | `int32 | `complex64 ] as 't) t
-  -> ([< `float | `double | `int32 | `complex64 ] as 't) t
-  -> ([< `float | `double | `int32 | `complex64 ] as 't) t
+  -> ([< `float | `double | `int32 | `int64 | `complex64 ] as 't) t
+  -> ([< `float | `double | `int32 | `int64 | `complex64 ] as 't) t
+  -> ([< `float | `double | `int32 | `int64 | `complex64 ] as 't) t
+
+val batchMatMulV2
+  :  ?name:string
+  -> ?adj_x:bool
+  -> ?adj_y:bool
+  -> ?control_inputs:Node.p list
+  -> ([< `float | `double | `int32 | `int64 | `complex64 ] as 't) t
+  -> ([< `float | `double | `int32 | `int64 | `complex64 ] as 't) t
+  -> ([< `float | `double | `int32 | `int64 | `complex64 ] as 't) t
 
 val batchMatrixBandPart
   :  ?name:string
@@ -1546,6 +1720,45 @@ val bitwiseXor
   -> ([< `int32 | `int64 ] as 't) t
   -> ([< `int32 | `int64 ] as 't) t
 
+val boostedTreesAggregateStats
+  :  ?name:string
+  -> max_splits:int
+  -> num_buckets:int
+  -> ?control_inputs:Node.p list
+  -> [ `int32 ] t
+  -> [ `float ] t
+  -> [ `float ] t
+  -> [ `int32 ] t
+  -> [ `float ] t
+
+val boostedTreesBucketize
+  :  ?name:string
+  -> ?control_inputs:Node.p list
+  -> [ `float ] t list
+  -> [ `float ] t list
+  -> [ `int32 ] t list
+
+val boostedTreesCalculateBestFeatureSplit
+  :  ?name:string
+  -> logits_dimension:int
+  -> ?split_type:string
+  -> ?control_inputs:Node.p list
+  -> [ `int32 ] t
+  -> [ `float ] t
+  -> [ `float ] t
+  -> [ `float ] t
+  -> [ `float ] t
+  -> [ `float ] t
+  -> [ `int32 ] t * [ `float ] t * [ `int32 ] t * [ `int32 ] t * [ `float ] t * [ `float ] t * [ `string ] t
+
+val boostedTreesMakeQuantileSummaries
+  :  ?name:string
+  -> ?control_inputs:Node.p list
+  -> [ `float ] t list
+  -> [ `float ] t
+  -> [ `float ] t
+  -> [ `float ] t list
+
 val boostedTreesMakeStatsSummary
   :  ?name:string
   -> max_splits:int
@@ -1585,15 +1798,6 @@ val bucketize
   -> ([< `int32 | `int64 | `float | `double ] as 't) t
   -> [ `int32 ] t
 
-val bytesProducedStatsDataset
-  :  ?name:string
-  -> output_types:Type.p list
-  -> output_shapes:Dim.t list list
-  -> ?control_inputs:Node.p list
-  -> [ `variant ] t
-  -> [ `string ] t
-  -> [ `variant ] t
-
 val cTCGreedyDecoder
   :  ?name:string
   -> ?merge_repeated:bool
@@ -1626,6 +1830,7 @@ val cacheDataset
 val cast
   :  ?name:string
   -> type_:'dstT Type.t
+  -> ?truncate:bool
   -> ?control_inputs:Node.p list
   -> 'srcT t
   -> 'dstT t
@@ -1685,6 +1890,23 @@ val collectiveBcastSend
   -> ([< `float | `double | `int32 | `int64 ] as 't) t
   -> ([< `float | `double | `int32 | `int64 ] as 't) t
 
+val collectiveGather
+  :  ?name:string
+  -> group_size:int
+  -> group_key:int
+  -> instance_key:int
+  -> shape:Dim.t list
+  -> ?control_inputs:Node.p list
+  -> ([< `float | `double | `int32 | `int64 ] as 't) t
+  -> ([< `float | `double | `int32 | `int64 ] as 't) t
+
+val collectivePermute
+  :  ?name:string
+  -> ?control_inputs:Node.p list
+  -> ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t
+  -> [ `int32 ] t
+  -> ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t
+
 val collectiveReduce
   :  ?name:string
   -> group_size:int
@@ -1693,9 +1915,23 @@ val collectiveReduce
   -> merge_op:string
   -> final_op:string
   -> subdiv_offsets:int list
+  -> ?wait_for:int list
   -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int32 | `int64 ] as 't) t
   -> ([< `float | `double | `int32 | `int64 ] as 't) t
+
+val combinedNonMaxSuppression
+  :  ?name:string
+  -> ?pad_per_class:bool
+  -> ?clip_boxes:bool
+  -> ?control_inputs:Node.p list
+  -> [ `float ] t
+  -> [ `float ] t
+  -> [ `int32 ] t
+  -> [ `int32 ] t
+  -> [ `float ] t
+  -> [ `float ] t
+  -> [ `float ] t * [ `float ] t * [ `float ] t * [ `int32 ] t
 
 val complex
   :  ?name:string
@@ -1757,6 +1993,16 @@ val conditionalAccumulator
   -> shape:Dim.t list
   -> ?container:string
   -> ?shared_name:string
+  -> ?reduction_type:string
+  -> ?control_inputs:Node.p list
+  -> unit
+  -> [ `string ] t
+
+val configureDistributedTPU
+  :  ?name:string
+  -> ?embedding_config:string
+  -> ?tpu_embedding_config:string
+  -> ?is_global_init:bool
   -> ?control_inputs:Node.p list
   -> unit
   -> [ `string ] t
@@ -1791,6 +2037,7 @@ val conv2D
   -> strides:int list
   -> ?use_cudnn_on_gpu:bool
   -> padding:string
+  -> ?explicit_paddings:int list
   -> ?data_format:string
   -> ?dilations:int list
   -> ?control_inputs:Node.p list
@@ -1803,6 +2050,7 @@ val conv2DBackpropFilter
   -> strides:int list
   -> ?use_cudnn_on_gpu:bool
   -> padding:string
+  -> ?explicit_paddings:int list
   -> ?data_format:string
   -> ?dilations:int list
   -> ?control_inputs:Node.p list
@@ -1816,6 +2064,7 @@ val conv2DBackpropInput
   -> strides:int list
   -> ?use_cudnn_on_gpu:bool
   -> padding:string
+  -> ?explicit_paddings:int list
   -> ?data_format:string
   -> ?dilations:int list
   -> ?control_inputs:Node.p list
@@ -1969,6 +2218,13 @@ val cross
   -> ([< `float | `double | `int32 | `int64 ] as 't) t
   -> ([< `float | `double | `int32 | `int64 ] as 't) t
 
+val crossReplicaSum
+  :  ?name:string
+  -> ?control_inputs:Node.p list
+  -> ([< `float | `int32 ] as 't) t
+  -> [ `int32 ] t
+  -> ([< `float | `int32 ] as 't) t
+
 val cudnnRNN
   :  ?name:string
   -> ?rnn_mode:string
@@ -2078,14 +2334,6 @@ val datasetToGraph
   -> [ `variant ] t
   -> [ `string ] t
 
-val datasetToTFRecord
-  :  ?name:string
-  -> ?control_inputs:Node.p list
-  -> [ `variant ] t
-  -> [ `string ] t
-  -> [ `string ] t
-  -> [ `unit ] t
-
 val debugGradientIdentity
   :  ?name:string
   -> ?control_inputs:Node.p list
@@ -2153,6 +2401,15 @@ val decodeJSONExample
   -> [ `string ] t
   -> [ `string ] t
 
+val decodePaddedRaw
+  :  ?name:string
+  -> type_:([< `float | `double | `int32 | `int64 ] as 'out_type) Type.t
+  -> ?little_endian:bool
+  -> ?control_inputs:Node.p list
+  -> [ `string ] t
+  -> [ `int32 ] t
+  -> ([< `float | `double | `int32 | `int64 ] as 'out_type) t
+
 val decodePng
   :  ?name:string
   -> type_:'dtype Type.t
@@ -2163,11 +2420,11 @@ val decodePng
 
 val decodeRaw
   :  ?name:string
-  -> type_:([< `float | `double | `int32 | `int64 ] as 'out_type) Type.t
+  -> type_:([< `float | `double | `int32 | `int64 | `complex64 | `bool ] as 'out_type) Type.t
   -> ?little_endian:bool
   -> ?control_inputs:Node.p list
   -> [ `string ] t
-  -> ([< `float | `double | `int32 | `int64 ] as 'out_type) t
+  -> ([< `float | `double | `int32 | `int64 | `complex64 | `bool ] as 'out_type) t
 
 val decodeWav
   :  ?name:string
@@ -2197,16 +2454,6 @@ val denseToDenseSetOperation
   -> ([< `int32 | `int64 | `string ] as 't) t
   -> ([< `int32 | `int64 | `string ] as 't) t
   -> [ `int64 ] t * ([< `int32 | `int64 | `string ] as 't) t * [ `int64 ] t
-
-val denseToSparseBatchDataset
-  :  ?name:string
-  -> output_types:Type.p list
-  -> output_shapes:Dim.t list list
-  -> ?control_inputs:Node.p list
-  -> [ `variant ] t
-  -> [ `int64 ] t
-  -> [ `int64 ] t
-  -> [ `variant ] t
 
 val denseToSparseSetOperation
   :  ?name:string
@@ -2349,10 +2596,25 @@ val div
   -> ([< `float | `double | `int32 | `int64 | `complex64 ] as 't) t
   -> ([< `float | `double | `int32 | `int64 | `complex64 ] as 't) t
 
+val divNoNan
+  :  ?name:string
+  -> ?control_inputs:Node.p list
+  -> ([< `float | `double | `complex64 ] as 't) t
+  -> ([< `float | `double | `complex64 ] as 't) t
+  -> ([< `float | `double | `complex64 ] as 't) t
+
 val drawBoundingBoxes
   :  ?name:string
   -> ?control_inputs:Node.p list
   -> ([< `float ] as 't) t
+  -> [ `float ] t
+  -> ([< `float ] as 't) t
+
+val drawBoundingBoxesV2
+  :  ?name:string
+  -> ?control_inputs:Node.p list
+  -> ([< `float ] as 't) t
+  -> [ `float ] t
   -> [ `float ] t
   -> ([< `float ] as 't) t
 
@@ -2408,6 +2670,7 @@ val emptyTensorList
   :  ?name:string
   -> ?control_inputs:Node.p list
   -> ([< `int32 | `int64 ] as 'shape_type) t
+  -> [ `int32 ] t
   -> [ `variant ] t
 
 val encodeBase64
@@ -2430,6 +2693,43 @@ val encodeWav
   -> [ `float ] t
   -> [ `int32 ] t
   -> [ `string ] t
+
+val enqueueTPUEmbeddingIntegerBatch
+  :  ?name:string
+  -> ?device_ordinal:int
+  -> ?control_inputs:Node.p list
+  -> [ `int32 ] t list
+  -> [ `string ] t
+  -> [ `unit ] t
+
+val enqueueTPUEmbeddingSparseBatch
+  :  ?name:string
+  -> ?device_ordinal:int
+  -> ?control_inputs:Node.p list
+  -> ([< `int32 | `int64 ] as 't1) t list
+  -> ([< `int32 | `int64 ] as 't2) t list
+  -> ([< `float | `double ] as 't3) t list
+  -> [ `string ] t
+  -> [ `unit ] t
+
+val enqueueTPUEmbeddingSparseTensorBatch
+  :  ?name:string
+  -> ?device_ordinal:int
+  -> table_ids:int list
+  -> ?max_sequence_lengths:int list
+  -> ?control_inputs:Node.p list
+  -> ([< `int32 | `int64 ] as 't1) t list
+  -> ([< `int32 | `int64 ] as 't2) t list
+  -> ([< `float | `double ] as 't3) t list
+  -> [ `string ] t
+  -> [ `unit ] t
+
+val ensureShape
+  :  ?name:string
+  -> shape:Dim.t list
+  -> ?control_inputs:Node.p list
+  -> 't t
+  -> 't t
 
 val enter
   :  ?name:string
@@ -2459,6 +2759,14 @@ val erfc
   -> ([< `float | `double ] as 't) t
   -> ([< `float | `double ] as 't) t
 
+val euclideanNorm
+  :  ?name:string
+  -> ?keep_dims:bool
+  -> ?control_inputs:Node.p list
+  -> ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t
+  -> ([< `int32 | `int64 ] as 'tidx) t
+  -> ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t
+
 val exit
   :  ?name:string
   -> ?control_inputs:Node.p list
@@ -2478,6 +2786,197 @@ val expandDims
   -> ([< `int32 | `int64 ] as 'tdim) t
   -> 't t
 
+val experimentalAssertNextDataset
+  :  ?name:string
+  -> output_types:Type.p list
+  -> output_shapes:Dim.t list list
+  -> ?control_inputs:Node.p list
+  -> [ `variant ] t
+  -> [ `string ] t
+  -> [ `variant ] t
+
+val experimentalAutoShardDataset
+  :  ?name:string
+  -> output_types:Type.p list
+  -> output_shapes:Dim.t list list
+  -> ?control_inputs:Node.p list
+  -> [ `variant ] t
+  -> [ `int64 ] t
+  -> [ `int64 ] t
+  -> [ `variant ] t
+
+val experimentalBytesProducedStatsDataset
+  :  ?name:string
+  -> output_types:Type.p list
+  -> output_shapes:Dim.t list list
+  -> ?control_inputs:Node.p list
+  -> [ `variant ] t
+  -> [ `string ] t
+  -> [ `variant ] t
+
+val experimentalChooseFastestDataset
+  :  ?name:string
+  -> num_experiments:int
+  -> output_types:Type.p list
+  -> output_shapes:Dim.t list list
+  -> ?control_inputs:Node.p list
+  -> [ `variant ] t list
+  -> [ `variant ] t
+
+val experimentalDatasetCardinality
+  :  ?name:string
+  -> ?control_inputs:Node.p list
+  -> [ `variant ] t
+  -> [ `int64 ] t
+
+val experimentalDatasetToTFRecord
+  :  ?name:string
+  -> ?control_inputs:Node.p list
+  -> [ `variant ] t
+  -> [ `string ] t
+  -> [ `string ] t
+  -> [ `unit ] t
+
+val experimentalDenseToSparseBatchDataset
+  :  ?name:string
+  -> output_types:Type.p list
+  -> output_shapes:Dim.t list list
+  -> ?control_inputs:Node.p list
+  -> [ `variant ] t
+  -> [ `int64 ] t
+  -> [ `int64 ] t
+  -> [ `variant ] t
+
+val experimentalDirectedInterleaveDataset
+  :  ?name:string
+  -> output_types:Type.p list
+  -> output_shapes:Dim.t list list
+  -> ?control_inputs:Node.p list
+  -> [ `variant ] t
+  -> [ `variant ] t list
+  -> [ `variant ] t
+
+val experimentalIgnoreErrorsDataset
+  :  ?name:string
+  -> output_types:Type.p list
+  -> output_shapes:Dim.t list list
+  -> ?control_inputs:Node.p list
+  -> [ `variant ] t
+  -> [ `variant ] t
+
+val experimentalLMDBDataset
+  :  ?name:string
+  -> output_types:Type.p list
+  -> output_shapes:Dim.t list list
+  -> ?control_inputs:Node.p list
+  -> [ `string ] t
+  -> [ `variant ] t
+
+val experimentalLatencyStatsDataset
+  :  ?name:string
+  -> output_types:Type.p list
+  -> output_shapes:Dim.t list list
+  -> ?control_inputs:Node.p list
+  -> [ `variant ] t
+  -> [ `string ] t
+  -> [ `variant ] t
+
+val experimentalMatchingFilesDataset
+  :  ?name:string
+  -> ?control_inputs:Node.p list
+  -> [ `string ] t
+  -> [ `variant ] t
+
+val experimentalMaxIntraOpParallelismDataset
+  :  ?name:string
+  -> output_types:Type.p list
+  -> output_shapes:Dim.t list list
+  -> ?control_inputs:Node.p list
+  -> [ `variant ] t
+  -> [ `int64 ] t
+  -> [ `variant ] t
+
+val experimentalNonSerializableDataset
+  :  ?name:string
+  -> output_types:Type.p list
+  -> output_shapes:Dim.t list list
+  -> ?control_inputs:Node.p list
+  -> [ `variant ] t
+  -> [ `variant ] t
+
+val experimentalPrivateThreadPoolDataset
+  :  ?name:string
+  -> output_types:Type.p list
+  -> output_shapes:Dim.t list list
+  -> ?control_inputs:Node.p list
+  -> [ `variant ] t
+  -> [ `int64 ] t
+  -> [ `variant ] t
+
+val experimentalRandomDataset
+  :  ?name:string
+  -> output_types:Type.p list
+  -> output_shapes:Dim.t list list
+  -> ?control_inputs:Node.p list
+  -> [ `int64 ] t
+  -> [ `int64 ] t
+  -> [ `variant ] t
+
+val experimentalRebatchDataset
+  :  ?name:string
+  -> output_types:Type.p list
+  -> output_shapes:Dim.t list list
+  -> ?control_inputs:Node.p list
+  -> [ `variant ] t
+  -> [ `int64 ] t
+  -> [ `variant ] t
+
+val experimentalSleepDataset
+  :  ?name:string
+  -> output_types:Type.p list
+  -> output_shapes:Dim.t list list
+  -> ?control_inputs:Node.p list
+  -> [ `variant ] t
+  -> [ `int64 ] t
+  -> [ `variant ] t
+
+val experimentalSlidingWindowDataset
+  :  ?name:string
+  -> output_types:Type.p list
+  -> output_shapes:Dim.t list list
+  -> ?control_inputs:Node.p list
+  -> [ `variant ] t
+  -> [ `int64 ] t
+  -> [ `int64 ] t
+  -> [ `int64 ] t
+  -> [ `variant ] t
+
+val experimentalSqlDataset
+  :  ?name:string
+  -> output_types:Type.p list
+  -> output_shapes:Dim.t list list
+  -> ?control_inputs:Node.p list
+  -> [ `string ] t
+  -> [ `string ] t
+  -> [ `string ] t
+  -> [ `variant ] t
+
+val experimentalUnbatchDataset
+  :  ?name:string
+  -> output_types:Type.p list
+  -> output_shapes:Dim.t list list
+  -> ?control_inputs:Node.p list
+  -> [ `variant ] t
+  -> [ `variant ] t
+
+val experimentalUniqueDataset
+  :  ?name:string
+  -> output_types:Type.p list
+  -> output_shapes:Dim.t list list
+  -> ?control_inputs:Node.p list
+  -> [ `variant ] t
+  -> [ `variant ] t
+
 val expm1
   :  ?name:string
   -> ?control_inputs:Node.p list
@@ -2489,6 +2988,7 @@ val extractGlimpse
   -> ?centered:bool
   -> ?normalized:bool
   -> ?uniform_noise:bool
+  -> ?noise:string
   -> ?control_inputs:Node.p list
   -> [ `float ] t
   -> [ `int32 ] t
@@ -2511,6 +3011,15 @@ val extractJpegShape
   -> ?control_inputs:Node.p list
   -> [ `string ] t
   -> ([< `int32 | `int64 ] as 'output_type) t
+
+val extractVolumePatches
+  :  ?name:string
+  -> ksizes:int list
+  -> strides:int list
+  -> padding:string
+  -> ?control_inputs:Node.p list
+  -> ([< `float | `double | `int32 | `int64 ] as 't) t
+  -> ([< `float | `double | `int32 | `int64 ] as 't) t
 
 val fFT
   :  ?name:string
@@ -2618,21 +3127,20 @@ val fakeQuantWithMinMaxVarsPerChannelGradient
   -> [ `float ] t
   -> [ `float ] t * [ `float ] t * [ `float ] t
 
-val featureStatsDataset
-  :  ?name:string
-  -> output_types:Type.p list
-  -> output_shapes:Dim.t list list
-  -> ?control_inputs:Node.p list
-  -> [ `variant ] t
-  -> [ `string ] t
-  -> [ `variant ] t
-
 val fill
   :  ?name:string
   -> ?control_inputs:Node.p list
   -> ([< `int32 | `int64 ] as 'index_type) t
   -> 't t
   -> 't t
+
+val filterByLastComponentDataset
+  :  ?name:string
+  -> output_types:Type.p list
+  -> output_shapes:Dim.t list list
+  -> ?control_inputs:Node.p list
+  -> [ `variant ] t
+  -> [ `variant ] t
 
 val fixedLengthRecordDataset
   :  ?name:string
@@ -2642,6 +3150,17 @@ val fixedLengthRecordDataset
   -> [ `int64 ] t
   -> [ `int64 ] t
   -> [ `int64 ] t
+  -> [ `variant ] t
+
+val fixedLengthRecordDatasetV2
+  :  ?name:string
+  -> ?control_inputs:Node.p list
+  -> [ `string ] t
+  -> [ `int64 ] t
+  -> [ `int64 ] t
+  -> [ `int64 ] t
+  -> [ `int64 ] t
+  -> [ `string ] t
   -> [ `variant ] t
 
 val fixedLengthRecordReader
@@ -2912,6 +3431,13 @@ val histogramSummary
   -> ([< `float | `double | `int32 | `int64 ] as 't) t
   -> [ `string ] t
 
+val hostConst
+  :  ?name:string
+  -> type_:'dtype Type.t
+  -> ?control_inputs:Node.p list
+  -> unit
+  -> 'dtype t
+
 val iFFT
   :  ?name:string
   -> ?control_inputs:Node.p list
@@ -3026,6 +3552,30 @@ val inTopKV2
   -> ([< `int32 | `int64 ] as 't) t
   -> [ `bool ] t
 
+val infeedDequeue
+  :  ?name:string
+  -> type_:'dtype Type.t
+  -> shape:Dim.t list
+  -> ?control_inputs:Node.p list
+  -> unit
+  -> 'dtype t
+
+val infeedEnqueue
+  :  ?name:string
+  -> ?shape:Dim.t list
+  -> ?layout:int list
+  -> ?device_ordinal:int
+  -> ?control_inputs:Node.p list
+  -> 'dtype t
+  -> [ `unit ] t
+
+val infeedEnqueuePrelinearizedBuffer
+  :  ?name:string
+  -> ?device_ordinal:int
+  -> ?control_inputs:Node.p list
+  -> [ `variant ] t
+  -> [ `unit ] t
+
 val initializeTable
   :  ?name:string
   -> ?control_inputs:Node.p list
@@ -3118,6 +3668,22 @@ val isVariableInitialized
   -> 'dtype t
   -> [ `bool ] t
 
+val kMC2ChainInitialization
+  :  ?name:string
+  -> ?control_inputs:Node.p list
+  -> [ `float ] t
+  -> [ `int64 ] t
+  -> [ `int64 ] t
+
+val kmeansPlusPlusInitialization
+  :  ?name:string
+  -> ?control_inputs:Node.p list
+  -> [ `float ] t
+  -> [ `int64 ] t
+  -> [ `int64 ] t
+  -> [ `int64 ] t
+  -> [ `float ] t
+
 val l2Loss
   :  ?name:string
   -> ?control_inputs:Node.p list
@@ -3154,14 +3720,20 @@ val lRNGrad
   -> ([< `float ] as 't) t
   -> ([< `float ] as 't) t
 
-val latencyStatsDataset
+val leakyRelu
   :  ?name:string
-  -> output_types:Type.p list
-  -> output_shapes:Dim.t list list
+  -> ?alpha:float
   -> ?control_inputs:Node.p list
-  -> [ `variant ] t
-  -> [ `string ] t
-  -> [ `variant ] t
+  -> ([< `float | `double ] as 't) t
+  -> ([< `float | `double ] as 't) t
+
+val leakyReluGrad
+  :  ?name:string
+  -> ?alpha:float
+  -> ?control_inputs:Node.p list
+  -> ([< `float | `double ] as 't) t
+  -> ([< `float | `double ] as 't) t
+  -> ([< `float | `double ] as 't) t
 
 val learnedUnigramCandidateSampler
   :  ?name:string
@@ -3230,6 +3802,211 @@ val loadAndRemapMatrix
   -> [ `int64 ] t
   -> [ `float ] t
   -> [ `float ] t
+
+val loadTPUEmbeddingADAMParameters
+  :  ?name:string
+  -> ?table_id:int
+  -> ?table_name:string
+  -> num_shards:int
+  -> shard_id:int
+  -> ?control_inputs:Node.p list
+  -> [ `float ] t
+  -> [ `float ] t
+  -> [ `float ] t
+  -> [ `unit ] t
+
+val loadTPUEmbeddingADAMParametersGradAccumDebug
+  :  ?name:string
+  -> ?table_id:int
+  -> ?table_name:string
+  -> num_shards:int
+  -> shard_id:int
+  -> ?control_inputs:Node.p list
+  -> [ `float ] t
+  -> [ `float ] t
+  -> [ `float ] t
+  -> [ `float ] t
+  -> [ `unit ] t
+
+val loadTPUEmbeddingAdadeltaParameters
+  :  ?name:string
+  -> ?table_id:int
+  -> ?table_name:string
+  -> num_shards:int
+  -> shard_id:int
+  -> ?control_inputs:Node.p list
+  -> [ `float ] t
+  -> [ `float ] t
+  -> [ `float ] t
+  -> [ `unit ] t
+
+val loadTPUEmbeddingAdadeltaParametersGradAccumDebug
+  :  ?name:string
+  -> ?table_id:int
+  -> ?table_name:string
+  -> num_shards:int
+  -> shard_id:int
+  -> ?control_inputs:Node.p list
+  -> [ `float ] t
+  -> [ `float ] t
+  -> [ `float ] t
+  -> [ `float ] t
+  -> [ `unit ] t
+
+val loadTPUEmbeddingAdagradParameters
+  :  ?name:string
+  -> ?table_id:int
+  -> ?table_name:string
+  -> num_shards:int
+  -> shard_id:int
+  -> ?control_inputs:Node.p list
+  -> [ `float ] t
+  -> [ `float ] t
+  -> [ `unit ] t
+
+val loadTPUEmbeddingAdagradParametersGradAccumDebug
+  :  ?name:string
+  -> ?table_id:int
+  -> ?table_name:string
+  -> num_shards:int
+  -> shard_id:int
+  -> ?control_inputs:Node.p list
+  -> [ `float ] t
+  -> [ `float ] t
+  -> [ `float ] t
+  -> [ `unit ] t
+
+val loadTPUEmbeddingCenteredRMSPropParameters
+  :  ?name:string
+  -> ?table_id:int
+  -> ?table_name:string
+  -> num_shards:int
+  -> shard_id:int
+  -> ?control_inputs:Node.p list
+  -> [ `float ] t
+  -> [ `float ] t
+  -> [ `float ] t
+  -> [ `float ] t
+  -> [ `unit ] t
+
+val loadTPUEmbeddingFTRLParameters
+  :  ?name:string
+  -> ?table_id:int
+  -> ?table_name:string
+  -> num_shards:int
+  -> shard_id:int
+  -> ?control_inputs:Node.p list
+  -> [ `float ] t
+  -> [ `float ] t
+  -> [ `float ] t
+  -> [ `unit ] t
+
+val loadTPUEmbeddingFTRLParametersGradAccumDebug
+  :  ?name:string
+  -> ?table_id:int
+  -> ?table_name:string
+  -> num_shards:int
+  -> shard_id:int
+  -> ?control_inputs:Node.p list
+  -> [ `float ] t
+  -> [ `float ] t
+  -> [ `float ] t
+  -> [ `float ] t
+  -> [ `unit ] t
+
+val loadTPUEmbeddingMDLAdagradLightParameters
+  :  ?name:string
+  -> ?table_id:int
+  -> ?table_name:string
+  -> num_shards:int
+  -> shard_id:int
+  -> ?control_inputs:Node.p list
+  -> [ `float ] t
+  -> [ `float ] t
+  -> [ `float ] t
+  -> [ `float ] t
+  -> [ `unit ] t
+
+val loadTPUEmbeddingMomentumParameters
+  :  ?name:string
+  -> ?table_id:int
+  -> ?table_name:string
+  -> num_shards:int
+  -> shard_id:int
+  -> ?control_inputs:Node.p list
+  -> [ `float ] t
+  -> [ `float ] t
+  -> [ `unit ] t
+
+val loadTPUEmbeddingMomentumParametersGradAccumDebug
+  :  ?name:string
+  -> ?table_id:int
+  -> ?table_name:string
+  -> num_shards:int
+  -> shard_id:int
+  -> ?control_inputs:Node.p list
+  -> [ `float ] t
+  -> [ `float ] t
+  -> [ `float ] t
+  -> [ `unit ] t
+
+val loadTPUEmbeddingProximalAdagradParameters
+  :  ?name:string
+  -> ?table_id:int
+  -> ?table_name:string
+  -> num_shards:int
+  -> shard_id:int
+  -> ?control_inputs:Node.p list
+  -> [ `float ] t
+  -> [ `float ] t
+  -> [ `unit ] t
+
+val loadTPUEmbeddingProximalAdagradParametersGradAccumDebug
+  :  ?name:string
+  -> ?table_id:int
+  -> ?table_name:string
+  -> num_shards:int
+  -> shard_id:int
+  -> ?control_inputs:Node.p list
+  -> [ `float ] t
+  -> [ `float ] t
+  -> [ `float ] t
+  -> [ `unit ] t
+
+val loadTPUEmbeddingRMSPropParameters
+  :  ?name:string
+  -> ?table_id:int
+  -> ?table_name:string
+  -> num_shards:int
+  -> shard_id:int
+  -> ?control_inputs:Node.p list
+  -> [ `float ] t
+  -> [ `float ] t
+  -> [ `float ] t
+  -> [ `unit ] t
+
+val loadTPUEmbeddingRMSPropParametersGradAccumDebug
+  :  ?name:string
+  -> ?table_id:int
+  -> ?table_name:string
+  -> num_shards:int
+  -> shard_id:int
+  -> ?control_inputs:Node.p list
+  -> [ `float ] t
+  -> [ `float ] t
+  -> [ `float ] t
+  -> [ `float ] t
+  -> [ `unit ] t
+
+val loadTPUEmbeddingStochasticGradientDescentParameters
+  :  ?name:string
+  -> ?table_id:int
+  -> ?table_name:string
+  -> num_shards:int
+  -> shard_id:int
+  -> ?control_inputs:Node.p list
+  -> [ `float ] t
+  -> [ `unit ] t
 
 val log
   :  ?name:string
@@ -3331,6 +4108,21 @@ val loopCond
   -> [ `bool ] t
   -> [ `bool ] t
 
+val lowerBound
+  :  ?name:string
+  -> type_:([< `int32 | `int64 ] as 'out_type) Type.t
+  -> ?control_inputs:Node.p list
+  -> 't t
+  -> 't t
+  -> ([< `int32 | `int64 ] as 'out_type) t
+
+val lu
+  :  ?name:string
+  -> type_1:([< `int32 | `int64 ] as 'output_idx_type) Type.t
+  -> ?control_inputs:Node.p list
+  -> ([< `double | `float | `complex64 ] as 't) t
+  -> ([< `double | `float | `complex64 ] as 't) t * ([< `int32 | `int64 ] as 'output_idx_type) t
+
 val mapClear
   :  ?name:string
   -> ?capacity:int
@@ -3369,9 +4161,9 @@ val matMul
   -> ?transpose_a:bool
   -> ?transpose_b:bool
   -> ?control_inputs:Node.p list
-  -> ([< `float | `double | `int32 | `complex64 ] as 't) t
-  -> ([< `float | `double | `int32 | `complex64 ] as 't) t
-  -> ([< `float | `double | `int32 | `complex64 ] as 't) t
+  -> ([< `float | `double | `int32 | `int64 | `complex64 ] as 't) t
+  -> ([< `float | `double | `int32 | `int64 | `complex64 ] as 't) t
+  -> ([< `float | `double | `int32 | `int64 | `complex64 ] as 't) t
 
 val matchingFiles
   :  ?name:string
@@ -3446,6 +4238,12 @@ val matrixSolveLs
   -> ([< `double | `float | `complex64 ] as 't) t
   -> ([< `double | `float | `complex64 ] as 't) t
   -> [ `double ] t
+  -> ([< `double | `float | `complex64 ] as 't) t
+
+val matrixSquareRoot
+  :  ?name:string
+  -> ?control_inputs:Node.p list
+  -> ([< `double | `float | `complex64 ] as 't) t
   -> ([< `double | `float | `complex64 ] as 't) t
 
 val matrixTriangularSolve
@@ -3550,6 +4348,7 @@ val maxPoolGradGradWithArgmax
   -> ksize:int list
   -> strides:int list
   -> padding:string
+  -> ?include_batch_in_index:bool
   -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int32 | `int64 ] as 't) t
   -> ([< `float | `double | `int32 | `int64 ] as 't) t
@@ -3573,6 +4372,7 @@ val maxPoolGradWithArgmax
   -> ksize:int list
   -> strides:int list
   -> padding:string
+  -> ?include_batch_in_index:bool
   -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int32 | `int64 ] as 't) t
   -> ([< `float | `double | `int32 | `int64 ] as 't) t
@@ -3595,6 +4395,7 @@ val maxPoolWithArgmax
   -> ksize:int list
   -> strides:int list
   -> padding:string
+  -> ?include_batch_in_index:bool
   -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int32 | `int64 ] as 't) t
   -> ([< `float | `double | `int32 | `int64 ] as 't) t * ([< `int32 | `int64 ] as 'targmax) t
@@ -3683,12 +4484,28 @@ val mod_
   -> ([< `int32 | `int64 | `float | `double ] as 't) t
   -> ([< `int32 | `int64 | `float | `double ] as 't) t
 
+val modelDataset
+  :  ?name:string
+  -> ?cpu_budget:int
+  -> output_types:Type.p list
+  -> output_shapes:Dim.t list list
+  -> ?control_inputs:Node.p list
+  -> [ `variant ] t
+  -> [ `variant ] t
+
 val mul
   :  ?name:string
   -> ?control_inputs:Node.p list
   -> ([< `float | `double | `int32 | `int64 | `complex64 ] as 't) t
   -> ([< `float | `double | `int32 | `int64 | `complex64 ] as 't) t
   -> ([< `float | `double | `int32 | `int64 | `complex64 ] as 't) t
+
+val mulNoNan
+  :  ?name:string
+  -> ?control_inputs:Node.p list
+  -> ([< `float | `double | `complex64 ] as 't) t
+  -> ([< `float | `double | `complex64 ] as 't) t
+  -> ([< `float | `double | `complex64 ] as 't) t
 
 val multinomial
   :  ?name:string
@@ -3731,6 +4548,37 @@ val mutableHashTableOfTensors
   -> unit
   -> [ `string ] t
 
+val ncclAllReduce
+  :  ?name:string
+  -> reduction:string
+  -> num_devices:int
+  -> shared_name:string
+  -> ?control_inputs:Node.p list
+  -> ([< `float | `double | `int32 | `int64 ] as 't) t
+  -> ([< `float | `double | `int32 | `int64 ] as 't) t
+
+val ncclBroadcast
+  :  ?name:string
+  -> shape:Dim.t list
+  -> ?control_inputs:Node.p list
+  -> ([< `float | `double | `int32 | `int64 ] as 't) t
+  -> ([< `float | `double | `int32 | `int64 ] as 't) t
+
+val ncclReduce
+  :  ?name:string
+  -> reduction:string
+  -> ?control_inputs:Node.p list
+  -> ([< `float | `double | `int32 | `int64 ] as 't) t list
+  -> ([< `float | `double | `int32 | `int64 ] as 't) t
+
+val nearestNeighbors
+  :  ?name:string
+  -> ?control_inputs:Node.p list
+  -> [ `float ] t
+  -> [ `float ] t
+  -> [ `int64 ] t
+  -> [ `int64 ] t * [ `float ] t
+
 val neg
   :  ?name:string
   -> ?control_inputs:Node.p list
@@ -3749,6 +4597,13 @@ val negTrain
   -> [ `float ] t
   -> [ `unit ] t
 
+val nextAfter
+  :  ?name:string
+  -> ?control_inputs:Node.p list
+  -> ([< `double | `float ] as 't) t
+  -> ([< `double | `float ] as 't) t
+  -> ([< `double | `float ] as 't) t
+
 val nextIteration
   :  ?name:string
   -> ?control_inputs:Node.p list
@@ -3760,6 +4615,13 @@ val noOp
   -> ?control_inputs:Node.p list
   -> unit
   -> [ `unit ] t
+
+val nonDeterministicInts
+  :  ?name:string
+  -> type_:'dtype Type.t
+  -> ?control_inputs:Node.p list
+  -> 'shape_dtype t
+  -> 'dtype t
 
 val nonMaxSuppression
   :  ?name:string
@@ -3773,8 +4635,8 @@ val nonMaxSuppression
 val nonMaxSuppressionV2
   :  ?name:string
   -> ?control_inputs:Node.p list
-  -> [ `float ] t
-  -> [ `float ] t
+  -> ([< `float ] as 't) t
+  -> ([< `float ] as 't) t
   -> [ `int32 ] t
   -> [ `float ] t
   -> [ `int32 ] t
@@ -3782,12 +4644,23 @@ val nonMaxSuppressionV2
 val nonMaxSuppressionV3
   :  ?name:string
   -> ?control_inputs:Node.p list
-  -> [ `float ] t
-  -> [ `float ] t
+  -> ([< `float ] as 't) t
+  -> ([< `float ] as 't) t
   -> [ `int32 ] t
   -> [ `float ] t
   -> [ `float ] t
   -> [ `int32 ] t
+
+val nonMaxSuppressionV4
+  :  ?name:string
+  -> ?pad_to_max_output_size:bool
+  -> ?control_inputs:Node.p list
+  -> ([< `float ] as 't) t
+  -> ([< `float ] as 't) t
+  -> [ `int32 ] t
+  -> [ `float ] t
+  -> [ `float ] t
+  -> [ `int32 ] t * [ `int32 ] t
 
 val nonMaxSuppressionWithOverlaps
   :  ?name:string
@@ -3839,6 +4712,18 @@ val optimizeDataset
   -> [ `string ] t
   -> [ `variant ] t
 
+val optionalHasValue
+  :  ?name:string
+  -> ?control_inputs:Node.p list
+  -> [ `variant ] t
+  -> [ `bool ] t
+
+val optionalNone
+  :  ?name:string
+  -> ?control_inputs:Node.p list
+  -> unit
+  -> [ `variant ] t
+
 val orderedMapClear
   :  ?name:string
   -> ?capacity:int
@@ -3871,6 +4756,21 @@ val orderedMapSize
   -> ?control_inputs:Node.p list
   -> unit
   -> [ `int32 ] t
+
+val outfeedDequeue
+  :  ?name:string
+  -> type_:'dtype Type.t
+  -> shape:Dim.t list
+  -> ?device_ordinal:int
+  -> ?control_inputs:Node.p list
+  -> unit
+  -> 'dtype t
+
+val outfeedEnqueue
+  :  ?name:string
+  -> ?control_inputs:Node.p list
+  -> 'dtype t
+  -> [ `unit ] t
 
 val pack
   :  ?name:string
@@ -3984,12 +4884,27 @@ val prefetchDataset
   -> [ `int64 ] t
   -> [ `variant ] t
 
+val prelinearize
+  :  ?name:string
+  -> ?shape:Dim.t list
+  -> ?layout:int list
+  -> ?control_inputs:Node.p list
+  -> 'dtype t
+  -> [ `variant ] t
+
 val preventGradient
   :  ?name:string
   -> ?message:string
   -> ?control_inputs:Node.p list
   -> 't t
   -> 't t
+
+val printV2
+  :  ?name:string
+  -> ?output_stream:string
+  -> ?control_inputs:Node.p list
+  -> [ `string ] t
+  -> [ `unit ] t
 
 val priorityQueue
   :  ?name:string
@@ -4033,6 +4948,7 @@ val quantizeAndDequantizeV2
   -> ?signed_input:bool
   -> ?num_bits:int
   -> ?range_given:bool
+  -> ?round_mode:string
   -> ?control_inputs:Node.p list
   -> ([< `float | `double ] as 't) t
   -> ([< `float | `double ] as 't) t
@@ -4152,6 +5068,272 @@ val quantizedConv2D
   -> [ `float ] t
   -> 'out_type t * [ `float ] t * [ `float ] t
 
+val quantizedConv2DAndRelu
+  :  ?name:string
+  -> type_:'out_type Type.t
+  -> strides:int list
+  -> padding:string
+  -> ?dilations:int list
+  -> ?padding_list:int list
+  -> ?control_inputs:Node.p list
+  -> 'tinput t
+  -> 'tfilter t
+  -> [ `float ] t
+  -> [ `float ] t
+  -> [ `float ] t
+  -> [ `float ] t
+  -> 'out_type t * [ `float ] t * [ `float ] t
+
+val quantizedConv2DAndReluAndRequantize
+  :  ?name:string
+  -> type_:'out_type Type.t
+  -> strides:int list
+  -> padding:string
+  -> ?dilations:int list
+  -> ?padding_list:int list
+  -> ?control_inputs:Node.p list
+  -> 'tinput t
+  -> 'tfilter t
+  -> [ `float ] t
+  -> [ `float ] t
+  -> [ `float ] t
+  -> [ `float ] t
+  -> [ `float ] t
+  -> [ `float ] t
+  -> 'out_type t * [ `float ] t * [ `float ] t
+
+val quantizedConv2DAndRequantize
+  :  ?name:string
+  -> type_:'out_type Type.t
+  -> strides:int list
+  -> padding:string
+  -> ?dilations:int list
+  -> ?padding_list:int list
+  -> ?control_inputs:Node.p list
+  -> 'tinput t
+  -> 'tfilter t
+  -> [ `float ] t
+  -> [ `float ] t
+  -> [ `float ] t
+  -> [ `float ] t
+  -> [ `float ] t
+  -> [ `float ] t
+  -> 'out_type t * [ `float ] t * [ `float ] t
+
+val quantizedConv2DPerChannel
+  :  ?name:string
+  -> type_:'out_type Type.t
+  -> strides:int list
+  -> padding:string
+  -> ?dilations:int list
+  -> ?control_inputs:Node.p list
+  -> 'tinput t
+  -> 'tfilter t
+  -> [ `float ] t
+  -> [ `float ] t
+  -> [ `float ] t
+  -> [ `float ] t
+  -> 'out_type t * [ `float ] t * [ `float ] t
+
+val quantizedConv2DWithBias
+  :  ?name:string
+  -> type_:'out_type Type.t
+  -> strides:int list
+  -> padding:string
+  -> ?dilations:int list
+  -> ?padding_list:int list
+  -> ?control_inputs:Node.p list
+  -> 'tinput t
+  -> 'tfilter t
+  -> [ `float ] t
+  -> [ `float ] t
+  -> [ `float ] t
+  -> [ `float ] t
+  -> [ `float ] t
+  -> 'out_type t * [ `float ] t * [ `float ] t
+
+val quantizedConv2DWithBiasAndRelu
+  :  ?name:string
+  -> type_:'out_type Type.t
+  -> strides:int list
+  -> padding:string
+  -> ?dilations:int list
+  -> ?padding_list:int list
+  -> ?control_inputs:Node.p list
+  -> 'tinput t
+  -> 'tfilter t
+  -> [ `float ] t
+  -> [ `float ] t
+  -> [ `float ] t
+  -> [ `float ] t
+  -> [ `float ] t
+  -> 'out_type t * [ `float ] t * [ `float ] t
+
+val quantizedConv2DWithBiasAndReluAndRequantize
+  :  ?name:string
+  -> type_:'out_type Type.t
+  -> strides:int list
+  -> padding:string
+  -> ?dilations:int list
+  -> ?padding_list:int list
+  -> ?control_inputs:Node.p list
+  -> 'tinput t
+  -> 'tfilter t
+  -> ([< `float ] as 'tbias) t
+  -> [ `float ] t
+  -> [ `float ] t
+  -> [ `float ] t
+  -> [ `float ] t
+  -> [ `float ] t
+  -> [ `float ] t
+  -> 'out_type t * [ `float ] t * [ `float ] t
+
+val quantizedConv2DWithBiasAndRequantize
+  :  ?name:string
+  -> type_:'out_type Type.t
+  -> strides:int list
+  -> padding:string
+  -> ?dilations:int list
+  -> ?padding_list:int list
+  -> ?control_inputs:Node.p list
+  -> 'tinput t
+  -> 'tfilter t
+  -> ([< `float ] as 'tbias) t
+  -> [ `float ] t
+  -> [ `float ] t
+  -> [ `float ] t
+  -> [ `float ] t
+  -> [ `float ] t
+  -> [ `float ] t
+  -> 'out_type t * [ `float ] t * [ `float ] t
+
+val quantizedConv2DWithBiasSignedSumAndReluAndRequantize
+  :  ?name:string
+  -> type_:'out_type Type.t
+  -> strides:int list
+  -> padding:string
+  -> ?dilations:int list
+  -> ?padding_list:int list
+  -> ?control_inputs:Node.p list
+  -> 'tinput t
+  -> 'tfilter t
+  -> ([< `float ] as 'tbias) t
+  -> [ `float ] t
+  -> [ `float ] t
+  -> [ `float ] t
+  -> [ `float ] t
+  -> [ `float ] t
+  -> [ `float ] t
+  -> 'tsummand t
+  -> [ `float ] t
+  -> [ `float ] t
+  -> 'out_type t * [ `float ] t * [ `float ] t
+
+val quantizedConv2DWithBiasSumAndRelu
+  :  ?name:string
+  -> type_:'out_type Type.t
+  -> strides:int list
+  -> padding:string
+  -> ?dilations:int list
+  -> ?padding_list:int list
+  -> ?control_inputs:Node.p list
+  -> 'tinput t
+  -> 'tfilter t
+  -> [ `float ] t
+  -> [ `float ] t
+  -> [ `float ] t
+  -> [ `float ] t
+  -> [ `float ] t
+  -> [ `float ] t
+  -> 'out_type t * [ `float ] t * [ `float ] t
+
+val quantizedConv2DWithBiasSumAndReluAndRequantize
+  :  ?name:string
+  -> type_:'out_type Type.t
+  -> strides:int list
+  -> padding:string
+  -> ?dilations:int list
+  -> ?padding_list:int list
+  -> ?control_inputs:Node.p list
+  -> 'tinput t
+  -> 'tfilter t
+  -> ([< `float ] as 'tbias) t
+  -> [ `float ] t
+  -> [ `float ] t
+  -> [ `float ] t
+  -> [ `float ] t
+  -> [ `float ] t
+  -> [ `float ] t
+  -> 'tsummand t
+  -> [ `float ] t
+  -> [ `float ] t
+  -> 'out_type t * [ `float ] t * [ `float ] t
+
+val quantizedDepthwiseConv2D
+  :  ?name:string
+  -> type_:'out_type Type.t
+  -> strides:int list
+  -> padding:string
+  -> ?dilations:int list
+  -> ?control_inputs:Node.p list
+  -> 'tinput t
+  -> 'tfilter t
+  -> [ `float ] t
+  -> [ `float ] t
+  -> [ `float ] t
+  -> [ `float ] t
+  -> 'out_type t * [ `float ] t * [ `float ] t
+
+val quantizedDepthwiseConv2DWithBias
+  :  ?name:string
+  -> type_:'out_type Type.t
+  -> strides:int list
+  -> padding:string
+  -> ?dilations:int list
+  -> ?control_inputs:Node.p list
+  -> 'tinput t
+  -> 'tfilter t
+  -> [ `float ] t
+  -> [ `float ] t
+  -> [ `float ] t
+  -> [ `float ] t
+  -> [ `float ] t
+  -> 'out_type t * [ `float ] t * [ `float ] t
+
+val quantizedDepthwiseConv2DWithBiasAndRelu
+  :  ?name:string
+  -> type_:'out_type Type.t
+  -> strides:int list
+  -> padding:string
+  -> ?dilations:int list
+  -> ?control_inputs:Node.p list
+  -> 'tinput t
+  -> 'tfilter t
+  -> [ `float ] t
+  -> [ `float ] t
+  -> [ `float ] t
+  -> [ `float ] t
+  -> [ `float ] t
+  -> 'out_type t * [ `float ] t * [ `float ] t
+
+val quantizedDepthwiseConv2DWithBiasAndReluAndRequantize
+  :  ?name:string
+  -> type_:'out_type Type.t
+  -> strides:int list
+  -> padding:string
+  -> ?dilations:int list
+  -> ?control_inputs:Node.p list
+  -> 'tinput t
+  -> 'tfilter t
+  -> ([< `float ] as 'tbias) t
+  -> [ `float ] t
+  -> [ `float ] t
+  -> [ `float ] t
+  -> [ `float ] t
+  -> [ `float ] t
+  -> [ `float ] t
+  -> 'out_type t * [ `float ] t * [ `float ] t
+
 val quantizedInstanceNorm
   :  ?name:string
   -> ?output_range_given:bool
@@ -4242,6 +5424,7 @@ val quantizedReshape
 val quantizedResizeBilinear
   :  ?name:string
   -> ?align_corners:bool
+  -> ?half_pixel_centers:bool
   -> ?control_inputs:Node.p list
   -> ([< `float ] as 't) t
   -> [ `int32 ] t
@@ -4295,6 +5478,21 @@ val rGBToHSV
   -> ([< `float | `double ] as 't) t
   -> ([< `float | `double ] as 't) t
 
+val raggedRange
+  :  ?name:string
+  -> ?control_inputs:Node.p list
+  -> ([< `float | `double | `int32 | `int64 ] as 't) t
+  -> ([< `float | `double | `int32 | `int64 ] as 't) t
+  -> ([< `float | `double | `int32 | `int64 ] as 't) t
+  -> [ `int64 ] t * ([< `float | `double | `int32 | `int64 ] as 't) t
+
+val raggedTensorToSparse
+  :  ?name:string
+  -> ?control_inputs:Node.p list
+  -> [ `int64 ] t list
+  -> 't t
+  -> [ `int64 ] t * 't t * [ `int64 ] t
+
 val randomCrop
   :  ?name:string
   -> ?seed:int
@@ -4303,15 +5501,6 @@ val randomCrop
   -> ([< `int32 | `int64 | `float | `double ] as 't) t
   -> [ `int64 ] t
   -> ([< `int32 | `int64 | `float | `double ] as 't) t
-
-val randomDataset
-  :  ?name:string
-  -> output_types:Type.p list
-  -> output_shapes:Dim.t list list
-  -> ?control_inputs:Node.p list
-  -> [ `int64 ] t
-  -> [ `int64 ] t
-  -> [ `variant ] t
 
 val randomGamma
   :  ?name:string
@@ -4514,6 +5703,14 @@ val recordInput
   -> unit
   -> [ `string ] t
 
+val recvTPUEmbeddingActivations
+  :  ?name:string
+  -> num_outputs:int
+  -> config:string
+  -> ?control_inputs:Node.p list
+  -> unit
+  -> [ `float ] t list
+
 val reduceJoin
   :  ?name:string
   -> ?keep_dims:bool
@@ -4629,11 +5826,31 @@ val requantizationRange
   -> [ `float ] t
   -> [ `float ] t * [ `float ] t
 
+val requantizationRangePerChannel
+  :  ?name:string
+  -> clip_value_max:float
+  -> ?control_inputs:Node.p list
+  -> 't t
+  -> [ `float ] t
+  -> [ `float ] t
+  -> [ `float ] t * [ `float ] t
+
 val requantize
   :  ?name:string
   -> type_:'out_type Type.t
   -> ?control_inputs:Node.p list
   -> 'tinput t
+  -> [ `float ] t
+  -> [ `float ] t
+  -> [ `float ] t
+  -> [ `float ] t
+  -> 'out_type t * [ `float ] t * [ `float ] t
+
+val requantizePerChannel
+  :  ?name:string
+  -> type_:'out_type Type.t
+  -> ?control_inputs:Node.p list
+  -> 't t
   -> [ `float ] t
   -> [ `float ] t
   -> [ `float ] t
@@ -4658,6 +5875,7 @@ val resizeArea
 val resizeBicubic
   :  ?name:string
   -> ?align_corners:bool
+  -> ?half_pixel_centers:bool
   -> ?control_inputs:Node.p list
   -> ([< `int32 | `int64 | `float | `double ] as 't) t
   -> [ `int32 ] t
@@ -4666,6 +5884,7 @@ val resizeBicubic
 val resizeBicubicGrad
   :  ?name:string
   -> ?align_corners:bool
+  -> ?half_pixel_centers:bool
   -> ?control_inputs:Node.p list
   -> [ `float ] t
   -> ([< `float | `double ] as 't) t
@@ -4674,6 +5893,7 @@ val resizeBicubicGrad
 val resizeBilinear
   :  ?name:string
   -> ?align_corners:bool
+  -> ?half_pixel_centers:bool
   -> ?control_inputs:Node.p list
   -> ([< `int32 | `int64 | `float | `double ] as 't) t
   -> [ `int32 ] t
@@ -4682,6 +5902,7 @@ val resizeBilinear
 val resizeBilinearGrad
   :  ?name:string
   -> ?align_corners:bool
+  -> ?half_pixel_centers:bool
   -> ?control_inputs:Node.p list
   -> [ `float ] t
   -> ([< `float | `double ] as 't) t
@@ -4690,6 +5911,7 @@ val resizeBilinearGrad
 val resizeNearestNeighbor
   :  ?name:string
   -> ?align_corners:bool
+  -> ?half_pixel_centers:bool
   -> ?control_inputs:Node.p list
   -> ([< `int32 | `int64 | `float | `double ] as 't) t
   -> [ `int32 ] t
@@ -4698,6 +5920,7 @@ val resizeNearestNeighbor
 val resizeNearestNeighborGrad
   :  ?name:string
   -> ?align_corners:bool
+  -> ?half_pixel_centers:bool
   -> ?control_inputs:Node.p list
   -> ([< `int32 | `float | `double ] as 't) t
   -> [ `int32 ] t
@@ -4721,6 +5944,176 @@ val restoreSlice
   -> [ `string ] t
   -> [ `string ] t
   -> 'dt t
+
+val retrieveTPUEmbeddingADAMParameters
+  :  ?name:string
+  -> ?table_id:int
+  -> ?table_name:string
+  -> num_shards:int
+  -> shard_id:int
+  -> ?control_inputs:Node.p list
+  -> unit
+  -> [ `float ] t * [ `float ] t * [ `float ] t
+
+val retrieveTPUEmbeddingADAMParametersGradAccumDebug
+  :  ?name:string
+  -> ?table_id:int
+  -> ?table_name:string
+  -> num_shards:int
+  -> shard_id:int
+  -> ?control_inputs:Node.p list
+  -> unit
+  -> [ `float ] t * [ `float ] t * [ `float ] t * [ `float ] t
+
+val retrieveTPUEmbeddingAdadeltaParameters
+  :  ?name:string
+  -> ?table_id:int
+  -> ?table_name:string
+  -> num_shards:int
+  -> shard_id:int
+  -> ?control_inputs:Node.p list
+  -> unit
+  -> [ `float ] t * [ `float ] t * [ `float ] t
+
+val retrieveTPUEmbeddingAdadeltaParametersGradAccumDebug
+  :  ?name:string
+  -> ?table_id:int
+  -> ?table_name:string
+  -> num_shards:int
+  -> shard_id:int
+  -> ?control_inputs:Node.p list
+  -> unit
+  -> [ `float ] t * [ `float ] t * [ `float ] t * [ `float ] t
+
+val retrieveTPUEmbeddingAdagradParameters
+  :  ?name:string
+  -> ?table_id:int
+  -> ?table_name:string
+  -> num_shards:int
+  -> shard_id:int
+  -> ?control_inputs:Node.p list
+  -> unit
+  -> [ `float ] t * [ `float ] t
+
+val retrieveTPUEmbeddingAdagradParametersGradAccumDebug
+  :  ?name:string
+  -> ?table_id:int
+  -> ?table_name:string
+  -> num_shards:int
+  -> shard_id:int
+  -> ?control_inputs:Node.p list
+  -> unit
+  -> [ `float ] t * [ `float ] t * [ `float ] t
+
+val retrieveTPUEmbeddingCenteredRMSPropParameters
+  :  ?name:string
+  -> ?table_id:int
+  -> ?table_name:string
+  -> num_shards:int
+  -> shard_id:int
+  -> ?control_inputs:Node.p list
+  -> unit
+  -> [ `float ] t * [ `float ] t * [ `float ] t * [ `float ] t
+
+val retrieveTPUEmbeddingFTRLParameters
+  :  ?name:string
+  -> ?table_id:int
+  -> ?table_name:string
+  -> num_shards:int
+  -> shard_id:int
+  -> ?control_inputs:Node.p list
+  -> unit
+  -> [ `float ] t * [ `float ] t * [ `float ] t
+
+val retrieveTPUEmbeddingFTRLParametersGradAccumDebug
+  :  ?name:string
+  -> ?table_id:int
+  -> ?table_name:string
+  -> num_shards:int
+  -> shard_id:int
+  -> ?control_inputs:Node.p list
+  -> unit
+  -> [ `float ] t * [ `float ] t * [ `float ] t * [ `float ] t
+
+val retrieveTPUEmbeddingMDLAdagradLightParameters
+  :  ?name:string
+  -> ?table_id:int
+  -> ?table_name:string
+  -> num_shards:int
+  -> shard_id:int
+  -> ?control_inputs:Node.p list
+  -> unit
+  -> [ `float ] t * [ `float ] t * [ `float ] t * [ `float ] t
+
+val retrieveTPUEmbeddingMomentumParameters
+  :  ?name:string
+  -> ?table_id:int
+  -> ?table_name:string
+  -> num_shards:int
+  -> shard_id:int
+  -> ?control_inputs:Node.p list
+  -> unit
+  -> [ `float ] t * [ `float ] t
+
+val retrieveTPUEmbeddingMomentumParametersGradAccumDebug
+  :  ?name:string
+  -> ?table_id:int
+  -> ?table_name:string
+  -> num_shards:int
+  -> shard_id:int
+  -> ?control_inputs:Node.p list
+  -> unit
+  -> [ `float ] t * [ `float ] t * [ `float ] t
+
+val retrieveTPUEmbeddingProximalAdagradParameters
+  :  ?name:string
+  -> ?table_id:int
+  -> ?table_name:string
+  -> num_shards:int
+  -> shard_id:int
+  -> ?control_inputs:Node.p list
+  -> unit
+  -> [ `float ] t * [ `float ] t
+
+val retrieveTPUEmbeddingProximalAdagradParametersGradAccumDebug
+  :  ?name:string
+  -> ?table_id:int
+  -> ?table_name:string
+  -> num_shards:int
+  -> shard_id:int
+  -> ?control_inputs:Node.p list
+  -> unit
+  -> [ `float ] t * [ `float ] t * [ `float ] t
+
+val retrieveTPUEmbeddingRMSPropParameters
+  :  ?name:string
+  -> ?table_id:int
+  -> ?table_name:string
+  -> num_shards:int
+  -> shard_id:int
+  -> ?control_inputs:Node.p list
+  -> unit
+  -> [ `float ] t * [ `float ] t * [ `float ] t
+
+val retrieveTPUEmbeddingRMSPropParametersGradAccumDebug
+  :  ?name:string
+  -> ?table_id:int
+  -> ?table_name:string
+  -> num_shards:int
+  -> shard_id:int
+  -> ?control_inputs:Node.p list
+  -> unit
+  -> [ `float ] t * [ `float ] t * [ `float ] t * [ `float ] t
+
+val retrieveTPUEmbeddingStochasticGradientDescentParameters
+  :  ?name:string
+  -> ?table_id:int
+  -> ?table_name:string
+  -> num_shards:int
+  -> shard_id:int
+  -> ?control_inputs:Node.p list
+  -> unit
+  -> [ `float ] t
 
 val reverse
   :  ?name:string
@@ -4824,12 +6217,45 @@ val sampleDistortedBoundingBoxV2
   -> [ `float ] t
   -> ([< `int32 | `int64 ] as 't) t * ([< `int32 | `int64 ] as 't) t * [ `float ] t
 
+val samplingDataset
+  :  ?name:string
+  -> output_types:Type.p list
+  -> output_shapes:Dim.t list list
+  -> ?control_inputs:Node.p list
+  -> [ `variant ] t
+  -> [ `float ] t
+  -> [ `int64 ] t
+  -> [ `int64 ] t
+  -> [ `variant ] t
+
 val scalarSummary
   :  ?name:string
   -> ?control_inputs:Node.p list
   -> [ `string ] t
   -> ([< `float | `double | `int32 | `int64 ] as 't) t
   -> [ `string ] t
+
+val scaleAndTranslate
+  :  ?name:string
+  -> ?kernel_type:string
+  -> ?antialias:bool
+  -> ?control_inputs:Node.p list
+  -> ([< `int32 | `int64 | `float | `double ] as 't) t
+  -> [ `int32 ] t
+  -> [ `float ] t
+  -> [ `float ] t
+  -> [ `float ] t
+
+val scaleAndTranslateGrad
+  :  ?name:string
+  -> ?kernel_type:string
+  -> ?antialias:bool
+  -> ?control_inputs:Node.p list
+  -> ([< `float ] as 't) t
+  -> ([< `float ] as 't) t
+  -> [ `float ] t
+  -> [ `float ] t
+  -> ([< `float ] as 't) t
 
 val scatterAdd
   :  ?name:string
@@ -4896,10 +6322,10 @@ val scatterNdAdd
 val scatterNdNonAliasingAdd
   :  ?name:string
   -> ?control_inputs:Node.p list
-  -> ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t
+  -> ([< `float | `double | `int32 | `complex64 | `int64 | `bool ] as 't) t
   -> ([< `int32 | `int64 ] as 'tindices) t
-  -> ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t
-  -> ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t
+  -> ([< `float | `double | `int32 | `complex64 | `int64 | `bool ] as 't) t
+  -> ([< `float | `double | `int32 | `complex64 | `int64 | `bool ] as 't) t
 
 val scatterNdSub
   :  ?name:string
@@ -5020,6 +6446,14 @@ val seluGrad
   -> ([< `float | `double ] as 't) t
   -> ([< `float | `double ] as 't) t
 
+val sendTPUEmbeddingGradients
+  :  ?name:string
+  -> config:string
+  -> ?control_inputs:Node.p list
+  -> [ `float ] t list
+  -> [ `float ] t list
+  -> [ `unit ] t
+
 val serializeManySparse
   :  ?name:string
   -> type_:([< `string | `variant ] as 'out_type) Type.t
@@ -5067,6 +6501,16 @@ val shapeN
   -> 't t list
   -> ([< `int32 | `int64 ] as 'out_type) t list
 
+val shardDataset
+  :  ?name:string
+  -> output_types:Type.p list
+  -> output_shapes:Dim.t list list
+  -> ?control_inputs:Node.p list
+  -> [ `variant ] t
+  -> [ `int64 ] t
+  -> [ `int64 ] t
+  -> [ `variant ] t
+
 val shardedFilename
   :  ?name:string
   -> ?control_inputs:Node.p list
@@ -5106,6 +6550,12 @@ val shuffleDataset
   -> [ `int64 ] t
   -> [ `variant ] t
 
+val shutdownDistributedTPU
+  :  ?name:string
+  -> ?control_inputs:Node.p list
+  -> unit
+  -> [ `unit ] t
+
 val sigmoid
   :  ?name:string
   -> ?control_inputs:Node.p list
@@ -5136,12 +6586,6 @@ val sinh
   -> ?control_inputs:Node.p list
   -> ([< `float | `double | `complex64 ] as 't) t
   -> ([< `float | `double | `complex64 ] as 't) t
-
-val sinkDataset
-  :  ?name:string
-  -> ?control_inputs:Node.p list
-  -> [ `variant ] t
-  -> [ `variant ] t
 
 val size
   :  ?name:string
@@ -5178,16 +6622,6 @@ val slice
   -> ([< `int32 | `int64 ] as 'index) t
   -> 't t
 
-val slideDataset
-  :  ?name:string
-  -> output_types:Type.p list
-  -> output_shapes:Dim.t list list
-  -> ?control_inputs:Node.p list
-  -> [ `variant ] t
-  -> [ `int64 ] t
-  -> [ `int64 ] t
-  -> [ `variant ] t
-
 val snapshot
   :  ?name:string
   -> ?control_inputs:Node.p list
@@ -5210,28 +6644,28 @@ val softmaxCrossEntropyWithLogits
 val softplus
   :  ?name:string
   -> ?control_inputs:Node.p list
-  -> ([< `float | `double | `int32 | `int64 ] as 't) t
-  -> ([< `float | `double | `int32 | `int64 ] as 't) t
+  -> ([< `float | `double ] as 't) t
+  -> ([< `float | `double ] as 't) t
 
 val softplusGrad
   :  ?name:string
   -> ?control_inputs:Node.p list
-  -> ([< `float | `double | `int32 | `int64 ] as 't) t
-  -> ([< `float | `double | `int32 | `int64 ] as 't) t
-  -> ([< `float | `double | `int32 | `int64 ] as 't) t
+  -> ([< `float | `double ] as 't) t
+  -> ([< `float | `double ] as 't) t
+  -> ([< `float | `double ] as 't) t
 
 val softsign
   :  ?name:string
   -> ?control_inputs:Node.p list
-  -> ([< `float | `double | `int32 | `int64 ] as 't) t
-  -> ([< `float | `double | `int32 | `int64 ] as 't) t
+  -> ([< `float | `double ] as 't) t
+  -> ([< `float | `double ] as 't) t
 
 val softsignGrad
   :  ?name:string
   -> ?control_inputs:Node.p list
-  -> ([< `float | `double | `int32 | `int64 ] as 't) t
-  -> ([< `float | `double | `int32 | `int64 ] as 't) t
-  -> ([< `float | `double | `int32 | `int64 ] as 't) t
+  -> ([< `float | `double ] as 't) t
+  -> ([< `float | `double ] as 't) t
+  -> ([< `float | `double ] as 't) t
 
 val spaceToBatch
   :  ?name:string
@@ -5452,6 +6886,7 @@ val sparseConditionalAccumulator
   -> shape:Dim.t list
   -> ?container:string
   -> ?shared_name:string
+  -> ?reduction_type:string
   -> ?control_inputs:Node.p list
   -> unit
   -> [ `string ] t
@@ -5759,16 +7194,6 @@ val splitV
   -> [ `int32 ] t
   -> 't t list
 
-val sqlDataset
-  :  ?name:string
-  -> output_types:Type.p list
-  -> output_shapes:Dim.t list list
-  -> ?control_inputs:Node.p list
-  -> [ `string ] t
-  -> [ `string ] t
-  -> [ `string ] t
-  -> [ `variant ] t
-
 val sqrt
   :  ?name:string
   -> ?control_inputs:Node.p list
@@ -5877,6 +7302,15 @@ val statelessRandomUniform
   -> ([< `int32 | `int64 ] as 'tseed) t
   -> ([< `float | `double ] as 'dtype) t
 
+val statelessRandomUniformInt
+  :  ?name:string
+  -> ?control_inputs:Node.p list
+  -> ([< `int32 | `int64 ] as 't) t
+  -> ([< `int32 | `int64 ] as 'tseed) t
+  -> ([< `int32 | `int64 ] as 'dtype) t
+  -> ([< `int32 | `int64 ] as 'dtype) t
+  -> ([< `int32 | `int64 ] as 'dtype) t
+
 val statelessTruncatedNormal
   :  ?name:string
   -> type_:([< `float | `double ] as 'dtype) Type.t
@@ -5884,6 +7318,22 @@ val statelessTruncatedNormal
   -> ([< `int32 | `int64 ] as 't) t
   -> ([< `int32 | `int64 ] as 'tseed) t
   -> ([< `float | `double ] as 'dtype) t
+
+val staticRegexFullMatch
+  :  ?name:string
+  -> pattern:string
+  -> ?control_inputs:Node.p list
+  -> [ `string ] t
+  -> [ `bool ] t
+
+val staticRegexReplace
+  :  ?name:string
+  -> pattern:string
+  -> rewrite:string
+  -> ?replace_global:bool
+  -> ?control_inputs:Node.p list
+  -> [ `string ] t
+  -> [ `string ] t
 
 val stopGradient
   :  ?name:string
@@ -5941,6 +7391,13 @@ val stringJoin
   -> ?control_inputs:Node.p list
   -> [ `string ] t list
   -> [ `string ] t
+
+val stringLength
+  :  ?name:string
+  -> ?unit:string
+  -> ?control_inputs:Node.p list
+  -> [ `string ] t
+  -> [ `int32 ] t
 
 val stringSplit
   :  ?name:string
@@ -6002,6 +7459,7 @@ val sub
 
 val substr
   :  ?name:string
+  -> ?unit:string
   -> ?control_inputs:Node.p list
   -> [ `string ] t
   -> ([< `int32 | `int64 ] as 't) t
@@ -6047,6 +7505,53 @@ val tFRecordReader
   -> ?control_inputs:Node.p list
   -> unit
   -> [ `string ] t
+
+val tPUCompilationResult
+  :  ?name:string
+  -> ?control_inputs:Node.p list
+  -> unit
+  -> [ `string ] t
+
+val tPUEmbeddingActivations
+  :  ?name:string
+  -> table_id:int
+  -> lookup_id:int
+  -> ?control_inputs:Node.p list
+  -> [ `float ] t
+  -> [ `float ] t
+  -> [ `float ] t
+
+val tPUOrdinalSelector
+  :  ?name:string
+  -> ?control_inputs:Node.p list
+  -> unit
+  -> [ `int32 ] t
+
+val tPUReplicateMetadata
+  :  ?name:string
+  -> num_replicas:int
+  -> ?num_cores_per_replica:int
+  -> ?topology:string
+  -> ?use_tpu:bool
+  -> ?device_assignment:int list
+  -> ?computation_shape:int list
+  -> ?step_marker_location:string
+  -> ?control_inputs:Node.p list
+  -> unit
+  -> [ `unit ] t
+
+val tPUReplicatedInput
+  :  ?name:string
+  -> ?control_inputs:Node.p list
+  -> 't t list
+  -> 't t
+
+val tPUReplicatedOutput
+  :  ?name:string
+  -> num_replicas:int
+  -> ?control_inputs:Node.p list
+  -> 't t
+  -> 't t list
 
 val takeDataset
   :  ?name:string
@@ -6283,12 +7788,29 @@ val tensorArrayWriteV2
   -> [ `float ] t
   -> [ `float ] t
 
+val tensorListConcat
+  :  ?name:string
+  -> type_:'element_dtype Type.t
+  -> ?element_shape:Dim.t list
+  -> ?control_inputs:Node.p list
+  -> [ `variant ] t
+  -> 'element_dtype t * [ `int64 ] t
+
 val tensorListConcatLists
   :  ?name:string
   -> ?control_inputs:Node.p list
   -> [ `variant ] t
   -> [ `variant ] t
   -> [ `variant ] t
+
+val tensorListConcatV2
+  :  ?name:string
+  -> type_:'element_dtype Type.t
+  -> ?control_inputs:Node.p list
+  -> [ `variant ] t
+  -> ([< `int32 | `int64 ] as 'shape_type) t
+  -> [ `int64 ] t
+  -> 'element_dtype t * [ `int64 ] t
 
 val tensorListElementShape
   :  ?name:string
@@ -6304,11 +7826,21 @@ val tensorListFromTensor
   -> ([< `int32 | `int64 ] as 'shape_type) t
   -> [ `variant ] t
 
+val tensorListGather
+  :  ?name:string
+  -> type_:'element_dtype Type.t
+  -> ?control_inputs:Node.p list
+  -> [ `variant ] t
+  -> [ `int32 ] t
+  -> [ `int32 ] t
+  -> 'element_dtype t
+
 val tensorListGetItem
   :  ?name:string
   -> type_:'element_dtype Type.t
   -> ?control_inputs:Node.p list
   -> [ `variant ] t
+  -> [ `int32 ] t
   -> [ `int32 ] t
   -> 'element_dtype t
 
@@ -6323,6 +7855,7 @@ val tensorListPopBack
   -> type_1:'element_dtype Type.t
   -> ?control_inputs:Node.p list
   -> [ `variant ] t
+  -> [ `int32 ] t
   -> [ `variant ] t * 'element_dtype t
 
 val tensorListPushBack
@@ -6346,6 +7879,38 @@ val tensorListReserve
   -> [ `int32 ] t
   -> [ `variant ] t
 
+val tensorListResize
+  :  ?name:string
+  -> ?control_inputs:Node.p list
+  -> [ `variant ] t
+  -> [ `int32 ] t
+  -> [ `variant ] t
+
+val tensorListScatter
+  :  ?name:string
+  -> ?control_inputs:Node.p list
+  -> 'element_dtype t
+  -> [ `int32 ] t
+  -> ([< `int32 | `int64 ] as 'shape_type) t
+  -> [ `variant ] t
+
+val tensorListScatterIntoExistingList
+  :  ?name:string
+  -> ?control_inputs:Node.p list
+  -> [ `variant ] t
+  -> 'element_dtype t
+  -> [ `int32 ] t
+  -> [ `variant ] t
+
+val tensorListScatterV2
+  :  ?name:string
+  -> ?control_inputs:Node.p list
+  -> 'element_dtype t
+  -> [ `int32 ] t
+  -> ([< `int32 | `int64 ] as 'shape_type) t
+  -> [ `int32 ] t
+  -> [ `variant ] t
+
 val tensorListSetItem
   :  ?name:string
   -> ?control_inputs:Node.p list
@@ -6354,13 +7919,61 @@ val tensorListSetItem
   -> 'element_dtype t
   -> [ `variant ] t
 
+val tensorListSplit
+  :  ?name:string
+  -> ?control_inputs:Node.p list
+  -> 'element_dtype t
+  -> ([< `int32 | `int64 ] as 'shape_type) t
+  -> [ `int64 ] t
+  -> [ `variant ] t
+
 val tensorListStack
   :  ?name:string
   -> type_:'element_dtype Type.t
   -> ?num_elements:int
   -> ?control_inputs:Node.p list
   -> [ `variant ] t
+  -> [ `int32 ] t
   -> 'element_dtype t
+
+val tensorScatterAdd
+  :  ?name:string
+  -> ?control_inputs:Node.p list
+  -> 't t
+  -> ([< `int32 | `int64 ] as 'tindices) t
+  -> 't t
+  -> 't t
+
+val tensorScatterSub
+  :  ?name:string
+  -> ?control_inputs:Node.p list
+  -> 't t
+  -> ([< `int32 | `int64 ] as 'tindices) t
+  -> 't t
+  -> 't t
+
+val tensorScatterUpdate
+  :  ?name:string
+  -> ?control_inputs:Node.p list
+  -> 't t
+  -> ([< `int32 | `int64 ] as 'tindices) t
+  -> 't t
+  -> 't t
+
+val tensorStridedSliceUpdate
+  :  ?name:string
+  -> ?begin_mask:int
+  -> ?end_mask:int
+  -> ?ellipsis_mask:int
+  -> ?new_axis_mask:int
+  -> ?shrink_axis_mask:int
+  -> ?control_inputs:Node.p list
+  -> 't t
+  -> ([< `int32 | `int64 ] as 'index) t
+  -> ([< `int32 | `int64 ] as 'index) t
+  -> ([< `int32 | `int64 ] as 'index) t
+  -> 't t
+  -> 't t
 
 val tensorSummary
   :  ?name:string
@@ -6450,6 +8063,13 @@ val transpose
   -> ([< `int32 | `int64 ] as 'tperm) t
   -> 't t
 
+val tridiagonalSolve
+  :  ?name:string
+  -> ?control_inputs:Node.p list
+  -> ([< `double | `float | `complex64 ] as 't) t
+  -> ([< `double | `float | `complex64 ] as 't) t
+  -> ([< `double | `float | `complex64 ] as 't) t
+
 val truncateDiv
   :  ?name:string
   -> ?control_inputs:Node.p list
@@ -6495,14 +8115,6 @@ val unbatch
   -> [ `int64 ] t
   -> 't t
 
-val unbatchDataset
-  :  ?name:string
-  -> output_types:Type.p list
-  -> output_shapes:Dim.t list list
-  -> ?control_inputs:Node.p list
-  -> [ `variant ] t
-  -> [ `variant ] t
-
 val unbatchGrad
   :  ?name:string
   -> ?container:string
@@ -6513,6 +8125,53 @@ val unbatchGrad
   -> 't t
   -> [ `int64 ] t
   -> 't t
+
+val unicodeDecode
+  :  ?name:string
+  -> input_encoding:string
+  -> ?errors:string
+  -> ?replacement_char:int
+  -> ?replace_control_characters:bool
+  -> ?control_inputs:Node.p list
+  -> [ `string ] t
+  -> [ `int64 ] t * [ `int32 ] t
+
+val unicodeDecodeWithOffsets
+  :  ?name:string
+  -> input_encoding:string
+  -> ?errors:string
+  -> ?replacement_char:int
+  -> ?replace_control_characters:bool
+  -> ?control_inputs:Node.p list
+  -> [ `string ] t
+  -> [ `int64 ] t * [ `int32 ] t * [ `int64 ] t
+
+val unicodeEncode
+  :  ?name:string
+  -> ?errors:string
+  -> output_encoding:string
+  -> ?replacement_char:int
+  -> ?control_inputs:Node.p list
+  -> [ `int32 ] t
+  -> [ `int64 ] t
+  -> [ `string ] t
+
+val unicodeScript
+  :  ?name:string
+  -> ?control_inputs:Node.p list
+  -> [ `int32 ] t
+  -> [ `int32 ] t
+
+val unicodeTranscode
+  :  ?name:string
+  -> input_encoding:string
+  -> output_encoding:string
+  -> ?errors:string
+  -> ?replacement_char:int
+  -> ?replace_control_characters:bool
+  -> ?control_inputs:Node.p list
+  -> [ `string ] t
+  -> [ `string ] t
 
 val uniformCandidateSampler
   :  ?name:string
@@ -6605,6 +8264,20 @@ val unsortedSegmentSum
   -> ([< `int32 | `int64 ] as 'tnumsegments) t
   -> ([< `float | `double | `int32 | `complex64 | `int64 ] as 't) t
 
+val unwrapDatasetVariant
+  :  ?name:string
+  -> ?control_inputs:Node.p list
+  -> [ `variant ] t
+  -> [ `variant ] t
+
+val upperBound
+  :  ?name:string
+  -> type_:([< `int32 | `int64 ] as 'out_type) Type.t
+  -> ?control_inputs:Node.p list
+  -> 't t
+  -> 't t
+  -> ([< `int32 | `int64 ] as 'out_type) t
+
 val variable
   :  ?name:string
   -> type_:'dtype Type.t
@@ -6646,6 +8319,21 @@ val windowDataset
   -> ?control_inputs:Node.p list
   -> [ `variant ] t
   -> [ `int64 ] t
+  -> [ `int64 ] t
+  -> [ `int64 ] t
+  -> [ `bool ] t
+  -> [ `variant ] t
+
+val workerHeartbeat
+  :  ?name:string
+  -> ?control_inputs:Node.p list
+  -> [ `string ] t
+  -> [ `string ] t
+
+val wrapDatasetVariant
+  :  ?name:string
+  -> ?control_inputs:Node.p list
+  -> [ `variant ] t
   -> [ `variant ] t
 
 val writeFile
@@ -6654,6 +8342,20 @@ val writeFile
   -> [ `string ] t
   -> [ `string ] t
   -> [ `unit ] t
+
+val xdivy
+  :  ?name:string
+  -> ?control_inputs:Node.p list
+  -> ([< `float | `double | `complex64 ] as 't) t
+  -> ([< `float | `double | `complex64 ] as 't) t
+  -> ([< `float | `double | `complex64 ] as 't) t
+
+val xlogy
+  :  ?name:string
+  -> ?control_inputs:Node.p list
+  -> ([< `float | `double | `complex64 ] as 't) t
+  -> ([< `float | `double | `complex64 ] as 't) t
+  -> ([< `float | `double | `complex64 ] as 't) t
 
 val zerosLike
   :  ?name:string

@@ -45,7 +45,7 @@ You can also use Tensorflow via utop.
 ### Optional step for GPU support
 
 The TensorFlow library installed via opam does not support GPU acceleration.
-In order to use your GPU you will have to install TensorFlow 1.10, either
+In order to use your GPU you will have to install TensorFlow 1.14, either
 by building it from source or by using prebuilt binaries. Then 
 the library should be installed system-wide or you could set the
 `LIBTENSORFLOW` environment variable.
@@ -74,7 +74,7 @@ Possible ways to get the TensorFlow library:
     1. Install the [Bazel build system](http://bazel.io/docs/install.html).
     1. Clone the TensorFlow repo:
 
-        `git clone --recurse-submodules -b r1.10 https://github.com/tensorflow/tensorflow`
+        `git clone --recurse-submodules -b r1.14 https://github.com/tensorflow/tensorflow`
     1. Configure the build (you will be asked if you want to enable CUDA support):
     
         ```
