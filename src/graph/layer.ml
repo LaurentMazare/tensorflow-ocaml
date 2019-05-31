@@ -46,6 +46,7 @@ end
 
 module Update_ops_store = struct
   type t = Node.p list ref
+
   let create () = ref []
   let ops t = !t
 end
@@ -58,7 +59,7 @@ let batch_norm ?(decay = 0.99) xs ~is_training ~update_ops_store =
   update_ops_store := List.map update_ops ~f:(fun n -> Node.P n) @ !update_ops_store;
   let not_is_training = Ops.(cast (logicalNot is_training) ~type_) in
   let is_training = Ops.cast is_training ~type_ in
-  Ops.(is_training * train + not_is_training * infer)
+  Ops.((is_training * train) + (not_is_training * infer))
 
 type activation =
   | Relu
@@ -74,16 +75,10 @@ module Linear = struct
     ; mutable b : 'a Node.t option
     }
 
-  let vars { w; b; output_dim = _ } =
-    [ Option.value_exn w; Option.value_exn b ]
+  let vars { w; b; output_dim = _ } = [ Option.value_exn w; Option.value_exn b ]
+  let create output_dim = { output_dim; w = None; b = None }
 
-  let create output_dim =
-    { output_dim
-    ; w = None
-    ; b = None
-    }
-
-  let apply ?activation ?(use_bias=true) t xs =
+  let apply ?activation ?(use_bias = true) t xs =
     let last_xs_dim = Node.shape xs |> List.last_exn in
     let type_ = Node.output_type xs in
     let w =
@@ -102,7 +97,7 @@ module Linear = struct
         t.b <- Some b;
         b
     in
-    let ys = if use_bias then Ops.(xs *^ w + b) else Ops.(xs *^ w) in
+    let ys = if use_bias then Ops.((xs *^ w) + b) else Ops.(xs *^ w) in
     match activation with
     | Some Relu -> Ops.relu ys
     | Some Softmax -> Ops.softmax ys
@@ -127,8 +122,11 @@ let padding_string = function
 let max_pool ?(padding = Same) xs ~ksize ~strides =
   let k1, k2 = ksize in
   let s1, s2 = strides in
-  Ops.maxPool xs
-    ~ksize:[ 1; k1; k2; 1 ] ~strides:[ 1; s1; s2; 1 ] ~padding:(padding_string padding)
+  Ops.maxPool
+    xs
+    ~ksize:[ 1; k1; k2; 1 ]
+    ~strides:[ 1; s1; s2; 1 ]
+    ~padding:(padding_string padding)
 
 module Conv2D = struct
   type 'a t =
@@ -140,19 +138,12 @@ module Conv2D = struct
     ; padding : padding
     }
 
-  let vars { w; b; _ } =
-    [ Option.value_exn w; Option.value_exn b ]
+  let vars { w; b; _ } = [ Option.value_exn w; Option.value_exn b ]
 
   let create ~ksize ~strides ~padding output_dim =
-    { output_dim
-    ; w = None
-    ; b = None
-    ; ksize
-    ; strides
-    ; padding
-    }
+    { output_dim; w = None; b = None; ksize; strides; padding }
 
-  let apply ?(use_bias=true) t xs =
+  let apply ?(use_bias = true) t xs =
     let last_xs_dim = Node.shape xs |> List.last_exn in
     let k1, k2 = t.ksize in
     let s1, s2 = t.strides in
@@ -173,7 +164,9 @@ module Conv2D = struct
         t.b <- Some b;
         b
     in
-    let conv2d = Ops.conv2D xs w ~strides:[ 1; s1; s2; 1 ] ~padding:(padding_string t.padding) in
+    let conv2d =
+      Ops.conv2D xs w ~strides:[ 1; s1; s2; 1 ] ~padding:(padding_string t.padding)
+    in
     if use_bias then Ops.add conv2d b else conv2d
 end
 
@@ -191,19 +184,12 @@ module Conv2DTranspose = struct
     ; padding : padding
     }
 
-  let vars { w; b; _ } =
-    [ Option.value_exn w; Option.value_exn b ]
+  let vars { w; b; _ } = [ Option.value_exn w; Option.value_exn b ]
 
   let create ~ksize ~strides ~padding output_dim =
-    { output_dim
-    ; w = None
-    ; b = None
-    ; ksize
-    ; strides
-    ; padding
-    }
+    { output_dim; w = None; b = None; ksize; strides; padding }
 
-  let apply ?(use_bias=true) t xs =
+  let apply ?(use_bias = true) t xs =
     let batch_dim, input_w, input_h, last_xs_dim =
       match Node.shape xs with
       | [ a; b; c; d ] -> a, b, c, d
@@ -211,7 +197,7 @@ module Conv2DTranspose = struct
     in
     let output_length input_l ~ksize ~stride =
       match t.padding with
-      | Valid -> input_l * stride + max 0 (ksize - stride)
+      | Valid -> (input_l * stride) + max 0 (ksize - stride)
       | Same -> input_l * stride
     in
     let k1, k2 = t.ksize in
@@ -237,7 +223,7 @@ module Conv2DTranspose = struct
     in
     let conv2d_t =
       Ops.conv2DBackpropInput
-        ~strides:[1; s1; s2; 1 ]
+        ~strides:[ 1; s1; s2; 1 ]
         ~padding:(padding_string t.padding)
         (Ops.ci32 ~shape:[ 4 ] [ batch_dim; output_w; output_h; t.output_dim ])
         w
@@ -251,25 +237,23 @@ let conv2d_transpose ?(padding = Same) ?use_bias xs ~ksize ~strides ~output_filt
   Conv2DTranspose.apply ?use_bias conv2d_t xs
 
 let shape_to_string shape =
-  List.map shape ~f:Int.to_string
-  |> String.concat ~sep:", "
-  |> Printf.sprintf "(%s)"
+  List.map shape ~f:Int.to_string |> String.concat ~sep:", " |> Printf.sprintf "(%s)"
 
-let reshape xs ~shape =
-  Ops.reshape xs (Ops.const_int ~type_:Int32 shape)
+let reshape xs ~shape = Ops.reshape xs (Ops.const_int ~type_:Int32 shape)
 
 let flatten xs =
   let shape = Node.shape xs in
   let total_dim =
     List.fold (List.tl_exn shape) ~init:1 ~f:(fun acc d ->
-      if d <= 0
-      then
-        let msg =
-          Printf.sprintf "cannot flatten %s shape %s"
-            (Node.name xs |> Node.Name.to_string)
-            (shape_to_string shape)
-        in
-        invalid_arg msg
-      else d * acc)
+        if d <= 0
+        then (
+          let msg =
+            Printf.sprintf
+              "cannot flatten %s shape %s"
+              (Node.name xs |> Node.Name.to_string)
+              (shape_to_string shape)
+          in
+          invalid_arg msg)
+        else d * acc)
   in
   reshape xs ~shape:[ -1; total_dim ]

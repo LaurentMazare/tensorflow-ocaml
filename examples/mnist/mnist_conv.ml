@@ -6,6 +6,7 @@ module O = Ops
 
 let image_dim = Mnist_helper.image_dim
 let label_count = Mnist_helper.label_count
+
 let scalar_tensor f =
   let array = Tensor.create1 Bigarray.float32 1 in
   Tensor.set array [| 0 |] f;
@@ -17,9 +18,8 @@ let epochs = 5000
 let () =
   let mnist = Mnist_helper.read_files () in
   let keep_prob = O.placeholder [] ~type_:Float in
-  let xs = O.placeholder [-1; image_dim] ~type_:Float in
-  let ys = O.placeholder [-1; label_count] ~type_:Float in
-
+  let xs = O.placeholder [ -1; image_dim ] ~type_:Float in
+  let ys = O.placeholder [ -1; label_count ] ~type_:Float in
   let ys_ =
     O.Placeholder.to_node xs
     |> Layer.reshape ~shape:[ -1; 28; 28; 1 ]
@@ -32,12 +32,12 @@ let () =
     |> O.dropout ~keep_prob:(O.Placeholder.to_node keep_prob)
     |> Layer.linear ~output_dim:10 ~activation:Softmax
   in
-
   let cross_entropy = O.cross_entropy ~ys:(O.Placeholder.to_node ys) ~y_hats:ys_ `sum in
   let gd = Optimizers.adam_minimizer ~learning_rate:(O.f 1e-5) cross_entropy in
   let one = scalar_tensor 1. in
   let predict images =
-    Session.run (Session.Output.float ys_)
+    Session.run
+      (Session.Output.float ys_)
       ~inputs:Session.Input.[ float xs images; float keep_prob one ]
   in
   let print_err n =
@@ -47,8 +47,11 @@ let () =
     let train_accuracy =
       Mnist_helper.batch_accuracy mnist `train ~batch_size:1024 ~predict ~samples:5000
     in
-    Stdio.printf "epoch %d, train: %.2f%% valid: %.2f%%\n%!"
-      n (100. *. train_accuracy) (100. *. test_accuracy)
+    Stdio.printf
+      "epoch %d, train: %.2f%% valid: %.2f%%\n%!"
+      n
+      (100. *. train_accuracy)
+      (100. *. test_accuracy)
   in
   let half = scalar_tensor 0.5 in
   for batch_idx = 1 to epochs do
@@ -57,8 +60,9 @@ let () =
     in
     if batch_idx % 100 = 0 then print_err batch_idx;
     Session.run
-      ~inputs:Session.Input.[
-        float xs batch_images; float ys batch_labels; float keep_prob half ]
+      ~inputs:
+        Session.Input.
+          [ float xs batch_images; float ys batch_labels; float keep_prob half ]
       ~targets:gd
-      Session.Output.empty;
+      Session.Output.empty
   done

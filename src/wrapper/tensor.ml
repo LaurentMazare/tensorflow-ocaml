@@ -9,14 +9,8 @@ type ('a, 'b) t =
 type p = P : (_, _) t -> p
 
 let create kind dims =
-  let dims, scalar =
-    if Array.length dims = 0
-    then [| 1 |], true
-    else dims, false
-  in
-  { data = Bigarray.Genarray.create kind Bigarray.c_layout dims
-  ; scalar
-  }
+  let dims, scalar = if Array.length dims = 0 then [| 1 |], true else dims, false in
+  { data = Bigarray.Genarray.create kind Bigarray.c_layout dims; scalar }
 
 let to_bigarray t = t.data
 let of_bigarray data ~scalar = { data; scalar }
@@ -29,9 +23,7 @@ let copy t =
       (Bigarray.Genarray.dims t.data)
   in
   Bigarray.Genarray.blit t.data copy;
-  { data = copy
-  ; scalar = t.scalar
-  }
+  { data = copy; scalar = t.scalar }
 
 let create0 kind = create kind [||]
 let create1 kind d = create kind [| d |]
@@ -40,77 +32,53 @@ let create3 kind d d' d'' = create kind [| d; d'; d'' |]
 
 (* Abstract a couple Bigarray functions to have a coherent interface. *)
 let get t indexes =
-  let indexes =
-    if t.scalar && Array.length indexes = 0
-    then [| 0 |]
-    else indexes
-  in
+  let indexes = if t.scalar && Array.length indexes = 0 then [| 0 |] else indexes in
   Bigarray.Genarray.get t.data indexes
 
 let set t indexes v =
-  let indexes =
-    if t.scalar && Array.length indexes = 0
-    then [| 0 |]
-    else indexes
-  in
+  let indexes = if t.scalar && Array.length indexes = 0 then [| 0 |] else indexes in
   Bigarray.Genarray.set t.data indexes v
 
-let dims t =
-  if t.scalar
-  then [||]
-  else Bigarray.Genarray.dims t.data
-
-let num_dims t =
-  if t.scalar
-  then 0
-  else Bigarray.Genarray.num_dims t.data
-
+let dims t = if t.scalar then [||] else Bigarray.Genarray.dims t.data
+let num_dims t = if t.scalar then 0 else Bigarray.Genarray.num_dims t.data
 let kind t = Bigarray.Genarray.kind t.data
 
 let sub_left t start stop =
-  { data = Bigarray.Genarray.sub_left t.data start stop
-  ; scalar = t.scalar
-  }
+  { data = Bigarray.Genarray.sub_left t.data start stop; scalar = t.scalar }
 
 let fill t v = Bigarray.Genarray.fill t.data v
-
 let blit t t' = Bigarray.Genarray.blit t.data t'.data
 
 let fill_uniform ?(lower_bound = 0.) ?(upper_bound = 1.) t =
   if upper_bound < lower_bound
   then
-    raise (Invalid_argument
-      (Printf.sprintf "upper_bound (%f) < lower_bound (%f)" upper_bound lower_bound))
-  else
+    raise
+      (Invalid_argument
+         (Printf.sprintf "upper_bound (%f) < lower_bound (%f)" upper_bound lower_bound))
+  else (
     let diff = upper_bound -. lower_bound in
-    let elements =
-      Bigarray.Genarray.dims t.data |> Array.fold_left ( * ) 1
-    in
+    let elements = Bigarray.Genarray.dims t.data |> Array.fold_left ( * ) 1 in
     let flattened_data = Bigarray.reshape_1 t.data elements in
     for index = 0 to elements - 1 do
       flattened_data.{index} <- lower_bound +. Random.float diff
-    done
+    done)
 
 let pp_ formatter (P tensor) =
   let print_ = Format.pp_print_string formatter in
-  let print (type a) (type b) (tensor : (a, b) t) (elt_to_string : a -> string) =
+  let print (type a b) (tensor : (a, b) t) (elt_to_string : a -> string) =
     match dims tensor with
-    | [||] ->
-      Printf.sprintf "%s\n%!" (get tensor [||] |> elt_to_string)
-      |> print_
+    | [||] -> Printf.sprintf "%s\n%!" (get tensor [||] |> elt_to_string) |> print_
     | [| dim |] ->
       for d = 0 to dim - 1 do
-        Printf.sprintf "%d %s\n%!" d (get tensor [| d |] |> elt_to_string)
-        |> print_
+        Printf.sprintf "%d %s\n%!" d (get tensor [| d |] |> elt_to_string) |> print_
       done
     | [| d0; d1 |] ->
       for x = 0 to d0 - 1 do
         Printf.sprintf "%d " x |> print_;
         for y = 0 to d1 - 1 do
-          Printf.sprintf "%s " (get tensor [| x; y |] |> elt_to_string)
-          |> print_
+          Printf.sprintf "%s " (get tensor [| x; y |] |> elt_to_string) |> print_
         done;
-        Printf.sprintf "\n%!" |> print_;
+        Printf.sprintf "\n%!" |> print_
       done
     | otherwise -> Printf.sprintf "%d dims\n%!" (Array.length otherwise) |> print_
   in
@@ -122,16 +90,16 @@ let pp_ formatter (P tensor) =
   | _ -> print_ "Unsupported kind"
 
 let pp formatter tensor = pp_ formatter (P tensor)
-
 let print p = pp_ Format.std_formatter p
 let print_ tensor = print (P tensor)
 
-let to_elt_list : type a b. (a, b) t -> a list = fun tensor ->
+let to_elt_list : type a b. (a, b) t -> a list =
+ fun tensor ->
   let size = Array.fold_left ( * ) 1 (Bigarray.Genarray.dims tensor.data) in
   let tensor = Bigarray.reshape_1 tensor.data size in
   let result = ref [] in
   for i = size - 1 downto 0 do
-    result := Bigarray.Array1.get tensor i :: !result
+    result := tensor.{i} :: !result
   done;
   !result
 
@@ -142,12 +110,11 @@ let to_float_list (P tensor) =
   | Bigarray.Float64 -> to_elt_list tensor
   | _ -> failwith "Not a float tensor"
 
-let copy_elt_list : type a b. (a, b) t -> a list -> unit = fun t data ->
+let copy_elt_list : type a b. (a, b) t -> a list -> unit =
+ fun t data ->
   let size = Array.fold_left ( * ) 1 (Bigarray.Genarray.dims t.data) in
   let t_data = Bigarray.reshape_1 t.data size in
-  List.iteri
-    (fun i v -> Bigarray.Array1.set t_data i v)
-    data
+  List.iteri (fun i v -> t_data.{i} <- v) data
 
 type 'a eq =
   | Float : (float32_elt * [ `float ]) eq
@@ -227,27 +194,15 @@ let of_float_array1 array kind =
 
 let of_float_array2 array kind =
   let dim1 = Array.length array in
-  let dim2 =
-    if dim1 = 0
-    then 0
-    else Array.length array.(0)
-  in
+  let dim2 = if dim1 = 0 then 0 else Array.length array.(0) in
   let t = create2 kind dim1 dim2 in
   set_float_array2 t array;
   t
 
 let of_float_array3 array kind =
   let dim1 = Array.length array in
-  let dim2 =
-    if dim1 = 0
-    then 0
-    else Array.length array.(0)
-  in
-  let dim3 =
-    if dim1 = 0 || dim2 = 0
-    then 0
-    else Array.length array.(0).(0)
-  in
+  let dim2 = if dim1 = 0 then 0 else Array.length array.(0) in
+  let dim3 = if dim1 = 0 || dim2 = 0 then 0 else Array.length array.(0).(0) in
   let t = create3 kind dim1 dim2 dim3 in
   set_float_array3 t array;
   t
@@ -259,10 +214,10 @@ let to_float_array1 t =
 let to_float_array2 t =
   let ba = Bigarray.array2_of_genarray t.data in
   Array.init (Bigarray.Array2.dim1 ba) (fun i ->
-    Array.init (Bigarray.Array2.dim2 ba) (fun j -> ba.{i, j}))
+      Array.init (Bigarray.Array2.dim2 ba) (fun j -> ba.{i, j}))
 
 let to_float_array3 t =
   let ba = Bigarray.array3_of_genarray t.data in
   Array.init (Bigarray.Array3.dim1 ba) (fun i ->
-    Array.init (Bigarray.Array3.dim2 ba) (fun j ->
-      Array.init (Bigarray.Array3.dim3 ba) (fun k -> ba.{i, j, k})))
+      Array.init (Bigarray.Array3.dim2 ba) (fun j ->
+          Array.init (Bigarray.Array3.dim3 ba) (fun k -> ba.{i, j, k})))

@@ -11,10 +11,15 @@ let () =
   let trained_ys = Linear_regression_common.run ~samples ~size_xs ~size_ys ~xs ~ys in
   let gp = Gp.create () in
   let series =
-    List.map (List.tl_exn (List.rev trained_ys)) ~f:(fun (n, y) ->
-      let title = sprintf "%d epochs" n in
-      Series.lines_xy (List.zip_exn x y) ~title)
+    List.map
+      (List.tl_exn (List.rev trained_ys))
+      ~f:(fun (n, y) ->
+        let title = sprintf "%d epochs" n in
+        Series.lines_xy (List.zip_exn x y) ~title)
   in
-  Gp.plot_many gp ~output:(Output.create `Qt)
-    (Series.points_xy (List.zip_exn x (List.concat ys)) ~color:`Blue ~title:"target" :: series);
+  Gp.plot_many
+    gp
+    ~output:(Output.create `Qt)
+    (Series.points_xy (List.zip_exn x (List.concat ys)) ~color:`Blue ~title:"target"
+    :: series);
   Gp.close gp

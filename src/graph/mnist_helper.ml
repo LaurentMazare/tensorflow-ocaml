@@ -13,7 +13,7 @@ let one_hot labels =
     for lbl = 0 to 9 do
       Tensor.set one_hot [| idx; lbl |] 0.
     done;
-    let lbl = Bigarray.Array1.get labels idx |> Int32.to_int_exn in
+    let lbl = labels.{idx} |> Int32.to_int_exn in
     Tensor.set one_hot [| idx; lbl |] 1.
   done;
   one_hot
@@ -23,7 +23,7 @@ let read_int32_be in_channel =
   let b2 = Option.value_exn (In_channel.input_byte in_channel) in
   let b3 = Option.value_exn (In_channel.input_byte in_channel) in
   let b4 = Option.value_exn (In_channel.input_byte in_channel) in
-  b4 + 256 * (b3 + 256 * (b2 + 256 * b1))
+  b4 + (256 * (b3 + (256 * (b2 + (256 * b1)))))
 
 let read_images filename =
   let in_channel = In_channel.create filename in
@@ -37,10 +37,10 @@ let read_images filename =
     Bigarray.Array2.create Bigarray.float32 Bigarray.c_layout samples (rows * columns)
   in
   for sample = 0 to samples - 1 do
-    for idx = 0 to rows * columns - 1 do
+    for idx = 0 to (rows * columns) - 1 do
       let v = Option.value_exn (In_channel.input_byte in_channel) in
-      Bigarray.Array2.set data sample idx Float.(of_int v / 255.);
-    done;
+      data.{sample, idx} <- Float.(of_int v / 255.)
+    done
   done;
   In_channel.close in_channel;
   data
@@ -54,7 +54,7 @@ let read_labels filename =
   let data = Bigarray.Array1.create Bigarray.int32 Bigarray.c_layout samples in
   for sample = 0 to samples - 1 do
     let v = Option.value_exn (In_channel.input_byte in_channel) |> Int32.of_int_exn in
-    Bigarray.Array1.set data sample v;
+    data.{sample} <- v
   done;
   In_channel.close in_channel;
   data
@@ -69,23 +69,21 @@ type t =
   }
 
 let read_files
-      ?(train_image_file = "data/train-images-idx3-ubyte")
-      ?(train_label_file = "data/train-labels-idx1-ubyte")
-      ?(test_image_file = "data/t10k-images-idx3-ubyte")
-      ?(test_label_file = "data/t10k-labels-idx1-ubyte")
-      ()
+    ?(train_image_file = "data/train-images-idx3-ubyte")
+    ?(train_label_file = "data/train-labels-idx1-ubyte")
+    ?(test_image_file = "data/t10k-images-idx3-ubyte")
+    ?(test_label_file = "data/t10k-labels-idx1-ubyte")
+    ()
   =
   let train_images = read_images train_image_file in
   let train_labels = read_labels train_label_file in
   let test_images = read_images test_image_file in
   let test_labels = read_labels test_label_file in
   let train_images =
-    Bigarray.genarray_of_array2 train_images
-    |> Tensor.of_bigarray ~scalar:false
+    Bigarray.genarray_of_array2 train_images |> Tensor.of_bigarray ~scalar:false
   in
   let test_images =
-    Bigarray.genarray_of_array2 test_images
-    |> Tensor.of_bigarray ~scalar:false
+    Bigarray.genarray_of_array2 test_images |> Tensor.of_bigarray ~scalar:false
   in
   { train_images
   ; train_labels = one_hot train_labels
@@ -95,7 +93,7 @@ let read_files
 
 let train_batch { train_images; train_labels; _ } ~batch_size ~batch_idx =
   let train_size = (Tensor.dims train_images).(0) in
-  let start_batch = Int.(%) (batch_size * batch_idx) (train_size - batch_size) in
+  let start_batch = Int.( % ) (batch_size * batch_idx) (train_size - batch_size) in
   let batch_images = Tensor.sub_left train_images start_batch batch_size in
   let batch_labels = Tensor.sub_left train_labels start_batch batch_size in
   batch_images, batch_labels
@@ -111,16 +109,16 @@ let accuracy ys ys' =
   let find_best_idx ys n =
     let best_idx = ref 0 in
     for l = 1 to label_count - 1 do
-      let v = Bigarray.Array2.get ys n !best_idx in
-      let v' = Bigarray.Array2.get ys n l in
-      if Float.(>) v' v then best_idx := l
+      let v = ys.{n, !best_idx} in
+      let v' = ys.{n, l} in
+      if Float.( > ) v' v then best_idx := l
     done;
     !best_idx
   in
   for n = 0 to nsamples - 1 do
     let idx = find_best_idx ys n in
     let idx' = find_best_idx ys' n in
-    res := Float.(+) !res (if idx = idx' then 1. else 0.)
+    res := Float.( + ) !res (if idx = idx' then 1. else 0.)
   done;
   Float.(!res / of_int nsamples)
 
@@ -137,7 +135,7 @@ let batch_accuracy ?samples t train_or_test ~batch_size ~predict =
   let rec loop start_index sum_accuracy =
     if samples <= start_index
     then sum_accuracy /. Float.of_int samples
-    else
+    else (
       let batch_size = Int.min batch_size (samples - start_index) in
       let images = Tensor.sub_left images start_index batch_size in
       let predicted_labels = predict images in
@@ -145,6 +143,6 @@ let batch_accuracy ?samples t train_or_test ~batch_size ~predict =
       let batch_accuracy = accuracy predicted_labels labels in
       loop
         (start_index + batch_size)
-        (sum_accuracy +. batch_accuracy *. Float.of_int batch_size)
+        (sum_accuracy +. (batch_accuracy *. Float.of_int batch_size)))
   in
   loop 0 0.

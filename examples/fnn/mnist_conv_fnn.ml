@@ -10,6 +10,7 @@ let epochs = 235
 
 let conv2d =
   Fnn.conv2d ~w_init:(`normal 0.1) ~filter:(5, 5) ~strides:(1, 1) ~padding:`same
+
 let max_pool = Fnn.max_pool ~filter:(2, 2) ~strides:(2, 2) ~padding:`same
 
 let () =
@@ -28,7 +29,8 @@ let () =
     |> Fnn.softmax
     |> Fnn.Model.create Float
   in
-  Fnn.Model.fit model
+  Fnn.Model.fit
+    model
     ~loss:(Fnn.Loss.cross_entropy `sum)
     ~optimizer:(Fnn.Optimizer.adam ~learning_rate:1e-4 ())
     ~epochs
@@ -38,6 +40,6 @@ let () =
     ~ys:mnist.train_labels;
   let test_accuracy =
     Mnist_helper.batch_accuracy mnist `test ~batch_size:1024 ~predict:(fun images ->
-      Fnn.Model.predict model [ input_id, images ])
+        Fnn.Model.predict model [ input_id, images ])
   in
   Stdio.printf "Accuracy: %.2f%%\n%!" (100. *. test_accuracy)

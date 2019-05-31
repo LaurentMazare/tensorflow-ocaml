@@ -1,20 +1,22 @@
 module Placeholder : sig
   type 'a t
+
   val to_node : 'a t -> 'a Node.t
 end
+
 (* ==== Binary Operations ==== *)
 
 (* The common type for binary operators. *)
-type 't b =  ?name:string -> 't Node.t -> 't Node.t -> 't Node.t
+type 't b = ?name:string -> 't Node.t -> 't Node.t -> 't Node.t
 
 (* Pointwise arithmetic operations. *)
-val (+) : [< `float | `double | `int32 | `int64 | `complex64 | `string ] b
-val (-) : [< `float | `double | `int32 | `int64 | `complex64 ] b
-val (/) : [< `float | `double | `int32 | `int64 | `complex64 ] b
+val ( + ) : [< `float | `double | `int32 | `int64 | `complex64 | `string ] b
+val ( - ) : [< `float | `double | `int32 | `int64 | `complex64 ] b
+val ( / ) : [< `float | `double | `int32 | `int64 | `complex64 ] b
 val ( * ) : [< `float | `double | `int32 | `int64 | `complex64 ] b
 
 (* Matrix multiplication. *)
-val ( *^) : [< `float | `double | `int32 | `complex64 ] b
+val ( *^ ) : [< `float | `double | `int32 | `complex64 ] b
 
 (* ==== Constant Tensors ==== *)
 
@@ -51,16 +53,8 @@ val const_int
   -> int list
   -> 'dtype Node.t
 
-val const_string
-  :  ?name:string
-  -> ?shape:int list
-  -> string list
-  -> [ `string ] Node.t
-
-val const_string0
-  :  ?name:string
-  -> string
-  -> [ `string ] Node.t
+val const_string : ?name:string -> ?shape:int list -> string list -> [ `string ] Node.t
+val const_string0 : ?name:string -> string -> [ `string ] Node.t
 
 val scalar
   :  ?empty_shape:unit
@@ -79,8 +73,8 @@ val zero32 : [ `int32 ] Node.t
 
 (* Reduction functions, [dims] is the list of dimensions across which the reduction
    is performed. *)
-type 'a reduce_fn
-   =  ?dims:int list
+type 'a reduce_fn =
+  ?dims:int list
   -> ([< `complex64 | `double | `float | `int32 | `int64 ] as 'a) Node.t
   -> 'a Node.t
 
@@ -103,11 +97,7 @@ val save_
 val save : filename:string -> (string * Node.p) list -> [ `unit ] Node.t
 
 (* ==== Split ==== *)
-val split2
-  :  ?name:string
-  -> [ `int32 ] Node.t
-  -> 't Node.t
-  -> 't Node.t * 't Node.t
+val split2 : ?name:string -> [ `int32 ] Node.t -> 't Node.t -> 't Node.t * 't Node.t
 
 val split3
   :  ?name:string
@@ -132,31 +122,16 @@ val placeholder : ?name:string -> type_:'a Node.Type.t -> int list -> 'a Placeho
 (* [dropout n ~keep_prob] returns a tensor with the same shape as [n] that either
    have the same value as [n] with prob [keep_prob] or else is [0].
    The resulting values are then scaled by [1/keep_prob]. *)
-val dropout
-  :  ([< `float | `double ] as 'a) Node.t
-  -> keep_prob:'a Node.t
-  -> 'a Node.t
-
-val cast
-  :  ?name:string
-  -> 'srcT Node.t
-  -> type_:'dstT Node.Type.t
-  -> 'dstT Node.t
-
-val count
-  :  'a Node.t
-  -> dims:int list
-  -> [ `int32 ] Node.t
+val dropout : ([< `float | `double ] as 'a) Node.t -> keep_prob:'a Node.t -> 'a Node.t
+val cast : ?name:string -> 'srcT Node.t -> type_:'dstT Node.Type.t -> 'dstT Node.t
+val count : 'a Node.t -> dims:int list -> [ `int32 ] Node.t
 
 type 'a moments =
   { mean : 'a Node.t
   ; variance : 'a Node.t
   }
 
-val moments
-  :  ([< `double | `float ] as 'a) Node.t
-  -> dims:int list
-  -> 'a moments
+val moments : ([< `double | `float ] as 'a) Node.t -> dims:int list -> 'a moments
 
 val normalize
   :  ?epsilon:float
@@ -174,11 +149,7 @@ val cond_with_control_inputs
 
 (* [if_true] and [if_false] will always be evaluated because of the 'not-so lazy'
    behavior of TensorFlow switch. *)
-val cond
-  :  [ `bool ] Node.t
-  -> if_true:'a Node.t
-  -> if_false:'a Node.t
-  -> 'a Node.t
+val cond : [ `bool ] Node.t -> if_true:'a Node.t -> if_false:'a Node.t -> 'a Node.t
 
 val shape32
   :  ?name:string
@@ -202,7 +173,4 @@ val binary_cross_entropy
   -> [ `sum | `mean ]
   -> 'a Node.t
 
-val leaky_relu
-  :  ([< `double | `float ] as 'a) Node.t
-  -> alpha:float
-  -> 'a Node.t
+val leaky_relu : ([< `double | `float ] as 'a) Node.t -> alpha:float -> 'a Node.t

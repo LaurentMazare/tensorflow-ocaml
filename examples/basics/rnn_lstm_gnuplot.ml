@@ -11,15 +11,15 @@ let lstm ~size_c ~size_x ~size_y x_and_ys =
   let lstm = Staged.unstage (Cell.lstm ~size_c ~size_x) in
   let one_lstm ~h ~x ~c =
     let `h h, `c c = lstm ~h ~x ~c in
-    let y_bar = Ops.(h *^ wy + by) in
+    let y_bar = Ops.((h *^ wy) + by) in
     y_bar, h, c
   in
   let err =
     let zero = Ops.f ~shape:[ train_size; size_c ] 0. in
     List.fold x_and_ys ~init:([], zero, zero) ~f:(fun (errs, h, c) (x, y) ->
-      let y_bar, h, c = one_lstm ~h ~x ~c in
-      let err = Ops.(y_bar - y) in
-      err :: errs, h, c)
+        let y_bar, h, c = one_lstm ~h ~x ~c in
+        let err = Ops.(y_bar - y) in
+        err :: errs, h, c)
     |> fun (errs, _, _) ->
     let errs =
       match errs with
@@ -39,24 +39,18 @@ let step_size = 0.1
 let fit_1d fn =
   let x_and_ys =
     List.init steps ~f:(fun x ->
-      let x = float x *. step_size in
-      let xs = List.init train_size ~f:(fun i -> fn (x +. float i)) in
-      let ys = List.init train_size ~f:(fun i -> fn (x +. step_size +. float i)) in
-      let xs = Ops.const_float ~type_:Float ~shape:[ train_size; 1 ] xs in
-      let ys = Ops.const_float ~type_:Float ~shape:[ train_size; 1 ] ys in
-      xs, ys
-    )
+        let x = float x *. step_size in
+        let xs = List.init train_size ~f:(fun i -> fn (x +. float i)) in
+        let ys = List.init train_size ~f:(fun i -> fn (x +. step_size +. float i)) in
+        let xs = Ops.const_float ~type_:Float ~shape:[ train_size; 1 ] xs in
+        let ys = Ops.const_float ~type_:Float ~shape:[ train_size; 1 ] ys in
+        xs, ys)
   in
   let err, one_lstm = lstm ~size_c ~size_x:1 ~size_y:1 x_and_ys in
   let gd = Optimizers.adam_minimizer err ~learning_rate:(Ops.f 0.004) in
   for i = 1 to epochs do
-    let err =
-      Session.run
-        ~inputs:[]
-        ~targets:gd
-        (Session.Output.scalar_float err);
-    in
-    printf "%d %f\n%!" i err;
+    let err = Session.run ~inputs:[] ~targets:gd (Session.Output.scalar_float err) in
+    printf "%d %f\n%!" i err
   done;
   let h = Ops.placeholder [] ~type_:Float in
   let x = Ops.placeholder [] ~type_:Float in
@@ -71,13 +65,13 @@ let fit_1d fn =
   let init = [], tensor 1, tensor size_c, tensor size_c in
   let ys, _, _, _ =
     List.fold (List.range 0 500) ~init ~f:(fun (acc_y, prev_y, prev_h, prev_c) _ ->
-      let y_res, h_res, c_res =
-        Session.run
-          ~inputs:Session.Input.[ float x prev_y; float h prev_h; float c prev_c ]
-          Session.Output.(three (float y_bar) (float h_out) (float c_out))
-      in
-      let y = Tensor.get y_res [| 0; 0 |] in
-      y :: acc_y, y_res, h_res, c_res)
+        let y_res, h_res, c_res =
+          Session.run
+            ~inputs:Session.Input.[ float x prev_y; float h prev_h; float c prev_c ]
+            Session.Output.(three (float y_bar) (float h_out) (float c_out))
+        in
+        let y = Tensor.get y_res [| 0; 0 |] in
+        y :: acc_y, y_res, h_res, c_res)
   in
   List.rev ys
 

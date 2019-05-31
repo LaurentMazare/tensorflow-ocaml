@@ -8,4 +8,3 @@ type t =
 
 val load : string -> t
 val save : (float, Bigarray.float32_elt) Tensor.t -> string -> unit
-

@@ -1,7 +1,7 @@
 open Ctypes
-
-module C = Tf_bindings.C(Tf_generated)
+module C = Tf_bindings.C (Tf_generated)
 open C
+
 let verbose = false
 let force_full_major = false
 
@@ -67,27 +67,19 @@ let int_to_data_type = function
 
 module Tensor = struct
   open C.Tf_tensor
+
   let sizeof = function
     | TF_FLOAT -> 4
     | TF_DOUBLE -> 8
     | TF_INT32 -> 4
-    | TF_UINT16
-    | TF_INT16 -> 2
-    | TF_BOOL
-    | TF_UINT8
-    | TF_INT8 -> 1
+    | TF_UINT16 | TF_INT16 -> 2
+    | TF_BOOL | TF_UINT8 | TF_INT8 -> 1
     | TF_INT64 -> 8
-    | TF_STRING
-    | TF_COMPLEX
-    | TF_QINT8
-    | TF_QUINT8
-    | TF_QINT32
-    | TF_BFLOAT16
-    | TF_QINT16
-    | TF_QUINT16
-    | Unknown _ -> failwith "Unsupported tensor type (sizeof)"
+    | TF_STRING | TF_COMPLEX | TF_QINT8 | TF_QUINT8 | TF_QINT32 | TF_BFLOAT16
+    | TF_QINT16 | TF_QUINT16 | Unknown _ ->
+      failwith "Unsupported tensor type (sizeof)"
 
-  let data_type_of_kind (type a) (type b) (kind : (a, b) Bigarray.kind) =
+  let data_type_of_kind (type a b) (kind : (a, b) Bigarray.kind) =
     match kind with
     | Bigarray.Float32 -> TF_FLOAT
     | Bigarray.Float64 -> TF_DOUBLE
@@ -98,28 +90,32 @@ module Tensor = struct
 
   module Id : sig
     type t
+
     val create : unit -> t
     val to_int : t -> int
     val of_int : int -> t
   end = struct
     type t = int
+
     let create =
       let cnt = ref 0 in
-      fun () -> incr cnt; !cnt
+      fun () ->
+        incr cnt;
+        !cnt
 
     let to_int t = t
     let of_int t = t
   end
 
   let live_tensors = Hashtbl.create 1024
+
   let deallocate _ _ id =
     let id = raw_address_of_ptr id |> Nativeint.to_int |> Id.of_int in
-    if verbose
-    then Printf.printf "Deallocating tensor %d\n%!" (Id.to_int id);
+    if verbose then Printf.printf "Deallocating tensor %d\n%!" (Id.to_int id);
     Hashtbl.remove live_tensors id
 
   let c_tensor_of_tensor packed_tensor =
-    let Tensor.P tensor = packed_tensor in
+    let (Tensor.P tensor) = packed_tensor in
     let id = Id.create () in
     let dim_array = Tensor.dims tensor in
     let dims =
@@ -132,13 +128,10 @@ module Tensor = struct
     let size = Array.fold_left ( * ) 1 dim_array * sizeof data_type in
     Hashtbl.add live_tensors id (`tensor packed_tensor);
     let num_dims = Tensor.num_dims tensor in
-    let start =
-      bigarray_start genarray (Tensor.to_bigarray tensor)
-      |> to_voidp
-    in
-    if force_full_major
-    then Gc.full_major ();
-    tf_newtensor (data_type_to_int data_type)
+    let start = bigarray_start genarray (Tensor.to_bigarray tensor) |> to_voidp in
+    if force_full_major then Gc.full_major ();
+    tf_newtensor
+      (data_type_to_int data_type)
       dims
       num_dims
       start
@@ -149,10 +142,9 @@ module Tensor = struct
   let tensor_of_c_tensor c_tensor =
     let num_dims = tf_numdims c_tensor in
     let dims = Array.init num_dims (fun i -> tf_dim c_tensor i) in
-    let dims = (* Scalar hack: use a 1d bigarray as 0d bigarray are not supported. *)
-      if Array.length dims = 0
-      then [| 1 |]
-      else dims
+    let dims =
+      (* Scalar hack: use a 1d bigarray as 0d bigarray are not supported. *)
+      if Array.length dims = 0 then [| 1 |] else dims
     in
     let apply_kind kind =
       let data = tf_tensordata c_tensor |> from_voidp (typ_of_bigarray_kind kind) in
@@ -169,11 +161,7 @@ module Tensor = struct
     | _ -> failwith "Unsupported tensor type"
 
   let varint_len int =
-    let rec loop acc int =
-      if int < 128
-      then acc + 1
-      else loop (acc + 1) (int / 128)
-    in
+    let rec loop acc int = if int < 128 then acc + 1 else loop (acc + 1) (int / 128) in
     loop 0 int
 
   let c_tensor_of_strings strings ~shape =
@@ -197,34 +185,28 @@ module Tensor = struct
           let offset = offsets.(i) in
           let length = String.length str in
           let rec loop acc length =
-            bigarray.{ start_offset_len + offset + acc } <- Char.chr (length mod 128);
-            if length < 128
-            then acc + 1
-            else loop (acc + 1) (length / 128)
+            bigarray.{start_offset_len + offset + acc} <- Char.chr (length mod 128);
+            if length < 128 then acc + 1 else loop (acc + 1) (length / 128)
           in
           let varint_len = loop 0 length in
           for j = 0 to length - 1 do
-            bigarray.{ start_offset_len + offset + varint_len + j } <- str.[j]
+            bigarray.{start_offset_len + offset + varint_len + j} <- str.[j]
           done;
           let offset = ref offset in
           for j = 0 to 7 do
-            bigarray.{8*i + j} <- Char.chr (!offset mod 256);
-            offset := !offset / 256;
+            bigarray.{(8 * i) + j} <- Char.chr (!offset mod 256);
+            offset := !offset / 256
           done)
         strings;
       Bigarray.genarray_of_array1 bigarray, Bigarray.Array1.dim bigarray
     in
     let id = Id.create () in
-    let dims =
-      List.map Int64.of_int shape
-      |> CArray.of_list int64_t
-      |> CArray.start
-    in
+    let dims = List.map Int64.of_int shape |> CArray.of_list int64_t |> CArray.start in
     Hashtbl.add live_tensors id (`string_tensor bigarray);
     let start = bigarray_start genarray bigarray |> to_voidp in
-    if force_full_major
-    then Gc.full_major ();
-    tf_newtensor (data_type_to_int TF_STRING)
+    if force_full_major then Gc.full_major ();
+    tf_newtensor
+      (data_type_to_int TF_STRING)
       dims
       (List.length shape)
       start
@@ -259,24 +241,24 @@ module Status = struct
   (* CAUTION: this has to stay in sync with [tensor_c_api.h], maybe we should generate
      some stubs to assert this at compile time. *)
   let code_of_int = function
-    | 0  -> TF_OK
-    | 1  -> TF_CANCELLED
-    | 2  -> TF_UNKNOWN
-    | 3  -> TF_INVALID_ARGUMENT
-    | 4  -> TF_DEADLINE_EXCEEDED
-    | 5  -> TF_NOT_FOUND
-    | 6  -> TF_ALREADY_EXISTS
-    | 7  -> TF_PERMISSION_DENIED
+    | 0 -> TF_OK
+    | 1 -> TF_CANCELLED
+    | 2 -> TF_UNKNOWN
+    | 3 -> TF_INVALID_ARGUMENT
+    | 4 -> TF_DEADLINE_EXCEEDED
+    | 5 -> TF_NOT_FOUND
+    | 6 -> TF_ALREADY_EXISTS
+    | 7 -> TF_PERMISSION_DENIED
     | 16 -> TF_UNAUTHENTICATED
-    | 8  -> TF_RESOURCE_EXHAUSTED
-    | 9  -> TF_FAILED_PRECONDITION
+    | 8 -> TF_RESOURCE_EXHAUSTED
+    | 9 -> TF_FAILED_PRECONDITION
     | 10 -> TF_ABORTED
     | 11 -> TF_OUT_OF_RANGE
     | 12 -> TF_UNIMPLEMENTED
     | 13 -> TF_INTERNAL
     | 14 -> TF_UNAVAILABLE
     | 15 -> TF_DATA_LOSS
-    | n  -> Unknown n
+    | n -> Unknown n
 
   let create () =
     let status = tf_newstatus () in
@@ -284,7 +266,6 @@ module Status = struct
     status
 
   let code t = tf_getcode t |> code_of_int
-
   let message = tf_message
 
   type 'a result =
@@ -299,12 +280,12 @@ module Status = struct
   let ok_exn = function
     | Ok ok -> ok
     | Error status ->
-      failwith
-        (Printf.sprintf "%d %s" (tf_getcode status) (message status))
+      failwith (Printf.sprintf "%d %s" (tf_getcode status) (message status))
 end
 
 module Buffer = struct
   module Tf_buffer = C.Tf_buffer
+
   type t = Tf_buffer.t
 
   let create_from_string str =
@@ -315,6 +296,7 @@ end
 
 module Graph_import = struct
   module Tf_import_graph_def_options = C.Tf_import_graph_def_options
+
   type import_options = Tf_import_graph_def_options.t
 
   let create_import_options () =
@@ -332,6 +314,7 @@ end
 
 module Graph = struct
   open C
+
   type t = Tf_graph.t
 
   let create () =
@@ -339,16 +322,13 @@ module Graph = struct
     Gc.finalise Tf_graph.tf_deletegraph t;
     t
 
-  let keep_alive t =
-    if to_voidp t = null
-    then failwith "null pointer"
+  let keep_alive t = if to_voidp t = null then failwith "null pointer"
 
   type operation = Tf_graph.t * Tf_operation.t
 
   (* Keep a reference to the graph as it should not be deleted before tf_finishoperation
      has been succesfully called. *)
   type operation_description = Tf_graph.t * Tf_operationdescription.t
-
   type output = Tf_output.t structure
 
   let live_strings = ref []
@@ -386,23 +366,20 @@ module Graph = struct
     let operation = Tf_operationdescription.tf_finishoperation od status in
     Status.result_or_error status (graph, operation)
 
-  let add_control_input (graph, od) (graph', op)=
-    if graph != graph'
-    then failwith "Calling add_input on different graphs.";
+  let add_control_input (graph, od) (graph', op) =
+    if graph != graph' then failwith "Calling add_input on different graphs.";
     Tf_operationdescription.tf_addcontrolinput od op;
     keep_alive graph
 
   let add_input (graph, od) (graph', op) ~index =
-    if graph != graph'
-    then failwith "Calling add_input on different graphs.";
+    if graph != graph' then failwith "Calling add_input on different graphs.";
     let output = create_output (graph, op) ~index in
     Tf_operationdescription.tf_addinput od output;
     keep_alive graph
 
   let add_inputs (graph, od) op_and_indexes =
     let outputs =
-      List.map (fun (op, index) -> create_output op ~index)
-        op_and_indexes
+      List.map (fun (op, index) -> create_output op ~index) op_and_indexes
       |> CArray.of_list Tf_output.t
       |> CArray.start
     in
@@ -426,10 +403,7 @@ module Graph = struct
     keep_alive graph
 
   let set_attr_float (graph, od) ~attr_name value =
-    Tf_operationdescription.tf_setattrfloat
-      od
-      (ptr_of_string attr_name)
-      value;
+    Tf_operationdescription.tf_setattrfloat od (ptr_of_string attr_name) value;
     keep_alive graph
 
   let set_attr_float_list (graph, od) ~attr_name values =
@@ -441,15 +415,8 @@ module Graph = struct
     keep_alive graph
 
   let set_attr_bool (graph, od) ~attr_name value =
-    let value =
-      if value
-      then Unsigned.UChar.one
-      else Unsigned.UChar.zero
-    in
-    Tf_operationdescription.tf_setattrbool
-      od
-      (ptr_of_string attr_name)
-      value;
+    let value = if value then Unsigned.UChar.one else Unsigned.UChar.zero in
+    Tf_operationdescription.tf_setattrbool od (ptr_of_string attr_name) value;
     keep_alive graph
 
   let set_attr_bool_list (graph, od) ~attr_name values =
@@ -494,22 +461,14 @@ module Graph = struct
   let set_attr_tensor (graph, od) ~attr_name tensor =
     let tensor = Tensor.c_tensor_of_tensor tensor in
     let status = Status.create () in
-    Tf_operationdescription.tf_setattrtensor
-      od
-      (ptr_of_string attr_name)
-      tensor
-      status;
+    Tf_operationdescription.tf_setattrtensor od (ptr_of_string attr_name) tensor status;
     keep_alive graph;
     Status.result_or_error status ()
 
   let set_attr_tensor_string (graph, od) ~attr_name ~shape strings =
     let tensor = Tensor.c_tensor_of_strings strings ~shape in
     let status = Status.create () in
-    Tf_operationdescription.tf_setattrtensor
-      od
-      (ptr_of_string attr_name)
-      tensor
-      status;
+    Tf_operationdescription.tf_setattrtensor od (ptr_of_string attr_name) tensor status;
     keep_alive graph;
     Status.result_or_error status ()
 
@@ -530,20 +489,14 @@ module Graph = struct
     let num_dims = List.length shape in
     let shape = List.map Int64.of_int shape in
     let shape = CArray.(of_list int64_t shape |> start) in
-    Tf_operationdescription.tf_setattrshape
-      od
-      (ptr_of_string attr_name)
-      shape
-      num_dims;
+    Tf_operationdescription.tf_setattrshape od (ptr_of_string attr_name) shape num_dims;
     keep_alive graph
 
   let import = Graph_import.import
 
   let find_operation t name =
     let operation = Tf_graph.tf_graphoperationbyname t name in
-    if to_voidp operation = null
-    then None
-    else Some (t, operation)
+    if to_voidp operation = null then None else Some (t, operation)
 
   let shape t output =
     let status = Status.create () in
@@ -564,7 +517,15 @@ module Graph = struct
     let xs = CArray.(of_list Tf_output.t xs |> start) in
     let ys = CArray.(of_list Tf_output.t ys |> start) in
     let dys = CArray.make Tf_output.t nx in
-    Tf_graph.tf_addgradients t ys ny xs nx (from_voidp Tf_output.t null) status (CArray.start dys);
+    Tf_graph.tf_addgradients
+      t
+      ys
+      ny
+      xs
+      nx
+      (from_voidp Tf_output.t null)
+      status
+      (CArray.start dys);
     keep_alive t;
     match Status.result_or_error status () with
     | Ok () -> Status.Ok (CArray.to_list dys)
@@ -590,9 +551,7 @@ module Session = struct
       | Some session_options -> session_options
     in
     let status = Status.create () in
-    let session =
-      Tf_session.tf_newsession graph session_options status
-    in
+    let session = Tf_session.tf_newsession graph session_options status in
     Gc.finalise
       (fun session ->
         Tf_session.tf_closesession session status;
@@ -614,8 +573,7 @@ module Session = struct
     let targets = List.map snd targets in
     let output_tensor_start = CArray.start output_tensors in
     let target_operations = CArray.(of_list Tf_operation.t targets |> start) in
-    if force_full_major
-    then Gc.full_major ();
+    if force_full_major then Gc.full_major ();
     Tf_session.tf_sessionrun
       t
       null
@@ -634,8 +592,7 @@ module Session = struct
     match Status.result_or_error status () with
     | Ok () ->
       let output_tensors =
-        CArray.to_list output_tensors
-        |> List.map Tensor.tensor_of_c_tensor
+        CArray.to_list output_tensors |> List.map Tensor.tensor_of_c_tensor
       in
       Status.Ok output_tensors
     | Error _ as err -> err

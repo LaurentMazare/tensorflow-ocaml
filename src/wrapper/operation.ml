@@ -103,8 +103,7 @@ type attr =
 
 let add_attribute operation_description ~attr_name attr =
   match (attr : attr) with
-  | String str ->
-    Wrapper.Graph.set_attr_string operation_description ~attr_name str
+  | String str -> Wrapper.Graph.set_attr_string operation_description ~attr_name str
   | Type dtype ->
     let dtype = Type.to_data_type dtype in
     Wrapper.Graph.set_attr_type operation_description ~attr_name dtype
@@ -115,12 +114,10 @@ let add_attribute operation_description ~attr_name attr =
       Wrapper.Graph.set_attr_tensor operation_description ~attr_name (Tensor.P tensor)
       |> Wrapper.Status.ok_exn
     in
-    begin
-      match tensor_float.type_ with
-      | Type.P Type.Float -> set_attr Float32
-      | Type.P Type.Double -> set_attr Float64
-      | Type.P _ -> assert false
-    end
+    (match tensor_float.type_ with
+    | Type.P Type.Float -> set_attr Float32
+    | Type.P Type.Double -> set_attr Float64
+    | Type.P _ -> assert false)
   | Tensor_int tensor_int ->
     let tensor =
       match tensor_int.type_ with
@@ -136,17 +133,13 @@ let add_attribute operation_description ~attr_name attr =
     in
     Wrapper.Graph.set_attr_tensor operation_description ~attr_name tensor
     |> Wrapper.Status.ok_exn
-  | Int i ->
-    Wrapper.Graph.set_attr_int operation_description ~attr_name i
-  | Float f ->
-    Wrapper.Graph.set_attr_float operation_description ~attr_name f
-  | Bool b ->
-    Wrapper.Graph.set_attr_bool operation_description ~attr_name b
+  | Int i -> Wrapper.Graph.set_attr_int operation_description ~attr_name i
+  | Float f -> Wrapper.Graph.set_attr_float operation_description ~attr_name f
+  | Bool b -> Wrapper.Graph.set_attr_bool operation_description ~attr_name b
   | Shape shape ->
     let shape = List.map (fun dim -> dim.Dim.size) shape in
     Wrapper.Graph.set_attr_shape operation_description ~attr_name shape
-  | List (Int is) ->
-    Wrapper.Graph.set_attr_int_list operation_description ~attr_name is
+  | List (Int is) -> Wrapper.Graph.set_attr_int_list operation_description ~attr_name is
   | List (Float fs) ->
     Wrapper.Graph.set_attr_float_list operation_description ~attr_name fs
   | List (Bool bs) ->
@@ -157,24 +150,22 @@ let add_attribute operation_description ~attr_name attr =
   | List (String _) -> failwith "List String attributes are not supported yet."
   | List (Shape _) -> failwith "List Shape attributes are not supported yet."
   | Tensor_string tensor_str ->
-    Wrapper.Graph.set_attr_tensor_string operation_description tensor_str.values
+    Wrapper.Graph.set_attr_tensor_string
+      operation_description
+      tensor_str.values
       ~attr_name
       ~shape:tensor_str.shape
     |> Wrapper.Status.ok_exn
 
-let create
-      graph
-      ~op_name
-      ~unique_name
-      ~inputs
-      ~input_lists
-      ~control_inputs
-      ~attributes
-  =
+let create graph
+           ~op_name
+           ~unique_name
+           ~inputs
+           ~input_lists
+           ~control_inputs
+           ~attributes =
   let operation_description =
-    Wrapper.Graph.new_operation graph
-      ~op_name
-      ~name:unique_name
+    Wrapper.Graph.new_operation graph ~op_name ~name:unique_name
   in
   List.iter
     (fun control_input ->
@@ -182,18 +173,12 @@ let create
     control_inputs;
   List.iter
     (fun (input, output_index) ->
-      Wrapper.Graph.add_input
-        operation_description
-        input
-        ~index:output_index)
+      Wrapper.Graph.add_input operation_description input ~index:output_index)
     inputs;
   List.iter
-    (fun inputs ->
-      Wrapper.Graph.add_inputs operation_description inputs)
+    (fun inputs -> Wrapper.Graph.add_inputs operation_description inputs)
     input_lists;
   List.iter
-    (fun (attr_name, attr) ->
-      add_attribute operation_description ~attr_name attr)
+    (fun (attr_name, attr) -> add_attribute operation_description ~attr_name attr)
     attributes;
-  Wrapper.Graph.finish_operation operation_description
-  |> Wrapper.Status.ok_exn
+  Wrapper.Graph.finish_operation operation_description |> Wrapper.Status.ok_exn

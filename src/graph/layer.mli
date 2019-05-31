@@ -8,10 +8,7 @@ module Batch_norm : sig
     -> ([< `double | `float ] as 'a) Node.t
     -> 'a t
 
-  val apply_infer
-    :  ([< `double | `float ] as 'a) t
-    -> 'a Node.t
-    -> 'a Node.t
+  val apply_infer : ([< `double | `float ] as 'a) t -> 'a Node.t -> 'a Node.t
 
   val apply_train
     :  ([< `double | `float ] as 'a) t
@@ -21,6 +18,7 @@ end
 
 module Update_ops_store : sig
   type t
+
   val create : unit -> t
   val ops : t -> Node.p list
 end
@@ -76,8 +74,8 @@ type padding =
 val max_pool
   :  ?padding:padding (* default: Same *)
   -> ([< `double | `float ] as 'a) Node.t
-  -> ksize:(int * int)
-  -> strides:(int * int)
+  -> ksize:int * int
+  -> strides:int * int
   -> 'a Node.t
 
 module Conv2D : sig
@@ -103,8 +101,8 @@ val conv2d
   :  ?padding:padding (* default: Same *)
   -> ?use_bias:bool (* default: true *)
   -> ([< `double | `float ] as 'a) Node.t
-  -> ksize:(int * int)
-  -> strides:(int * int)
+  -> ksize:int * int
+  -> strides:int * int
   -> output_dim:int
   -> 'a Node.t
 
@@ -131,17 +129,12 @@ val conv2d_transpose
   :  ?padding:padding (* default: Same *)
   -> ?use_bias:bool (* default: true *)
   -> ([< `double | `float ] as 'a) Node.t
-  -> ksize:(int * int)
-  -> strides:(int * int)
+  -> ksize:int * int
+  -> strides:int * int
   -> output_filters:int
   -> 'a Node.t
 
 (** [flatten] preserves the first (batch) dimension. *)
-val flatten
-  :  'a Node.t
-  -> 'a Node.t
+val flatten : 'a Node.t -> 'a Node.t
 
-val reshape
-  : 'a Node.t
-  -> shape:int list
-  -> 'a Node.t
+val reshape : 'a Node.t -> shape:int list -> 'a Node.t

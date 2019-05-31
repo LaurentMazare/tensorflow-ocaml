@@ -17,15 +17,15 @@ let gru ~size_h ~size_x ~size_y x_and_ys =
   let gru = Staged.unstage (Cell.gru ~size_h ~size_x) in
   let one_gru ~h ~x =
     let h = gru ~h ~x in
-    let y_bar = Ops.(h *^ wy + by) in
+    let y_bar = Ops.((h *^ wy) + by) in
     y_bar, h
   in
   let err =
     let zero = Ops.f ~shape:[ train_size; size_h ] 0. in
     List.fold x_and_ys ~init:([], zero) ~f:(fun (errs, h) (x, y) ->
-      let y_bar, h = one_gru ~h ~x in
-      let err = Ops.(y_bar - y) in
-      err :: errs, h)
+        let y_bar, h = one_gru ~h ~x in
+        let err = Ops.(y_bar - y) in
+        err :: errs, h)
     |> fun (errs, __) ->
     let errs =
       match errs with
@@ -45,24 +45,18 @@ let step_size = 0.1
 let fit_1d fn =
   let x_and_ys =
     List.init steps ~f:(fun x ->
-      let x = float x *. step_size in
-      let xs = List.init train_size ~f:(fun i -> fn (x +. float i)) in
-      let ys = List.init train_size ~f:(fun i -> fn (x +. step_size +. float i)) in
-      let xs = Ops.const_float ~type_:Float ~shape:[ train_size; 1 ] xs in
-      let ys = Ops.const_float ~type_:Float ~shape:[ train_size; 1 ] ys in
-      xs, ys
-    )
+        let x = float x *. step_size in
+        let xs = List.init train_size ~f:(fun i -> fn (x +. float i)) in
+        let ys = List.init train_size ~f:(fun i -> fn (x +. step_size +. float i)) in
+        let xs = Ops.const_float ~type_:Float ~shape:[ train_size; 1 ] xs in
+        let ys = Ops.const_float ~type_:Float ~shape:[ train_size; 1 ] ys in
+        xs, ys)
   in
   let err, one_gru = gru ~size_h ~size_x:1 ~size_y:1 x_and_ys in
   let gd = Optimizers.adam_minimizer err ~learning_rate:(Ops.f 0.004) in
   for i = 1 to epochs do
-    let err =
-      Session.run
-        ~inputs:[]
-        ~targets:gd
-        (Session.Output.scalar_float err);
-    in
-    printf "%d %f\n%!" i err;
+    let err = Session.run ~inputs:[] ~targets:gd (Session.Output.scalar_float err) in
+    printf "%d %f\n%!" i err
   done;
   let h = Ops.placeholder [] ~type_:Float in
   let x = Ops.placeholder [] ~type_:Float in
@@ -73,25 +67,25 @@ let fit_1d fn =
   let init = [], tensor 1, tensor size_h in
   let ys, _, h_res =
     List.foldi (List.range 0 500) ~init ~f:(fun idx (acc_y, prev_y, prev_h) _ ->
-      if idx < 5 then Tensor.set prev_y [| 0; 0 |] (sin (float idx *. step_size));
-      let y_res, h_res =
-        Session.run
-          ~inputs:Session.Input.[ float x prev_y; float h prev_h ]
-          Session.Output.(both (float y_bar) (float h_out))
-      in
-      let y = Tensor.get y_res [| 0; 0 |] in
-      y :: acc_y, y_res, h_res)
+        if idx < 5 then Tensor.set prev_y [| 0; 0 |] (sin (float idx *. step_size));
+        let y_res, h_res =
+          Session.run
+            ~inputs:Session.Input.[ float x prev_y; float h prev_h ]
+            Session.Output.(both (float y_bar) (float h_out))
+        in
+        let y = Tensor.get y_res [| 0; 0 |] in
+        y :: acc_y, y_res, h_res)
   in
   let init = [], tensor 1, h_res in
   let ys', _, _ =
     List.fold (List.range 0 500) ~init ~f:(fun (acc_y, prev_y, prev_h) _ ->
-      let y_res, h_res =
-        Session.run
-          ~inputs:Session.Input.[ float x prev_y; float h prev_h ]
-          Session.Output.(both (float y_bar) (float h_out))
-      in
-      let y = Tensor.get y_res [| 0; 0 |] in
-      y :: acc_y, y_res, h_res)
+        let y_res, h_res =
+          Session.run
+            ~inputs:Session.Input.[ float x prev_y; float h prev_h ]
+            Session.Output.(both (float y_bar) (float h_out))
+        in
+        let y = Tensor.get y_res [| 0; 0 |] in
+        y :: acc_y, y_res, h_res)
   in
   List.rev ys, List.rev ys'
 
@@ -101,7 +95,8 @@ let () =
   let xys = List.mapi ys ~f:(fun i y -> float i *. step_size, y) in
   let xys' = List.mapi ys' ~f:(fun i y -> float i *. step_size, y) in
   let gp = Gp.create () in
-  Gp.plot_many gp ~output:(Output.create `Qt)
-    [ Series.points_xy xys ~title:"original"
-    ; Series.points_xy xys'~title:"replay" ];
+  Gp.plot_many
+    gp
+    ~output:(Output.create `Qt)
+    [ Series.points_xy xys ~title:"original"; Series.points_xy xys' ~title:"replay" ];
   Gp.close gp

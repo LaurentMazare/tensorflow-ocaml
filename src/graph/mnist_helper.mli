@@ -1,4 +1,5 @@
 open Tensorflow_core
+
 type float32_tensor = (float, Bigarray.float32_elt) Tensor.t
 
 (* Images have shape [ samples; 728 ]. Labels are one-hot encoded with
@@ -18,12 +19,7 @@ val read_files
   -> unit
   -> t
 
-val train_batch
-  :  t
-  -> batch_size:int
-  -> batch_idx:int
-  -> float32_tensor * float32_tensor
-
+val train_batch : t -> batch_size:int -> batch_idx:int -> float32_tensor * float32_tensor
 val image_dim : int
 val label_count : int
 

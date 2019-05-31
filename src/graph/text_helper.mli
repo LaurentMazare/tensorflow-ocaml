@@ -3,10 +3,7 @@ open Tensorflow_core
 
 type 'a t
 
-val create
-  :  string
-  -> (float, 'a) Bigarray.kind
-  -> 'a t
+val create : string -> (float, 'a) Bigarray.kind -> 'a t
 
 val batch_sequence
   :  ?pos:int
@@ -17,7 +14,5 @@ val batch_sequence
   -> ((float, 'a) Tensor.t * (float, 'a) Tensor.t) Sequence.t
 
 val map : _ t -> int Map.M(Int).t
-
 val length : _ t -> int
-
 val dim : _ t -> int

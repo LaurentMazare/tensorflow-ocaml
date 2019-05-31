@@ -10,7 +10,7 @@ let epochs = 300
 let hidden_nodes = 64
 
 let () =
-  let mnist= Mnist_helper.read_files () in
+  let mnist = Mnist_helper.read_files () in
   let input, input_id = Fnn.input ~shape:(D1 image_dim) in
   let model =
     Fnn.dense ~w_init:(`normal 0.1) hidden_nodes input
@@ -19,7 +19,8 @@ let () =
     |> Fnn.softmax
     |> Fnn.Model.create Float
   in
-  Fnn.Model.fit model
+  Fnn.Model.fit
+    model
     ~loss:(Fnn.Loss.cross_entropy `mean)
     ~optimizer:(Fnn.Optimizer.gradient_descent ~learning_rate:8.)
     ~epochs
@@ -28,6 +29,6 @@ let () =
     ~ys:mnist.train_labels;
   let test_accuracy =
     Mnist_helper.batch_accuracy mnist `test ~batch_size:1024 ~predict:(fun images ->
-      Fnn.Model.predict model [ input_id, images ])
+        Fnn.Model.predict model [ input_id, images ])
   in
   Stdio.printf "Accuracy: %.2f%%\n%!" (100. *. test_accuracy)

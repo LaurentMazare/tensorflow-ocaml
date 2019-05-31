@@ -14,8 +14,7 @@ let system cmd =
 
 let system_exn cmd =
   Stdio.printf "Running %s\n%!" cmd;
-  if not (system cmd)
-  then Printf.failwithf "error while running %s" cmd ()
+  if not (system cmd) then Printf.failwithf "error while running %s" cmd ()
 
 let env_exists name =
   match Sys.getenv_opt name with
@@ -29,26 +28,25 @@ let tf_is_available ~lib_filename =
 
 let maybe_ask_user () =
   if Unix.isatty Unix.stdout
-  then begin
+  then (
     Stdio.printf
       "Cannot find %s, should I download it from\n  %s\nand install it? [y/n] %!"
-      lib_basename tf_lib_url;
+      lib_basename
+      tf_lib_url;
     match Stdlib.read_line () with
     | "y" -> true
     | _ ->
       Stdio.printf "Cancelling install.\n%!";
-      false
-  end else begin
+      false)
+  else (
     Stdio.printf "Installing %s\n%!" lib_basename;
-    true
-  end
+    true)
 
 let create_missing_directory dirname =
   if not (Sys.file_exists dirname)
-  then begin
+  then (
     Stdio.printf "Creating missing directory %s\n%!" dirname;
-    Unix.mkdir dirname 0o777;
-  end
+    Unix.mkdir dirname 0o777)
 
 let tf_install ~lib_filename =
   Stdio.printf "Downloading and installing TensorFlow to %s.\n%!" lib_filename;
@@ -69,5 +67,5 @@ let () =
   let lib_filename =
     Filename.concat (Filename.concat Caml.Sys.argv.(1) "tensorflow") lib_basename
   in
-  if not (tf_is_available ~lib_filename) && maybe_ask_user ()
+  if (not (tf_is_available ~lib_filename)) && maybe_ask_user ()
   then tf_install ~lib_filename
