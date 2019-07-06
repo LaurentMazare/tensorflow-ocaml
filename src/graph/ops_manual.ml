@@ -21,11 +21,7 @@ let get_shape ?shape values =
     shape
   | None -> [ List.length values ]
 
-let const_float ?(name = "Const")
-                ?(control_inputs = [])
-                ?shape
-                ~type_
-                values =
+let const_float ?(name = "Const") ?(control_inputs = []) ?shape ~type_ values =
   let shape = get_shape ?shape values in
   Node.create
     ~name:(Name.of_string name)
@@ -39,11 +35,7 @@ let const_float ?(name = "Const")
       ]
     ~output_idx:None
 
-let const_int ?(name = "Const")
-              ?(control_inputs = [])
-              ?shape
-              ~type_
-              values =
+let const_int ?(name = "Const") ?(control_inputs = []) ?shape ~type_ values =
   let shape = get_shape ?shape values in
   Node.create
     ~name:(Name.of_string name)
@@ -55,9 +47,7 @@ let const_int ?(name = "Const")
       [ "dtype", Type (P type_); "value", Tensor_int { type_ = P type_; shape; values } ]
     ~output_idx:None
 
-let const_string ?(name = "Const")
-                 ?shape
-                 values =
+let const_string ?(name = "Const") ?shape values =
   let shape = get_shape ?shape values in
   Node.create
     ~name:(Name.of_string name)
@@ -142,10 +132,7 @@ let dropout node ~keep_prob =
   Ops_generated.floor (keep_prob + random)
   |> fun binary_tensor -> node * Ops_generated.reciprocal keep_prob * binary_tensor
 
-let save_ ?(name = "Save")
-          filename
-          tensor_names
-          tensors =
+let save_ ?(name = "Save") filename tensor_names tensors =
   let inputs =
     [ `single (Node.P filename); `single (Node.P tensor_names); `multi tensors ]
   in

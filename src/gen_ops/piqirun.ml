@@ -735,7 +735,11 @@ let parse_packed_repeated_array_field code parse_packed_value parse_value l =
   Array.of_list res, rem
 
 let parse_packed_repeated_array_fixed_field
-    elem_size code parse_packed_value parse_value l
+    elem_size
+    code
+    parse_packed_value
+    parse_value
+    l
   =
   let fields, rem = find_fields code l in
   match fields with

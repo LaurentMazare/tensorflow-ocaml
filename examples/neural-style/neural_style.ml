@@ -48,8 +48,7 @@ let style_grams_and_content_nodes input ~img_h ~img_w ~npz_filename =
            Hashtbl.set var_by_name ~key:(name ^ "W") ~data:w;
            Hashtbl.set var_by_name ~key:(name ^ "b") ~data:b;
            let relu = Ops.relu conv2d in
-           relu, (relu, (`block_idx block_idx, `out_channels out_channels)) :: acc_relus
-       )
+           relu, (relu, (`block_idx block_idx, `out_channels out_channels)) :: acc_relus)
     |> fun (node, acc_relus) -> max_pool node, List.rev acc_relus :: acc
   in
   let _model, acc_relus =

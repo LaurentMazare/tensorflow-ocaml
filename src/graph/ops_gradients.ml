@@ -347,8 +347,8 @@ let conv2d_gradient : type a. self:a N.t -> gradient:a N.t -> N.p option list =
     all [ N.P gradient_input; N.P gradient_filter ]
   | _, _ -> failwith "Inconsistent types"
 
-let conv2dbackpropinput_gradient : type a.
-    self:a N.t -> gradient:a N.t -> N.p option list
+let conv2dbackpropinput_gradient
+    : type a. self:a N.t -> gradient:a N.t -> N.p option list
   =
  fun ~self ~gradient ->
   match N.output_type self, N.output_type gradient with

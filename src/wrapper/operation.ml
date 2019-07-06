@@ -157,13 +157,7 @@ let add_attribute operation_description ~attr_name attr =
       ~shape:tensor_str.shape
     |> Wrapper.Status.ok_exn
 
-let create graph
-           ~op_name
-           ~unique_name
-           ~inputs
-           ~input_lists
-           ~control_inputs
-           ~attributes =
+let create graph ~op_name ~unique_name ~inputs ~input_lists ~control_inputs ~attributes =
   let operation_description =
     Wrapper.Graph.new_operation graph ~op_name ~name:unique_name
   in

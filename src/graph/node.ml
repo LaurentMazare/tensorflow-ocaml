@@ -118,13 +118,7 @@ let packed_output_idx (P t) = t.output_idx
 let packed_operation (P t) = t.operation
 let packed_output (P t) = t.output
 
-let create ~name
-           ~op_name
-           ~output_type
-           ~inputs
-           ~control_inputs
-           ~attributes
-           ~output_idx =
+let create ~name ~op_name ~output_type ~inputs ~control_inputs ~attributes ~output_idx =
   let id = Id.create () in
   let op_inputs, op_input_lists =
     List.partition_map inputs ~f:(function

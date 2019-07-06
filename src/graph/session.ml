@@ -106,8 +106,9 @@ module Output = struct
   let scalar_int32 n = scalar_gen int32 n |> map ~f:Int32.to_int_exn
   let scalar_int64 n = scalar_gen int64 n
 
-  let rec build_output : type a.
-      a t -> (Node.p list -> Node.p list) * (Tensor.p list -> a * Tensor.p list)
+  let rec build_output
+      : type a.
+        a t -> (Node.p list -> Node.p list) * (Tensor.p list -> a * Tensor.p list)
     = function
     | Return a -> (fun l -> l), fun l -> a, l
     | Both (o1, o2) ->

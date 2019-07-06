@@ -75,9 +75,15 @@ module Tensor = struct
     | TF_UINT16 | TF_INT16 -> 2
     | TF_BOOL | TF_UINT8 | TF_INT8 -> 1
     | TF_INT64 -> 8
-    | TF_STRING | TF_COMPLEX | TF_QINT8 | TF_QUINT8 | TF_QINT32 | TF_BFLOAT16
-    | TF_QINT16 | TF_QUINT16 | Unknown _ ->
-      failwith "Unsupported tensor type (sizeof)"
+    | TF_STRING
+    | TF_COMPLEX
+    | TF_QINT8
+    | TF_QUINT8
+    | TF_QINT32
+    | TF_BFLOAT16
+    | TF_QINT16
+    | TF_QUINT16
+    | Unknown _ -> failwith "Unsupported tensor type (sizeof)"
 
   let data_type_of_kind (type a b) (kind : (a, b) Bigarray.kind) =
     match kind with

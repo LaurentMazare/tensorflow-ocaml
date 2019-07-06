@@ -166,7 +166,8 @@ let flatten t = reshape t ~shape:(D1 (Shape.total_dim t.shape))
 let split t =
   let id = Id.create () in
   let (Shape.D2 (num_split, d)) = t.shape in
-  List.init num_split ~f:(fun idx -> { shape = D1 d; op = Split (t, idx, num_split); id })
+  List.init num_split ~f:(fun idx ->
+      { shape = D1 d; op = Split (t, idx, num_split); id })
 
 let concat = function
   | [] -> failwith "concat called on an empty list"
