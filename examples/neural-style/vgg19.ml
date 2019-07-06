@@ -1,7 +1,6 @@
 open Base
 open Float.O_dot
 open Tensorflow_core
-open! Tensorflow
 open Tensorflow_fnn
 
 let img_size = 224
